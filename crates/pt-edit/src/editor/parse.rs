@@ -9,12 +9,34 @@ pub(super) const MAX_COUNT: usize = 1_000_000;
 
 /// Normal-mode keys after `normal_char` mapping. Ctrl+D, Ctrl+U, Ctrl+R, Ctrl+A, Ctrl+X, Ctrl+V
 /// are `\x04`, `\x15`, `\x12`, `\x01`, `\x18`, `\x16`.
-pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'";
-pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/vV\x16~r.\x01\x18mqz@S";
+pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'|";
+pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07";
 /// Keys followed by a char argument.
 pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
-pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16";
+pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
+/// `g<c>` motions and commands, as keys `g_key(c)`.
+pub(super) const G_MOTIONS: &str = "o";
+pub(super) const G_COMMANDS: &str = "-+\x07a8";
+
+/// Internal key for `g<c>`: a private-use char, so it never collides with a typed key.
+pub(super) const fn g_key(c: char) -> char {
+    match char::from_u32(0xE100 + c as u32) {
+        Some(k) => k,
+        None => panic!("g keys are ASCII"),
+    }
+}
+
+/// The `c` of a `g<c>` key.
+fn g_of(k: char) -> Option<char> {
+    (0xE100..0xE180).contains(&(k as u32)).then(|| char::from_u32(k as u32 - 0xE100).expect("ASCII"))
+}
+
+/// Whether `k` (a parsed key) is a motion.
+pub(super) fn is_motion(k: char) -> bool {
+    MOTIONS.contains(k) || g_of(k).is_some_and(|c| G_MOTIONS.contains(c))
+}
+
 /// Internal operator chars for `gu`, `gU`, `g~`.
 pub(super) const OP_LOWER: char = '\u{E000}';
 pub(super) const OP_UPPER: char = '\u{E001}';
@@ -105,10 +127,12 @@ pub(super) fn parse(s: &str) -> Parse {
     } else {
         return Parse::Invalid;
     };
+    let mut key = key;
     if key == 'g' {
         match it.next() {
             None => return Parse::Incomplete,
             Some('g') => {}
+            Some(c) if G_MOTIONS.contains(c) || (op.is_none() && G_COMMANDS.contains(c)) => key = g_key(c),
             Some(_) => return Parse::Invalid,
         }
     }
@@ -184,6 +208,7 @@ pub(super) fn normal_char(key: KeyEvent) -> Option<char> {
             'a' => '\x01',
             'x' => '\x18',
             'v' => '\x16',
+            'g' => '\x07',
             _ => return None,
         },
         KeyCode::Char(c) => c,
@@ -209,6 +234,7 @@ pub(super) fn char_key(c: char) -> KeyEvent {
         '\x01' => ctrl('a'),
         '\x18' => ctrl('x'),
         '\x16' => ctrl('v'),
+        '\x07' => ctrl('g'),
         c => KeyCode::Char(c).into(),
     }
 }
@@ -245,6 +271,10 @@ mod tests {
         assert_eq!(parse("d'a"), cmd(None, Some('d'), '\'', Some('a')));
         assert_eq!(parse("3@@"), cmd(Some(3), None, '@', Some('@')));
         assert_eq!(parse("\x16"), cmd(None, None, '\x16', None));
+        assert_eq!(parse("3g-"), cmd(Some(3), None, g_key('-'), None));
+        assert_eq!(parse("g+"), cmd(None, None, g_key('+'), None));
+        assert_eq!(parse("dg-"), Parse::Invalid);
+        assert!(!is_motion(g_key('-')) && is_motion('w') && !is_motion('x'));
         for s in ["", "3", "d", "d2", "g", "dg", "f", "dt", "r", "di", "z", "\"", "\"a", "gu", "gug"] {
             assert_eq!(parse(s), Parse::Incomplete, "{s:?}");
         }
@@ -289,7 +319,7 @@ mod tests {
 
     #[test]
     fn keys_round_trip() {
-        for c in ['a', '\x04', '\x15', '\x12', '\x01', '\x18', '\x16'] {
+        for c in ['a', '\x04', '\x15', '\x12', '\x01', '\x18', '\x16', '\x07'] {
             assert_eq!(normal_char(char_key(c)), Some(c));
         }
         assert_eq!(normal_char(KeyEvent::new(KeyCode::Char('z'), KeyModifiers::CONTROL)), None);

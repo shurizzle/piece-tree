@@ -3,7 +3,7 @@
 use super::{Cmd, Editor, Kind, Pos, class, search};
 
 /// Motions that set the `''` mark when they move the cursor (vim "jumps").
-pub(super) const JUMPS: &str = "Gg%nN*#HML`'";
+pub(super) const JUMPS: &str = "Gg%nN*#HML`'\u{E16F}";
 
 impl Editor {
     /// Chars from `p` forward; each line but the last ends with `\n`.
@@ -191,27 +191,19 @@ impl Editor {
                 (p, Kind::Exclusive)
             }
             'n' | 'N' => {
-                self.hl = true;
-                let mut p = None;
-                for _ in 0..n {
-                    let from = p.map_or_else(|| self.offset(), |q| self.offset_of(q));
-                    p = Some(self.search_from(key == 'n', from)?);
-                }
-                (p?, Kind::Exclusive)
+                let back = self.last_search.as_ref().is_some_and(|s| s.back);
+                self.search_motion(back == (key == 'N'), n, None)?
             }
             '*' | '#' => {
                 let Some((word, start)) = self.word_under_cursor() else {
                     self.msg = "No identifier under cursor".into();
                     return None;
                 };
-                self.last_search = Some(super::Search { pat: word, word: true });
-                self.hl = true;
-                let mut from = self.offset_of((line, start));
-                for _ in 0..n {
-                    let p = self.search_from(key == '*', from)?;
-                    from = self.offset_of(p);
-                }
-                (self.pos_of(from), Kind::Exclusive)
+                let mut s = search::Search::word(&word);
+                s.back = key == '#';
+                self.last_search = Some(s);
+                let from = self.offset_of((line, start));
+                self.search_motion(key == '*', n, Some(from))?
             }
             'f' | 'F' | 't' | 'T' => {
                 let ch = arg.expect("parse requires an argument");
@@ -232,6 +224,8 @@ impl Editor {
                 };
                 self.find(k, ch, n, true)?
             }
+            '|' => ((line, (n - 1).min(self.line_chars(line))), Kind::Exclusive),
+            super::G_BYTE => (self.pos_of(self.byte_pos(n - 1)), Kind::Exclusive),
             '`' | '\'' => {
                 let m = match arg.expect("parse requires an argument") {
                     '`' => '\'',
@@ -246,6 +240,11 @@ impl Editor {
             }
             _ => unreachable!("not a motion: {key:?}"),
         })
+    }
+
+    /// Char boundary at or before byte `b`, clamped to the text (`go`, `:goto`).
+    pub(super) fn byte_pos(&self, b: usize) -> usize {
+        self.doc.text().floor_char_boundary(b)
     }
 
     /// Moves the cursor to a motion's target in Normal or Visual mode; jumps set the `''` mark.
@@ -270,50 +269,65 @@ impl Editor {
         self.marks.insert('\'', self.offset());
     }
 
-    /// Next (or previous) match of `last_search` from byte `cur`, wrapping around; sets the message.
-    pub(super) fn search_from(&mut self, forward: bool, cur: usize) -> Option<Pos> {
+    /// The `n`-th match of `last_search` forward or backward from byte `from` (the cursor by
+    /// default), wrapping, with the search offset applied. Sets the wrap or not-found message.
+    pub(super) fn search_motion(&mut self, forward: bool, n: usize, from: Option<usize>) -> Option<(Pos, Kind)> {
         let Some(s) = self.last_search.clone() else {
             self.msg = "No previous search pattern".into();
             return None;
         };
-        let Some((off, wrapped)) = self.find_text(&s.pat, s.word, forward, cur) else {
-            self.msg = format!("Pattern not found: {}", s.pat);
-            return None;
+        self.hl = true;
+        // Repeating after an offset moved the cursor off the match: continue from the match.
+        let mut cur = match (from, self.search_landing) {
+            (Some(f), _) => f,
+            (None, Some((p, start))) if p == (self.line, self.col) => start,
+            _ => self.offset(),
         };
-        if wrapped {
-            self.msg = if forward { "search hit BOTTOM, continuing at TOP" } else { "search hit TOP, continuing at BOTTOM" }.into();
+        let mut found = None;
+        for _ in 0..n {
+            let Some((m, wrapped)) = self.find_match(&s.re, forward, cur) else {
+                self.msg = format!("Pattern not found: {}", s.pat);
+                return None;
+            };
+            if wrapped {
+                self.msg = if forward { "search hit BOTTOM, continuing at TOP" } else { "search hit TOP, continuing at BOTTOM" }.into();
+            }
+            cur = m.start;
+            found = Some(m);
         }
-        Some(self.pos_of(off))
+        let m = found?;
+        let text = self.doc.text();
+        let at_char = |c: isize| self.pos_of(text.char_to_offset(c.clamp(0, text.char_count() as isize) as usize));
+        let target = match s.offset {
+            search::Offset::None => (self.pos_of(m.start), Kind::Exclusive),
+            search::Offset::Start(k) => (at_char(text.offset_to_char(m.start) as isize + k), Kind::Exclusive),
+            search::Offset::End(k) => {
+                let last = text.offset_to_char(m.end).saturating_sub(usize::from(!m.is_empty()));
+                (at_char(last as isize + k), Kind::Inclusive)
+            }
+            search::Offset::Lines(k) => {
+                let l = self.pos_of(m.start).0.saturating_add_signed(k).min(self.line_count() - 1);
+                ((l, self.first_non_blank(l)), Kind::Linewise)
+            }
+        };
+        let landing = (target.0.0, target.0.1.min(self.line_chars(target.0.0).saturating_sub(1)));
+        self.search_landing = Some((landing, m.start));
+        Some(target)
     }
 
-    /// Offset of the first match after `cur` (or the last before it), and whether it wrapped.
-    pub(super) fn find_text(&self, pat: &str, word: bool, forward: bool, cur: usize) -> Option<(usize, bool)> {
+    /// The match of `re` after byte `cur` (or the last before it), and whether it wrapped.
+    pub(super) fn find_match(&self, re: &piece_tree::Regex, forward: bool, cur: usize) -> Option<(std::ops::Range<usize>, bool)> {
         let text = self.doc.text();
-        let accept = |off: usize| {
-            !word || {
-                // Whole word: look at the chars around the match in its line.
-                let line = text.offset_to_line(off);
-                let start = text.line_to_offset(line);
-                let s = text.line(line);
-                s.len() >= off - start + pat.len() && search::is_whole_word(&s, off - start..off - start + pat.len())
-            }
-        };
-        let mut hits = search::match_starts(text, pat).filter(|&o| accept(o));
-        if forward {
-            let first = hits.next()?;
-            if first > cur {
-                return Some((first, false));
-            }
-            Some(hits.find(|&o| o > cur).map_or((first, true), |o| (o, false)))
-        } else {
-            let (mut before, mut last) = (None, None);
-            for o in hits {
-                if o < cur {
-                    before = Some(o);
-                }
-                last = Some(o);
-            }
-            before.map(|o| (o, false)).or(last.map(|o| (o, true)))
+        if !forward {
+            return search::find_backward(text, re, cur);
         }
+        // Past the char at `cur`; on a line end that is the next line's start.
+        let (line, col) = self.pos_of(cur);
+        let next = if col < self.line_chars(line) {
+            self.offset_of((line, col + 1))
+        } else {
+            (cur + 1).min(text.len())
+        };
+        search::find_forward(text, re, cur, next)
     }
 }

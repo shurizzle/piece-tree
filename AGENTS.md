@@ -53,4 +53,4 @@ cargo test -p pt-edit                          # editor tests (keys, frames, sub
 | Undo/redo, writing | `crates/piece-tree/src/document.rs` |
 | Regex search/replace | `crates/piece-tree/src/search.rs` |
 | Benchmarks | `crates/piece-tree/benches/bench.rs` |
-| Editor | `crates/pt-edit/src/editor.rs` + `editor/*.rs` (grammar, motions, objects, search, registers, options, render; CLI/terminal in `main.rs`) |
+| Editor | `crates/pt-edit/src/editor.rs` + `editor/*.rs` (grammar, motions, objects, search, `:s`, registers, options, render; CLI/terminal in `main.rs`) |

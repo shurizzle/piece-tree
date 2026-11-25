@@ -36,6 +36,28 @@ fn assert_same(t: &Text, m: &str, rng: &mut Rng, full: bool) {
         assert_eq!(t.slice(r.clone()), &m[r]);
     }
     assert_eq!(t.offset_to_line(m.len()), lines.len() - 1);
+    assert_chars(t, m, rng);
+}
+
+/// Char metrics of `t` against `m`: counts, both conversions, line columns.
+fn assert_chars(t: &Text, m: &str, rng: &mut Rng) {
+    let total = m.chars().count();
+    assert_eq!(t.char_count(), total);
+    assert_eq!((t.offset_to_char(m.len()), t.char_to_offset(total)), (total, m.len()));
+    for _ in 0..16 {
+        let off = rng.boundary(m);
+        let ch = m[..off].chars().count();
+        assert_eq!(t.offset_to_char(off), ch, "offset_to_char({off})");
+        assert_eq!(t.char_to_offset(ch), off, "char_to_offset({ch})");
+        let line = m[..off].matches('\n').count();
+        let start = m[..off].rfind('\n').map_or(0, |i| i + 1);
+        let col = m[start..off].chars().count();
+        assert_eq!(t.offset_to_line_col(off), (line, col));
+        assert_eq!(t.line_col_to_offset(line, col), off);
+        let len = m[start..].split('\n').next().unwrap().chars().count();
+        assert_eq!(t.line_char_len(line), len);
+        assert_eq!(t.line_end(line), start + m[start..].find('\n').unwrap_or(m.len() - start));
+    }
 }
 
 /// Random edits applied to `Text` and `String` in lockstep.
@@ -475,4 +497,69 @@ fn from_string_normalizes_and_handles_small_texts() {
     let small = Text::from("x\ry".to_string());
     assert_eq!(small.to_string(), "x\ny");
     assert!(Text::from(String::new()).is_empty());
+}
+
+/// Sealed chunks are indexed every `CHAR_BLOCK` bytes; long pieces of them use the index.
+#[test]
+fn char_metrics_on_indexed_chunks() {
+    use crate::chunk::{CHAR_BLOCK, MAX_ADD_BYTES};
+    let mut rng = Rng(11);
+    let big: String = (0..).map(|_| rng.text(4)).take_while({
+        let mut n = 0;
+        move |s: &String| {
+            n += s.len();
+            n < 3 * MAX_ADD_BYTES
+        }
+    }).collect();
+    assert!(big.len() > 2 * CHAR_BLOCK);
+    let (mut t, mut m) = (Text::from(big.clone()), big);
+    assert!(t.chunks().count() == 1);
+    assert_same(&t, &m, &mut rng, false);
+    for _ in 0..40 {
+        let off = rng.boundary(&m);
+        let s = rng.text(3);
+        t = t.insert(off, &s);
+        m.insert_str(off, &s);
+        let r = rng.range(&m);
+        let r = r.start..r.start + (r.end - r.start).min(64);
+        let r = r.start..(r.start..=r.end).rev().find(|&e| m.is_char_boundary(e)).unwrap();
+        t = t.delete(r.clone());
+        m.replace_range(r, "");
+        assert_same(&t, &m, &mut rng, false);
+    }
+    // Every char position of a long indexed piece, both ways.
+    let t = Text::from("é".repeat(3 * CHAR_BLOCK));
+    for ch in (0..=3 * CHAR_BLOCK).step_by(7) {
+        assert_eq!((t.char_to_offset(ch), t.offset_to_char(2 * ch)), (2 * ch, ch));
+    }
+}
+
+#[test]
+fn char_metrics_panics() {
+    let t = Text::from("aé\nb");
+    assert_eq!(std::panic::catch_unwind(|| t.offset_to_char(2)).unwrap_err().downcast_ref::<&str>(), Some(&"offset not on a char boundary"));
+    for f in [
+        &(|| _ = t.offset_to_char(9)) as &(dyn Fn() + std::panic::RefUnwindSafe),
+        &|| _ = t.char_to_offset(9),
+        &|| _ = t.line_col_to_offset(0, 3),
+        &|| _ = t.line_end(2),
+    ] {
+        let e = std::panic::catch_unwind(f).unwrap_err();
+        let msg = e.downcast_ref::<String>().cloned().unwrap_or_default();
+        assert!(msg.contains("out of bounds"), "{msg}");
+    }
+    assert_eq!(t.line_col_to_offset(0, 2), 3);
+    assert_eq!(Text::new().char_to_offset(0), 0);
+}
+
+#[test]
+fn char_boundaries() {
+    let mut t = Text::from("aé");
+    t = t.insert(3, "🦀x");
+    let m = "aé🦀x";
+    for off in 0..=m.len() + 2 {
+        assert_eq!(t.is_char_boundary(off), m.is_char_boundary(off), "{off}");
+        assert_eq!(t.floor_char_boundary(off), m.floor_char_boundary(off.min(m.len())), "{off}");
+    }
+    assert!(Text::new().is_char_boundary(0) && !Text::new().is_char_boundary(1));
 }

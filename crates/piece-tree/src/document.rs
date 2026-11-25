@@ -1,35 +1,110 @@
 use std::{
     io::{self, Write},
-    mem,
     ops::Range,
+    time::{Duration, Instant},
 };
 
-use crate::{LineEnding, Text};
+use crate::{LineEnding, Regex, Text};
 
-/// A [`Text`] with undo/redo history and an output line ending.
+/// One change between two versions: `old_len` bytes at `start` became `new_len` bytes.
 ///
-/// Every edit is one undo step; undo and redo just swap roots.
-pub struct Document {
+/// A list of edits applies in order: each `start` is an offset in the text left by the
+/// previous edits.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Edit {
+    pub start: usize,
+    pub old_len: usize,
+    pub new_len: usize,
+}
+
+impl Edit {
+    /// The edit that undoes this one.
+    pub fn inverse(self) -> Edit {
+        Edit { start: self.start, old_len: self.new_len, new_len: self.old_len }
+    }
+
+    /// Where offset `off` of the old text ends up: before the edit it stays, after it shifts,
+    /// inside a replaced range it moves to the range start. An insertion at `off` pushes it.
+    pub fn map(self, off: usize) -> usize {
+        if off < self.start {
+            off
+        } else if off >= self.start + self.old_len {
+            off - self.old_len + self.new_len
+        } else {
+            self.start
+        }
+    }
+}
+
+/// Maps `off` through `edits` in order (see [`Edit::map`]).
+pub fn map_offset(edits: &[Edit], off: usize) -> usize {
+    edits.iter().fold(off, |o, e| e.map(o))
+}
+
+/// What [`Document::versions`] reports about one version.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Version {
+    pub seq: usize,
+    /// The version it was made from (the root reports itself).
+    pub parent: usize,
+    /// Number of edits from the parent.
+    pub edits: usize,
+    /// Whether no version was made from it (a branch tip).
+    pub leaf: bool,
+    pub time: Instant,
+}
+
+/// A version in the history tree.
+struct State {
     text: Text,
+    /// Index of the version this one was made from; the root points to itself.
+    parent: usize,
+    /// Edits from the parent's text to this one, as a range of `Document::log`.
+    edits: Range<usize>,
+    /// Child that `redo` goes to: the last one created or left by `undo`.
+    redo: Option<usize>,
+    time: Instant,
+}
+
+/// A [`Text`] with an undo tree and an output line ending.
+///
+/// Every effective edit (or every group of edits, see [`Document::begin_group`]) makes a new
+/// version. Versions form a tree: editing after an undo starts a branch and keeps the old one,
+/// reachable with [`Document::goto`], [`Document::earlier`] and [`Document::later`]. A version's
+/// number ([`Document::seq`]) is its creation order, 0 being the loaded text. Moving between
+/// versions only swaps roots; [`Document::last_edits`] says how offsets moved.
+pub struct Document {
     eol: LineEnding,
-    undo: Vec<Text>,
-    redo: Vec<Text>,
+    states: Vec<State>,
+    cur: usize,
+    /// Open [`Document::begin_group`] calls, and the version the open group writes into.
+    depth: usize,
+    group: Option<usize>,
+    /// Every version's edits, back to back. The open group's version is always the newest, so its
+    /// edits are the tail and can grow in place.
+    log: Vec<Edit>,
+    last: Vec<Edit>,
 }
 
 impl Document {
     /// Loads `s`, detecting its line ending and normalizing it internally to `\n`.
     pub fn new(s: &str) -> Self {
-        Self { text: Text::from(s), eol: LineEnding::detect(s), undo: Vec::new(), redo: Vec::new() }
+        Self::with_text(Text::from(s), LineEnding::detect(s))
     }
 
     /// Like [`Document::new`], taking over `s`'s buffer when possible (no copy of large files).
     pub fn from_string(s: String) -> Self {
         let eol = LineEnding::detect(&s);
-        Self { text: Text::from(s), eol, undo: Vec::new(), redo: Vec::new() }
+        Self::with_text(Text::from(s), eol)
+    }
+
+    fn with_text(text: Text, eol: LineEnding) -> Self {
+        let root = State { text, parent: 0, edits: 0..0, redo: None, time: Instant::now() };
+        Self { eol, states: vec![root], cur: 0, depth: 0, group: None, log: Vec::new(), last: Vec::new() }
     }
 
     pub fn text(&self) -> &Text {
-        &self.text
+        &self.states[self.cur].text
     }
 
     pub fn eol(&self) -> LineEnding {
@@ -41,48 +116,213 @@ impl Document {
     }
 
     pub fn insert(&mut self, off: usize, s: &str) {
-        let next = self.text.insert(off, s);
-        self.apply(next);
+        let next = self.text().insert(off, s);
+        self.apply(next, &[Edit { start: off, old_len: 0, new_len: s.len() }]);
     }
 
     pub fn delete(&mut self, range: Range<usize>) {
-        let next = self.text.delete(range);
-        self.apply(next);
+        let next = self.text().delete(range.clone());
+        self.apply(next, &[Edit { start: range.start, old_len: range.len(), new_len: 0 }]);
     }
 
-    fn apply(&mut self, next: Text) {
-        if next.ptr_eq(&self.text) {
+    /// Replaces `range` with `s` as one change (one version, one [`Edit`]).
+    pub fn splice(&mut self, range: Range<usize>, s: &str) {
+        if self.text().slice(range.clone()) == s {
+            // Same content (e.g. replacing a word with itself): not a change.
+            self.last.clear();
             return;
         }
-        self.undo.push(mem::replace(&mut self.text, next));
-        self.redo.clear();
+        let next = self.text().delete(range.clone()).insert(range.start, s);
+        self.apply(next, &[Edit { start: range.start, old_len: range.len(), new_len: s.len() }]);
+    }
+
+    /// Records `next` (with the edits that produced it) as a new version, or into the open group.
+    fn apply(&mut self, next: Text, edits: &[Edit]) {
+        self.last.clear();
+        if next.ptr_eq(self.text()) {
+            return;
+        }
+        self.last.extend_from_slice(edits);
+        self.log.extend_from_slice(edits);
+        if self.depth > 0 && self.group == Some(self.cur) {
+            let s = &mut self.states[self.cur];
+            s.text = next;
+            s.edits.end = self.log.len();
+            return;
+        }
+        let id = self.states.len();
+        self.states[self.cur].redo = Some(id);
+        let edits = self.log.len() - edits.len()..self.log.len();
+        self.states.push(State { text: next, parent: self.cur, edits, redo: None, time: Instant::now() });
+        self.cur = id;
+        if self.depth > 0 {
+            self.group = Some(id);
+        }
+    }
+
+    /// Starts a group: until the matching [`Document::end_group`], effective edits make a single
+    /// version (one undo step). Groups nest; only the outermost one counts. Moving in the history
+    /// closes every open group.
+    pub fn begin_group(&mut self) {
+        self.last.clear();
+        if self.depth == 0 {
+            self.group = None;
+        }
+        self.depth += 1;
+    }
+
+    /// Ends a group; returns true when the outermost group made a version.
+    pub fn end_group(&mut self) -> bool {
+        self.last.clear();
+        self.depth = self.depth.saturating_sub(1);
+        self.depth == 0 && self.group.take().is_some()
+    }
+
+    /// Runs `f` inside a group.
+    pub fn group<R>(&mut self, f: impl FnOnce(&mut Self) -> R) -> R {
+        self.begin_group();
+        let r = f(self);
+        self.end_group();
+        r
     }
 
     /// [`Text::replace_all`] as a single undo step; returns the match count.
-    pub fn replace_all(&mut self, re: &crate::Regex, rep: &str) -> usize {
-        let (next, n) = self.text.replace_all(re, rep);
-        self.apply(next);
+    pub fn replace_all(&mut self, re: &Regex, rep: &str) -> usize {
+        self.replace_matching(re, rep, |_| true)
+    }
+
+    /// [`Text::replace_matching`] as a single undo step; returns the replaced count.
+    /// [`Document::last_edits`] lists one edit per replaced match.
+    pub fn replace_matching(&mut self, re: &Regex, rep: &str, keep: impl FnMut(Range<usize>) -> bool) -> usize {
+        let (next, edits) = self.text().replace_matching_edits(re, rep, keep);
+        let n = edits.len();
+        self.apply(next, &edits);
         n
     }
 
-    /// Returns false when there is nothing to undo.
+    /// Edits that the last call made to the current text: an edit's own change, or the path
+    /// of a history move. Empty when the last call changed nothing (including
+    /// `begin_group`/`end_group`), so mapping positions after every call never applies an
+    /// edit twice. Use [`map_offset`] to keep positions such as marks in place.
+    pub fn last_edits(&self) -> &[Edit] {
+        &self.last
+    }
+
+    /// Number of the current version (0 is the loaded text).
+    pub fn seq(&self) -> usize {
+        self.cur
+    }
+
+    /// Number of versions, current or not.
+    pub fn history_len(&self) -> usize {
+        self.states.len()
+    }
+
+    /// Every version in creation order, for undo-tree views (vim `:undolist` lists the leaves).
+    pub fn versions(&self) -> impl Iterator<Item = Version> + '_ {
+        // Children are created after their parent, so a version is a parent iff a later one says so.
+        let mut parent_of_some = vec![false; self.states.len()];
+        for s in &self.states[1..] {
+            parent_of_some[s.parent] = true;
+        }
+        self.states.iter().enumerate().map(move |(seq, s)| Version {
+            seq,
+            parent: s.parent,
+            edits: s.edits.len(),
+            leaf: !parent_of_some[seq],
+            time: s.time,
+        })
+    }
+
+    /// Goes to the parent version. Returns false at the root.
     pub fn undo(&mut self) -> bool {
-        let Some(prev) = self.undo.pop() else { return false };
-        self.redo.push(mem::replace(&mut self.text, prev));
+        if self.cur == 0 {
+            self.close_groups();
+            self.last.clear();
+            return false;
+        }
+        self.goto(self.states[self.cur].parent)
+    }
+
+    /// Goes to the child version last created or left by `undo`. Returns false without one.
+    pub fn redo(&mut self) -> bool {
+        match self.states[self.cur].redo {
+            Some(child) => self.goto(child),
+            None => {
+                self.close_groups();
+                self.last.clear();
+                false
+            }
+        }
+    }
+
+    /// Goes `n` versions back in creation order, across branches (vim `g-`, `:earlier`).
+    pub fn earlier(&mut self, n: usize) -> bool {
+        self.goto(self.cur.saturating_sub(n))
+    }
+
+    /// Goes `n` versions forward in creation order (vim `g+`, `:later`).
+    pub fn later(&mut self, n: usize) -> bool {
+        self.goto(self.cur.saturating_add(n).min(self.states.len() - 1))
+    }
+
+    /// Goes to the newest version made at least `d` before the current one (vim `:earlier 10s`).
+    pub fn earlier_time(&mut self, d: Duration) -> bool {
+        let now = self.states[self.cur].time;
+        let target = self.states[..self.cur].iter().rposition(|s| now.duration_since(s.time) >= d).unwrap_or(0);
+        self.goto(target)
+    }
+
+    /// Goes to the oldest version made at least `d` after the current one, or the newest.
+    pub fn later_time(&mut self, d: Duration) -> bool {
+        let now = self.states[self.cur].time;
+        let last = self.states.len() - 1;
+        let target = (self.cur..=last).find(|&i| self.states[i].time.duration_since(now) >= d).unwrap_or(last);
+        self.goto(target)
+    }
+
+    /// Goes to version `seq` (clamped to the newest), through the closest common ancestor.
+    /// Returns false when it is already the current one.
+    pub fn goto(&mut self, seq: usize) -> bool {
+        self.close_groups();
+        self.last.clear();
+        let target = seq.min(self.states.len() - 1);
+        if target == self.cur {
+            return false;
+        }
+        // Children always have larger indexes than their parent, so climbing from the larger
+        // index finds the common ancestor.
+        let (mut up, mut down) = (self.cur, target);
+        let mut path = Vec::new();
+        while up != down {
+            if up > down {
+                self.last.extend(self.log[self.states[up].edits.clone()].iter().rev().map(|e| e.inverse()));
+                let p = self.states[up].parent;
+                self.states[p].redo = Some(up);
+                up = p;
+            } else {
+                path.push(down);
+                down = self.states[down].parent;
+            }
+        }
+        for &s in path.iter().rev() {
+            self.last.extend_from_slice(&self.log[self.states[s].edits.clone()]);
+            let p = self.states[s].parent;
+            self.states[p].redo = Some(s);
+        }
+        self.cur = target;
         true
     }
 
-    /// Returns false when there is nothing to redo.
-    pub fn redo(&mut self) -> bool {
-        let Some(next) = self.redo.pop() else { return false };
-        self.undo.push(mem::replace(&mut self.text, next));
-        true
+    fn close_groups(&mut self) {
+        self.depth = 0;
+        self.group = None;
     }
 
     /// Writes the text with `\n` converted to the document's line ending.
     pub fn write_to(&self, mut w: impl Write) -> io::Result<()> {
         let eol = self.eol.as_str().as_bytes();
-        for chunk in self.text.chunks() {
+        for chunk in self.text().chunks() {
             if self.eol == LineEnding::Lf {
                 w.write_all(chunk.as_bytes())?;
                 continue;
@@ -99,195 +339,4 @@ impl Document {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn output(doc: &Document) -> Vec<u8> {
-        let mut out = Vec::new();
-        doc.write_to(&mut out).unwrap();
-        out
-    }
-
-    #[test]
-    fn eol_round_trip() {
-        for eol in [LineEnding::Lf, LineEnding::Cr, LineEnding::CrLf] {
-            let s = ["one", "", "two é", "three", ""].join(eol.as_str());
-            let doc = Document::new(&s);
-            assert_eq!(doc.eol(), eol);
-            assert_eq!(doc.text().line_count(), 5);
-            assert_eq!(output(&doc), s.as_bytes());
-        }
-    }
-
-    #[test]
-    fn converts_eol_on_output() {
-        let mut doc = Document::new("a\nb\n");
-        doc.set_eol(LineEnding::CrLf);
-        assert_eq!(output(&doc), b"a\r\nb\r\n");
-    }
-
-    #[test]
-    fn undo_redo_restore_exact_versions() {
-        let mut doc = Document::new("hello world");
-        let v0 = doc.text().clone();
-        doc.insert(5, ",");
-        let v1 = doc.text().clone();
-        doc.delete(0..1);
-        assert_eq!(doc.text().to_string(), "ello, world");
-
-        assert!(doc.undo());
-        assert!(doc.text().ptr_eq(&v1));
-        assert!(doc.undo());
-        assert!(doc.text().ptr_eq(&v0));
-        assert!(!doc.undo());
-
-        assert!(doc.redo());
-        assert!(doc.text().ptr_eq(&v1));
-        doc.insert(0, "!");
-        assert!(!doc.redo(), "new edit clears redo");
-    }
-
-    #[test]
-    fn load_detects_and_normalizes() {
-        let doc = Document::new("a\r\nb\r\n");
-        assert_eq!(doc.eol(), LineEnding::CrLf);
-        assert_eq!(doc.text().to_string(), "a\nb\n");
-        let doc = Document::new("");
-        assert_eq!((doc.eol(), doc.text().is_empty()), (LineEnding::Lf, true));
-        assert!(output(&doc).is_empty());
-    }
-
-    #[test]
-    fn from_string_matches_new() {
-        for s in ["a\r\nb\r\n", "x\ry", "", "plain\n"] {
-            let (a, b) = (Document::new(s), Document::from_string(s.to_string()));
-            assert_eq!((a.eol(), a.text().to_string()), (b.eol(), b.text().to_string()));
-        }
-    }
-
-    #[test]
-    fn set_eol_changes_output_only() {
-        let mut doc = Document::new("a\nb");
-        let before = doc.text().clone();
-        for (eol, bytes) in [
-            (LineEnding::Cr, &b"a\rb"[..]),
-            (LineEnding::CrLf, b"a\r\nb"),
-            (LineEnding::Lf, b"a\nb"),
-        ] {
-            doc.set_eol(eol);
-            assert_eq!(doc.eol(), eol);
-            assert_eq!(output(&doc), bytes);
-        }
-        assert!(doc.text().ptr_eq(&before));
-        assert!(!doc.undo(), "set_eol is not an undo step");
-    }
-
-    #[test]
-    fn output_conversion_across_piece_boundaries() {
-        // Newlines at the start, middle and end of pieces.
-        let mut doc = Document::new("\nmid\n");
-        doc.insert(0, "start\n");
-        doc.insert(doc.text().len(), "end");
-        doc.insert(6, "\n");
-        let model = doc.text().to_string();
-        assert!(doc.text().chunks().count() >= 4);
-        for eol in [LineEnding::Cr, LineEnding::CrLf] {
-            doc.set_eol(eol);
-            assert_eq!(output(&doc), model.replace('\n', eol.as_str()).as_bytes());
-        }
-    }
-
-    #[test]
-    fn cr_and_lf_inserted_separately_are_two_breaks() {
-        let mut doc = Document::new("ab");
-        doc.insert(1, "\r");
-        doc.insert(2, "\n");
-        assert_eq!(doc.text().line_count(), 3);
-    }
-
-    /// Writer failing on the `n`-th call to `write`.
-    struct FailAt(usize);
-
-    impl Write for FailAt {
-        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-            if self.0 == 0 {
-                return Err(io::Error::other("disk full"));
-            }
-            self.0 -= 1;
-            Ok(buf.len())
-        }
-
-        fn flush(&mut self) -> io::Result<()> {
-            Ok(())
-        }
-    }
-
-    #[test]
-    fn write_errors_propagate() {
-        for eol in [LineEnding::Lf, LineEnding::Cr, LineEnding::CrLf] {
-            let mut doc = Document::new("a\nb");
-            doc.set_eol(eol);
-            // Non-LF output writes "a", eol, "b": fail at each of them.
-            let writes = if eol == LineEnding::Lf { 1 } else { 3 };
-            for n in 0..writes {
-                let err = doc.write_to(FailAt(n)).unwrap_err();
-                assert_eq!(err.to_string(), "disk full");
-            }
-            let mut ok = FailAt(writes);
-            assert!(doc.write_to(&mut ok).is_ok());
-            assert!(ok.flush().is_ok());
-        }
-    }
-
-    #[cfg(not(miri))]
-    const UNDO_REDO_STEPS: usize = 2000;
-    #[cfg(miri)]
-    const UNDO_REDO_STEPS: usize = 200;
-
-    #[test]
-    fn undo_redo_differential() {
-        let mut rng = crate::test_util::Rng(99);
-        let mut doc = Document::new("");
-        let (mut cur, mut undo, mut redo) = (String::new(), Vec::<String>::new(), Vec::<String>::new());
-        for _ in 0..UNDO_REDO_STEPS {
-            match rng.below(10) {
-                0..=1 => {
-                    let expected = undo.pop().map(|prev| redo.push(mem::replace(&mut cur, prev)));
-                    assert_eq!(doc.undo(), expected.is_some());
-                }
-                2 => {
-                    let expected = redo.pop().map(|next| undo.push(mem::replace(&mut cur, next)));
-                    assert_eq!(doc.redo(), expected.is_some());
-                }
-                3..=5 if !cur.is_empty() => {
-                    let r = rng.range(&cur);
-                    let mut next = cur.clone();
-                    next.replace_range(r.clone(), "");
-                    doc.delete(r);
-                    if next != cur {
-                        undo.push(mem::replace(&mut cur, next));
-                        redo.clear();
-                    }
-                }
-                _ => {
-                    let off = rng.boundary(&cur);
-                    let s = rng.text(3);
-                    let mut next = cur.clone();
-                    next.insert_str(off, &s);
-                    doc.insert(off, &s);
-                    undo.push(mem::replace(&mut cur, next));
-                    redo.clear();
-                }
-            }
-            assert_eq!(doc.text().to_string(), cur);
-        }
-    }
-
-    #[test]
-    fn noop_edit_is_not_an_undo_step() {
-        let mut doc = Document::new("x");
-        doc.insert(0, "");
-        doc.delete(1..1);
-        assert!(!doc.undo());
-    }
-}
+mod tests;

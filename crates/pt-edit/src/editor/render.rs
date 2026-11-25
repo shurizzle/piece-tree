@@ -71,10 +71,10 @@ impl Editor {
     }
 
     /// Pattern to highlight: the one being typed (incsearch), else the last search (hlsearch).
-    fn highlight(&self) -> Option<(String, bool)> {
+    fn highlight(&self) -> Option<std::rc::Rc<piece_tree::Regex>> {
         match &self.mode {
-            Mode::Search(p) => (!p.is_empty()).then(|| (p.clone(), false)),
-            _ if self.hl => self.last_search.as_ref().map(|s| (s.pat.clone(), s.word)),
+            Mode::Search(_) => self.inc_search.as_ref().map(|s| s.re.clone()),
+            _ if self.hl => self.last_search.as_ref().map(|s| s.re.clone()),
             _ => None,
         }
     }
@@ -104,6 +104,8 @@ impl Editor {
 
         let hl = self.highlight();
         let text = self.doc.text();
+        let visible = self.top..(self.top + self.rows).min(text.line_count());
+        let matches = hl.as_ref().map_or_else(Vec::new, |re| search::visible_matches(text, re, visible.clone()));
         let mut rows: Vec<Vec<Span>> = (self.top..self.top + self.rows)
             .map(|n| {
                 if n >= text.line_count() {
@@ -117,9 +119,7 @@ impl Editor {
                 }
                 let s = text.line(n);
                 let sel = self.selection(n);
-                let matches = hl.as_ref().map_or_else(Vec::new, |(p, word)| {
-                    search::line_matches(&s, p, |l, r| !*word || search::is_whole_word(l, r))
-                });
+                let matches = matches.get(n - self.top).map_or(&[][..], Vec::as_slice);
                 let style_at = |i: usize| {
                     if sel.contains(&i) {
                         Style::Reverse
@@ -141,7 +141,7 @@ impl Editor {
 
         let input = match &self.mode {
             Mode::Command(s) => Some(format!(":{s}")),
-            Mode::Search(s) => Some(format!("/{s}")),
+            Mode::Search(s) => Some(format!("{}{s}", if self.search_back { '?' } else { '/' })),
             _ => None,
         };
         let (status, cursor, bar) = if let Some(input) = input {

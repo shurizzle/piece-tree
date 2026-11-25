@@ -67,11 +67,17 @@ Each entry: decision, why, consequences. Ordered by importance.
 
 **Consequences**: callers convert columns to bytes themselves (the editor does it with `char_indices`). A single insert, or a file, over 4 GiB cannot be loaded, because it is one exact chunk.
 
-## D7. Undo granularity = one edit
+## D7. Undo tree of versions, with groups and an edit log
 
-**Decision**: `Document` pushes the previous `Text` on every effective edit; no-op edits (empty insert, empty delete) are detected with `ptr_eq` and skipped.
+**Decision**: `Document` keeps every version in a tree (`Vec<State>`, children after their parents). An effective edit makes a version; no-op edits are detected with `ptr_eq` and skipped. `begin_group`/`end_group` (nestable) fold the edits of one command into one version. Each version records the `Edit`s (start, old length, new length) from its parent, in one flat log, and its creation time. `undo`/`redo`/`goto`/`earlier`/`later` swap roots and report the path's edits as `last_edits`.
 
-**Consequences**: the library has no undo grouping (roadmap item, see [../reference/limitations.md](../reference/limitations.md)). `pt-edit` groups on its side: it counts the effective edits of each command or insert session and calls `undo`/`redo` that many times.
+**Why**: persistence makes old versions free to keep (shared structure), so a tree costs nothing over two stacks and loses no branch. Editors need groups (one `u` per command) and position mapping (marks, cursors, other views) on every change, including undo; without the log the caller cannot know where text moved after an undo or a regex replace.
+
+**Rejected**: grouping in the caller by counting edits (what pt-edit did before): it cannot map positions through undo and duplicates history logic in every caller. A `Vec<Edit>` per version: one allocation per keystroke; the flat log has none (the open group's version is always the newest, so its edits are the log's tail).
+
+**Cost**: the timestamp is one `Instant::now()` (~22 ns) per version, about 15% of a single-key `Document::insert`; grouped typing (editors) reads the clock once per group. Measured in [../guides/benchmarks.md](../guides/benchmarks.md).
+
+**Consequences**: history is never freed (roadmap: drop old versions). `last_edits` is empty after any call that changed nothing, so mapping after every call never applies an edit twice.
 
 ## D8. Dependencies: use the best crate for the job
 
@@ -155,3 +161,13 @@ Writes go through raw pointers into reserved, unreferenced ranges. `Piece::text`
 - Drop the vendored copy when upstream ships a fix.
 
 **Replace**: one edit per match would create k versions and k path copies. Collecting the matches and assembling `pieces_in` gaps plus sub-pieces of one stored replacement buffer gives one version, one undo step and an O(n + k) build. The `$` expansion uses `regex_automata::util::interpolate::string`, the same code `regex` uses.
+
+## D15. Char metrics cached in the tree
+
+**Decision**: every piece caches its char count and every node the subtree's. Sealed chunks (loads, large inserts) get an immutable char index at creation (chars before every 1 KiB), so splitting or querying a long piece scans at most a block; add-chunk pieces (≤ 64 KiB) are scanned. `char_to_offset`, `offset_to_char` and the line/column conversions are O(log n).
+
+**Why**: editors address text by columns; without the cache every column conversion is O(line length) on the caller's side (pt-edit's `chars().count()`), and char offsets in the whole text are O(n). Counting on demand at split time would scan the whole loaded piece (MBs) per edit.
+
+**Rejected**: an index in add chunks: their pieces are short, and keeping it would need writes past the published end of a second area (more `unsafe`).
+
+**Cost**: `Piece` 24 → 32 bytes, `Node` 64 → 80, one extra pass over the text at load; numbers in [../guides/benchmarks.md](../guides/benchmarks.md).

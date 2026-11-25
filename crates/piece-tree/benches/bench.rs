@@ -83,6 +83,16 @@ fn main() {
 
     let base = Text::from(sample(1 << 20).as_str());
     let typed = bench("typing 10k chars in 1MB", 10_000, |_| type_into(&base));
+    // Same keystrokes through `Document`: one undo version (and edit log entry) per key.
+    bench("Document typing 10k chars in 1MB", 10_000, |_| {
+        let mut doc = Document::new("");
+        doc.insert(0, &base.to_string());
+        let start = doc.text().line_to_offset(doc.text().line_count() / 2);
+        for (i, off) in (start..start + 10_000).enumerate() {
+            doc.insert(off, if i % 40 == 39 { "\n" } else { "x" });
+        }
+        doc
+    });
     println!("{:<30} {:>10}", "pieces after typing", typed.chunks().count());
     read_all_lines("line() all, after typing", &typed);
     bench("line() 10x50 windows, typed", 50_000, |rng| {

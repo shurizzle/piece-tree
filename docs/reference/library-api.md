@@ -20,10 +20,16 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `offset_to_line(off)` | 0-based line | `out of bounds` (off > len) | offset at a `\n` → line it ends |
 | `line_to_offset(line)` | start byte | `out of bounds` (line ≥ line_count) | |
 | `line(i)` | `Cow<str>` without `\n` | `out of bounds` | one descent and borrowed if the line is inside one piece |
+| `char_count()` | chars | — | O(1) |
+| `offset_to_char(off)` / `char_to_offset(ch)` | char index / byte offset | `out of bounds`, `char boundary` | O(log n) plus at most ~2 KiB scanned |
+| `line_end(line)` | byte offset of the line's `\n` (or the end) | `out of bounds` | |
+| `line_char_len(line)` | chars in the line | `out of bounds` | O(log n), not O(line length) |
+| `line_col_to_offset(line, col)` / `offset_to_line_col(off)` | char columns ↔ bytes | `out of bounds` (line, or col > line length), `char boundary` | |
+| `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |
 | `Display` / `to_string()` | full text | — | |
-| `find_iter`, `find_from`, `replace_all`, `cursor`, `cursor_at` | — | `out of bounds` (`find_from`/`cursor_at`) | regex search; see [search.md](search.md) |
+| `find_iter`, `find_from`, `replace_all`, `replace_matching`, `cursor`, `cursor_at` | — | `out of bounds` (`find_from`/`cursor_at`) | regex search; see [search.md](search.md) |
 
 ## `Document`
 
@@ -33,10 +39,22 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `from_string(String)` | same, taking over the buffer of large files (no copy) |
 | `text() -> &Text` | current version |
 | `eol()` / `set_eol(LineEnding)` | output ending; changing it is not an undo step |
-| `insert(off, &str)` / `delete(Range)` | same panics as `Text`; effective edits push an undo entry and clear redo; no-ops do nothing |
-| `undo() -> bool` / `redo() -> bool` | false when the stack is empty; O(1) |
+| `insert(off, &str)` / `delete(Range)` | same panics as `Text`; an effective edit makes a new version (a child of the current one); no-ops do nothing |
+| `splice(Range, &str)` | replace a range as one edit; same content is not a change |
+| `begin_group()` / `end_group() -> bool` / `group(f)` | edits in a group make one version; nestable (outermost counts); `end_group` says whether it made one; any history move closes open groups |
+| `undo() -> bool` / `redo() -> bool` | to the parent / the child last created or left; false at the ends |
+| `earlier(n)` / `later(n)` | `n` versions back/forward in creation order, across branches (vim `g-`/`g+`) |
+| `earlier_time(Duration)` / `later_time(Duration)` | by timestamp (vim `:earlier 10s`) |
+| `goto(seq) -> bool` | to version `seq` (clamped), through the common ancestor |
+| `seq()` / `history_len()` / `versions()` | current version number, count, and `Version { seq, parent, edits, leaf, time }` for each |
+| `last_edits() -> &[Edit]` | edits made by the last call (an edit, or a history move's path); empty after a no-op, including group calls |
 | `replace_all(&Regex, &str) -> usize` | regex replace as one undo step ([search.md](search.md)) |
+| `replace_matching(&Regex, &str, keep) -> usize` | same, only the matches `keep(range)` accepts; `last_edits` has one edit per replaced match |
 | `write_to(impl Write) -> io::Result<()>` | writes with `eol()`; propagates writer errors |
+
+## `Edit`, `map_offset`
+
+`Edit { start, old_len, new_len }`: one change; a list applies in order, each start in the text left by the previous ones. `Edit::inverse()` undoes it; `Edit::map(off)` and `map_offset(&[Edit], off)` move a position through changes (before: unchanged; after: shifted; inside a replaced range: to its start; an insertion at `off` pushes it).
 
 ## `LineEnding`
 

@@ -23,6 +23,11 @@ pub(crate) const MAX_ADD_BYTES: usize = 64 * 1024;
 /// owned chunk paths with ~1 KiB of text instead of 64 KiB.
 #[cfg(miri)]
 pub(crate) const MAX_ADD_BYTES: usize = 1024;
+/// Bytes per entry of a sealed chunk's char index.
+#[cfg(not(miri))]
+pub(crate) const CHAR_BLOCK: usize = 1024;
+#[cfg(miri)]
+pub(crate) const CHAR_BLOCK: usize = 16;
 /// First add chunk of a text; later ones double up to `MAX_ADD_BYTES`.
 pub(crate) const MIN_ADD_BYTES: usize = 256;
 
@@ -36,6 +41,10 @@ pub(crate) struct Chunk {
     /// Reserved prefix, packed by `Fill::pack`.
     fill: AtomicU64,
     storage: Storage,
+    /// Sealed chunks only: entry `i` is the number of chars (UTF-8 lead bytes) before byte
+    /// `i * CHAR_BLOCK`, so a char count or position costs one lookup plus a short scan. Empty for
+    /// add chunks, whose pieces are at most `MAX_ADD_BYTES` and are scanned directly.
+    char_index: Box<[u32]>,
 }
 
 /// Who owns the memory behind `bytes` and `newlines`; freed in `Drop`.
@@ -79,6 +88,16 @@ pub(crate) fn count_lf(s: &str) -> usize {
     memchr_iter(b'\n', s.as_bytes()).count()
 }
 
+/// Whether `b` starts a char (is not a UTF-8 continuation byte).
+pub(crate) fn is_char_start(b: u8) -> bool {
+    (b as i8) >= -0x40
+}
+
+/// Number of chars starting in `b` (any byte range; vectorizes).
+pub(crate) fn count_chars(b: &[u8]) -> usize {
+    b.iter().filter(|&&x| is_char_start(x)).count()
+}
+
 impl Chunk {
     fn with_capacity(cap: usize, nl_cap: usize) -> Self {
         assert_fits_u32(cap);
@@ -94,6 +113,7 @@ impl Chunk {
             nl_cap: nl_cap as u32,
             fill: AtomicU64::new(0),
             storage: Storage::Words(words),
+            char_index: Box::default(),
         }
     }
 
@@ -107,6 +127,13 @@ impl Chunk {
         assert_fits_u32(s.len());
         assert!(!s.is_empty(), "empty chunk");
         let newlines: Vec<u32> = memchr_iter(b'\n', s.as_bytes()).map(|i| i as u32).collect();
+        let mut seen = 0u32;
+        let char_index: Box<[u32]> = std::iter::once(0)
+            .chain(s.as_bytes().chunks(CHAR_BLOCK).map(|b| {
+                seen += count_chars(b) as u32;
+                seen
+            }))
+            .collect();
         // `Vec::as_mut_ptr` keeps provenance over the whole allocation (capacity,
         // not just length), which `Drop` needs to free it.
         let (mut bytes, mut newlines) = (ManuallyDrop::new(s.into_bytes()), ManuallyDrop::new(newlines));
@@ -118,6 +145,7 @@ impl Chunk {
             nl_cap: fill.nl,
             fill: AtomicU64::new(fill.pack()),
             storage: Storage::Owned { text_cap: bytes.capacity(), nl_cap: newlines.capacity() },
+            char_index,
         })
     }
 
@@ -174,6 +202,18 @@ impl Chunk {
     pub(crate) unsafe fn newlines(&self, first: u32, count: u32) -> &[u32] {
         // SAFETY: published slots are initialized and never change.
         unsafe { slice::from_raw_parts(self.nl_ptr().add(first as usize), count as usize) }
+    }
+
+    /// A sealed chunk's bytes and char index (see `char_index`); `None` for add chunks.
+    pub(crate) fn char_index(&self) -> Option<(&[u8], &[u32])> {
+        if self.char_index.is_empty() {
+            return None;
+        }
+        let len = self.fill().len as usize;
+        // SAFETY: only sealed chunks have an index; they are published in full at creation
+        // (`fill` = their length) and never written again.
+        let bytes = unsafe { slice::from_raw_parts(self.bytes_ptr(), len) };
+        Some((bytes, &self.char_index))
     }
 
     fn bytes_ptr(&self) -> *mut u8 {

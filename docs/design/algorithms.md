@@ -146,8 +146,16 @@ All are iterative root-to-leaf walks using subtree totals.
   - `backtrack`: the mirror image;
   - both check first whether a neighbour exists (`offset + chunk.len() < len`, `offset > 0`), so a failed move changes nothing;
   - `cursor_at(off)` descends like `offset_to_line`, stopping at the piece containing `off`, or the last piece when `off == len`.
-- **`replace_all`**:
-  1. matches are collected as (match range, range in the replacement buffer);
+- **`replace_all`** (= `replace_matching` keeping every match):
+  1. matches are collected as (match range, range in the replacement buffer), skipping those the `keep` filter rejects (rejected matches are not expanded);
   2. the buffer is stored once;
   3. pieces are emitted in order: `pieces_in(pos, match.start)` (whole pieces cloned, edge pieces cut with `sub`), then the replacement sub-piece;
   4. `from_pieces` builds a perfectly balanced tree (middle element as root, recursively), which satisfies the AVL invariant.
+
+## Undo tree navigation (`document.rs`)
+
+`goto(target)` climbs from the current version and from the target to their closest common ancestor: since a child always has a larger index than its parent, the walk repeatedly steps up from whichever of the two is larger until they meet. Steps up append the inverse of each version's edits in reverse order to `last_edits`; steps down (replayed root-first) append the edits as recorded. Every parent on the path gets its `redo` pointer set to the child the path went through, so a later `redo` follows the last visit (vim). `undo` is `goto(parent)`, `redo` is `goto(redo child)`, `earlier(n)`/`later(n)` are `goto(seq ∓ n)` (creation order, across branches), the time variants scan timestamps for the target first.
+
+Groups write into the version they created: it is the newest one (moving in the history closes every group), so its edit range is the tail of the flat log and grows in place.
+
+`Edit::map(off)` keeps an offset before the edit, shifts one at or after the replaced range (an insertion at `off` pushes it), and moves one inside the replaced range to its start. `map_offset` folds a list in order.

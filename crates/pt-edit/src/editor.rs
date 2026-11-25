@@ -10,6 +10,7 @@ mod parse;
 mod registers;
 mod render;
 mod search;
+mod substitute;
 
 use std::{
     collections::HashMap,
@@ -26,8 +27,16 @@ use piece_tree::{Document, LineEnding, Text};
 use objects::Obj;
 pub use options::Background;
 use options::Options;
-use parse::{Cmd, MAX_COUNT, MOTIONS, OP_LOWER, OP_TOGGLE, OP_UPPER, Parse, VISUAL_KEYS, char_key, normal_char, parse, strip_counts, valid_reg};
+use parse::{Cmd, MAX_COUNT, OP_LOWER, OP_TOGGLE, OP_UPPER, Parse, VISUAL_KEYS, char_key, normal_char, parse, strip_counts, valid_reg};
 use registers::{Reg, RegKind, Registers};
+use search::Search;
+
+const G_EARLIER: char = parse::g_key('-');
+const G_LATER: char = parse::g_key('+');
+const G_COUNTS: char = parse::g_key('\x07');
+const G_ASCII: char = parse::g_key('a');
+const G_UTF8: char = parse::g_key('8');
+const G_BYTE: char = parse::g_key('o');
 
 /// Nesting limit for macros calling macros (`qa@aq@a` would never end).
 const MAX_MACRO_DEPTH: usize = 100;
@@ -56,13 +65,6 @@ enum Kind {
     Exclusive,
     Inclusive,
     Linewise,
-}
-
-#[derive(Clone, Debug)]
-struct Search {
-    pat: String,
-    /// Whole words only (`*`, `#`).
-    word: bool,
 }
 
 /// What `.` replays: `count` (replaced by a new one), the command keys without counts, then the
@@ -156,10 +158,16 @@ pub struct Editor {
     /// Register named by the current command's `"x` prefix.
     cur_reg: Option<char>,
     last_search: Option<Search>,
+    /// incsearch: the pattern being typed after `/`, when it compiles.
+    inc_search: Option<Search>,
     /// hlsearch: matches of `last_search` are highlighted until `:noh`.
     hl: bool,
-    /// Cursor when `/` started, for incsearch and Esc.
+    /// Cursor when `/` started, for incsearch and Esc; `?` searches backward.
     search_origin: Pos,
+    search_back: bool,
+    /// Where the last search offset left the cursor and the match it came from, so `n` after
+    /// `/pat/e` continues from the match rather than from the moved cursor.
+    search_landing: Option<(Pos, usize)>,
     /// Last `f`/`F`/`t`/`T` and its char, for `;` and `,`.
     last_find: Option<(char, char)>,
     /// `a`–`z` and `'` (position before the last jump), as byte offsets shifted by edits.
@@ -185,11 +193,10 @@ pub struct Editor {
     macro_depth: usize,
     macro_abort: bool,
     quit: bool,
-    /// `Document` has no undo grouping, so the editor counts the edits of each
-    /// command (or insert session) and undoes them together.
-    group_edits: usize,
-    undo_groups: Vec<usize>,
-    redo_groups: Vec<usize>,
+    /// A `Document` group is open for the current command (or insert session), so it is one
+    /// undo step; `changed` says it edited the text.
+    grouping: bool,
+    changed: bool,
 }
 
 impl Editor {
@@ -213,8 +220,11 @@ impl Editor {
             regs: Registers::default(),
             cur_reg: None,
             last_search: None,
+            inc_search: None,
             hl: false,
             search_origin: (0, 0),
+            search_back: false,
+            search_landing: None,
             last_find: None,
             marks: HashMap::new(),
             rec: Vec::new(),
@@ -232,9 +242,8 @@ impl Editor {
             macro_depth: 0,
             macro_abort: false,
             quit: false,
-            group_edits: 0,
-            undo_groups: Vec::new(),
-            redo_groups: Vec::new(),
+            grouping: false,
+            changed: false,
         }
     }
 
@@ -257,7 +266,7 @@ impl Editor {
     }
 
     fn line_chars(&self, line: usize) -> usize {
-        self.doc.text().line(line).chars().count()
+        self.doc.text().line_char_len(line)
     }
 
     fn first_non_blank(&self, line: usize) -> usize {
@@ -268,9 +277,10 @@ impl Editor {
         self.doc.text().line(line).chars().take_while(|c| c.is_whitespace()).collect()
     }
 
+    /// Byte offset of `(line, col)`; a column past the line end means the end.
     fn offset_of(&self, (line, col): Pos) -> usize {
         let text = self.doc.text();
-        text.line_to_offset(line) + byte_of_col(&text.line(line), col)
+        text.line_col_to_offset(line, col.min(text.line_char_len(line)))
     }
 
     /// Byte offset of the cursor.
@@ -279,9 +289,7 @@ impl Editor {
     }
 
     fn pos_of(&self, off: usize) -> Pos {
-        let text = self.doc.text();
-        let line = text.offset_to_line(off);
-        (line, text.line(line)[..off - text.line_to_offset(line)].chars().count())
+        self.doc.text().offset_to_line_col(off)
     }
 
     /// Offset of the `\n` ending `line`, or the text length on the last line.
@@ -317,60 +325,52 @@ impl Editor {
         self.offset_of(a)..e
     }
 
-    fn edit_insert(&mut self, off: usize, s: &str) {
-        let before = self.doc.text().clone();
-        self.doc.insert(off, s);
-        if self.track(&before) {
-            for m in self.marks.values_mut() {
-                if *m >= off {
-                    *m += s.len();
-                }
-            }
+    /// Runs one `Document` edit inside the command's group and moves the marks with it.
+    fn edit<R>(&mut self, f: impl FnOnce(&mut Document) -> R) -> R {
+        if !self.grouping {
+            self.doc.begin_group();
+            self.grouping = true;
         }
+        let r = f(&mut self.doc);
+        if !self.doc.last_edits().is_empty() {
+            self.changed = true;
+            self.map_marks();
+        }
+        r
+    }
+
+    /// Moves every mark through the last `Document` call's edits.
+    fn map_marks(&mut self) {
+        let edits = self.doc.last_edits();
+        for m in self.marks.values_mut() {
+            *m = piece_tree::map_offset(edits, *m);
+        }
+    }
+
+    fn edit_insert(&mut self, off: usize, s: &str) {
+        self.edit(|d| d.insert(off, s));
     }
 
     fn edit_delete(&mut self, range: Range<usize>) {
-        let before = self.doc.text().clone();
-        self.doc.delete(range.clone());
-        if self.track(&before) {
-            for m in self.marks.values_mut() {
-                if *m >= range.end {
-                    *m -= range.len();
-                } else if *m > range.start {
-                    *m = range.start;
-                }
-            }
-        }
+        self.edit(|d| d.delete(range));
     }
 
-    /// Replaces `range` with `s`, skipping the edit when nothing changes.
+    /// Replaces `range` with `s` (no change when it already holds `s`).
     fn edit_replace(&mut self, range: Range<usize>, s: &str) {
-        if self.doc.text().slice(range.clone()) != s {
-            self.edit_delete(range.clone());
-            self.edit_insert(range.start, s);
-        }
-    }
-
-    /// `Document` skips no-op edits, so only real changes count toward the group.
-    fn track(&mut self, before: &Text) -> bool {
-        let changed = !self.doc.text().ptr_eq(before);
-        if changed {
-            self.group_edits += 1;
-            self.redo_groups.clear();
-        }
-        changed
+        self.edit(|d| d.splice(range, s));
     }
 
     /// Closes the undo group; a command that changed the text becomes the one `.` repeats.
     fn end_command(&mut self) {
-        if self.group_edits > 0 {
-            self.undo_groups.push(mem::take(&mut self.group_edits));
-            if !self.replaying
-                && let Some((count, cmd, n)) = &self.rec_cmd
-            {
-                let tail = self.rec[(*n).min(self.rec.len())..].to_vec();
-                self.last_change = Some(LastChange { count: *count, cmd: cmd.clone(), tail });
-            }
+        if mem::take(&mut self.grouping) {
+            self.doc.end_group();
+        }
+        if mem::take(&mut self.changed)
+            && !self.replaying
+            && let Some((count, cmd, n)) = &self.rec_cmd
+        {
+            let tail = self.rec[(*n).min(self.rec.len())..].to_vec();
+            self.last_change = Some(LastChange { count: *count, cmd: cmd.clone(), tail });
         }
     }
 
@@ -458,7 +458,7 @@ impl Editor {
             let last = (self.line + n - 1).min(self.line_count() - 1);
             return self.operate(key, (self.line, 0), (last, 0), Kind::Linewise);
         }
-        if MOTIONS.contains(key) {
+        if parse::is_motion(key) {
             let Some((to, kind)) = self.motion(&cmd) else { return };
             match op {
                 Some(op) => self.operate(op, (self.line, self.col), to, kind),
@@ -484,8 +484,10 @@ impl Editor {
             'u' => self.undo(n),
             '\x12' => self.redo(n),
             ':' => self.mode = Mode::Command(String::new()),
-            '/' => {
+            '/' | '?' => {
                 self.search_origin = (self.line, self.col);
+                self.search_back = key == '?';
+                self.inc_search = None;
                 self.mode = Mode::Search(String::new());
             }
             'v' | 'V' | '\x16' => {
@@ -512,6 +514,18 @@ impl Editor {
                 }
             }
             '.' => self.repeat(count),
+            G_EARLIER => self.history(1, |d| d.earlier(n), "Already at oldest change"),
+            '\x07' => self.msg = self.file_info(),
+            G_COUNTS => self.msg = self.counts(),
+            G_ASCII | G_UTF8 => {
+                let c = self.char_at((self.line, self.col));
+                self.msg = match (key, c) {
+                    (_, '\n') => "NUL".into(),
+                    (G_ASCII, c) => format!("<{c}> {0}, Hex {0:04x}, Oct {0:o}", c as u32),
+                    (_, c) => c.encode_utf8(&mut [0; 4]).bytes().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join(" "),
+                };
+            }
+            G_LATER => self.history(1, |d| d.later(n), "Already at newest change"),
             '\x01' => self.add_number(n as i64),
             '\x18' => self.add_number(-(n as i64)),
             'm' => match arg() {
@@ -767,29 +781,37 @@ impl Editor {
     }
 
     fn undo(&mut self, n: usize) {
-        for _ in 0..n {
-            let Some(k) = self.undo_groups.pop() else {
-                self.msg = "Already at oldest change".into();
-                break;
-            };
-            for _ in 0..k {
-                self.doc.undo();
-            }
-            self.redo_groups.push(k);
-        }
-        self.clamp();
+        self.history(n, Document::undo, "Already at oldest change");
     }
 
     fn redo(&mut self, n: usize) {
+        self.history(n, Document::redo, "Already at newest change");
+    }
+
+    /// Repeats a history move `n` times, keeping marks in place; the cursor goes to the start of
+    /// the first changed range (vim).
+    fn history(&mut self, n: usize, mut step: impl FnMut(&mut Document) -> bool, at_end: &str) {
+        let mut first = None;
         for _ in 0..n {
-            let Some(k) = self.redo_groups.pop() else {
-                self.msg = "Already at newest change".into();
+            if !step(&mut self.doc) {
+                self.msg = at_end.into();
                 break;
-            };
-            for _ in 0..k {
-                self.doc.redo();
             }
-            self.undo_groups.push(k);
+            self.map_marks();
+            let edits = self.doc.last_edits();
+            first = edits
+                .first()
+                .map(|e| {
+                    let off = piece_tree::map_offset(&edits[1..], e.start);
+                    // Restored lines that start with their line break begin on the next line.
+                    let nl = e.new_len > 0 && off < self.doc.text().len() && self.char_at(self.pos_of(off)) == '\n';
+                    off + usize::from(nl)
+                })
+                .or(first);
+        }
+        if let Some(off) = first {
+            (self.line, self.col) = self.pos_of(off.min(self.doc.text().len()));
+            self.want_col = self.col;
         }
         self.clamp();
     }
@@ -815,6 +837,11 @@ impl Editor {
     }
 
     fn visual_key(&mut self, key: KeyEvent, kind: VKind) {
+        // `'<`/`'>`: the selection's first and last lines, kept after leaving Visual (vim).
+        let (a, b) = sorted(self.anchor, (self.line, self.col));
+        let (sa, sb) = (self.doc.text().line_to_offset(a.0), self.doc.text().line_to_offset(b.0));
+        self.marks.insert('<', sa);
+        self.marks.insert('>', sb);
         if key.code == KeyCode::Esc {
             self.pending.clear();
             self.mode = Mode::Normal;
@@ -865,7 +892,7 @@ impl Editor {
             self.pending.clear();
             if let Parse::Cmd(cmd) = parsed
                 && cmd.op.is_none()
-                && MOTIONS.contains(cmd.key)
+                && parse::is_motion(cmd.key)
                 && let Some((to, _)) = self.motion(&cmd)
             {
                 self.move_to(cmd.key, to);
@@ -911,6 +938,8 @@ impl Editor {
                 self.line = a.0;
                 self.join((b.0 - a.0).max(1));
             }
+            // `visual_key` has set marks `<` and `>` for the range.
+            ':' => self.mode = Mode::Command("'<,'>".into()),
             '<' | '>' => self.shift(a.0, b.0, c == '>', n),
             _ if kind == VKind::Block => self.block_op(c),
             'I' => {
@@ -1146,16 +1175,36 @@ impl Editor {
                         self.quit = true;
                     }
                 }
-                Mode::Search(pat) => {
+                Mode::Search(typed) => {
                     (self.line, self.col) = self.search_origin;
+                    self.inc_search = None;
+                    let (pat, off) = search::split_typed(&typed, if self.search_back { '?' } else { '/' });
+                    let offset = match search::Offset::parse(off) {
+                        Ok(o) => o,
+                        Err(e) => {
+                            self.msg = e;
+                            return self.clamp_normal();
+                        }
+                    };
                     if !pat.is_empty() {
-                        self.last_search = Some(Search { pat, word: false });
+                        match Search::new(pat) {
+                            Ok(s) => self.last_search = Some(s),
+                            Err(e) => {
+                                self.msg = e;
+                                return self.clamp_normal();
+                            }
+                        }
                     }
-                    self.hl = true;
-                    if let Some(p) = self.search_from(true, self.offset()) {
-                        self.set_jump();
-                        (self.line, self.col) = p;
-                        self.want_col = self.col;
+                    // A new `/` or `?` sets the direction and offset of the last search, also
+                    // when it reuses the pattern (`//e`).
+                    if let Some(s) = &mut self.last_search {
+                        (s.back, s.offset) = (self.search_back, offset);
+                    }
+                    self.search_landing = None;
+                    if let Some((to, _)) = self.search_motion(!self.search_back, 1, None) {
+                        self.move_to('n', to);
+                    } else if self.last_search.is_none() {
+                        self.msg = "No previous search pattern".into();
                     }
                     return self.clamp_normal();
                 }
@@ -1167,12 +1216,17 @@ impl Editor {
             return;
         }
         // incsearch: the cursor previews the first match from where `/` started; Esc goes back.
+        // A pattern that does not compile yet (`(`) shows nothing.
         (self.line, self.col) = self.search_origin;
-        if let Mode::Search(pat) = &self.mode
-            && !pat.is_empty()
-            && let Some((off, _)) = self.find_text(&pat.clone(), false, true, self.offset())
+        let delim = if self.search_back { '?' } else { '/' };
+        self.inc_search = match &self.mode {
+            Mode::Search(typed) => Some(search::split_typed(typed, delim).0).filter(|p| !p.is_empty()).and_then(|p| Search::new(p).ok()),
+            _ => None,
+        };
+        if let Some(s) = self.inc_search.clone()
+            && let Some((m, _)) = self.find_match(&s.re, !self.search_back, self.offset())
         {
-            (self.line, self.col) = self.pos_of(off);
+            (self.line, self.col) = self.pos_of(m.start);
         }
     }
 
@@ -1191,6 +1245,30 @@ impl Editor {
             "wq" => return !self.save(),
             "x" => return self.is_dirty() && !self.save(),
             "noh" | "nohlsearch" => self.hl = false,
+            "undol" | "undolist" => self.msg = self.undolist(),
+            _ if let Some(n) = cmd.strip_prefix("go").map(|a| a.trim_start_matches("to").trim()) => match n.parse::<usize>() {
+                Ok(n) => {
+                    self.set_jump();
+                    (self.line, self.col) = self.pos_of(self.byte_pos(n.saturating_sub(1)));
+                    self.want_col = self.col;
+                    self.clamp_normal();
+                }
+                Err(_) if n.is_empty() => {
+                    self.set_jump();
+                    (self.line, self.col) = (0, 0);
+                }
+                Err(_) => self.msg = format!("Invalid argument: {n}"),
+            },
+            _ if let Some((name, arg)) = cmd.split_once(' ').or(Some((cmd, ""))).filter(|(n, _)| {
+                matches!(*n, "earlier" | "ea" | "later" | "lat" | "undo" | "u" | "redo" | "red")
+            }) =>
+            {
+                self.time_travel(name, arg.trim());
+            }
+            _ if let Some(s) = substitute::parse(cmd) => match s {
+                Ok(s) => self.substitute(s),
+                Err(e) => self.msg = e,
+            },
             _ if cmd == "set" || cmd.starts_with("set ") => {
                 self.msg = self.opts.set(&cmd[3..]).unwrap_or_else(|e| e);
             }
@@ -1207,15 +1285,170 @@ impl Editor {
         true
     }
 
+    /// `:earlier`/`:later` with a count or a duration (`10s`, `5m`, `1h`, `2d`), `:undo N`
+    /// (go to version N), `:undo`/`:redo` alone.
+    fn time_travel(&mut self, name: &str, arg: &str) {
+        let back = matches!(name, "earlier" | "ea" | "undo" | "u");
+        let (num, unit) = arg.split_at(arg.find(|c: char| !c.is_ascii_digit()).unwrap_or(arg.len()));
+        let n: Option<usize> = if num.is_empty() { Some(1) } else { num.parse().ok() };
+        let secs = match unit {
+            "" => None,
+            "s" => Some(1),
+            "m" => Some(60),
+            "h" => Some(3600),
+            "d" => Some(86400),
+            _ => return self.msg = format!("Invalid argument: {arg}"),
+        };
+        let Some(n) = n else { return self.msg = format!("Invalid argument: {arg}") };
+        let end = if back { "Already at oldest change" } else { "Already at newest change" };
+        match (name, secs) {
+            ("undo" | "u", None) if arg.is_empty() => self.undo(1),
+            ("undo" | "u", None) => self.history(1, |d| d.goto(n), "Already at that change"),
+            ("redo" | "red", None) if arg.is_empty() => self.redo(1),
+            ("undo" | "u" | "redo" | "red", _) => self.msg = format!("Invalid argument: {arg}"),
+            (_, Some(s)) => {
+                let d = std::time::Duration::from_secs((n as u64).saturating_mul(s));
+                self.history(1, |doc| if back { doc.earlier_time(d) } else { doc.later_time(d) }, end);
+            }
+            _ => self.history(1, |d| if back { d.earlier(n) } else { d.later(n) }, end),
+        }
+    }
+
+    /// `Ctrl+G`: name, modified flag, line count and position in percent.
+    fn file_info(&self) -> String {
+        let lines = self.line_count();
+        format!(
+            "\"{}\"{} {lines} line{} --{}%--",
+            self.path.display(),
+            if self.is_dirty() { " [Modified]" } else { "" },
+            if lines == 1 { "" } else { "s" },
+            (self.line + 1) * 100 / lines,
+        )
+    }
+
+    /// `g Ctrl+G`: cursor position against the text's totals (columns and chars from the
+    /// library's char metrics; words are blank-separated, counted by a scan).
+    fn counts(&self) -> String {
+        let text = self.doc.text();
+        let off = self.offset();
+        let all = text.slice(0..text.len());
+        // The cursor's word is the last one starting at or before it.
+        let starts: Vec<usize> = all.split_whitespace().map(|w| w.as_ptr() as usize - all.as_ptr() as usize).collect();
+        let (words, word) = (starts.len(), starts.partition_point(|&s| s <= off));
+        format!(
+            "Col {} of {}; Line {} of {}; Word {} of {}; Char {} of {}; Byte {} of {}",
+            self.col + 1,
+            self.line_chars(self.line),
+            self.line + 1,
+            self.line_count(),
+            word,
+            words,
+            text.offset_to_char(off) + 1,
+            text.char_count(),
+            off + 1,
+            text.len(),
+        )
+    }
+
+    /// `:undolist`: the branch tips (vim's list), as `seq:changes:age`, newest last.
+    fn undolist(&self) -> String {
+        let versions: Vec<_> = self.doc.versions().collect();
+        let now = std::time::Instant::now();
+        let mut out = format!("at {} of {} |", self.doc.seq(), versions.len() - 1);
+        for v in versions.iter().filter(|v| v.leaf && v.seq > 0) {
+            // Changes: the number of versions from the root to this one.
+            let (mut depth, mut s) = (0, v.seq);
+            while s != 0 {
+                depth += 1;
+                s = versions[s].parent;
+            }
+            out.push_str(&format!(" {}:{}:{}s", v.seq, depth, now.duration_since(v.time).as_secs()));
+        }
+        out
+    }
+
+    /// 1-based address → 0-based line.
+    fn resolve(&self, a: substitute::Addr) -> Result<usize, String> {
+        use substitute::Base;
+        let base = match a.base {
+            Base::Current => self.line,
+            Base::Last => self.line_count() - 1,
+            Base::Line(n) => n.wrapping_sub(1),
+            Base::Mark(m) => self.pos_of(self.mark(m).ok_or("Mark not set")?).0,
+        };
+        base.checked_add_signed(a.offset).filter(|&l| l < self.line_count()).ok_or_else(|| "Invalid range".into())
+    }
+
+    /// `:[range]s/pat/rep/[flags]`: one undo step through `Document::replace_matching`.
+    fn substitute(&mut self, s: substitute::Sub) {
+        let (first, last) = match s.range {
+            None => (self.line, self.line),
+            Some((a, b)) => match (self.resolve(a), self.resolve(b)) {
+                (Ok(a), Ok(b)) => (a.min(b), a.max(b)),
+                (Err(e), _) | (_, Err(e)) => return self.msg = e,
+            },
+        };
+        let pat = if s.pat.is_empty() {
+            match &self.last_search {
+                Some(l) => l.pat.clone(),
+                None => return self.msg = "No previous regular expression".into(),
+            }
+        } else {
+            s.pat
+        };
+        let pattern = match s.ignore_case {
+            Some(true) => format!("(?i){pat}"),
+            Some(false) => format!("(?-i){pat}"),
+            None => pat.clone(),
+        };
+        let search = match Search::new(&pattern) {
+            Ok(r) => r,
+            Err(e) => return self.msg = e,
+        };
+        let text = self.doc.text().clone();
+        let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
+        // A match belongs to the line it starts on; without `g` only the first per line counts.
+        let mut lines: Vec<usize> = Vec::new();
+        let n = self.edit(|d| d.replace_matching(&search.re, &s.rep, |m| {
+            if m.start < start || m.start > end {
+                return false;
+            }
+            let l = text.offset_to_line(m.start);
+            if !s.all && lines.last() == Some(&l) {
+                return false;
+            }
+            if lines.last() != Some(&l) {
+                lines.push(l);
+            }
+            true
+        }));
+        self.last_search = Some(search);
+        self.hl = true;
+        if n == 0 {
+            return self.msg = format!("Pattern not found: {pat}");
+        }
+        // The line where the last replacement ends (the edits are in order, each in the text
+        // left by the previous ones, so the last one is already in final coordinates).
+        let last_edit = *self.doc.last_edits().last().expect("n > 0");
+        let l = self.doc.text().offset_to_line(last_edit.start + last_edit.new_len);
+        self.set_jump();
+        self.line = l;
+        self.set_col(self.first_non_blank(l));
+        self.clamp_normal();
+        let plural = |k: usize| if k == 1 { "" } else { "s" };
+        self.msg = format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len()));
+        // `.` does not repeat `:` commands (vim), so this undo group is not the last change.
+        self.rec_cmd = None;
+        self.end_command();
+    }
+
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.
     fn reload(&mut self) {
         match read_doc(&self.path, self.eol_override) {
             Ok(doc) => {
                 self.saved = doc.text().clone();
                 self.doc = doc;
-                self.group_edits = 0;
-                self.undo_groups.clear();
-                self.redo_groups.clear();
+                (self.grouping, self.changed) = (false, false);
                 self.clamp();
                 self.msg = format!("Reloaded ({})", self.doc.eol());
             }

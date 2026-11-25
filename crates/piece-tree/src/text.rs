@@ -115,6 +115,108 @@ impl Text {
         acc
     }
 
+    /// Number of chars (Unicode scalar values).
+    pub fn char_count(&self) -> usize {
+        tree::chars(&self.root)
+    }
+
+    /// Chars before byte `off` (a char boundary). O(log n) plus a short scan.
+    pub fn offset_to_char(&self, off: usize) -> usize {
+        assert!(off <= self.len(), "offset {off} out of bounds");
+        let (mut t, mut off, mut acc) = (&self.root, off, 0);
+        while let Some(n) = t {
+            let ll = tree::len(&n.left);
+            if off < ll {
+                t = &n.left;
+                continue;
+            }
+            acc += tree::chars(&n.left);
+            off -= ll;
+            if off <= n.piece.len() {
+                assert!(off == n.piece.len() || n.piece.text().is_char_boundary(off), "offset not on a char boundary");
+                return acc + n.piece.chars_before(off);
+            }
+            acc += n.piece.chars();
+            off -= n.piece.len();
+            t = &n.right;
+        }
+        acc
+    }
+
+    /// Byte offset where char `ch` starts (`len()` for `ch == char_count()`).
+    pub fn char_to_offset(&self, ch: usize) -> usize {
+        assert!(ch <= self.char_count(), "char {ch} out of bounds");
+        let (mut t, mut ch, mut base) = (&self.root, ch, 0);
+        while let Some(n) = t {
+            let lc = tree::chars(&n.left);
+            if ch < lc {
+                t = &n.left;
+                continue;
+            }
+            ch -= lc;
+            base += tree::len(&n.left);
+            if ch < n.piece.chars() {
+                return base + n.piece.byte_of_char(ch);
+            }
+            ch -= n.piece.chars();
+            base += n.piece.len();
+            t = &n.right;
+        }
+        base
+    }
+
+    /// Whether byte `off` is a char boundary (false past the end).
+    pub fn is_char_boundary(&self, off: usize) -> bool {
+        if off >= self.len() {
+            return off == self.len();
+        }
+        let (mut t, mut off) = (&self.root, off);
+        loop {
+            let n = t.as_ref().expect("off < len is inside a piece");
+            let ll = tree::len(&n.left);
+            if off < ll {
+                t = &n.left;
+            } else if off - ll < n.piece.len() {
+                return n.piece.text().is_char_boundary(off - ll);
+            } else {
+                off -= ll + n.piece.len();
+                t = &n.right;
+            }
+        }
+    }
+
+    /// The largest char boundary at or before `off`, clamped to the text length.
+    pub fn floor_char_boundary(&self, off: usize) -> usize {
+        // A char is at most 4 bytes, and the text end is a boundary.
+        let off = off.min(self.len());
+        (off.saturating_sub(3)..=off).rev().find(|&o| self.is_char_boundary(o)).expect("0 is a boundary")
+    }
+
+    /// Byte offset where 0-based `line` ends (its `\n`, or the text end on the last line).
+    pub fn line_end(&self, line: usize) -> usize {
+        assert!(line < self.line_count(), "line {line} out of bounds");
+        if line + 1 < self.line_count() { self.line_to_offset(line + 1) - 1 } else { self.len() }
+    }
+
+    /// Chars in 0-based `line`, without its `\n`.
+    pub fn line_char_len(&self, line: usize) -> usize {
+        self.offset_to_char(self.line_end(line)) - self.offset_to_char(self.line_to_offset(line))
+    }
+
+    /// Byte offset of char column `col` of `line`; `col` may be the line's length (its end).
+    pub fn line_col_to_offset(&self, line: usize, col: usize) -> usize {
+        let start = self.line_to_offset(line);
+        let first = self.offset_to_char(start);
+        assert!(col <= self.offset_to_char(self.line_end(line)) - first, "column {col} out of bounds");
+        self.char_to_offset(first + col)
+    }
+
+    /// 0-based line and char column of byte `off` (a char boundary).
+    pub fn offset_to_line_col(&self, off: usize) -> (usize, usize) {
+        let line = self.offset_to_line(off);
+        (line, self.offset_to_char(off) - self.offset_to_char(self.line_to_offset(line)))
+    }
+
     /// Byte offset where 0-based `line` starts.
     pub fn line_to_offset(&self, line: usize) -> usize {
         assert!(line < self.line_count(), "line {line} out of bounds");

@@ -12,6 +12,7 @@ let ranges: Vec<_> = text.find_iter(&re).collect();  // byte ranges, leftmost no
 let next = text.find_from(&re, cursor_offset);       // "find next" at or after an offset
 let (new_text, n) = text.replace_all(&re, "v$1");    // $n, ${name}, $$ like `regex`
 doc.replace_all(&re, "v$1");                         // Document: one undo step
+let (t, n) = text.replace_matching(&re, "v$1", |m| m.start >= from);  // only accepted matches
 ```
 
 | Item | Notes |
@@ -20,7 +21,9 @@ doc.replace_all(&re, "v$1");                         // Document: one undo step
 | `Text::find_iter(&Regex)` | iterator of `Range<usize>` in bytes, same as `regex::Regex::find_iter(..).map(range)` |
 | `Text::find_from(&Regex, off)` | same as `regex::Regex::find_at(haystack, off)`: the text before `off` is still visible to look-behind such as `\b` and `^`; panics `out of bounds` if `off > len` |
 | `Text::replace_all(&Regex, &str) -> (Text, usize)` | same output as `regex::Regex::replace_all`; the replacement is normalized (`\r\n` → `\n`); no match returns the same version (`ptr_eq`) |
+| `Text::replace_matching(&Regex, &str, keep)` | `replace_all` restricted to the matches `keep: FnMut(Range<usize>) -> bool` accepts, called once per match in order; rejected matches stay and are not counted. `replace_all` is `replace_matching(.., \|_\| true)`. Used by pt-edit's `:s` (line range, first match per line) |
 | `Document::replace_all(&Regex, &str) -> usize` | single undo step; no match, no step |
+| `Document::replace_matching(&Regex, &str, keep) -> usize` | same, filtered |
 | `Text::cursor()`, `Text::cursor_at(off)` | `TextCursor`, an implementation of `regex_cursor::Cursor`, for using regex-cursor's engines directly |
 
 ## Semantics worth knowing

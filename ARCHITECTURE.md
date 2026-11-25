@@ -22,8 +22,9 @@ crates/
       text.rs              Text: immutable value, public queries and edits
       text/tests.rs
       eol.rs               LineEnding, detection, normalization (+ tests)
-      document.rs          Document: Text + undo/redo + output EOL (+ tests)
-      search.rs            Regex, TextCursor, find_iter/find_from/replace_all
+      document.rs          Document: undo tree of Text versions, groups, edit log, output EOL
+      document/tests.rs
+      search.rs            Regex, TextCursor, find_iter/find_from/replace_all/replace_matching
       search/tests.rs
       test_util.rs         deterministic LCG and random text (cfg(test))
     benches/bench.rs       benchmarks (harness = false)
@@ -31,7 +32,7 @@ crates/
   pt-edit/                 minimal vim-like terminal editor (crossterm, unicode-width, memchr, base64, terminal-colorsaurus)
     src/main.rs            CLI, theme detection, terminal guard, event loop
     src/editor.rs          Editor state, modes, edits/undo groups, operators, `:` commands, save/reload (+ editor/tests.rs)
-    src/editor/            parse.rs (grammar), motion.rs, objects.rs, search.rs (chunk search), registers.rs, options.rs (:set), render.rs (Frame, draw)
+    src/editor/            parse.rs (grammar), motion.rs, objects.rs, search.rs (regex search via piece-tree), substitute.rs (:s parser), registers.rs, options.rs (:set), render.rs (Frame, draw)
 vendor/regex-cursor/       upstream regex-cursor 0.1.5 + documented fix (PATCHES.md)
 docs/                      detailed knowledge base, see docs/README.md
 ```
@@ -39,7 +40,7 @@ docs/                      detailed knowledge base, see docs/README.md
 ## Layers
 
 ```
-pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  Text (current) + Vec<Text> undo/redo
+pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of Text versions + edit log
                                                │  Text = { root, add chunk }
                                                ▼
                                      Tree = Option<Arc<Node>>   (persistent AVL)
@@ -57,7 +58,7 @@ pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  Text (current
 | `Piece` | a published byte range of a chunk, its `\n` count and first newline index | value |
 | `Node`/`Tree` | balanced ordering of pieces, subtree totals (`len`, `lf`, `height`) | immutable, shared via `Arc` |
 | `Text` | public API: byte offsets, lines, slices, chunks; holds the current add chunk | immutable value, `Clone` is O(1) |
-| `Document` | undo/redo stacks, output line ending, writing | mutable wrapper |
+| `Document` | undo tree, groups, edit log, output line ending, writing | mutable wrapper |
 | `pt-edit` | cursor, rendering, keys, file I/O | application |
 
 ## Core invariants
@@ -65,7 +66,7 @@ pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  Text (current
 1. Text inside the tree contains **no `\r`**: all input passes through `eol::normalize`.
 2. Every piece is **non-empty**.
 3. AVL balance: `|height(left) - height(right)| <= 1` at every node.
-4. Node `len` and `lf` are **totals of the whole subtree** (not left-only as in VS Code).
+4. Node `len`, `lf` and `chars` are **totals of the whole subtree** (not left-only as in VS Code); pieces cache their own `lf` and `chars`.
 5. Public offsets are **bytes** and must be on UTF-8 char boundaries (asserted).
 6. A `Text` is never mutated; edits return a new `Text`.
 7. **Soundness**: a piece only covers published chunk bytes and newline slots, and its ends are char boundaries. `Piece::text` relies on it (`from_utf8_unchecked`); `Piece::split` asserts it.

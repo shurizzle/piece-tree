@@ -34,7 +34,7 @@ mod tree;
 #[cfg(test)]
 mod test_util;
 
-pub use document::Document;
+pub use document::{Document, Edit, Version, map_offset};
 pub use eol::LineEnding;
 pub use search::{Regex, RegexError, TextCursor};
 pub use text::{Chunks, Text};

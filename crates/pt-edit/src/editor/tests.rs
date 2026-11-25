@@ -819,9 +819,22 @@ fn marks() {
     assert_eq!(pos(&run(s, ":3\n''")), (0, 0));
     assert_eq!(run(s, "'z").msg, "Mark not set");
     assert_eq!(run(s, "m1").msg, "Invalid mark name");
-    // After undo a mark may point anywhere: it is clamped to a char boundary.
-    let e = run("日本\nx", "jmaggddu`a");
-    assert_eq!(pos(&e), (0, 0));
+    // Undo and redo move marks back with the text.
+    assert_eq!(pos(&run("日本\nx", "jmaggddu`a")), (1, 0));
+    assert_eq!(pos(&run("日本\nx", "jmaggddu\x12`a")), (0, 0));
+    // `:s` moves them through each replacement.
+    assert_eq!(pos(&run("aaa\nbx", "j$ma:%s/a/zz/g\n`a")), (1, 1));
+    assert_eq!(pos(&run("a b c", "$ma:s/a b/q/\n`a")), (0, 2));
+}
+
+#[test]
+fn undo_puts_the_cursor_on_the_change() {
+    let e = run("a\nb\nc\nd", "Gddggu");
+    assert_eq!(pos(&e), (3, 0));
+    let e = run("abc def", "wdwgg0u");
+    assert_eq!(pos(&e), (0, 4));
+    let e = run("abc def", "wdw0u\x12");
+    assert_eq!(pos(&e), (0, 3));
 }
 
 #[test]
@@ -1090,4 +1103,181 @@ fn escaped_quotes_and_visual_growth() {
     // Words do not grow, and a one-char selection is not grown (it is just the cursor).
     assert_eq!(sel("fbviwiw"), ((0, 4), (0, 5)));
     assert_eq!(sel("f(lvi("), ((0, 2), (0, 7)));
+}
+
+#[test]
+fn regex_search() {
+    let s = "a1 b22\nc333 a";
+    let mut e = run(s, concat!(r"/\d+", "\n"));
+    assert_eq!(pos(&e), (0, 1));
+    feed(&mut e, "n");
+    assert_eq!(pos(&e), (0, 4));
+    // Like vim, the next match may start inside the current one.
+    feed(&mut e, "n");
+    assert_eq!(pos(&e), (0, 5));
+    feed(&mut e, "ggN");
+    assert_eq!((pos(&e), e.msg.as_str()), ((1, 1), "search hit TOP, continuing at BOTTOM"));
+    feed(&mut e, "G$n");
+    assert_eq!((pos(&e), e.msg.as_str()), ((0, 1), "search hit BOTTOM, continuing at TOP"));
+    assert_eq!(pos(&run(s, "/(?i)C\n")), (1, 0));
+    assert_eq!(pos(&run(s, "/^a\n")), (0, 0));
+    assert_eq!(pos(&run(s, "w/^a\n")), (0, 0));
+    assert_eq!(pos(&run(s, "/a$\n")), (1, 5));
+    // Search from an empty line looks past its line break.
+    assert_eq!(pos(&run("x\n\ny", "j/y\n")), (2, 0));
+    // An invalid pattern keeps the last search.
+    let mut e = run(s, "/b\n/(\n");
+    assert!(e.msg.starts_with("Invalid pattern: "), "{}", e.msg);
+    feed(&mut e, "gg");
+    feed(&mut e, "n");
+    assert_eq!(pos(&e), (0, 3));
+    // incsearch: an incomplete pattern previews nothing.
+    let mut e = run(s, "/c");
+    assert_eq!((pos(&e), screen(&e.frame(20, 3))[1].as_str()), ((1, 0), "2 {c}333 a"));
+    feed(&mut e, "(");
+    assert_eq!((pos(&e), screen(&e.frame(20, 3))[1].as_str()), ((0, 0), "1 c333 a"));
+    // Highlights: regex matches, empty ones ignored.
+    assert_eq!(screen(&run(s, concat!(r"/\d+", "\n")).frame(20, 3))[0], "1 a{1} b{22}");
+    assert_eq!(screen(&run(s, "/x*\n").frame(20, 3))[0], "1 a1 b22");
+    // `*` builds `\bword\b`; punctuation around the word does not matter.
+    let e = run("(foo) foo_x foo.", "l*");
+    assert_eq!((pos(&e), e.last_search.as_ref().unwrap().pat.as_str()), ((0, 12), r"\bfoo\b"));
+}
+
+#[test]
+fn substitute_lines_and_flags() {
+    let s = "a a\na a\na a";
+    assert_eq!(text(&run(s, ":s/a/b/\n")), "b a\na a\na a");
+    assert_eq!(text(&run(s, ":s/a/b/g\n")), "b b\na a\na a");
+    assert_eq!(text(&run(s, ":%s/a/b/\n")), "b a\nb a\nb a");
+    assert_eq!(text(&run(s, ":%s/a/b/g\n")), "b b\nb b\nb b");
+    assert_eq!(text(&run(s, ":2,3s/a/b/\n")), "a a\nb a\nb a");
+    assert_eq!(text(&run(s, "j:.,$s/a/b/\n")), "a a\nb a\nb a");
+    assert_eq!(text(&run(s, ":3,2s/a/b/\n")), "a a\nb a\nb a");
+    assert_eq!(text(&run(s, "jma:'as/a/b/\n")), "a a\nb a\na a");
+    assert_eq!(text(&run(s, ":.+1s/a/b/\n")), "a a\nb a\na a");
+    assert_eq!(text(&run("Ab", ":s/a/x/i\n")), "xb");
+    assert_eq!(text(&run("Ab", ":s/a/x/I\n")), "Ab");
+    assert_eq!(text(&run("k=v", concat!(r":s/(\w)=(\w)/$2=$1/", "\n"))), "v=k");
+    assert_eq!(text(&run("a,b", concat!(r":s/,/\n/", "\n"))), "a\nb");
+    assert_eq!(text(&run("ab", concat!(r":s/b/\$1/", "\n"))), "a$1");
+    assert_eq!(text(&run("a\nb", concat!(r":%s/\n//", "\n"))), "ab");
+    assert_eq!(text(&run("ab", ":s/$/!/\n")), "ab!");
+    // An empty pattern reuses the last search; `:s` sets it.
+    assert_eq!(text(&run("xa a", "/a\n:s//b/g\n")), "xb b");
+    let e = run("a b a", ":s/a/c/\nn");
+    assert_eq!(pos(&e), (0, 4));
+}
+
+#[test]
+fn substitute_cursor_messages_and_undo() {
+    let s = "x\n  a\na\nb";
+    let mut e = run(s, ":%s/a/z/g\n");
+    assert_eq!((text(&e).as_str(), pos(&e), e.msg.as_str()), ("x\n  z\nz\nb", (2, 0), "2 substitutions on 2 lines"));
+    feed(&mut e, "u");
+    assert_eq!(text(&e), s);
+    feed(&mut e, "\x12");
+    assert_eq!(text(&e), "x\n  z\nz\nb");
+    assert_eq!(run("aa", ":s/a/b/g\n").msg, "2 substitutions on 1 line");
+    assert_eq!(run("a", ":s/a/b/\n").msg, "1 substitution on 1 line");
+    // The cursor goes where the last substitution ends, past the line breaks it added.
+    assert_eq!(pos(&run("a,b\nc,d", concat!(r":%s/,/\n/", "\n"))), (3, 0));
+    let e = run(s, ":%s/q/z/\n");
+    assert_eq!((text(&e).as_str(), e.msg.as_str()), (s, "Pattern not found: q"));
+    assert_eq!(run(s, ":%s/(/z/\n").msg.split(':').next(), Some("Invalid pattern"));
+    assert_eq!(run(s, ":s//z/\n").msg, "No previous regular expression");
+    assert_eq!(run(s, ":9s/a/z/\n").msg, "Invalid range");
+    assert_eq!(run(s, ":0s/a/z/\n").msg, "Invalid range");
+    assert_eq!(run(s, ":'qs/a/z/\n").msg, "Mark not set");
+    assert_eq!(run(s, ":s/a/z/q\n").msg, "Trailing characters: q");
+    // `.` does not repeat it: it repeats the `x` before.
+    assert_eq!(text(&run("a a a", "x:s/a/z/\nw.")), " z ");
+    // Undo after a substitute and a normal edit: separate steps.
+    assert_eq!(text(&run("ab", ":s/a/z/\nxu")), "zb");
+}
+
+#[test]
+fn substitute_on_a_visual_selection() {
+    let s = "a\na\na\na";
+    let mut e = run(s, "jVj:");
+    assert_eq!(e.mode, Mode::Command("'<,'>".into()));
+    feed(&mut e, "s/a/b/\n");
+    assert_eq!(text(&e), "a\nb\nb\na");
+    assert_eq!(text(&run(s, "jvj:s/a/b/\n")), "a\nb\nb\na");
+    // The marks stay for later commands.
+    assert_eq!(text(&run(s, "Vj\x1bG:'<,'>s/a/c/\n")), "c\nc\na\na");
+}
+
+#[test]
+fn undo_tree_commands() {
+    // Two branches: "ab" (undone) and "ac".
+    let mut e = run("a", "Ab\x1buAc\x1b");
+    assert_eq!(text(&e), "ac");
+    feed(&mut e, "g-");
+    assert_eq!(text(&e), "ab", "g- goes back in time across branches");
+    feed(&mut e, "g-");
+    assert_eq!(text(&e), "a");
+    feed(&mut e, "g-");
+    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("a", "Already at oldest change"));
+    feed(&mut e, "2g+");
+    assert_eq!(text(&e), "ac");
+    feed(&mut e, "g+");
+    assert_eq!(e.msg, "Already at newest change");
+    feed(&mut e, ":earlier 2\n");
+    assert_eq!(text(&e), "a");
+    feed(&mut e, ":later\n");
+    assert_eq!(text(&e), "ab");
+    feed(&mut e, ":undo 2\n");
+    assert_eq!(text(&e), "ac");
+    feed(&mut e, ":undo 0\n");
+    assert_eq!(text(&e), "a");
+    feed(&mut e, ":u\n");
+    assert_eq!(e.msg, "Already at oldest change");
+    feed(&mut e, ":red\n");
+    assert_eq!(text(&e), "ac", "redo follows the last branch visited");
+    feed(&mut e, ":undo\n");
+    assert_eq!(text(&e), "a");
+    feed(&mut e, ":earlier 10m\n");
+    assert_eq!(text(&e), "a");
+    feed(&mut e, ":later 1h\n");
+    assert_eq!(text(&e), "ac", "nothing that late: the newest version");
+    for bad in [":earlier 3x\n", ":later 99999999999999999999999\n", ":redo 2\n", ":undo 1s\n"] {
+        feed(&mut e, bad);
+        assert!(e.msg.starts_with("Invalid argument: "), "{bad:?}: {}", e.msg);
+    }
+    feed(&mut e, ":undolist\n");
+    assert!(e.msg.starts_with("at 2 of 2 | 1:1:") && e.msg.contains(" 2:1:"), "{}", e.msg);
+    // Marks follow time travel too.
+    let e = run("x\ny", "jmaggOz\x1bg-g+`a");
+    assert_eq!(pos(&e), (2, 0));
+}
+
+#[test]
+fn char_info_and_byte_motions() {
+    let s = "ab é\nfoo bar\n";
+    let e = run(s, "j\x07");
+    assert_eq!(e.msg, "\"/nonexistent/pt-edit-test\" 3 lines --66%--");
+    assert_eq!(run(s, "x\x07").msg, "\"/nonexistent/pt-edit-test\" [Modified] 3 lines --33%--");
+    let e = run(s, "jw\x07".replace('\x07', "g\x07").as_str());
+    assert_eq!(e.msg, "Col 5 of 7; Line 2 of 3; Word 4 of 4; Char 10 of 13; Byte 11 of 14");
+    assert_eq!(run(s, "g\x07").msg, "Col 1 of 4; Line 1 of 3; Word 1 of 4; Char 1 of 13; Byte 1 of 14");
+    assert_eq!(run(s, "$ga").msg, "<é> 233, Hex 00e9, Oct 351");
+    assert_eq!(run(s, "$g8").msg, "c3 a9");
+    assert_eq!(run(s, "Gga").msg, "NUL");
+    // Byte motions land on the char containing the byte.
+    assert_eq!(pos(&run(s, "5go")), (0, 3));
+    assert_eq!(pos(&run(s, "6go")), (0, 3));
+    assert_eq!(pos(&run(s, "7go")), (1, 0));
+    assert_eq!(pos(&run(s, "8go")), (1, 1));
+    assert_eq!(pos(&run(s, "Ggo")), (0, 0));
+    assert_eq!(pos(&run(s, "999go")), (2, 0));
+    assert_eq!(text(&run(s, "d4go")), "é\nfoo bar\n");
+    assert_eq!(pos(&run(s, ":goto 9\n")), (1, 2));
+    assert_eq!(pos(&run(s, "j$:go\n")), (0, 0));
+    assert_eq!(run(s, ":goto x\n").msg, "Invalid argument: x");
+    // Column motion.
+    assert_eq!(pos(&run(s, "j4|")), (1, 3));
+    assert_eq!(pos(&run(s, "j99|")), (1, 6));
+    assert_eq!(pos(&run(s, "j$|")), (1, 0));
+    assert_eq!(text(&run(s, "j$d3|")), "ab é\nfor\n");
 }

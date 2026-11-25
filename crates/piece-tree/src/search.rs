@@ -7,6 +7,7 @@ use triomphe::Arc;
 
 use crate::chunk::{Chunk, MAX_ADD_BYTES, count_lf};
 use crate::eol::normalize;
+use crate::document::Edit;
 use crate::text::Text;
 use crate::tree::{self, Node, Piece};
 
@@ -180,6 +181,68 @@ impl Text {
         re.0.find(Input::new(self.cursor_at(off)).range(off..)).map(|m| m.range())
     }
 
+    /// Matches starting in `range`: leftmost, non-overlapping, searched from `range.start` with
+    /// the text around still visible to look-around (`\b`, `^`). A match may end past
+    /// `range.end`. For highlighting the visible part of a text.
+    pub fn find_iter_in<'a>(&'a self, re: &'a Regex, range: Range<usize>) -> impl Iterator<Item = Range<usize>> + 'a {
+        assert!(range.start <= range.end && range.end <= self.len(), "invalid range {range:?}");
+        let end = range.end;
+        re.0.find_iter(Input::new(self.cursor_at(range.start)).range(range.start..))
+            .map(|m| m.range())
+            .take_while(move |m| m.start < end)
+    }
+
+    /// The match starting at the largest position before `off` where [`Text::find_from`] finds
+    /// one starting right there ("find previous"; overlapping starts count, as in vim's `?`).
+    ///
+    /// Scans backward in windows that double from 4 KiB, enumerating the match starts inside
+    /// each, so a match near `off` costs about its window. Worst case (few matches, none after
+    /// `off`) is O(n log n).
+    pub fn rfind_before(&self, re: &Regex, off: usize) -> Option<Range<usize>> {
+        assert!(off <= self.len(), "offset {off} out of bounds");
+        let (mut hi, mut w) = (off, 4096);
+        while hi > 0 {
+            let lo = self.floor_char_boundary(hi.saturating_sub(w));
+            let (mut best, mut p) = (None, lo);
+            while let Some(m) = self.find_from(re, p).filter(|m| m.start < hi) {
+                // `m.start < hi <= len`, so a boundary follows it.
+                p = (m.start + 1..=self.len()).find(|&o| self.is_char_boundary(o)).expect("the end is a boundary");
+                best = Some(m);
+            }
+            if best.is_some() {
+                return best;
+            }
+            (hi, w) = (lo, w * 2);
+        }
+        None
+    }
+
+    /// The first match at or after `off` and its replacement `rep` expanded as in
+    /// [`Text::replace_all`] (normalized to `\n`). For confirming substitutions one by one.
+    pub fn replacement_at(&self, re: &Regex, off: usize, rep: &str) -> Option<(Range<usize>, String)> {
+        assert!(off <= self.len(), "offset {off} out of bounds");
+        let mut caps = re.0.create_captures();
+        re.0.search_captures(Input::new(self.cursor_at(off)).range(off..), &mut caps);
+        let m = caps.get_match()?.range();
+        let mut out = String::new();
+        self.expand(&caps, &normalize(rep), &mut out);
+        Some((m, out))
+    }
+
+    /// Appends `rep` with `$n`/`${name}`/`$$` expanded from `caps` to `out`.
+    fn expand(&self, caps: &regex_cursor::regex_automata::util::captures::Captures, rep: &str, out: &mut String) {
+        interpolate::string(
+            rep,
+            |i, dst| {
+                if let Some(span) = caps.get_group(i) {
+                    dst.push_str(&self.slice(span.range()));
+                }
+            },
+            |name| caps.pattern().and_then(|pid| caps.group_info().to_index(pid, name)),
+            out,
+        );
+    }
+
     /// Replaces every match with `rep`, expanding `$n`, `${name}` and `$$` like
     /// `regex::Regex::replace_all`. Returns the new text and the match count;
     /// with no match, the same version.
@@ -187,32 +250,45 @@ impl Text {
     /// The new tree is built in one go from the untouched pieces and the
     /// replacement pieces, rather than by one edit per match.
     pub fn replace_all(&self, re: &Regex, rep: &str) -> (Text, usize) {
+        self.replace_matching(re, rep, |_| true)
+    }
+
+    /// Like [`Text::replace_all`], but only for the matches `keep` accepts. `keep` sees
+    /// every match in order, by byte range; rejected matches stay as they are and
+    /// do not count. This is what an editor's ranged or first-per-line substitute needs.
+    pub fn replace_matching(&self, re: &Regex, rep: &str, keep: impl FnMut(Range<usize>) -> bool) -> (Text, usize) {
+        let (text, edits) = self.replace_matching_edits(re, rep, keep);
+        (text, edits.len())
+    }
+
+    /// [`Text::replace_matching`] with one [`Edit`] per replaced match, in order (each start is
+    /// in the text left by the previous replacements).
+    pub(crate) fn replace_matching_edits(
+        &self,
+        re: &Regex,
+        rep: &str,
+        mut keep: impl FnMut(Range<usize>) -> bool,
+    ) -> (Text, Vec<Edit>) {
         let rep = normalize(rep);
         // All replacement texts, concatenated; each match maps to a range of it.
         let mut out = String::new();
         let mut edits: Vec<(Range<usize>, Range<usize>)> = Vec::new();
         if memchr::memchr(b'$', rep.as_bytes()).is_none() {
             out.push_str(&rep);
-            edits.extend(self.find_iter(re).map(|m| (m, 0..rep.len())));
+            edits.extend(self.find_iter(re).filter(|m| keep(m.clone())).map(|m| (m, 0..rep.len())));
         } else {
             for caps in re.0.captures_iter(Input::new(self.cursor())) {
                 let m = caps.get_match().expect("yielded captures always match").range();
+                if !keep(m.clone()) {
+                    continue;
+                }
                 let start = out.len();
-                interpolate::string(
-                    &rep,
-                    |i, dst| {
-                        if let Some(span) = caps.get_group(i) {
-                            dst.push_str(&self.slice(span.range()));
-                        }
-                    },
-                    |name| caps.pattern().and_then(|pid| caps.group_info().to_index(pid, name)),
-                    &mut out,
-                );
+                self.expand(&caps, &rep, &mut out);
                 edits.push((m, start..out.len()));
             }
         }
         if edits.is_empty() {
-            return (self.clone(), 0);
+            return (self.clone(), Vec::new());
         }
         let (buf, add) = self.store_replacements(out);
         let mut pieces = Vec::new();
@@ -225,7 +301,16 @@ impl Text {
             pos = m.end;
         }
         tree::pieces_in(self.root(), pos, self.len(), &mut pieces);
-        (Text::from_parts(tree::from_pieces(pieces), add), edits.len())
+        let mut shift = 0isize;
+        let changes = edits
+            .iter()
+            .map(|(m, r)| {
+                let e = Edit { start: m.start.strict_add_signed(shift), old_len: m.len(), new_len: r.len() };
+                shift += r.len() as isize - m.len() as isize;
+                e
+            })
+            .collect();
+        (Text::from_parts(tree::from_pieces(pieces), add), changes)
     }
 
     /// Stores the concatenated replacements once; returns their piece (if any)

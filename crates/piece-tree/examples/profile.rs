@@ -5,11 +5,11 @@
 //! samply record target/release/examples/profile typing
 //! ```
 //!
-//! Scenarios: `typing`, `backspace`, `paste`, `edits`, `read`.
+//! Scenarios: `typing`, `backspace`, `paste`, `edits`, `read`, `doc-typing`.
 
 use std::{env, hint::black_box};
 
-use piece_tree::Text;
+use piece_tree::{Document, Text};
 
 fn sample(bytes: usize) -> String {
     let mut s = String::with_capacity(bytes + 64);
@@ -66,6 +66,16 @@ fn main() {
                 for _ in 0..20 {
                     black_box((0..t.line_count()).map(|i| t.line(i).len()).sum::<usize>());
                 }
+            }
+            "doc-typing" => {
+                // Typing through `Document`: one version and edit log entry per key.
+                let mut doc = Document::new("");
+                doc.insert(0, &t.to_string());
+                for (i, off) in (start..start + 10_000).enumerate() {
+                    doc.insert(off, if i % 40 == 39 { "\n" } else { "x" });
+                }
+                t = doc.text().clone();
+                black_box(doc);
             }
             other => panic!("unknown scenario {other:?}"),
         }

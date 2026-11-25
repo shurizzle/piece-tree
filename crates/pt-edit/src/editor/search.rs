@@ -1,77 +1,121 @@
-//! Literal search over `Text::chunks` without copying the text.
+//! Regex search through piece-tree's `Regex` (Rust `regex` syntax).
 
-use std::ops::Range;
+use std::{ops::Range, rc::Rc};
 
-use memchr::memmem::{self, Finder};
-use piece_tree::Text;
+use piece_tree::{Regex, Text};
 
-/// Start offsets of every match of `pat` (overlapping included), in order. Matches spanning
-/// chunks are found through a small buffer of the previous `pat.len() - 1` bytes.
-pub(super) fn match_starts<'a>(text: &'a Text, pat: &'a str) -> impl Iterator<Item = usize> + 'a {
-    let finder = Finder::new(pat.as_bytes());
-    let m = pat.len();
-    let (mut carry, mut base): (Vec<u8>, usize) = (Vec::new(), 0);
-    text.chunks().flat_map(move |chunk| {
-        let chunk = chunk.as_bytes();
-        let mut hits = Vec::new();
-        if m > 1 && !carry.is_empty() {
-            let mut buf = carry.clone();
-            buf.extend_from_slice(&chunk[..chunk.len().min(m - 1)]);
-            let mut i = 0;
-            // Only matches that start in `carry` and end past it: the others were found already.
-            while let Some(k) = finder.find(&buf[i..]) {
-                let s = i + k;
-                if s >= carry.len() {
-                    break;
-                }
-                if s + m > carry.len() {
-                    hits.push(base - carry.len() + s);
-                }
-                i = s + 1;
+/// Where the cursor lands relative to a match (vim's search offset: `/pat/e+1`).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(super) enum Offset {
+    #[default]
+    None,
+    /// `+N`/`-N`: lines below/above the match, linewise.
+    Lines(isize),
+    /// `s+N`/`b+N`: chars from the match start.
+    Start(isize),
+    /// `e+N`: chars from the match's last char, inclusive.
+    End(isize),
+}
+
+impl Offset {
+    /// Parses the part after the closing delimiter (`e`, `s-1`, `+2`, empty).
+    pub fn parse(s: &str) -> Result<Offset, String> {
+        let invalid = || format!("Invalid search offset: {s}");
+        let num = |n: &str| -> Result<isize, String> {
+            match n {
+                "" => Ok(0),
+                "+" => Ok(1),
+                "-" => Ok(-1),
+                n => n.strip_prefix('+').unwrap_or(n).parse().map_err(|_| invalid()),
             }
+        };
+        Ok(match s.chars().next() {
+            None => Offset::None,
+            Some('e') => Offset::End(num(&s[1..])?),
+            Some('s' | 'b') => Offset::Start(num(&s[1..])?),
+            Some(_) => Offset::Lines(num(s)?),
+        })
+    }
+}
+
+/// A compiled search: pattern, regex, direction of the `/`/`?` that set it, and its offset.
+#[derive(Clone)]
+pub(super) struct Search {
+    pub pat: String,
+    pub re: Rc<Regex>,
+    pub back: bool,
+    pub offset: Offset,
+}
+
+impl Search {
+    pub fn new(pat: &str) -> Result<Search, String> {
+        Regex::new(pat)
+            .map(|re| Search { pat: pat.into(), re: Rc::new(re), back: false, offset: Offset::None })
+            .map_err(|e| format!("Invalid pattern: {e}"))
+    }
+
+    /// `*`/`#`: `word` as a whole word. Words are alnum and `_` only, so nothing needs escaping.
+    pub fn word(word: &str) -> Search {
+        Search::new(&format!(r"\b{word}\b")).expect("a word is a valid pattern")
+    }
+}
+
+/// Splits what was typed after `/` (or `?`, `delim`) into the pattern and the offset text, at
+/// the first unescaped delimiter.
+pub(super) fn split_typed(typed: &str, delim: char) -> (&str, &str) {
+    let mut escaped = false;
+    for (i, c) in typed.char_indices() {
+        if c == delim && !escaped {
+            return (&typed[..i], &typed[i + 1..]);
         }
-        let mut i = 0;
-        while let Some(k) = finder.find(&chunk[i..]) {
-            hits.push(base + i + k);
-            i += k + 1;
-        }
-        if m > 1 {
-            if chunk.len() >= m - 1 {
-                carry = chunk[chunk.len() - (m - 1)..].to_vec();
-            } else {
-                carry.extend_from_slice(chunk);
-                let excess = carry.len().saturating_sub(m - 1);
-                carry.drain(..excess);
-            }
-        }
-        base += chunk.len();
-        hits
+        escaped = c == '\\' && !escaped;
+    }
+    (typed, "")
+}
+
+/// First match starting at or after byte `next` (just past the cursor), or the first match of
+/// the text when there is none; the flag says it wrapped (started at or before `cur`).
+pub(super) fn find_forward(text: &Text, re: &Regex, cur: usize, next: usize) -> Option<(Range<usize>, bool)> {
+    if let Some(m) = text.find_from(re, next) {
+        return Some((m, false));
+    }
+    text.find_from(re, 0).map(|m| {
+        let wrapped = m.start <= cur;
+        (m, wrapped)
     })
 }
 
-/// Char ranges of the matches of `pat` in `line` (non-overlapping), keeping those `accept` takes.
-pub(super) fn line_matches(line: &str, pat: &str, accept: impl Fn(&str, Range<usize>) -> bool) -> Vec<Range<usize>> {
-    if pat.is_empty() {
-        return Vec::new();
+/// Last match starting before byte `cur` (`Text::rfind_before`), or the last of the text.
+pub(super) fn find_backward(text: &Text, re: &Regex, cur: usize) -> Option<(Range<usize>, bool)> {
+    if let Some(m) = text.rfind_before(re, cur) {
+        return Some((m, false));
     }
-    let (mut out, mut chars, mut seen) = (Vec::new(), 0, 0);
-    for b in memmem::find_iter(line.as_bytes(), pat.as_bytes()) {
-        if !accept(line, b..b + pat.len()) {
-            continue;
-        }
-        chars += line[seen..b].chars().count();
-        let len = pat.chars().count();
-        out.push(chars..chars + len);
-        chars += len;
-        seen = b + pat.len();
-    }
-    out
+    // Nothing before: wrap to the last match, which then starts at or after `cur`.
+    let last = text.rfind_before(re, text.len()).or_else(|| text.find_from(re, text.len()))?;
+    Some((last, true))
 }
 
-/// Whether byte range `r` of `s` is not glued to word chars on either side (`*`, `#`).
-pub(super) fn is_whole_word(s: &str, r: Range<usize>) -> bool {
-    let word = |c: Option<char>| c.is_some_and(|c| c.is_alphanumeric() || c == '_');
-    !word(s[..r.start].chars().next_back()) && !word(s[r.end..].chars().next())
+/// Non-empty matches starting in lines `lines` (from `Text::find_iter_in` over their bytes),
+/// cut into char ranges per line: entry `i` is for line `lines.start + i`. Matches spanning line
+/// breaks are split at them.
+pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> Vec<Vec<Range<usize>>> {
+    let mut out = vec![Vec::new(); lines.len()];
+    if lines.is_empty() {
+        return out;
+    }
+    let (start, end) = (text.line_to_offset(lines.start), text.line_end(lines.end - 1));
+    for m in text.find_iter_in(re, start..end).filter(|m| !m.is_empty()) {
+        let (l0, c0) = text.offset_to_line_col(m.start);
+        let (l1, c1) = text.offset_to_line_col(m.end);
+        for l in l0..=l1.min(lines.end - 1) {
+            let from = if l == l0 { c0 } else { 0 };
+            let to = if l == l1 { c1 } else { text.line_char_len(l) };
+            if from < to {
+                out[l - lines.start].push(from..to);
+            }
+        }
+    }
+    out
 }
 
 #[cfg(test)]
@@ -80,41 +124,72 @@ mod tests {
     use piece_tree::Document;
 
     #[test]
-    fn finds_matches_across_chunks() {
-        // Prepends never extend the previous piece: chunks "xab", "cdab", "cd" split inside the matches.
+    fn invalid_patterns_report_the_cause() {
+        let e = Search::new("(").err().unwrap();
+        assert!(e.starts_with("Invalid pattern: ") && e.len() > "Invalid pattern: ".len(), "{e}");
+        assert_eq!(Search::word("foo").pat, r"\bfoo\b");
+    }
+
+    #[test]
+    fn offsets_and_typed_splits() {
+        assert_eq!(Offset::parse(""), Ok(Offset::None));
+        assert_eq!(Offset::parse("e"), Ok(Offset::End(0)));
+        assert_eq!(Offset::parse("e-1"), Ok(Offset::End(-1)));
+        assert_eq!(Offset::parse("s+2"), Ok(Offset::Start(2)));
+        assert_eq!(Offset::parse("b-"), Ok(Offset::Start(-1)));
+        assert_eq!(Offset::parse("+"), Ok(Offset::Lines(1)));
+        assert_eq!(Offset::parse("-3"), Ok(Offset::Lines(-3)));
+        assert_eq!(Offset::parse("2"), Ok(Offset::Lines(2)));
+        assert_eq!(Offset::parse("0"), Ok(Offset::Lines(0)));
+        for bad in ["x", "e+x", "+-"] {
+            assert_eq!(Offset::parse(bad), Err(format!("Invalid search offset: {bad}")), "{bad}");
+        }
+        assert_eq!(split_typed("a/b/e", '/'), ("a", "b/e"));
+        assert_eq!(split_typed(r"a\/b/e", '/'), (r"a\/b", "e"));
+        assert_eq!(split_typed(r"a\\/e", '/'), (r"a\\", "e"));
+        assert_eq!(split_typed("a?", '?'), ("a", ""));
+        assert_eq!(split_typed("abc", '/'), ("abc", ""));
+    }
+
+    #[test]
+    fn forward_and_backward_wrap() {
+        let t = Text::from("a1 b22 c3");
+        let re = Regex::new(r"\d+").unwrap();
+        assert_eq!(find_forward(&t, &re, 0, 1), Some((1..2, false)));
+        assert_eq!(find_forward(&t, &re, 1, 2), Some((4..6, false)));
+        assert_eq!(find_forward(&t, &re, 8, 9), Some((1..2, true)));
+        assert_eq!(find_backward(&t, &re, 4), Some((1..2, false)));
+        assert_eq!(find_backward(&t, &re, 1), Some((8..9, true)));
+        let z = Regex::new("z").unwrap();
+        assert_eq!((find_forward(&t, &z, 0, 1), find_backward(&t, &z, 0)), (None, None));
+        // Only an empty match at the very end: found when wrapping backward.
+        assert_eq!(find_backward(&t, &Regex::new("$").unwrap(), 0), Some((9..9, true)));
+    }
+
+    #[test]
+    fn finds_matches_across_pieces() {
         let mut doc = Document::new("cd");
         doc.insert(0, "cdab");
         doc.insert(0, "xab");
-        let text = doc.text();
-        assert_eq!(text.chunks().collect::<Vec<_>>(), ["xab", "cdab", "cd"]);
-        assert_eq!(text.slice(0..text.len()), "xabcdabcd");
-        assert_eq!(match_starts(text, "abcd").collect::<Vec<_>>(), [1, 5]);
-        assert_eq!(match_starts(text, "bc").collect::<Vec<_>>(), [2, 6]);
-        assert_eq!(match_starts(text, "d").collect::<Vec<_>>(), [4, 8]);
-        assert_eq!(match_starts(text, "dabc").collect::<Vec<_>>(), [4]);
-        assert_eq!(match_starts(text, "xabcdabcd").collect::<Vec<_>>(), [0]);
-        assert_eq!(match_starts(text, "zz").count(), 0);
+        let t = doc.text();
+        assert_eq!(t.chunks().collect::<Vec<_>>(), ["xab", "cdab", "cd"]);
+        let re = Regex::new("bc").unwrap();
+        assert_eq!(find_forward(t, &re, 0, 1), Some((2..4, false)));
+        assert_eq!(find_forward(t, &re, 2, 3), Some((6..8, false)));
+        assert_eq!(find_backward(t, &re, 6), Some((2..4, false)));
     }
 
     #[test]
-    fn finds_overlapping_matches_across_tiny_chunks() {
-        let mut doc = Document::new("a");
-        // Prepending never extends the previous piece: one-byte chunks, shorter than the carry.
-        for _ in 1..6 {
-            doc.insert(0, "a");
-        }
-        assert_eq!(doc.text().chunks().count(), 6);
-        assert_eq!(match_starts(doc.text(), "aaa").collect::<Vec<_>>(), [0, 1, 2, 3]);
-    }
-
-    #[test]
-    fn line_matches_in_chars() {
-        let any = |_: &str, _| true;
-        assert_eq!(line_matches("日a日a", "a", any), [1..2, 3..4]);
-        assert_eq!(line_matches("aaaa", "aa", any), [0..2, 2..4]);
-        assert!(line_matches("ab", "", any).is_empty());
-        assert_eq!(line_matches("foo food foo", "foo", is_whole_word), [0..3, 9..12]);
-        assert!(is_whole_word("(a)", 1..2));
-        assert!(!is_whole_word("_a", 1..2));
+    fn visible_matches_per_line() {
+        let re = |p| Regex::new(p).unwrap();
+        let t = Text::from("日a日a\nfoo\nbar foo");
+        assert_eq!(visible_matches(&t, &re("a"), 0..3), [vec![1..2, 3..4], vec![], vec![1..2]]);
+        assert_eq!(visible_matches(&t, &re("x*"), 0..3), [vec![], vec![], vec![]]);
+        // Spanning a line break: split per line; only the visible lines.
+        assert_eq!(visible_matches(&t, &re("o\nb"), 1..3), [vec![2..3], vec![0..1]]);
+        assert_eq!(visible_matches(&t, &re("a\nf"), 0..1), [vec![3..4]]);
+        assert_eq!(visible_matches(&t, &re(r"\bfoo\b"), 2..3), [vec![4..7]]);
+        assert!(visible_matches(&t, &re("a"), 1..1).is_empty());
+        assert_eq!(visible_matches(&t, &re("\n"), 0..2), [vec![], vec![]]);
     }
 }

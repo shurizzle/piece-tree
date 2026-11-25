@@ -142,6 +142,61 @@ fn replace_all_matches_regex() {
 }
 
 #[test]
+fn replace_matching_matches_regex_on_the_kept_matches() {
+    let mut rng = Rng(5);
+    let texts = texts(&mut rng);
+    for p in patterns() {
+        let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
+        for rep in if cfg!(miri) { &REPLACEMENTS[..3] } else { REPLACEMENTS } {
+            for (t, s) in &texts {
+                // Keep every other match: the oracle replaces kept ones and copies the rest.
+                let mut i = 0;
+                let (out, n) = t.replace_matching(&ours, rep, |_| {
+                    i += 1;
+                    i % 2 == 1
+                });
+                let mut expected = String::new();
+                let mut last = 0;
+                for (j, caps) in oracle.captures_iter(s).enumerate() {
+                    let m = caps.get(0).unwrap();
+                    expected.push_str(&s[last..m.start()]);
+                    if j % 2 == 0 {
+                        caps.expand(rep, &mut expected);
+                    } else {
+                        expected.push_str(m.as_str());
+                    }
+                    last = m.end();
+                }
+                expected.push_str(&s[last..]);
+                tree::check(out.root());
+                assert_eq!(out.to_string(), expected.replace("\r\n", "\n"), "{p:?} -> {rep:?} on {s:?}");
+                assert_eq!(n, oracle.find_iter(s).count().div_ceil(2));
+            }
+        }
+    }
+}
+
+#[test]
+fn replace_matching_sees_ranges_and_can_reject_all() {
+    let t = Text::from("a1 b22 c333");
+    let re = Regex::new(r"\d+").unwrap();
+    let mut seen = Vec::new();
+    let (out, n) = t.replace_matching(&re, "#", |m| {
+        seen.push(m.clone());
+        m.len() > 1
+    });
+    assert_eq!((out.to_string().as_str(), n, seen), ("a1 b# c#", 2, vec![1..2, 4..6, 8..11]));
+    let (out, n) = t.replace_matching(&re, "<$0>", |_| false);
+    assert!(n == 0 && out.ptr_eq(&t));
+    let mut doc = Document::new("x x");
+    assert_eq!(doc.replace_matching(&Regex::new("x").unwrap(), "y", |m| m.start == 2), 1);
+    assert_eq!(doc.text().to_string(), "x y");
+    assert!(doc.undo() && !doc.undo());
+    assert_eq!(doc.replace_matching(&Regex::new("x").unwrap(), "y", |_| false), 0);
+    assert!(!doc.undo(), "no accepted match, no undo step");
+}
+
+#[test]
 fn replace_all_without_matches_keeps_the_version() {
     let t = Text::from("abc");
     let (out, n) = t.replace_all(&Regex::new("z").unwrap(), "y");
@@ -194,3 +249,104 @@ fn invalid_pattern_is_an_error() {
     let _: &dyn std::error::Error = &err;
 }
 
+
+fn boundaries(s: &str) -> impl Iterator<Item = usize> + '_ {
+    (0..=s.len()).filter(|&i| s.is_char_boundary(i))
+}
+
+#[test]
+fn rfind_before_matches_a_brute_force_oracle() {
+    let mut rng = Rng(21);
+    let texts = texts(&mut rng);
+    for p in patterns() {
+        let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
+        for (t, s) in &texts {
+            for off in boundaries(s) {
+                // The largest start before `off` where a search from there starts right there.
+                let expected = boundaries(s)
+                    .filter(|&b| b < off)
+                    .filter_map(|b| oracle.find_at(s, b).filter(|m| m.start() == b).map(|m| m.range()))
+                    .last();
+                assert_eq!(t.rfind_before(&ours, off), expected, "{p:?} before {off} in {s:?}");
+            }
+        }
+    }
+}
+
+#[test]
+fn rfind_before_crosses_windows() {
+    // A match far before `off` needs several doubling windows; one at the end of the text is found too.
+    let s = format!("x{}", "-".repeat(20_000));
+    let t = Text::from(s.as_str());
+    let re = Regex::new("x").unwrap();
+    assert_eq!(t.rfind_before(&re, t.len()), Some(0..1));
+    assert_eq!(t.rfind_before(&re, 0), None);
+    assert_eq!(Text::from("ab").rfind_before(&Regex::new("").unwrap(), 2), Some(1..1));
+    assert_eq!(Text::from("ab").rfind_before(&Regex::new("$").unwrap(), 2), None);
+    let e = std::panic::catch_unwind(|| Text::new().rfind_before(&re, 1)).unwrap_err();
+    assert!(e.downcast_ref::<String>().unwrap().contains("out of bounds"));
+}
+
+#[test]
+fn find_iter_in_matches_regex_in_a_range() {
+    let mut rng = Rng(22);
+    let texts = texts(&mut rng);
+    for p in patterns() {
+        let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
+        for (t, s) in &texts {
+            for _ in 0..8 {
+                let r = rng.range(s);
+                // regex's own iteration from `r.start`, look-behind included, cut at the end.
+                let next = |i: usize| (i + 1..=s.len() + 1).find(|&j| j > s.len() || s.is_char_boundary(j)).unwrap();
+                let (mut expected, mut at, mut last_end) = (Vec::new(), r.start, None);
+                while at <= s.len() {
+                    let Some(m) = oracle.find_at(s, at) else { break };
+                    if m.start() >= r.end {
+                        break;
+                    }
+                    // `regex` skips an empty match right where the previous match ended.
+                    if m.is_empty() && Some(m.start()) == last_end {
+                        at = next(m.start());
+                        continue;
+                    }
+                    expected.push(m.range());
+                    last_end = Some(m.end());
+                    at = if m.is_empty() { next(m.end()) } else { m.end() };
+                }
+                let got: Vec<_> = t.find_iter_in(&ours, r.clone()).collect();
+                assert_eq!(got, expected, "{p:?} in {r:?} of {s:?}");
+            }
+        }
+    }
+    let t = Text::from("ab");
+    assert!(std::panic::catch_unwind(|| t.find_iter_in(&Regex::new("a").unwrap(), 2..1).count()).is_err());
+    let e = std::panic::catch_unwind(|| t.find_iter_in(&Regex::new("a").unwrap(), 0..3).count()).unwrap_err();
+    assert!(e.downcast_ref::<String>().unwrap().contains("invalid range"));
+}
+
+#[test]
+fn replacement_at_expands_one_match() {
+    let t = Text::from("k=v x=y");
+    let re = Regex::new(r"(?<a>\w)=(\w)").unwrap();
+    assert_eq!(t.replacement_at(&re, 0, "$2=${a}"), Some((0..3, "v=k".into())));
+    assert_eq!(t.replacement_at(&re, 1, "[$0]\r\n"), Some((4..7, "[x=y]\n".into())));
+    assert_eq!(t.replacement_at(&re, 5, "z"), None);
+    let mut rng = Rng(23);
+    let texts = texts(&mut rng);
+    for p in patterns() {
+        let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
+        for (t, s) in &texts {
+            for off in boundaries(s) {
+                for rep in ["<$0>", "$1|$2", "${w}"] {
+                    let expected = oracle.captures_at(s, off).map(|c| {
+                        let mut out = String::new();
+                        c.expand(rep, &mut out);
+                        (c.get(0).unwrap().range(), out)
+                    });
+                    assert_eq!(t.replacement_at(&ours, off, rep), expected, "{p:?} at {off} in {s:?}");
+                }
+            }
+        }
+    }
+    assert!(std::panic::catch_unwind(|| Text::new().replacement_at(&re, 1, "")).is_err());
+}

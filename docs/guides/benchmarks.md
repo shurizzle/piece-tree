@@ -49,6 +49,8 @@ Load average ~2, minimum of 7 runs. "regex+copy" is `regex::Regex` on `Text::to_
 
 **Rejected**: disabling auto prefilters (the first workaround for the regex-cursor bug). `\bvalue_\d+5\b` took 49 ms/MB (45x slower) and the literal search 0.47 ms/MB (5.4x slower). Replaced by the vendored fix (decisions D14).
 
+**Kept, no regression**: `replace_all` delegating to `replace_matching(re, rep, |_| true)` (the filter for editor substitutes). A/B against a standalone copy of the previous version, both built in `bench`, 3 alternating runs each, min of 7: literal 355/428/433 ns/match before vs 403/395/406 after, `$1` 1206/1181/1217 vs 1127/1247/1198. Differences are inside the run-to-run noise (±15%).
+
 ## Results, round 2 (profile-driven)
 
 Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load average ~2. "Before" is the state at the end of round 1.
@@ -112,3 +114,17 @@ Where the round 1 gains come from:
 - **Single-descent `line()`** answers lines inside one piece with one walk and a borrowed slice.
 - **Piece extension** keeps a typing session in one piece per chunk.
 - **Exact chunks** scan large inserts once with memchr.
+
+## Undo tree and edit log (`document.rs`)
+
+New scenario `Document typing 10k chars in 1MB`: the typing loop through `Document::insert`, one version per key (the worst case: editors group a whole insert session into one version). Six alternating runs, min of 7 each, standalone copies built the same way, load average ~5:
+
+| Variant | min ns/key over 6 runs |
+|---|---|
+| before (two `Vec<Text>` stacks) | 243 261 270 273 274 293 |
+| undo tree + flat edit log + timestamp (kept) | 298 301 306 309 362 364 |
+| same without the timestamp (diagnostic only) | 220 236 262 275 309 655 |
+
+**Kept**: the tree with timestamps, ~+15% per ungrouped key. The difference is all `Instant::now()` (measured alone: ~22 ns); the tree and the log cost nothing measurable. Time travel (`earlier_time`) needs the stamp.
+
+**Rejected**: a `Vec<Edit>` per version (first version): one allocation per key, ~+30%. Replaced by the flat log.
