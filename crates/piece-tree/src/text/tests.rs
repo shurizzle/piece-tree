@@ -672,7 +672,9 @@ fn apply_edits_clustered_in_a_fragmented_text() {
     // Windows at the start, in the middle and at the end: a small span takes the cluster path, a
     // wide one (whole text) falls back to path copies; both must match the model.
     let (end, mid) = (fm.len(), fm.len() / 2);
-    for (lo, hi) in [(0, 40), (mid, mid + 60), (end - 40, end), (0, end)] {
+    // Also spans of ~45% (rejected by the density estimate) and of ~15% (passes it, but holds
+    // more pieces than the budget: rejected by the count).
+    for (lo, hi) in [(0, 40), (mid, mid + 60), (end - 40, end), (0, end), (0, end * 45 / 100), (0, end * 15 / 100), (mid, mid + end / 20)] {
         let (lo, hi) = (fm.floor_char_boundary(lo), fm.floor_char_boundary(hi));
         let mut batch = random_batch(&mut rng, &fm[lo..hi], 6, &texts);
         batch.iter_mut().for_each(|(r, _)| *r = r.start + lo..r.end + lo);

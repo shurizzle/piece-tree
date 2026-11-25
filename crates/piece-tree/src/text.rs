@@ -18,6 +18,10 @@ pub(crate) type Span = (Range<usize>, Range<usize>);
 /// edits (below that its fixed cost loses).
 const REBUILD_MIN_EDITS: usize = 3;
 const REBUILD_PIECES_PER_EDIT: usize = 10;
+/// Fewest edits for the clustered rebuild (`Text::rebuilt_cluster`): it pays two splits and two
+/// joins (~4 path copies) on top of the span, so it lost 12% at 4 edits and won 20% at 6
+/// (benchmarks.md).
+const CLUSTER_MIN_EDITS: usize = 6;
 
 /// Immutable text value. `clone` is O(1) and edits return a new `Text` that
 /// shares unchanged structure with the old one.
@@ -220,7 +224,7 @@ impl Text {
     /// `None` when the span has too many pieces.
     #[inline(never)] // see `tree::delete_range`
     fn rebuilt_cluster(&self, buf: Option<&Piece>, edits: &[Span]) -> Option<Tree> {
-        if edits.len() < REBUILD_MIN_EDITS {
+        if edits.len() < CLUSTER_MIN_EDITS {
             return None;
         }
         let (lo, hi) = (edits[0].0.start, edits[edits.len() - 1].0.end);
@@ -230,7 +234,11 @@ impl Text {
         // to `budget` pieces for nothing, which cost scattered batches on a fragmented text
         // +27-60% (benchmarks.md). The estimate is a heuristic: an uneven text just takes the
         // other strategy.
-        if (hi - lo) as u128 * tree::min_pieces(&self.root) as u128 > budget as u128 * self.len() as u128
+        // A span over half the text cannot beat the whole rebuild by much (it would hold ~all the
+        // pieces `rebuild_wins` just rejected), and its failed count cost scattered batches of
+        // 128 edits +10%.
+        if (hi - lo) * 2 > self.len()
+            || (hi - lo) as u128 * tree::min_pieces(&self.root) as u128 > budget as u128 * self.len() as u128
             || !tree::has_at_most_in(&self.root, lo, hi, budget)
         {
             return None;

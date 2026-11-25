@@ -286,42 +286,21 @@ Scratch program, 10 MB synthetic text, min over 15 reps of a whole batch and 3 r
 | | 997 | 417 | 92 | 4.53x |
 | | 4925 | 448 | 87 | 5.15x |
 | fragmented, scattered | 1-32 | 411-500 | 419-500 | 0.96-1.00x |
-| | 128 | 458 | 574 | 0.80x |
+| | 128 | 469 | 514 | 0.91x |
 | | 997 | 512 | 302 | 1.70x |
 | | 4925 | 548 | 145 | 3.78x |
 | single piece, clustered | 4 / 15 / 51 | 198 / 233 / 251 | 125 / 106 / 83 | 1.58x / 2.20x / 3.02x |
-| fragmented, clustered | 4 / 15 / 51 | 427 / 425 / 420 | 469 / 203 / 118 | 0.91x / 2.09x / 3.56x |
+| fragmented, clustered | 4 / 6 / 8 / 12 / 15 / 51 | 427 / 417 / 417 / 424 / 439 / 419 | 438 / 340 / 302 / 243 / 208 / 114 | 0.97x / 1.23x / 1.38x / 1.74x / 2.11x / 3.68x |
 
-Below 3 edits it is the sparse path plus the fixed cost of validating, normalizing and storing the replacements (~40 ns per edit at 1-2 edits): use `insert`/`delete` there. The 0.91x row is the bounded count walk of D17 (1280 pieces visited, ~7 ns each); it is the worst band (the 128-edit row is 521 -> 574 against the version before the clustered path, +10%: the failed attempt of the clustered path, see below; within the ~10% noise).
+Below 3 edits it is the sparse path plus the fixed cost of validating, normalizing and storing the replacements (~40 ns per edit at 1-2 edits): use `insert`/`delete` there. The 0.91x row is the bounded count walk of D17 (1280 pieces visited, ~7 ns each); it is the worst band (the 128-edit row is 525 -> 514 against the version before the clustered path: no change).
 
-**Clustered batches (W2).** The 4437-piece rows "fragmented, clustered" took the sparse path and gained nothing (1.0x). Now, when the batch is sparse, `Text::rebuilt_cluster` rebuilds only the span from the first to the last edit (`rebuilt` over `[lo, hi)`), and joins it with the untouched left and right parts obtained by `split`. A/B against a standalone copy of the previous version, same example built the same way, 7 alternating rounds, min, ns per edit (`apply_edits`): 15 edits 439 -> 203 (2.2x), 51 edits 426 -> 118 (3.6x); 4 edits 427 -> 469 (+10%: the span has more than the 40 pieces of the budget, so the attempt fails). Single piece and scattered rows unchanged (0.99-1.04x; the 1-2 edit rows move by +-10% between builds, code placement: they never reach the new code). Hot paths, same A/B, 12 alternating rounds, min / median: paste 629 / 671 -> 597 / 639, random edits 652 / 681 -> 643 / 666, typing 60.9 -> 60.9, backspace 52.2 -> 51.8, `line()` 4.0 -> 4.0 (no regression).
+**Clustered batches (W2).** The 4437-piece rows "fragmented, clustered" took the sparse path and gained nothing (1.0x). Now, when the batch is sparse and has at least `CLUSTER_MIN_EDITS` (6) edits, `Text::rebuilt_cluster` rebuilds only the span from the first to the last edit (`rebuilt` over `[lo, hi)`), and joins it with the untouched left and right parts obtained by `split`. A/B against a standalone copy of the previous version, same example built the same way, 8 alternating rounds, min, ns per edit (`apply_edits`, previous -> new): 6 edits 424 -> 340 (1.25x), 8 edits 427 -> 302 (1.4x), 12 edits 434 -> 243 (1.8x), 15 edits 442 -> 208 (2.1x), 51 edits 428 -> 114 (3.8x); 4 edits 438 -> 438 (below the minimum, same path). Single piece and scattered rows unchanged (0.96-1.04x; rows that never reach the new code move by up to 8% between builds: code placement). Hot paths, same A/B, 12 alternating rounds, min / median: paste 637 / 662 -> 605 / 619, random edits 651 / 682 -> 618 / 633, typing 60.9 -> 60.9, backspace 52.2 -> 52.2, `line()` 4.0 -> 4.0 (no regression).
 
-**Rejected / reworked in W2**: (1) the span rebuild tried on every sparse batch with only a piece limit while cloning pieces: scattered batches on the fragmented text became +40-60% slower (417-438 -> 547-703 ns at 4-128 edits), because a failed attempt clones up to `edits * 10` pieces (an atomic increment each) for nothing, much more than the ~7 ns per piece of a count. (2) Adding the O(1) density estimate (`span * min_pieces <= budget * len`) removed it except at 128 edits (+27%). (3) Adding a count walk that clones nothing (`tree::has_at_most_in`) before the rebuild brought that to +10%, the cost kept.
-
-Strategy calibration (forced one way or the other, same scratch program): rebuilding costs ~135 µs on 4437 pieces regardless of the number of edits (~30 ns per piece) plus ~100 ns per edit, a path copy ~500 ns per edit, so they cross near 1 edit per 12 pieces (the code uses 1 per 10); on a single piece the rebuild wins from 3-4 edits (k=1: 0.58x, 2: 0.78x, 4: 1.53x).
-
-**Rejected**: (1) divide and conquer on the middle edit (split, recurse, join). Single piece 1.1-2.8x, but fragmented 0.45x at 2-8 edits, 0.57x at 32, 0.77x at 128, 1.18x at 997, 2.0x at 4925: every edit pays two splits and two joins. (2) A piece count in every `Node` (`u32` in the padding): A/B against a copy without it, 6 alternating pairs, min of 40 reps: paste 655 -> 680 ns (+3.8%, higher in 6 of 6 pairs), random edits 660 -> 672 (+1.8%), typing 62.8 -> 61.7 (noise). (3) A height-only estimate of the piece count (`3/4 * 2^height`): no hot-path cost, but off by 2.8x on 4437 pieces, so 997 edits took the sparse path (1.04x instead of 1.9x). (4) Counting every piece before deciding: +53% on a 128-edit batch.
-
-Across the other libraries (harness, "batch 1k edits, one pass, 10MB": ~1000 sorted line inserts and deletes, ns per edit; piece-tree applies them with `apply_edits`, ropey one by one from the end, Zed in one cursor pass):
-
-| Corpus | piece-tree | ropey 1.x | ropey 2 beta | SumTree |
-|---|---|---|---|---|
-| synthetic | **95** (was 415 one by one) | 655 | 537 | 5 710 |
-| Rust sources | **99** (was 427) | 669 | 458 | 6 424 |
-| CJK | **88** (was 405) | 708 | 428 | 6 414 |
-
-The resulting text is identical across the four libraries (the harness sanity check, `ok` on all three corpora).
-
-**Hot paths and the +4-7% that was found and fixed.** A/B of a scratch program (paste 1000 x on 10 MB, 1000+1000 random edits, typing 10k, backspace 10k, `line()` over all lines) against a standalone copy of the tree before the SIMD and batch work ("base"), alternating runs, ns/op, min / median:
-
-| Variant | paste | random edits | typing | backspace | `line()` |
-|---|---|---|---|---|---|
-| base | 603 / 662 | 616 / 660 | 60.8 / 61.0 | 52.4 / 52.5 | 4.0 / 4.1 |
-| tree with the batch API (12 rounds) | 642 / 684 | 653 / 676 | 60.9 / 61.0 | 52.5 / 52.5 | 4.0 / 4.1 |
-| same, batch helpers `#[inline(never)]` (12 rounds) | 614 / 645 | 629 / 638 | 60.9 / 61.0 | 52.1 / 52.2 | 4.0 / 4.0 |
-| final tree with that fix, vs base in the same run (12 rounds) | 629 / 651 (base 612 / 642) | 632 / 667 (base 634 / 649) | 60.9 / 61.0 | 52.3 / 52.3 | 4.0 / 4.0 |
-
-The batch API made paste and random edits +4-8% slower although the `insert` path source did not change. Bisected: base plus only the SIMD files is not slower (paste 593-682 over 6 rounds against 605-628 for base, i.e. noise), a copy of the tree with the old `memchr` scan is as slow as the current one, and reverting `Text::delete` to its inline form does not help; putting `#[inline(never)]` on `tree::delete_range`, `Text::rebuilt` and `Text::apply_edits_spans` brings both rows back to base level (within ~3%, the spread of the base itself between runs is 5-10%). So the cause was inlining of batch code into shared paths, not the SIMD scan or the algorithm. Typing, backspace and reads never moved. The attributes carry a comment pointing here.
+**Rejected / reworked in W2** (each step measured against the previous version of the same A/B):
+1. The span rebuild tried on every sparse batch with only a piece limit, cloning pieces: scattered batches on the fragmented text became +40-60% slower (417-438 -> 547-703 ns at 4-128 edits), because a failed attempt clones up to `edits * 10` pieces (an atomic increment each) for nothing, much more than the ~7 ns per piece of a count.
+2. Adding the O(1) density estimate (`span * min_pieces <= budget * len`) removed it except at 128 edits (+27%).
+3. Adding a count walk that clones nothing (`tree::has_at_most_in`) before the rebuild brought that to +10% (574 against 521), and left 4 clustered edits at +10% (469 against 427): there the attempt succeeds, but two splits and two `join2` cost about four path copies, so the span rebuild only breaks even.
+4. Kept: a minimum of 6 edits for the clustered path (break-even between 4 and 6; 4 edits +12%, 6 edits -20%) and an O(1) rejection of spans over half of the text (they would hold about the pieces `rebuild_wins` has just rejected). Both slowdowns are gone (4 clustered edits 1.00x, 128 scattered edits 0.98x).
 
 ## Noise of the cross-library harness (3 runs per cell)
 
