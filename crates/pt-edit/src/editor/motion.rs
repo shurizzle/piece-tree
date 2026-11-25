@@ -1,34 +1,89 @@
 //! Motions: char iterators, words, finds, brackets, screen lines, marks and searches.
 
-use super::{Cmd, Editor, Kind, Pos, class, search};
+use super::{Cmd, Editor, G_DOWN, G_UP, Kind, Pos, class, search};
+
+/// Chars of a line, then its `\n` if it has one, from byte `b` on.
+struct FwdChars<'a> {
+    s: std::borrow::Cow<'a, str>,
+    b: usize,
+    nl: bool,
+}
+
+impl Iterator for FwdChars<'_> {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        match self.s[self.b..].chars().next() {
+            Some(c) => {
+                self.b += c.len_utf8();
+                Some(c)
+            }
+            None => std::mem::take(&mut self.nl).then_some('\n'),
+        }
+    }
+}
+
+/// Chars of a line backward from byte `b_end` (after the `\n` when `nl`), with the column of each.
+struct BwdChars<'a> {
+    s: std::borrow::Cow<'a, str>,
+    b_end: usize,
+    nl: bool,
+    idx: usize,
+}
+
+impl Iterator for BwdChars<'_> {
+    type Item = (usize, char);
+
+    fn next(&mut self) -> Option<(usize, char)> {
+        let c = if std::mem::take(&mut self.nl) {
+            '\n'
+        } else {
+            let c = self.s[..self.b_end].chars().next_back()?;
+            self.b_end -= c.len_utf8();
+            c
+        };
+        let idx = self.idx;
+        self.idx = idx.wrapping_sub(1);
+        Some((idx, c))
+    }
+}
 
 /// Motions that set the `''` mark when they move the cursor (vim "jumps").
 pub(super) const JUMPS: &str = "Gg%nN*#HML`'\u{E16F}";
 
 impl Editor {
-    /// Chars from `p` forward; each line but the last ends with `\n`.
+    /// Chars from `p` forward; each line but the last ends with `\n`. Lazy: a line is read in place and
+    /// only as far as the caller consumes it, so a word motion in a huge line costs the word.
     pub(super) fn fwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
         let text = self.doc.text();
         let lines = text.line_count();
-        (p.0..lines)
-            .flat_map(move |l| {
-                let chars: Vec<char> = text.line(l).chars().chain((l + 1 < lines).then_some('\n')).collect();
-                chars.into_iter().enumerate().map(move |(c, ch)| ((l, c), ch))
-            })
-            .skip(p.1)
+        (p.0..lines).flat_map(move |l| {
+            let s = text.line(l);
+            let (b, c0) = if l == p.0 { (super::byte_of_col(&s, p.1), p.1) } else { (0, 0) };
+            let chars = FwdChars { s, b, nl: l + 1 < lines };
+            chars.enumerate().map(move |(i, ch)| ((l, c0 + i), ch))
+        })
     }
 
     /// Chars from `p` backward, `p` included.
     pub(super) fn bwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
         let text = self.doc.text();
         let lines = text.line_count();
-        (0..=p.0)
-            .rev()
-            .flat_map(move |l| {
-                let chars: Vec<char> = text.line(l).chars().chain((l + 1 < lines).then_some('\n')).collect();
-                chars.into_iter().enumerate().rev().map(move |(c, ch)| ((l, c), ch))
-            })
-            .skip_while(move |&((l, c), _)| l == p.0 && c > p.1)
+        (0..=p.0).rev().flat_map(move |l| {
+            let s = text.line(l);
+            let nl = l + 1 < lines;
+            // `b_end`: end of the chars still to give; `idx`: column of the next one (counted down).
+            let (b_end, nl, idx) = if l == p.0 && super::byte_of_col(&s, p.1) < s.len() {
+                // The cursor is on a char of the line: start at it, the line break is after it.
+                (super::byte_of_col(&s, p.1 + 1), false, p.1)
+            } else {
+                // A line before the cursor's, or the cursor on the line break (or past it): all chars.
+                let n = str_indices::chars::count(&s);
+                let nl = nl && (l < p.0 || p.1 >= n);
+                (s.len(), nl, (if nl { n } else { n.wrapping_sub(1) }).min(if l == p.0 { p.1 } else { usize::MAX }))
+            };
+            BwdChars { s, b_end, nl, idx }.map(move |(c, ch)| ((l, c), ch))
+        })
     }
 
     /// `w`: start of the next word; an empty line counts as a word.
@@ -81,12 +136,20 @@ impl Editor {
 
     /// `f`/`F`/`t`/`T` in the cursor line. Repeated `t`/`T` skip an adjacent match (vim default `cpo`).
     fn find(&self, kind: char, ch: char, n: usize, repeat: bool) -> Option<(Pos, Kind)> {
-        let chars: Vec<char> = self.doc.text().line(self.line).chars().collect();
+        let line = self.doc.text().line(self.line);
         let skip = usize::from(repeat && matches!(kind, 't' | 'T'));
+        let mut buf = [0; 4];
+        let needle = ch.encode_utf8(&mut buf).as_bytes();
+        // Byte searches (UTF-8 is self-synchronizing, so a hit is a char); columns are counted per hit.
         let hit = if matches!(kind, 'f' | 't') {
-            (self.col + 1 + skip..chars.len()).filter(|&i| chars[i] == ch).nth(n - 1)?
+            let from = self.col + 1 + skip;
+            let b = super::byte_of_col(&line, from);
+            let k = memchr::memmem::find_iter(&line.as_bytes()[b..], needle).nth(n - 1)?;
+            from + str_indices::chars::count(&line[b..b + k])
         } else {
-            (0..self.col.checked_sub(skip)?).rev().filter(|&i| chars[i] == ch).nth(n - 1)?
+            let to = self.col.checked_sub(skip)?;
+            let k = memchr::memmem::rfind_iter(&line.as_bytes()[..super::byte_of_col(&line, to)], needle).nth(n - 1)?;
+            str_indices::chars::count(&line[..k])
         };
         Some(match kind {
             'f' => ((self.line, hit), Kind::Inclusive),
@@ -99,7 +162,10 @@ impl Editor {
     /// `%`: the bracket matching the first `()[]{}` at or after the cursor in its line.
     fn match_bracket(&self) -> Option<Pos> {
         let line = self.doc.text().line(self.line);
-        let (i, ch) = line.chars().enumerate().skip(self.col).find(|(_, c)| "()[]{}".contains(*c))?;
+        let b = super::byte_of_col(&line, self.col);
+        let hay = &line.as_bytes()[b..];
+        let k = [memchr::memchr3(b'(', b')', b'[', hay), memchr::memchr3(b']', b'{', b'}', hay)].into_iter().flatten().min()?;
+        let (i, ch) = (self.col + str_indices::chars::count(&line[b..b + k]), hay[k] as char);
         let (open, close) = match ch {
             '(' | ')' => ('(', ')'),
             '[' | ']' => ('[', ']'),
@@ -110,13 +176,17 @@ impl Editor {
 
     /// `*`/`#`: the word under the cursor (or the next one in the line) and its start column.
     fn word_under_cursor(&self) -> Option<(String, usize)> {
-        let chars: Vec<char> = self.doc.text().line(self.line).chars().collect();
-        let mut start = (self.col..chars.len()).find(|&i| class(chars[i]) == 1)?;
-        while start > 0 && class(chars[start - 1]) == 1 {
-            start -= 1;
+        let line = self.doc.text().line(self.line);
+        let b = super::byte_of_col(&line, self.col);
+        let (skipped, _) = line[b..].char_indices().find(|&(_, c)| class(c) == 1)?;
+        let mut start = b + skipped;
+        let mut col = self.col + line[b..start].chars().count();
+        // Back to the word start, then on to its end.
+        while let Some(p) = line[..start].chars().next_back().filter(|&p| class(p) == 1) {
+            (start, col) = (start - p.len_utf8(), col - 1);
         }
-        let end = (start..chars.len()).find(|&i| class(chars[i]) != 1).unwrap_or(chars.len());
-        Some((chars[start..end].iter().collect(), start))
+        let end = start + line[start..].find(|c| class(c) != 1).unwrap_or(line.len() - start);
+        Some((line[start..end].to_string(), col))
     }
 
     /// Byte offset of mark `m`, kept inside the text and on a char boundary (undo does not move marks).
@@ -136,14 +206,26 @@ impl Editor {
         let vertical = |e: &Self, l: usize| ((l, e.want_col.min(e.line_chars(l))), Kind::Linewise);
         let first = |e: &Self, l: usize| ((l, e.first_non_blank(l)), Kind::Linewise);
         let half = (self.rows / 2).max(1);
-        let bottom = (self.top + self.rows - 1).min(last);
         Some(match key {
             'h' => ((line, col.saturating_sub(n)), Kind::Exclusive),
             'l' => ((line, (col + n).min(self.line_chars(line))), Kind::Exclusive),
             'j' => vertical(self, (line + n).min(last)),
             'k' => vertical(self, line.saturating_sub(n)),
-            '\x04' => vertical(self, (line + half).min(last)),
-            '\x15' => vertical(self, line.saturating_sub(half)),
+            // Half a screen of rows, not lines, so wrapped lines count for what they show.
+            '\x04' | '\x15' => {
+                let (k, _) = self.cursor_row();
+                let (l, _) = self.step_rows(line, k, key == '\x04', half);
+                vertical(self, l)
+            }
+            G_DOWN | G_UP => {
+                let (k, x) = self.cursor_row();
+                let x = self.want_x.filter(|&(_, p)| p == (line, col)).map_or(x, |(x, _)| x);
+                let (l, k) = self.step_rows(line, k, key == G_DOWN, n);
+                let pos = (l, self.col_at(l, k, x));
+                // Stored as Normal mode will clamp it, so the next `gj` recognizes the cursor.
+                self.want_x = Some((x, (l, pos.1.min(self.line_chars(l).saturating_sub(1)))));
+                (pos, Kind::Exclusive)
+            }
             '0' => ((line, 0), Kind::Exclusive),
             '^' => ((line, self.first_non_blank(line)), Kind::Exclusive),
             '$' => {
@@ -151,9 +233,22 @@ impl Editor {
                 ((l, self.line_chars(l).saturating_sub(1)), Kind::Inclusive)
             }
             'g' | 'G' => first(self, count.map_or(if key == 'g' { 0 } else { last }, |c| (c - 1).min(last))),
-            'H' => first(self, (self.top + n - 1).min(bottom)),
-            'L' => first(self, bottom.saturating_sub(n - 1).max(self.top.min(bottom))),
-            'M' => first(self, self.top.min(bottom) + (bottom - self.top.min(bottom)) / 2),
+            'H' => first(self, (self.top + n - 1).min(self.bottom_line())),
+            'L' => {
+                let bottom = self.bottom_line();
+                first(self, bottom.saturating_sub(n - 1).max(self.top.min(bottom)))
+            }
+            'M' => {
+                // The line on the middle screen row of what is shown.
+                let (top, bottom) = (self.top.min(last), self.bottom_line());
+                let shown: usize = (top..=bottom).map(|l| self.height_to(l, self.rows + 1)).sum::<usize>().saturating_sub(self.top_sub);
+                let (mut row, mut l) = ((shown.max(1) - 1) / 2 + self.top_sub, top);
+                while l < bottom && row >= self.height_to(l, self.rows + 1) {
+                    row -= self.height_to(l, self.rows + 1);
+                    l += 1;
+                }
+                first(self, l)
+            }
             // `N%` goes to N percent of the lines, rounded up (vim).
             '%' if count.is_some() => first(self, ((n.min(100) * (last + 1)).div_ceil(100)).saturating_sub(1)),
             '%' => (self.match_bracket()?, Kind::Inclusive),
@@ -255,7 +350,7 @@ impl Editor {
         self.line = to.0;
         let col = to.1.min(self.line_chars(to.0).saturating_sub(1));
         match key {
-            'j' | 'k' | '\x04' | '\x15' => self.col = col,
+            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP => self.col = col,
             '$' => {
                 self.col = col;
                 self.want_col = usize::MAX;

@@ -550,6 +550,37 @@ fn char_metrics_panics() {
     assert_eq!(Text::new().char_to_offset(0), 0);
 }
 
+/// A line made of several pieces is converted in place, across piece boundaries.
+#[test]
+fn line_conversions_across_pieces() {
+    let mut t = Text::from("aé日\nxyz");
+    // "é" 2 bytes, "日" 3 bytes: pieces split mid-line at every kind of boundary.
+    t = t.insert(1, "1").insert(4, "2🦀").insert(0, "<");
+    let line: String = t.line(0).into_owned();
+    assert_eq!(line, "<a1é2🦀日");
+    assert!(t.line_count() == 2 && t.chunks().count() > 3);
+    let chars = line.chars().count();
+    assert_eq!(t.line_char_len(0), chars);
+    for col in 0..=chars {
+        let off = line.char_indices().nth(col).map_or(line.len(), |(i, _)| i);
+        assert_eq!(t.line_col_to_offset(0, col), off, "col {col}");
+        assert_eq!(t.offset_to_line_col(off), (0, col), "off {off}");
+    }
+    // `chars_in` on every sub-range, across pieces, and its range check.
+    for a in 0..=line.len() {
+        for b in a..=line.len() {
+            if line.is_char_boundary(a) && line.is_char_boundary(b) {
+                assert_eq!(t.chars_in(a..b), line[a..b].chars().count(), "{a}..{b}");
+            }
+        }
+    }
+    assert!(std::panic::catch_unwind(|| t.chars_in(std::ops::Range { start: 3, end: 2 })).is_err() && std::panic::catch_unwind(|| t.chars_in(0..99)).is_err());
+    assert_eq!(t.line_col_to_offset(1, 3), line.len() + 1 + 3);
+    assert_eq!(t.offset_to_line_col(line.len() + 1 + 2), (1, 2));
+    let e = std::panic::catch_unwind(|| t.line_col_to_offset(0, chars + 1)).unwrap_err();
+    assert!(e.downcast_ref::<String>().is_some_and(|m| m.contains("out of bounds")));
+}
+
 #[test]
 fn char_boundaries() {
     let mut t = Text::from("aé");

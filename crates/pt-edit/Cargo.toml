@@ -10,6 +10,7 @@ piece-tree = { path = "../piece-tree" }
 crossterm = "0.29"
 unicode-width = "0.2"
 memchr = "2.8"
+str_indices = "0.4.4"
 base64 = "0.22"
 terminal-colorsaurus = "1.0"
 mimalloc = "0.1"

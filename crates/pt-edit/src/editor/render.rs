@@ -3,6 +3,7 @@
 use std::{
     io::{self, Write},
     ops::Range,
+    rc::Rc,
 };
 
 use crossterm::{
@@ -13,7 +14,7 @@ use crossterm::{
 };
 use unicode_width::UnicodeWidthChar;
 
-use super::{Editor, Mode, VKind, options::Palette, registers::osc52, search, sorted};
+use super::{Editor, Mode, VKind, layout::{LONG_LINE, Rows}, options::Palette, registers::osc52, search, sorted};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Style {
@@ -39,9 +40,9 @@ pub struct Frame {
     pub rows: Vec<Vec<Span>>,
     pub cursor: (usize, usize),
     pub bar: bool,
-    /// Row drawn on the cursor line background (`cursorline`); padded to the full width so the
-    /// background spans it.
-    pub cursor_line: Option<usize>,
+    /// Rows drawn on the cursor line background (`cursorline`); padded to the full width so the
+    /// background spans them.
+    pub cursor_line: Option<Range<usize>>,
     pub palette: Palette,
     /// Text to copy to the system clipboard (OSC 52).
     pub clipboard: Option<String>,
@@ -71,12 +72,130 @@ impl Editor {
     }
 
     /// Pattern to highlight: the one being typed (incsearch), else the last search (hlsearch).
-    fn highlight(&self) -> Option<std::rc::Rc<piece_tree::Regex>> {
+    fn highlight(&self) -> Option<Rc<piece_tree::Regex>> {
         match &self.mode {
             Mode::Search(_) => self.inc_search.as_ref().map(|s| s.re.clone()),
             _ if self.hl => self.last_search.as_ref().map(|s| s.re.clone()),
             _ => None,
         }
+    }
+
+    /// Highlighted ranges per line of `lines` (`search::visible_matches`), kept while the text, the
+    /// pattern and the lines stay the same: scrolling aside, most frames only move the cursor.
+    fn matches_in(&self, re: &Rc<piece_tree::Regex>, lines: Range<usize>) -> Rc<Vec<Vec<Range<usize>>>> {
+        let text = self.doc.text();
+        let mut cache = self.match_cache.borrow_mut();
+        if let Some((t, r, l, m)) = &*cache
+            && t.ptr_eq(text)
+            && Rc::ptr_eq(r, re)
+            && *l == lines
+        {
+            return m.clone();
+        }
+        let m = Rc::new(search::visible_matches(text, re, lines.clone()));
+        *cache = Some((text.clone(), re.clone(), lines, m.clone()));
+        m
+    }
+
+    /// Wrap width of the last frame, `usize::MAX` without `wrap` (a line is then one row).
+    fn wrap_w(&self) -> usize {
+        if self.opts.wrap { self.text_w } else { usize::MAX }
+    }
+
+    /// Runs `f` on line `n` and its rows. The rows of the cursor line and of huge lines are kept between
+    /// calls, so only what an edit changed is laid out again; `f` must not ask for rows again.
+    fn with_rows<R>(&self, n: usize, f: impl FnOnce(&str, &mut Rows) -> R) -> R {
+        let (w, ts) = (self.wrap_w(), self.opts.tabstop);
+        let text = self.doc.text();
+        if w != usize::MAX {
+            let mut layouts = self.layout.borrow_mut();
+            if let Some((line, rows)) = layouts.cached(text, n, w, ts) {
+                return f(line, rows);
+            }
+            let line = text.line(n);
+            if n == self.line || line.len() >= LONG_LINE {
+                let (line, rows) = layouts.sync(&line, text, n, w, ts);
+                return f(line, rows);
+            }
+            drop(layouts);
+            return f(&line, &mut Rows::new(w, ts));
+        }
+        f(&text.line(n), &mut Rows::new(w, ts))
+    }
+
+    /// Screen rows of line `n` at the last frame's width, counted up to `cap` (at least 1).
+    pub(super) fn height_to(&self, n: usize, cap: usize) -> usize {
+        if self.wrap_w() == usize::MAX { 1 } else { self.with_rows(n, |l, r| r.height_to(l, cap)) }
+    }
+
+    /// Last line shown whole on the screen (the top line when it alone does not fit).
+    pub(super) fn bottom_line(&self) -> usize {
+        let last = self.line_count() - 1;
+        let (mut used, mut bottom) = (0, self.top.min(last));
+        for n in self.top..=last {
+            used += self.height_to(n, self.rows + 1).saturating_sub(if n == self.top { self.top_sub } else { 0 });
+            if used > self.rows {
+                break;
+            }
+            bottom = n;
+        }
+        bottom
+    }
+
+    /// Screen row of the cursor inside its line and its cell column inside that row.
+    pub(super) fn cursor_row(&self) -> (usize, usize) {
+        self.with_rows(self.line, |line, rows| {
+            let k = rows.row_of(line, self.col);
+            let (start, seg) = rows.row(line, k);
+            (k, screen_col(seg, self.col - start, self.opts.tabstop))
+        })
+    }
+
+    /// Moves `n` screen rows down or up from row `k` of `line`, stopping at the text edges. Going up
+    /// into a line needs its last row, so the whole line is laid out (once; the cursor line is kept).
+    pub(super) fn step_rows(&self, mut line: usize, mut k: usize, down: bool, mut n: usize) -> (usize, usize) {
+        while n > 0 {
+            if down {
+                let below = self.height_to(line, k + n + 1) - 1 - k;
+                if n <= below {
+                    return (line, k + n);
+                }
+                if line + 1 >= self.line_count() {
+                    return (line, k + below);
+                }
+                (n, line, k) = (n - below - 1, line + 1, 0);
+            } else {
+                if n <= k {
+                    return (line, k - n);
+                }
+                if line == 0 {
+                    return (0, 0);
+                }
+                (n, line) = (n - k - 1, line - 1);
+                k = self.height_to(line, usize::MAX) - 1;
+            }
+        }
+        (line, k)
+    }
+
+    /// Char index in row `k` of `line` at cell column `x`; a row that is not the last never ends past its last char.
+    pub(super) fn col_at(&self, line: usize, k: usize, x: usize) -> usize {
+        let ts = self.opts.tabstop;
+        self.with_rows(line, |text, rows| {
+            rows.ensure(text, k);
+            let (start, seg) = rows.row(text, k);
+            let (mut cx, mut idx) = (0, 0);
+            for c in seg.chars() {
+                let cw = cell_width(c, ts);
+                if cx + cw > x {
+                    break;
+                }
+                cx += cw;
+                idx += 1;
+            }
+            let max = if k + 1 < rows.len() { idx.min(str_indices::chars::count(seg).saturating_sub(1)) } else { idx };
+            start + max
+        })
     }
 
     /// Lays out a `w`×`h` screen and scrolls to keep the cursor visible.
@@ -85,59 +204,114 @@ impl Editor {
         self.rows = h.saturating_sub(1).max(1);
         let ts = self.opts.tabstop;
 
-        if self.line < self.top {
-            self.top = self.line;
-        } else if self.line >= self.top + self.rows {
-            self.top = self.line + 1 - self.rows;
-        }
+        let text = self.doc.text().clone();
+        let wrap = self.opts.wrap;
         let (nu, rnu) = (self.opts.number, self.opts.relativenumber);
         let gutter = if nu || rnu { gutter_width(self.line_count()) } else { 0 };
         let text_w = w.saturating_sub(gutter).max(1);
-        let line = self.doc.text().line(self.line);
-        let cx = screen_col(&line, self.col, ts);
-        let cw = line.chars().nth(self.col).map_or(1, |c| cell_width(c, ts).max(1));
-        if cx < self.left {
-            self.left = cx;
-        } else if cx + cw > self.left + text_w {
-            self.left = (cx + cw).saturating_sub(text_w);
+        self.text_w = text_w;
+
+        // Heights are capped: only whether a line fits matters, and a line is laid out no further.
+        // The top line also counts the rows scrolled off its top.
+        let cap = self.rows + 1;
+        let (mut top, mut top_sub) = (self.top, self.top_sub);
+        if self.line < top {
+            (top, top_sub) = (self.line, 0);
+        } else {
+            // Every line takes at least one row, so `top` cannot be above this; then drop rows until the cursor line fits.
+            let t = top.max((self.line + 1).saturating_sub(self.rows));
+            if t != top {
+                (top, top_sub) = (t, 0);
+            }
+            let mut used = (top..=self.line).map(|n| self.height_to(n, cap + if n == top { top_sub } else { 0 })).sum::<usize>();
+            used = used.saturating_sub(top_sub);
+            while used > self.rows && top < self.line {
+                used -= self.height_to(top, cap + top_sub).saturating_sub(top_sub);
+                (top, top_sub) = (top + 1, 0);
+            }
+        }
+        let (kc, cx) = self.cursor_row();
+        if top == self.line {
+            // A cursor line taller than the screen scrolls by rows inside itself, but not past its end.
+            if kc < top_sub {
+                top_sub = kc;
+            } else if kc >= top_sub + self.rows {
+                top_sub = kc + 1 - self.rows;
+            }
+            top_sub = top_sub.min(self.height_to(self.line, top_sub + self.rows).saturating_sub(self.rows));
+        }
+        (self.top, self.top_sub) = (top, top_sub);
+        if wrap {
+            self.left = 0;
+        } else {
+            let line = text.line(self.line);
+            let cw = line[str_indices::chars::to_byte_idx(&line, self.col)..].chars().next().map_or(1, |c| cell_width(c, ts).max(1));
+            if cx < self.left {
+                self.left = cx;
+            } else if cx + cw > self.left + text_w {
+                self.left = (cx + cw).saturating_sub(text_w);
+            }
         }
 
         let hl = self.highlight();
-        let text = self.doc.text();
         let visible = self.top..(self.top + self.rows).min(text.line_count());
-        let matches = hl.as_ref().map_or_else(Vec::new, |re| search::visible_matches(text, re, visible.clone()));
-        let mut rows: Vec<Vec<Span>> = (self.top..self.top + self.rows)
-            .map(|n| {
-                if n >= text.line_count() {
-                    return Vec::new();
+        let matches = hl.map_or_else(Default::default, |re| self.matches_in(&re, visible));
+        let mut rows: Vec<Vec<Span>> = Vec::new();
+        let mut cursor = (0, 0);
+        let mut cursor_rows = 0..0;
+        let mut n = self.top;
+        while rows.len() < self.rows {
+            if n >= text.line_count() {
+                rows.push(Vec::new());
+                continue;
+            }
+            let skip = if n == self.top { self.top_sub } else { 0 };
+            let want = self.rows - rows.len();
+            let sel = self.selection(n);
+            let matches = matches.get(n - self.top).map_or(&[][..], Vec::as_slice);
+            let style_at = |i: usize| {
+                if sel.contains(&i) {
+                    Style::Reverse
+                } else if matches.get(matches.partition_point(|r| r.end <= i)).is_some_and(|r| r.start <= i) {
+                    Style::Match
+                } else {
+                    Style::Plain
                 }
-                let mut spans = Vec::new();
-                if gutter > 0 {
-                    let style = if n == self.line { Style::CurrentNumber } else { Style::Number };
-                    let number = format!("{:>width$} ", line_number(n, self.line, nu, rnu), width = gutter - 1);
-                    spans.push(Span { style, text: number });
+            };
+            let first_row = rows.len();
+            self.with_rows(n, |s, r| {
+                r.ensure(s, skip + want - 1);
+                if n == self.line {
+                    let x = if wrap { cx.min(text_w - 1) } else { cx - self.left };
+                    cursor = (gutter + x, (rows.len() + kc.saturating_sub(skip)).min(self.rows - 1));
                 }
-                let s = text.line(n);
-                let sel = self.selection(n);
-                let matches = matches.get(n - self.top).map_or(&[][..], Vec::as_slice);
-                let style_at = |i: usize| {
-                    if sel.contains(&i) {
-                        Style::Reverse
-                    } else if matches.iter().any(|r| r.contains(&i)) {
-                        Style::Match
-                    } else {
-                        Style::Plain
+                for k in skip..(skip + want).min(r.len()) {
+                    let (start, seg) = r.row(s, k);
+                    let mut spans = Vec::new();
+                    if gutter > 0 {
+                        if k == 0 {
+                            let style = if n == self.line { Style::CurrentNumber } else { Style::Number };
+                            let number = format!("{:>width$} ", line_number(n, self.line, nu, rnu), width = gutter - 1);
+                            spans.push(Span { style, text: number });
+                        } else {
+                            spans.push(Span { style: Style::Plain, text: " ".repeat(gutter) });
+                        }
                     }
-                };
-                spans.extend(row_spans(&s, style_at, self.left, text_w, ts));
-                if n == self.line && self.opts.cursorline {
-                    // Explicit padding: erasing with a background color is not portable (no BCE everywhere).
-                    let used: usize = spans.iter().flat_map(|s| s.text.chars()).map(|c| cell_width(c, ts)).sum();
-                    spans.push(Span { style: Style::Plain, text: " ".repeat(w.saturating_sub(used)) });
+                    let last = r.done() && k + 1 == r.len();
+                    spans.extend(row_spans(seg, |i| style_at(start + i), self.left, text_w, ts, last));
+                    if n == self.line && self.opts.cursorline {
+                        // Explicit padding: erasing with a background color is not portable (no BCE everywhere).
+                        let used: usize = spans.iter().flat_map(|s| s.text.chars()).map(|c| cell_width(c, ts)).sum();
+                        spans.push(Span { style: Style::Plain, text: " ".repeat(w.saturating_sub(used)) });
+                    }
+                    rows.push(spans);
                 }
-                spans
-            })
-            .collect();
+            });
+            if n == self.line {
+                cursor_rows = first_row..rows.len();
+            }
+            n += 1;
+        }
 
         let input = match &self.mode {
             Mode::Command(s) => Some(format!(":{s}")),
@@ -166,7 +340,6 @@ impl Editor {
                 self.recording.map_or_else(String::new, |r| format!("recording @{r} ")),
                 self.msg,
             );
-            let cursor = (gutter + cx - self.left, self.line - self.top);
             (Span { style: Style::Reverse, text: fit(&status, w) }, cursor, self.mode == Mode::Insert)
         };
         rows.push(vec![status]);
@@ -174,7 +347,7 @@ impl Editor {
             rows,
             cursor,
             bar,
-            cursor_line: self.opts.cursorline.then_some(self.line - self.top),
+            cursor_line: self.opts.cursorline.then_some(cursor_rows),
             palette: self.opts.palette(),
             clipboard: self.regs.clipboard.take(),
         }
@@ -202,7 +375,7 @@ pub(super) fn draw(f: &Frame, out: &mut impl Write) -> io::Result<()> {
                 Style::Reverse => (Attribute::Reverse, None, None),
                 Style::Match => (Attribute::Reset, Some(p.match_fg), Some(p.match_bg)),
             };
-            let bg = bg.or((Some(y) == f.cursor_line).then_some(p.cursorline_bg));
+            let bg = bg.or(f.cursor_line.as_ref().is_some_and(|r| r.contains(&y)).then_some(p.cursorline_bg));
             // `Attribute::Reset` also clears colors, so they are set after it.
             queue!(out, SetAttribute(attr))?;
             if let Some(c) = fg {
@@ -236,6 +409,11 @@ pub(super) fn line_number(line: usize, cursor: usize, nu: bool, rnu: bool) -> us
 pub(super) fn cell_width(c: char, ts: usize) -> usize {
     match c {
         '\t' => ts,
+        // ASCII is one cell, control chars included (drawn as `?`).
+        c if c.is_ascii() => 1,
+        // The common wide chars (ideographs, kana, Hangul syllables) without the table lookup: it is
+        // what a long CJK line pays per char (`wide_fast_path_agrees_with_unicode_width` checks the ranges).
+        '\u{4E00}'..='\u{9FFF}' | '\u{3041}'..='\u{3096}' | '\u{30A1}'..='\u{30FA}' | '\u{AC00}'..='\u{D7A3}' => 2,
         c if c.is_control() => 1,
         c => c.width().unwrap_or(1),
     }
@@ -247,10 +425,10 @@ pub(super) fn screen_col(s: &str, col: usize, ts: usize) -> usize {
 
 /// Cells of `line` between screen columns `left` and `left + width`, styled per char.
 /// Tabs expand to spaces, control chars show as `?`, and a wide char cut by the edge shows as spaces.
-fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: usize, ts: usize) -> Vec<Span> {
+fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: usize, ts: usize, last: bool) -> Vec<Span> {
     let mut spans: Vec<Span> = Vec::new();
-    // A selected line break shows as one cell.
-    let tail = (style_at(line.chars().count()) == Style::Reverse).then_some(' ');
+    // A selected line break shows as one cell, after the last row of the line.
+    let tail = (last && style_at(str_indices::chars::count(line)) == Style::Reverse).then_some(' ');
     let mut x = 0;
     for (i, c) in line.chars().chain(tail).enumerate() {
         let (x0, cw) = (x, cell_width(c, ts));

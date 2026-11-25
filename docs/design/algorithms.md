@@ -145,7 +145,7 @@ All are iterative root-to-leaf walks using subtree totals.
   2. If that piece also holds the `\n` ending the line (`next < piece.lf`), return `Cow::Borrowed(&text[start..nth_newline(next)])`.
   3. If it is the last piece of the text, the line runs to the end: `Cow::Borrowed(&text[start..])`. This includes an empty last line after a trailing `\n`.
   4. Otherwise the line spans pieces: compute the end with `line_to_offset(i + 1) − 1` (or `len()`) and `slice`.
-- **`slice(a..b)`**: `collect` visits only subtrees overlapping the range, pushing `&str` sub-slices of pieces. One part → `Cow::Borrowed`, several → `Cow::Owned(concat)`.
+- **`slice(a..b)`**: `collect` visits only subtrees overlapping the range and calls a callback (`FnMut(&str) -> ControlFlow<B>`, `#[inline(always)]`) with each piece's `&str` sub-slice, in order, until it breaks. `slice` builds its `Cow` from the callback (one part → `Cow::Borrowed`, several → one owned `String`); `chars_in` sums `count_chars` and `line_col_to_offset` stops at the piece holding the column, so neither collects the pieces nor copies a line that spans pieces.
 - **`chunks()`**: explicit-stack in-order iterator (push left spine, pop, push left spine of right child).
 
 ## Regex search (`search.rs`)

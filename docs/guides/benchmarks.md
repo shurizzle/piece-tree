@@ -435,3 +435,104 @@ Full comparison under mimalloc (same method as "Comparison with other implementa
 | batch 1k edits, one pass, 10MB | **73** | 613 | 522 | 5 386 | piece-tree (7.16x) |
 
 Wins or ties over the 39 rows with mimalloc: piece-tree 37, ropey 2 beta 3, ropey 1.x 0, SumTree 0 (33 / 10 / 0 / 0 with the system allocator). Adopted by pt-edit (application decision, D18); `cargo bench -p piece-tree` and the examples stay on the system allocator.
+
+## Editor frame with `wrap` (`pt-edit`, `render.rs`)
+
+Release build, 100×50 screen, one run of 200 (10 for the huge line) per cell, temporary ignored test (removed); per-iteration time of `frame` alone and of key + `frame`. Compared with `nowrap` on the same build; there is no copy of the previous version because `wrap` did not exist.
+
+| Scenario | `wrap` frame | `nowrap` frame | `wrap` `gj`+frame | `wrap` `L`,`Ctrl-D`+frame |
+|---|---|---|---|---|
+| 100k lines × 120 ASCII, cursor mid-file | 44 µs | 62 µs | 44 µs | 46 µs |
+| 1 line × 2 MB ASCII | 157 µs | 86 µs | 467 µs | 525 µs |
+
+Steps, kept and **rejected**:
+
+- First version: the cursor line was split into rows 3–4 times per frame, each with a width lookup per char. 1 × 2 MB: `wrap` frame 10.3 ms (`nowrap` 6.4 ms), `gj`+frame 20 ms. **Rejected** as too slow for huge lines.
+- Cursor line laid out once per frame (`cur_segs`, no repeated `Text::line`): `wrap` 3.5 ms, `nowrap` 86 µs (the old `nowrap` cost came from the repeated copies too). Kept.
+- ASCII fast path in `segments` (`str::is_ascii` + `memchr` for tabs, rows are fixed-size chunks): `wrap` 157 µs, 65× faster than the first version. Kept. Non-ASCII lines still pay one width lookup per char per frame (about 3.5 ms for 2 MB), see [limitations](../reference/limitations.md).
+
+### `segments` on mixed (non-ASCII or tab) lines
+
+`segments` alone, release, 2 MB line, text width 100, mean of 10, against the plain per-char loop (`naive`, the layout before the run skipping) in the same binary:
+
+| Line | `segments` | `naive` |
+|---|---|---|
+| one accent in 2 MB of ASCII | 0.33 ms | 2.7 ms |
+| accent every 1000 chars | 0.48 ms | 2.7 ms |
+| accent every 8 chars | 3.7 ms | 3.0 ms |
+| tab every 8 chars | 3.0 ms | 2.7 ms |
+| pure CJK | 5.3 ms | 5.1 ms |
+
+Steps, kept and **rejected**:
+
+- Skip ASCII runs of up to 64 bytes, retry every 16 bytes after a failure, per-char `str` slicing in the loop: sparse 4-5x faster but dense text 2-3x **slower** (accent every 8 chars 9.5 ms, CJK 11 ms). **Rejected.**
+- Same with a `Chars` iterator and exponential backoff on failed checks: dense text 5-6 ms. **Rejected**, the loop around the iterator was the cost.
+- Failed checks double a window laid out by the plain `char_indices` loop (16 bytes up to 4 KiB): the table above. Kept; dense mixed text stays within 20% of the plain loop.
+
+These are the costs of laying a whole line out; since the lazy layout below a frame only pays them for a line prefix, once.
+
+### Lazy rows kept for the cursor line (`layout.rs`)
+
+Release, 100×50 screen, cursor at char 500000 of a single 2 MB line, mean of 20 per cell (temporary ignored test, removed). Key + `frame` unless noted; the previous layout re-laid the cursor line out on every frame.
+
+| Line | frame, same text | `gj` + frame | `Ctrl-D` + frame | insert `x` only | insert `x` + frame |
+|---|---|---|---|---|---|
+| 2 MB CJK (6 MB) | 50 µs | 233 µs | 244 µs | 1.77 ms | 2.04 ms |
+| 2 MB ASCII | 65 µs | 141 µs | 145 µs | 0.44 ms | 0.60 ms |
+| 2 MB accent every 8 chars | 72 µs | 159 µs | 158 µs | 0.61 ms | 0.82 ms |
+
+Before (whole line laid out every frame, ASCII fast paths included): CJK frame 10.9 ms and 44 ms with `gj`, ASCII frame 157 µs, accent every 8 chars 9.5 ms. The first jump to the cursor (cold) lays out its prefix once: CJK 2.3 ms, ASCII 0.29 ms, accent 0.98 ms. What remains of the insert cost is the editor's insert path, which the frame does not touch (frame share: 0.27, 0.16 and 0.21 ms).
+
+Steps, kept and **rejected**:
+
+- Rows laid out lazily (`Rows`), cursor line cached with a byte comparison of the old and new line each frame: steady frame CJK 617 µs, ASCII 283 µs. Kept as the base.
+- Skip the comparison when the slice address and length are unchanged, holding the `Text` so the address is not reused: steady 52 µs. **Rejected** for the next step, which does not rely on addresses.
+- Cache keyed by `Text::ptr_eq` and line number, one `Text::line` read per frame after an edit instead of 3-4: insert + frame CJK 2.74 ms to 2.04 ms. Kept.
+
+### Position conversions, `hlsearch` and Visual on huge lines (`pt-edit`, `Text::line_col_to_offset`)
+
+Release, a single 2 MB line (CJK: 6 MB), cursor at char 500000 after a few typed chars (several pieces), mean of 20 per cell (temporary ignored test, removed).
+
+| Operation | CJK before | CJK after | ASCII before | ASCII after |
+|---|---|---|---|---|
+| `Text::line_col_to_offset` | 1.68 ms | 0.14 ms | 385 µs | 42 µs |
+| `l` (key only) | 480 µs | 0.27 µs | 179 µs | 0.09 µs |
+| `h` (key only) | 292 µs | 0.06 µs | 120 µs | 0.05 µs |
+| `x` in Normal | 4.02 ms | 0.73 ms | 1.07 ms | 0.27 ms |
+| typed char in Insert | 1.78 ms | 0.29 ms | 449 µs | 103 µs |
+| typed char + frame | 2.08 ms | 0.55 ms | 595 µs | 245 µs |
+| `v` then `l` + frame | 800 µs | 134 µs | 375 µs | 224 µs |
+
+Steps, kept and **rejected**:
+
+- `line_col_to_offset` used `char_indices().nth(col)`; `str_indices::chars::to_byte_idx` (already a house choice, see AGENTS.md) does the lookup with SIMD. Kept; it was the largest share of every edit.
+- `Editor::line_chars` keeps its last answer per text version (`Text::ptr_eq`, line): motions, clamps and the Visual selection ask for the same count several times per key. Kept; `l`/`h` no longer scan the line.
+- `visible_matches` converted every match with `offset_to_line_col`, which counts chars from the line start: quadratic on a line with many matches (250 000 matches in 2 MB: 20 frames did not finish in 60 s). Now the column of each match is counted from the previous one, and the highlight lookup per char is a binary search instead of a scan of the line's matches. The result is kept while the text version, pattern and lines are the same (`matches_in`). Kept; a miss with 330 000 matches costs about 20 ms, a hit nothing.
+- **Not done**: restricting the matches to the displayed window. Matches must be enumerated from the line start to stay exactly as vim finds them (a match depends on the text after it), so a miss still costs the whole line.
+
+## Editor on huge lines: A/B against HEAD (`pt-edit`, library `Text` conversions)
+
+Supersedes the single-run workspace tables of the three editor sections above (kept for the steps they record). Both sides are standalone copies built the same way (`cargo test --release -p pt-edit`), the same ignored test in both (removed from the repo afterwards), 3 alternating runs, minimum of 5 repetitions per cell, µs, 100×50 screen, one 2.1 M-char line (`"abcdef ghijk, lm(no) "` or `"日本語 テスト、漢字(abc) "` repeated), cursor at char 500000 after a few typed chars (several pieces). "Before" is HEAD (`679cdb5`: no wrap, per-char `Vec<char>` scans); "after" has wrap on (default), so its frame also lays rows out.
+
+| Operation | ASCII key before → after | ASCII frame before → after | CJK key before → after | CJK frame before → after |
+|---|---|---|---|---|
+| `w` | 1830 → 87 | 2031 → 66 | 2622 → 203 | 2971 → 60 |
+| `b` | 2830 → 93 | 2028 → 66 | 3344 → 235 | 2973 → 60 |
+| `e` | 1791 → 87 | 2023 → 66 | 2546 → 205 | 2938 → 61 |
+| `fz` (not found) | 1921 → 92 | 2036 → 66 | 2280 → 211 | 2995 → 60 |
+| `%` | 2274 → 252 | 2000 → 66 | 3873 → 564 | 2932 → 61 |
+| `x` | 1070 → 107 | 1990 → 166 | 2654 → 223 | 2953 → 297 |
+| `dw` | 2624 → 188 | 2024 → 191 | 4949 → 428 | 2977 → 305 |
+| `diw` | 3111 → 225 | 2030 → 169 | 6618 → 481 | 2965 → 237 |
+| `ciwx<Esc>` | 3628 → 263 | 2006 → 181 | 7734 → 569 | 2964 → 254 |
+| `yiw` | 3119 → 192 | 2031 → 66 | 6607 → 431 | 2957 → 60 |
+| `l` / `h` | 183 / 123 → 0.0 | 1998 → 66 | 305 / 200 → 0.0 | 3027 → 60 |
+| `ix` (typed char) | 510 → 43 | 1994 → 195 | 1273 → 93 | 2945 → 311 |
+| `ixyz<Esc>` | 1439 → 146 | 1985 → 188 | 3741 → 309 | 2946 → 316 |
+| `u` | 150 → 36 | 1917 → 104 | 257 → 61 | 2903 → 127 |
+| `vlld` | 1873 → 193 | 1987 → 179 | 4497 → 418 | 2956 → 300 |
+| `$` | 186 → 0.1 | 7854 → 301 | 307 → 0.1 | 8876 → 2235 |
+
+`hlsearch` on 10 000 matches in one 200 KB line (`*` on a word, then a frame): key 410 → 59 µs, frame 29 543 → 1 002 µs (HEAD converted every match from the line start, quadratic; 250 000 matches in 2 MB did not finish a frame in 60 s). Library, `Text::line_col_to_offset` (standalone copies, 5 alternating runs, min of 9, ns): 2 MB ASCII 1 piece at col 1000 694 → 52, mid-line 702 946 → 12 242, line end 1 432 744 → 48 708; the same text in about 100 pieces at col 1000 40 612 → 623, mid-line 743 977 → 26 235; 6 MB CJK in 100 pieces at col 1000 92 998 → 727, line end 5 056 594 → 129 419 (`str_indices::chars::to_byte_idx` instead of `char_indices().nth`, and the pieces read in place instead of copied by `slice`).
+
+What did not get faster: `$`/`A` on the 2.1 M-char CJK line still lays out its whole prefix once (2.2 ms, down from 8.9 ms with no layout kept), and `yy`/`p` copy the line.

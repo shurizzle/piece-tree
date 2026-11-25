@@ -1,4 +1,8 @@
-use std::{borrow::Cow, fmt, ops::Range};
+use std::{
+    borrow::Cow,
+    fmt,
+    ops::{ControlFlow, Range},
+};
 
 use triomphe::Arc;
 
@@ -99,25 +103,41 @@ impl Text {
         if s.len() > MAX_ADD_BYTES {
             // Too big to extend a piece or share a chunk: one exact chunk, one scan.
             let piece = Piece::whole(Chunk::exact(&s));
-            return Text { root: tree::insert_at(&self.root, off, piece), add: self.add.clone() };
+            return Text {
+                root: tree::insert_at(&self.root, off, piece),
+                add: self.add.clone(),
+            };
         }
         let lf = count_lf(&s);
         if let Some(add) = &self.add
             && let Some(root) = tree::extend_at(&self.root, off, |p| p.try_extend(add, &s, lf))
         {
-            return Text { root, add: self.add.clone() };
+            return Text {
+                root,
+                add: self.add.clone(),
+            };
         }
         let (piece, add) = Piece::store(self.add.as_ref(), &s, lf);
-        Text { root: tree::insert_at(&self.root, off, piece), add }
+        Text {
+            root: tree::insert_at(&self.root, off, piece),
+            add,
+        }
     }
 
     pub fn delete(&self, range: Range<usize>) -> Text {
         assert!(range.start <= range.end, "invalid range {range:?}");
-        assert!(range.end <= self.len(), "offset {} out of bounds", range.end);
+        assert!(
+            range.end <= self.len(),
+            "offset {} out of bounds",
+            range.end
+        );
         if range.is_empty() {
             return self.clone();
         }
-        Text { root: tree::delete_range(&self.root, range.start, range.end), add: self.add.clone() }
+        Text {
+            root: tree::delete_range(&self.root, range.start, range.end),
+            add: self.add.clone(),
+        }
     }
 
     /// Applies many edits in one pass: each `(range, replacement)` replaces `range` of *this*
@@ -141,7 +161,10 @@ impl Text {
         let mut prev_end = 0;
         for (r, _) in edits {
             assert!(r.start <= r.end, "invalid range {r:?}");
-            assert!(r.start >= prev_end, "invalid range {r:?}: edits must be sorted and must not overlap");
+            assert!(
+                r.start >= prev_end,
+                "invalid range {r:?}: edits must be sorted and must not overlap"
+            );
             assert!(r.end <= self.len(), "offset {} out of bounds", r.end);
             prev_end = r.end;
         }
@@ -161,7 +184,11 @@ impl Text {
             return (self.clone(), spans);
         }
         let (buf, add) = self.store_replacements(out);
-        let piece = |o: &Range<usize>| buf.as_ref().expect("non-empty replacements were stored").sub(o.start, o.end);
+        let piece = |o: &Range<usize>| {
+            buf.as_ref()
+                .expect("non-empty replacements were stored")
+                .sub(o.start, o.end)
+        };
         let root = if self.rebuild_wins(spans.len()) {
             // Dense: one linear rebuild beats a path copy per edit.
             self.rebuilt(buf.as_ref(), &spans, 0, self.len())
@@ -208,7 +235,11 @@ impl Text {
         spans
             .iter()
             .map(|(m, r)| {
-                let e = Edit { start: m.start.strict_add_signed(shift), old_len: m.len(), new_len: r.len() };
+                let e = Edit {
+                    start: m.start.strict_add_signed(shift),
+                    old_len: m.len(),
+                    new_len: r.len(),
+                };
                 shift += r.len() as isize - m.len() as isize;
                 e
             })
@@ -219,13 +250,22 @@ impl Text {
     /// (sorted, not overlapping, inside `[lo, hi)`) replaced by the matching part of `buf`: the
     /// untouched pieces and the replacement pieces in order, built into a balanced tree in one go.
     #[inline(never)] // see `tree::delete_range`: batch code stays out of the edit paths' inlining
-    pub(crate) fn rebuilt(&self, buf: Option<&Piece>, edits: &[Span], lo: usize, hi: usize) -> Tree {
+    pub(crate) fn rebuilt(
+        &self,
+        buf: Option<&Piece>,
+        edits: &[Span],
+        lo: usize,
+        hi: usize,
+    ) -> Tree {
         let mut pieces = Vec::new();
         let mut pos = lo;
         for (m, r) in edits {
             tree::pieces_in(&self.root, pos, m.start, &mut pieces);
             if !r.is_empty() {
-                pieces.push(buf.expect("non-empty replacements were stored").sub(r.start, r.end));
+                pieces.push(
+                    buf.expect("non-empty replacements were stored")
+                        .sub(r.start, r.end),
+                );
             }
             pos = m.end;
         }
@@ -253,7 +293,8 @@ impl Text {
         // pieces `rebuild_wins` just rejected), and its failed count cost scattered batches of
         // 128 edits +10%.
         if (hi - lo) * 2 > self.len()
-            || (hi - lo) as u128 * tree::min_pieces(&self.root) as u128 > budget as u128 * self.len() as u128
+            || (hi - lo) as u128 * tree::min_pieces(&self.root) as u128
+                > budget as u128 * self.len() as u128
             || !tree::has_at_most_in(&self.root, lo, hi, budget)
         {
             return None;
@@ -350,39 +391,73 @@ impl Text {
     pub fn floor_char_boundary(&self, off: usize) -> usize {
         // A char is at most 4 bytes, and the text end is a boundary.
         let off = off.min(self.len());
-        (off.saturating_sub(3)..=off).rev().find(|&o| self.is_char_boundary(o)).expect("0 is a boundary")
+        (off.saturating_sub(3)..=off)
+            .rev()
+            .find(|&o| self.is_char_boundary(o))
+            .expect("0 is a boundary")
     }
 
     /// Byte offset where 0-based `line` ends (its `\n`, or the text end on the last line).
     pub fn line_end(&self, line: usize) -> usize {
         assert!(line < self.line_count(), "line {line} out of bounds");
-        if line + 1 < self.line_count() { self.line_to_offset(line + 1) - 1 } else { self.len() }
+        if line + 1 < self.line_count() {
+            self.line_to_offset(line + 1) - 1
+        } else {
+            self.len()
+        }
     }
 
-    /// Chars in 0-based `line`, without its `\n`. O(line length).
+    /// Chars inside the byte `range` (both ends on char boundaries). O(range length), no copy and no
+    /// allocation: for counting columns between nearby offsets, such as consecutive search matches.
+    pub fn chars_in(&self, range: Range<usize>) -> usize {
+        assert!(
+            range.start <= range.end && range.end <= self.len(),
+            "invalid range {range:?}"
+        );
+        let mut chars = 0;
+        _ = collect(&self.root, range.start, range.end, &mut |part| {
+            chars += count_chars(part);
+            ControlFlow::<()>::Continue(())
+        });
+        chars
+    }
+
+    /// Chars in 0-based `line`, without its `\n`. O(line length), no copy.
     pub fn line_char_len(&self, line: usize) -> usize {
-        count_chars(&self.line(line))
+        let start = self.line_to_offset(line);
+        self.chars_in(start..self.line_end(line))
     }
 
     /// Byte offset of char column `col` of `line`; `col` may be the line's length (its end).
-    /// O(line length).
+    /// O(line length), no copy.
     pub fn line_col_to_offset(&self, line: usize, col: usize) -> usize {
-        let text = self.line(line);
-        let in_line = match text.char_indices().nth(col) {
-            Some((i, _)) => i,
-            None => {
-                assert!(col == count_chars(&text), "column {col} out of bounds");
-                text.len()
+        let start = self.line_to_offset(line);
+        let (mut left, mut base) = (col, start);
+        let found = collect(&self.root, start, self.line_end(line), &mut |part| {
+            // `to_byte_idx` gives the length when `left` is not a char of `part` (also for the char just
+            // past it): then the part is skipped by its char count.
+            let i = to_byte_idx(part, left);
+            if i < part.len() {
+                return ControlFlow::Break(base + i);
             }
-        };
-        self.line_to_offset(line) + in_line
+            left -= count_chars(part);
+            base += part.len();
+            ControlFlow::Continue(())
+        });
+        match found {
+            ControlFlow::Break(off) => off,
+            ControlFlow::Continue(()) => {
+                assert!(left == 0, "column {col} out of bounds");
+                base
+            }
+        }
     }
 
-    /// 0-based line and char column of byte `off` (a char boundary). O(line length).
+    /// 0-based line and char column of byte `off` (a char boundary). O(line length), no copy.
     pub fn offset_to_line_col(&self, off: usize) -> (usize, usize) {
         let line = self.offset_to_line(off);
         let start = self.line_to_offset(line);
-        (line, count_chars(&self.slice(start..off)))
+        (line, self.chars_in(start..off))
     }
 
     /// Byte offset where 0-based `line` starts.
@@ -423,7 +498,9 @@ impl Text {
     /// with a borrowed result; otherwise falls back to a range slice.
     pub fn line(&self, line: usize) -> Cow<'_, str> {
         assert!(line < self.line_count(), "line {line} out of bounds");
-        let Some(root) = &self.root else { return Cow::Borrowed("") };
+        let Some(root) = &self.root else {
+            return Cow::Borrowed("");
+        };
         // `start`: line start within `piece`; `next`: index in `piece` of the `\n` ending the line.
         let (piece, base, start, next) = if line == 0 {
             let mut n = root;
@@ -452,14 +529,20 @@ impl Text {
 
     /// Borrowed when the range lies inside a single piece.
     pub fn slice(&self, range: Range<usize>) -> Cow<'_, str> {
-        assert!(range.start <= range.end && range.end <= self.len(), "invalid range {range:?}");
-        let mut parts = Vec::new();
-        collect(&self.root, range.start, range.end, &mut parts);
-        match parts.as_slice() {
-            [] => Cow::Borrowed(""),
-            [one] => Cow::Borrowed(one),
-            _ => Cow::Owned(parts.concat()),
-        }
+        assert!(
+            range.start <= range.end && range.end <= self.len(),
+            "invalid range {range:?}"
+        );
+        let mut out = Cow::Borrowed("");
+        _ = collect(&self.root, range.start, range.end, &mut |part| {
+            if out.is_empty() {
+                out = Cow::Borrowed(part);
+            } else {
+                out.to_mut().push_str(part);
+            }
+            ControlFlow::<()>::Continue(())
+        });
+        out
     }
 
     pub fn chunks(&self) -> Chunks<'_> {
@@ -482,7 +565,10 @@ impl From<String> for Text {
         if s.len() <= MAX_ADD_BYTES {
             return Text::from(s.as_str());
         }
-        Text { root: tree::insert_at(&None, 0, Piece::whole(Chunk::from_string(s))), add: None }
+        Text {
+            root: tree::insert_at(&None, 0, Piece::whole(Chunk::from_string(s))),
+            add: None,
+        }
     }
 }
 
@@ -492,23 +578,33 @@ impl fmt::Display for Text {
     }
 }
 
-/// Pushes the parts of pieces overlapping `[s, e)`, relative to the subtree.
-fn collect<'a>(t: &'a Tree, s: usize, e: usize, out: &mut Vec<&'a str>) {
-    let Some(n) = t else { return };
+/// Calls `f` on the parts of the pieces overlapping `[s, e)` (relative to the subtree), in order,
+/// until it breaks. A callback instead of a collected `Vec`, so callers read the pieces in place.
+#[inline(always)]
+fn collect<'a, B>(
+    t: &'a Tree,
+    s: usize,
+    e: usize,
+    f: &mut impl FnMut(&'a str) -> ControlFlow<B>,
+) -> ControlFlow<B> {
+    let Some(n) = t else {
+        return ControlFlow::Continue(());
+    };
     if s >= e {
-        return;
+        return ControlFlow::Continue(());
     }
     let (ll, pl) = (tree::len(&n.left), n.piece.len());
     if s < ll {
-        collect(&n.left, s, e.min(ll), out);
+        collect(&n.left, s, e.min(ll), f)?;
     }
     let (ps, pe) = (s.max(ll), e.min(ll + pl));
     if ps < pe {
-        out.push(&n.piece.text()[ps - ll..pe - ll]);
+        f(&n.piece.text()[ps - ll..pe - ll])?;
     }
     if e > ll + pl {
-        collect(&n.right, s.saturating_sub(ll + pl), e - ll - pl, out);
+        collect(&n.right, s.saturating_sub(ll + pl), e - ll - pl, f)?;
     }
+    ControlFlow::Continue(())
 }
 
 /// In-order iterator over the text's pieces.

@@ -31,6 +31,8 @@ pub(super) struct Options {
     pub number: bool,
     pub relativenumber: bool,
     pub cursorline: bool,
+    /// Long lines continue on the next screen rows instead of scrolling sideways.
+    pub wrap: bool,
     /// Tab display width, spaces inserted by Tab, and the `>`/`<` shift.
     pub tabstop: usize,
     pub background: Background,
@@ -46,6 +48,7 @@ impl Default for Options {
             number: true,
             relativenumber: true,
             cursorline: true,
+            wrap: true,
             tabstop: 4,
             background: Background::Dark,
             cursorlinebg: None,
@@ -61,6 +64,7 @@ fn long(name: &str) -> Option<&'static str> {
         "number" | "nu" => "number",
         "relativenumber" | "rnu" => "relativenumber",
         "cursorline" | "cul" => "cursorline",
+        "wrap" => "wrap",
         "tabstop" | "ts" => "tabstop",
         "background" | "bg" => "background",
         "cursorlinebg" | "clbg" => "cursorlinebg",
@@ -84,6 +88,7 @@ impl Options {
             "number" => Some(&mut self.number),
             "relativenumber" => Some(&mut self.relativenumber),
             "cursorline" => Some(&mut self.cursorline),
+            "wrap" => Some(&mut self.wrap),
             _ => None,
         }
     }
@@ -96,6 +101,7 @@ impl Options {
             "number" => on(self.number, name),
             "relativenumber" => on(self.relativenumber, name),
             "cursorline" => on(self.cursorline, name),
+            "wrap" => on(self.wrap, name),
             "tabstop" => format!("tabstop={}", self.tabstop),
             "background" => format!("background={}", if self.background == Background::Dark { "dark" } else { "light" }),
             "cursorlinebg" => format!("cursorlinebg={}", p.cursorline_bg),
@@ -108,7 +114,7 @@ impl Options {
     pub fn set(&mut self, args: &str) -> Result<String, String> {
         let mut shown = Vec::new();
         if args.trim().is_empty() {
-            for n in ["number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg"] {
+            for n in ["number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap"] {
                 shown.push(self.show(n));
             }
         }

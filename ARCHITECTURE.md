@@ -30,10 +30,10 @@ crates/
       test_util.rs         deterministic LCG and random text (cfg(test))
     benches/bench.rs       benchmarks (harness = false)
     examples/profile.rs    long single-scenario loops for samply
-  pt-edit/                 minimal vim-like terminal editor (crossterm, unicode-width, memchr, base64, terminal-colorsaurus, mimalloc as global allocator)
+  pt-edit/                 minimal vim-like terminal editor (crossterm, unicode-width, memchr, str_indices, base64, terminal-colorsaurus, mimalloc as global allocator)
     src/main.rs            CLI, theme detection, terminal guard, event loop
     src/editor.rs          Editor state, modes, edits/undo groups, operators, `:` commands, save/reload (+ editor/tests.rs)
-    src/editor/            parse.rs (grammar), motion.rs, objects.rs, search.rs (regex search via piece-tree), substitute.rs (:s parser), registers.rs, options.rs (:set), render.rs (Frame, draw)
+    src/editor/            parse.rs (grammar), motion.rs, objects.rs, search.rs (regex search via piece-tree), substitute.rs (:s parser), registers.rs, options.rs (:set), layout.rs (lazy wrap rows, kept for the cursor line), render.rs (Frame, draw)
 vendor/regex-cursor/       upstream regex-cursor 0.1.5 + documented fix (PATCHES.md)
 docs/                      detailed knowledge base, see docs/README.md
 ```

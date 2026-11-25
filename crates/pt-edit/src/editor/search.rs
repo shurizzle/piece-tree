@@ -104,14 +104,31 @@ pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> V
         return out;
     }
     let (start, end) = (text.line_to_offset(lines.start), text.line_end(lines.end - 1));
+    // Matches come in order, so the char column of each one is counted from the previous one: a
+    // line with many matches costs its length once, not once per match. The lines are read once (in
+    // place unless they span several pieces) so each count is a slice, not a tree descent.
+    let region = text.slice(start..end);
+    let chars = |a: usize, b: usize| str_indices::chars::count(&region[a - start..b - start]);
+    let (mut l, mut line_end) = (lines.start, text.line_end(lines.start));
+    let (mut at, mut col) = (start, 0);
     for m in text.find_iter_in(re, start..end).filter(|m| !m.is_empty()) {
-        let (l0, c0) = text.offset_to_line_col(m.start);
+        while m.start > line_end {
+            (l, at, col) = (l + 1, line_end + 1, 0);
+            line_end = text.line_end(l);
+        }
+        let c0 = col + chars(at, m.start);
+        (at, col) = (m.start, c0);
+        if m.end <= line_end {
+            out[l - lines.start].push(c0..c0 + chars(m.start, m.end));
+            continue;
+        }
+        // Spanning line breaks: split at them.
         let (l1, c1) = text.offset_to_line_col(m.end);
-        for l in l0..=l1.min(lines.end - 1) {
-            let from = if l == l0 { c0 } else { 0 };
-            let to = if l == l1 { c1 } else { text.line_char_len(l) };
+        for k in l..=l1.min(lines.end - 1) {
+            let from = if k == l { c0 } else { 0 };
+            let to = if k == l1 { c1 } else { text.line_char_len(k) };
             if from < to {
-                out[l - lines.start].push(from..to);
+                out[k - lines.start].push(from..to);
             }
         }
     }

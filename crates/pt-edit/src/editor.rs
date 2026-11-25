@@ -3,6 +3,7 @@
 //! Key handling never touches the terminal, and rendering builds a `Frame`
 //! before drawing it, so both are tested without a terminal.
 
+mod layout;
 mod motion;
 mod objects;
 mod options;
@@ -39,6 +40,8 @@ const G_UTF8: char = parse::g_key('8');
 const G_BYTE: char = parse::g_key('o');
 const G_NEXT: char = parse::g_key('n');
 const G_PREV: char = parse::g_key('N');
+const G_DOWN: char = parse::g_key('j');
+const G_UP: char = parse::g_key('k');
 const G_SUBST: char = parse::g_key('&');
 
 /// Nesting limit for macros calling macros (`qa@aq@a` would never end).
@@ -121,7 +124,7 @@ fn case_fn(op: char) -> Option<fn(&str) -> String> {
 }
 
 fn byte_of_col(s: &str, col: usize) -> usize {
-    s.char_indices().nth(col).map_or(s.len(), |(i, _)| i)
+    str_indices::chars::to_byte_idx(s, col)
 }
 
 /// Loads `path` (missing file → empty), applying the `--eol` override.
@@ -161,6 +164,9 @@ impl Confirm {
     }
 }
 
+/// Text version, pattern, lines and result of `Editor::matches_in`.
+type MatchCache = (Text, std::rc::Rc<piece_tree::Regex>, Range<usize>, std::rc::Rc<Vec<Vec<Range<usize>>>>);
+
 pub struct Editor {
     doc: Document,
     path: PathBuf,
@@ -173,8 +179,21 @@ pub struct Editor {
     /// Column kept across vertical moves; `usize::MAX` after `$`.
     want_col: usize,
     top: usize,
+    /// Screen rows of line `top` scrolled off the top (a cursor line taller than the screen).
+    top_sub: usize,
     left: usize,
     rows: usize,
+    /// Text width of the last frame: the wrap width of `gj`/`gk`, `Ctrl-D`/`Ctrl-U`, `H`/`M`/`L`
+    /// (`usize::MAX` before the first frame).
+    text_w: usize,
+    /// Screen column kept by consecutive `gj`/`gk`, valid while the cursor stays at the position stored.
+    want_x: Option<(usize, Pos)>,
+    /// Rows of the cursor line and of recent huge lines, kept between frames (`wrap`).
+    layout: std::cell::RefCell<layout::Layouts>,
+    /// Text version, line and char count of the last `line_chars`.
+    /// Highlight matches of the last frame: text version, pattern, lines, result.
+    match_cache: std::cell::RefCell<Option<MatchCache>>,
+    chars_memo: std::cell::RefCell<Option<(Text, usize, usize)>>,
     msg: String,
     mode: Mode,
     opts: Options,
@@ -242,8 +261,14 @@ impl Editor {
             col: 0,
             want_col: 0,
             top: 0,
+            top_sub: 0,
             left: 0,
             rows: 1,
+            text_w: usize::MAX,
+            want_x: None,
+            layout: Default::default(),
+            chars_memo: Default::default(),
+            match_cache: Default::default(),
             msg: "i insert | Esc normal | :w save | :q quit".into(),
             mode: Mode::Normal,
             opts: Options::default(),
@@ -299,12 +324,35 @@ impl Editor {
         self.doc.text().line_count()
     }
 
+    /// Chars in `line`. Counting is O(line length), so the last answer is kept for the same text version.
     fn line_chars(&self, line: usize) -> usize {
-        self.doc.text().line_char_len(line)
+        let text = self.doc.text();
+        let mut memo = self.chars_memo.borrow_mut();
+        match &*memo {
+            Some((t, l, n)) if *l == line && t.ptr_eq(text) => *n,
+            _ => {
+                let n = text.line_char_len(line);
+                *memo = Some((text.clone(), line, n));
+                n
+            }
+        }
     }
 
+    /// Leading blanks of `line`, read in growing windows so a huge line is not read past its indent.
     fn first_non_blank(&self, line: usize) -> usize {
-        self.doc.text().line(line).chars().take_while(|c| c.is_whitespace()).count()
+        let text = self.doc.text();
+        let end = text.line_end(line);
+        let (mut cols, mut from, mut window) = (0, text.line_to_offset(line), 256);
+        loop {
+            let to = text.floor_char_boundary(from + window).min(end);
+            let chunk = text.slice(from..to);
+            let blanks = chunk.len() - chunk.trim_start().len();
+            cols += str_indices::chars::count(&chunk[..blanks]);
+            if blanks < chunk.len() || to == end {
+                return cols;
+            }
+            (from, window) = (to, window * 2);
+        }
     }
 
     fn indent_of(&self, line: usize) -> String {
@@ -338,7 +386,10 @@ impl Editor {
     }
 
     fn char_at(&self, (line, col): Pos) -> char {
-        self.doc.text().line(line).chars().nth(col).unwrap_or('\n')
+        {
+            let l = self.doc.text().line(line);
+            l[str_indices::chars::to_byte_idx(&l, col)..].chars().next().unwrap_or('\n')
+        }
     }
 
     /// Visual block columns, inclusive.
@@ -590,12 +641,15 @@ impl Editor {
                 },
                 r => self.play_macro(r, n),
             },
-            'z' => match arg() {
-                'z' => self.top = self.line.saturating_sub((self.rows - 1) / 2),
-                't' => self.top = self.line,
-                'b' => self.top = (self.line + 1).saturating_sub(self.rows),
-                _ => {}
-            },
+            'z' => {
+                self.top_sub = 0;
+                match arg() {
+                    'z' => self.top = self.line.saturating_sub((self.rows - 1) / 2),
+                    't' => self.top = self.line,
+                    'b' => self.top = (self.line + 1).saturating_sub(self.rows),
+                    _ => {}
+                }
+            }
             _ => unreachable!("parse yields only known keys"),
         }
         if matches!(key, 'i' | 'a' | 'I' | 'A' | 'o' | 'O') {
@@ -860,22 +914,24 @@ impl Editor {
 
     /// `Ctrl+A`/`Ctrl+X`: adds `delta` to the decimal number at or after the cursor in the line.
     fn add_number(&mut self, delta: i64) {
-        let chars: Vec<char> = self.doc.text().line(self.line).chars().collect();
-        let Some(mut i) = (self.col..chars.len()).find(|&i| chars[i].is_ascii_digit()) else { return };
-        while i > 0 && chars[i - 1].is_ascii_digit() {
-            i -= 1;
-        }
-        let start = if i > 0 && chars[i - 1] == '-' { i - 1 } else { i };
-        let end = (i..chars.len()).find(|&j| !chars[j].is_ascii_digit()).unwrap_or(chars.len());
-        let s: String = chars[start..end].iter().collect();
+        let line = self.doc.text().line(self.line);
+        let from = byte_of_col(&line, self.col);
+        let Some(k) = line[from..].find(|c: char| c.is_ascii_digit()) else { return };
+        // Digits are ASCII: byte and char counts agree inside the number.
+        let mut i = from + k;
+        i -= line[..i].bytes().rev().take_while(u8::is_ascii_digit).count();
+        let start = if line[..i].ends_with('-') { i - 1 } else { i };
+        let end = i + line[i..].find(|c: char| !c.is_ascii_digit()).unwrap_or(line.len() - i);
+        let s = &line[start..end];
+        let col = str_indices::chars::count(&line[..start]);
         let Some(v) = s.parse::<i64>().ok().and_then(|v| v.checked_add(delta)) else {
             self.msg = "Number out of range".into();
             return;
         };
         let v = v.to_string();
-        let range = self.cols_range(self.line, start..end);
-        self.edit_replace(range, &v);
-        self.set_col(start + v.chars().count() - 1);
+        let off = self.doc.text().line_to_offset(self.line);
+        self.edit_replace(off + start..off + end, &v);
+        self.set_col(col + v.chars().count() - 1);
     }
 
     fn visual_key(&mut self, key: KeyEvent, kind: VKind) {

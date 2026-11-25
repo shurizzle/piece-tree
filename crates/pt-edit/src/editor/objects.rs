@@ -60,17 +60,13 @@ fn sentences(chars: &[char]) -> Vec<(Range<usize>, bool)> {
     spans
 }
 
-/// Quote indexes in `chars`, skipping those escaped by an odd number of backslashes.
-fn quotes(chars: &[char], q: char) -> Vec<usize> {
-    let mut out = Vec::new();
-    let mut backslashes = 0;
-    for (i, &c) in chars.iter().enumerate() {
-        if c == q && backslashes % 2 == 0 {
-            out.push(i);
-        }
-        backslashes = if c == '\\' { backslashes + 1 } else { 0 };
-    }
-    out
+/// Byte offsets of the quotes `q` in `line`, skipping those escaped by an odd number of backslashes.
+fn quotes(line: &str, q: char) -> Vec<usize> {
+    let bytes = line.as_bytes();
+    let mut buf = [0; 4];
+    memchr::memmem::find_iter(bytes, q.encode_utf8(&mut buf).as_bytes())
+        .filter(|&i| bytes[..i].iter().rev().take_while(|&&b| b == b'\\').count() % 2 == 0)
+        .collect()
 }
 
 /// Tag pairs `(open, close)` as byte ranges of the tags, found by one scan with a stack.
@@ -132,48 +128,57 @@ impl Editor {
     /// `iw`: `n` runs of one word class (blanks are a run too); `aw`: words with their trailing
     /// blanks, or the leading ones when there are none. Stays in the cursor line.
     fn word_object(&self, around: bool, big: bool, n: usize) -> Option<Obj> {
-        let chars: Vec<char> = self.doc.text().line(self.line).chars().collect();
+        let line = self.doc.text().line(self.line);
         let cls = |c: char| if big { u8::from(!c.is_whitespace()) } else { class(c) };
-        let col = self.col.min(chars.len().checked_sub(1)?);
-        // End (exclusive) of the run starting at `i`.
-        let run = |i: usize| {
-            let c = cls(chars[i]);
-            (i..chars.len()).find(|&j| cls(chars[j]) != c).unwrap_or(chars.len())
+        // Everything works on byte positions in the line, moving only as far as the object extends.
+        let col = self.col.min(str_indices::chars::count(&line).checked_sub(1)?);
+        let at = |b: usize| line[b..].chars().next();
+        let before = |b: usize| line[..b].chars().next_back();
+        let blank = |b: usize| at(b).is_some_and(|c| cls(c) == 0);
+        // End (exclusive) of the run starting at `b`.
+        let run = |b: usize| {
+            let c = cls(at(b).expect("a run starts on a char"));
+            b + line[b..].find(|ch| cls(ch) != c).unwrap_or(line.len() - b)
         };
-        let mut start = col;
-        while start > 0 && cls(chars[start - 1]) == cls(chars[col]) {
-            start -= 1;
+        let bcol = super::byte_of_col(&line, col);
+        let mut start = bcol;
+        while let Some(p) = before(start).filter(|&p| cls(p) == cls(at(bcol).expect("col is a char"))) {
+            start -= p.len_utf8();
         }
-        let mut end = col;
-        let blank = |i: usize| cls(chars[i]) == 0;
+        let mut end = bcol;
         for _ in 0..n {
-            if end >= chars.len() {
+            if end >= line.len() {
                 break;
             }
             let on_blank = blank(end);
             end = run(end);
-            if around && end < chars.len() && blank(end) != on_blank {
+            if around && end < line.len() && blank(end) != on_blank {
                 end = run(end);
             } else if around && !on_blank {
-                while start > 0 && blank(start - 1) {
-                    start -= 1;
+                while let Some(p) = before(start).filter(|&p| cls(p) == 0) {
+                    start -= p.len_utf8();
                 }
             }
         }
-        Some(Obj::Chars(self.cols_range(self.line, start..end)))
+        let off = self.doc.text().line_to_offset(self.line);
+        Some(Obj::Chars(off + start..off + end))
     }
 
     /// `i"`: between the first pair of unescaped quotes in the line that ends at or after the
     /// cursor; `a"` adds the quotes and trailing blanks.
     fn quote_object(&self, around: bool, q: char) -> Option<Obj> {
-        let chars: Vec<char> = self.doc.text().line(self.line).chars().collect();
-        let quotes = quotes(&chars, q);
-        let pair = quotes.as_chunks::<2>().0.iter().find(|p| p[1] >= self.col)?;
+        let line = self.doc.text().line(self.line);
+        let quotes = quotes(&line, q);
+        // Quotes as byte offsets; the pair is the first one ending at or after the cursor's byte.
+        let cursor = super::byte_of_col(&line, self.col);
+        let pair = quotes.as_chunks::<2>().0.iter().find(|p| p[1] >= cursor)?;
+        let off = self.doc.text().line_to_offset(self.line);
         if !around {
-            return Some(Obj::Chars(self.cols_range(self.line, pair[0] + 1..pair[1])));
+            return Some(Obj::Chars(off + pair[0] + q.len_utf8()..off + pair[1]));
         }
-        let end = (pair[1] + 1..chars.len()).find(|&i| !chars[i].is_whitespace()).unwrap_or(chars.len());
-        Some(Obj::Chars(self.cols_range(self.line, pair[0]..end)))
+        let after = pair[1] + q.len_utf8();
+        let end = after + line[after..].find(|c: char| !c.is_whitespace()).unwrap_or(line.len() - after);
+        Some(Obj::Chars(off + pair[0]..off + end))
     }
 
     /// `i(`: inside the `n`-th enclosing pair, linewise when the brackets sit alone at the edges of
@@ -373,8 +378,10 @@ mod tests {
 
     #[test]
     fn finds_unescaped_quotes() {
-        let chars: Vec<char> = r#""a\"b\\"c"#.chars().collect();
-        assert_eq!(quotes(&chars, '"'), [0, 7]);
+        assert_eq!(quotes(r#""a\"b\\"c"#, '"'), [0, 7]);
+        // Byte offsets, also past multi-byte chars and for a multi-byte quote.
+        assert_eq!(quotes("日\"é\"", '"'), [3, 6]);
+        assert_eq!(quotes("«a»«b»", '«'), [0, 5]);
     }
 
     #[test]

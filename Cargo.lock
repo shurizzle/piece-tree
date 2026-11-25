@@ -243,6 +243,7 @@ dependencies = [
  "memchr",
  "mimalloc",
  "piece-tree",
+ "str_indices",
  "terminal-colorsaurus",
  "unicode-width",
 ]

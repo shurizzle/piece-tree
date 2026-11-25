@@ -24,8 +24,9 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `char_count()` | chars | — | O(n) |
 | `offset_to_char(off)` / `char_to_offset(ch)` | char index / byte offset | `out of bounds`, `char boundary` | O(n) scan of the pieces up to the offset |
 | `line_end(line)` | byte offset of the line's `\n` (or the end) | `out of bounds` | |
-| `line_char_len(line)` | chars in the line | `out of bounds` | O(line length) |
-| `line_col_to_offset(line, col)` / `offset_to_line_col(off)` | char columns ↔ bytes | `out of bounds` (line, or col > line length), `char boundary` | O(line length) |
+| `line_char_len(line)` | chars in the line | `out of bounds` | O(line length), reads the pieces in place (no copy) |
+| `chars_in(Range<usize>)` | chars in a byte range (char boundaries) | `invalid range` | O(range length), no copy, no allocation |
+| `line_col_to_offset(line, col)` / `offset_to_line_col(off)` | char columns ↔ bytes | `out of bounds` (line, or col > line length), `char boundary` | O(line length), no copy |
 | `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |

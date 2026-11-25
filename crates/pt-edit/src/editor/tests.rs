@@ -541,15 +541,116 @@ fn frame_renders_wide_chars_tabs_and_controls() {
     assert!(!snapshot("\tx", "l", 20, 2).2);
     assert_eq!(snapshot("\tx", "l", 20, 2).1, (6, 0));
     // Text area of 4 cells: the cursor char is always fully visible; a cut wide char shows as a space.
-    let (rows, cursor, _) = snapshot("日本語abc", "", 6, 2);
+    let (rows, cursor, _) = snapshot("日本語abc", ":set nowrap\n", 6, 2);
     assert_eq!((rows[0].as_str(), cursor), ("1 日本", (2, 0)));
-    let (rows, cursor, _) = snapshot("日本語abc", "ll", 6, 2);
+    let (rows, cursor, _) = snapshot("日本語abc", ":set nowrap\nll", 6, 2);
     assert_eq!((rows[0].as_str(), cursor), ("1 本語", (4, 0)));
-    let (rows, cursor, _) = snapshot("日本語abc", "lll", 6, 2);
+    let (rows, cursor, _) = snapshot("日本語abc", ":set nowrap\nlll", 6, 2);
     assert_eq!((rows[0].as_str(), cursor), ("1  語a", (5, 0)));
     // Combining marks take no cell.
     assert_eq!(snapshot("e\u{301}x", "", 20, 2).0[0], "1 e\u{301}x");
     assert_eq!(snapshot("e\u{301}x", "ll", 20, 2).1, (3, 0));
+}
+
+#[test]
+fn frame_wraps_long_lines() {
+    // Text area of 4 cells: rows break on cell width, a wide char that does not fit starts the next row.
+    let (rows, cursor, _) = snapshot("abcdefghij\nx", "", 6, 5);
+    assert_eq!(rows[..4], ["1 abcd", "  efgh", "  ij", "1 x"]);
+    assert_eq!(cursor, (2, 0));
+    let (rows, cursor, _) = snapshot("abcdefghij\nx", "7l", 6, 5);
+    assert_eq!((rows[1].as_str(), cursor), ("  efgh", (5, 1)));
+    let (rows, cursor, _) = snapshot("abc日本", "", 6, 3);
+    assert_eq!((rows[..2].to_vec(), cursor), (["1 abc", "  日本"].map(String::from).to_vec(), (2, 0)));
+    // Selected line break stays on the last row; an empty line is one row; the cursor line pads one row.
+    assert_eq!(snapshot("abcde\nf", "V", 6, 4).0[..3], ["1 [abcd]", "  [e ]", "1 f"]);
+    assert_eq!(snapshot("\nf", "", 6, 3).0[..2], ["1", "1 f"]);
+    // Scrolls by screen rows: the cursor line must fit.
+    let (rows, cursor, _) = snapshot("a\nbcdefgh\nk", "G", 6, 4);
+    assert_eq!((rows[..3].to_vec(), cursor), (["1 bcde", "  fgh", "3 k"].map(String::from).to_vec(), (2, 2)));
+    // A cursor line taller than the screen shows its first rows.
+    assert_eq!(snapshot("a\nbcdefghij", "j", 6, 3).0[..2], ["2 bcde", "  fghi"]);
+    // Cursor at the end of a full row stays on screen.
+    assert_eq!(snapshot("abcd", "A", 6, 3).1, (5, 0));
+    // nowrap: sideways scroll again.
+    assert_eq!(snapshot("abcdefghij", ":set nowrap\n$", 6, 3).0[0], "1 ghij");
+    assert_eq!(snapshot("abcdefghij", ":set nowrap\n:set wrap\n$", 6, 4).0[2], "  ij");
+}
+
+#[test]
+fn wrap_screen_rows_motions_and_scroll() {
+    let w = |s: &str, keys: &str, h: usize| {
+        let mut e = ed(s);
+        e.frame(6, h); // text area of 4 cells
+        feed(&mut e, keys);
+        e
+    };
+    // gj/gk walk screen rows, keep the screen column through short rows, and cross lines.
+    let e = w("abcdefghij\nxy\nklmnopqr", "lgj", 8);
+    assert_eq!(pos(&e), (0, 5));
+    assert_eq!(pos(&w("abcdefghij\nxy", "lgjgj", 8)), (0, 9));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "llllllgjgj", 8)), (1, 1));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "llllllgjgjgj", 8)), (2, 2));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "llllllgjgjgjgk", 8)), (1, 1));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "G$gk", 8)), (2, 3));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "G$2gk", 8)), (1, 1));
+    assert_eq!(pos(&w("abcdefghij\nxy\nklmnopqr", "G99gj", 8)), (2, 4));
+    assert_eq!(pos(&w("abcdefghij\nxy", "99gk", 8)), (0, 0));
+    assert_eq!(pos(&w("abcdefghij\nxy", "jgk", 8)), (0, 8));
+    assert_eq!(text(&w("abcdefghij", "ldgj", 8)), "afghij");
+    // Without wrap gj is j.
+    assert_eq!(pos(&w("abcdefghij\nxy", ":set nowrap\ngj", 8)), (1, 0));
+    // H/M/L count rows: lines take 3, 1, 2, 1, 1 rows; L is the last line shown whole.
+    let s = "abcdefghij\nx\nklmnopqr\nz\nw";
+    assert_eq!(pos(&w(s, "L", 8)).0, 3);
+    assert_eq!(pos(&w(s, "L", 7)).0, 2);
+    assert_eq!(pos(&w(s, "M", 8)).0, 1);
+    // Ctrl-D moves half a screen of rows (3 here).
+    assert_eq!(pos(&w(s, "\x04", 7)).0, 1);
+    assert_eq!(pos(&w(s, "\x04\x04", 7)).0, 3);
+    assert_eq!(pos(&w(s, "G\x15", 7)).0, 2);
+    // A cursor line taller than the screen scrolls inside itself.
+    let mut e = w("abcdefghijklmnop", "$", 3);
+    assert_eq!(screen(&e.frame(6, 3))[..2], ["  ijkl", "  mnop"]);
+    assert_eq!(e.frame(6, 3).cursor, (5, 1));
+    feed(&mut e, "0");
+    assert_eq!(screen(&e.frame(6, 3))[..2], ["1 abcd", "  efgh"]);
+    // cursorline covers every row of the cursor line.
+    let mut e = w("abcdefghij\nx", "", 5);
+    assert_eq!(e.frame(6, 5).cursor_line, Some(0..3));
+}
+
+#[test]
+fn wrapped_rows_with_visual_mode_tabs_wide_chars_and_cursorline() {
+    let w = |s: &str, keys: &str| {
+        let mut e = ed(s);
+        e.frame(6, 8); // text area of 4 cells
+        feed(&mut e, keys);
+        e
+    };
+    // gj/gk over a tab (4 cells) and wide chars (2 cells) keep the screen column.
+    assert_eq!([pos(&w("a\tbcdefg", "gj")), pos(&w("a\tbcdefg", "gjgj")), pos(&w("a\tbcdefg", "gjgjgj"))], [(0, 1), (0, 2), (0, 6)]);
+    assert_eq!([pos(&w("日本語日本語", "lgj")), pos(&w("日本語日本語", "lgjgj")), pos(&w("日本語日本語", "lgjgjgk"))], [(0, 3), (0, 5), (0, 3)]);
+    // gj extends a Visual selection by rows, drawn on every row it covers.
+    let mut e = w("abcdefghij", "vgj");
+    assert_eq!(pos(&e), (0, 4));
+    assert_eq!(screen(&e.frame(6, 8))[..3], ["1 [abcd]", "  [e]fgh", "  ij"]);
+    // Operators with gj: exclusive, so `ygjP` pastes the rows' chars before the cursor row's column.
+    assert_eq!(text(&w("abcdefghij", "ygjP")), "abcdabcdefghij");
+    assert_eq!(text(&w("日本語日本語", "lcgjX")), "日X日本語");
+    // Block selection with wrap: the columns on every line, `$` to the end of each line.
+    let mut e = w("abcdefghij\nklmnopqrst", "\x16jl");
+    assert_eq!(screen(&e.frame(6, 8))[..6], ["1 [ab]cd", "  efgh", "  ij", "2 [kl]mn", "  opqr", "  st"]);
+    let mut e = w("abcdefghij\nklmno", "\x16j$");
+    assert_eq!(screen(&e.frame(6, 8))[..5], ["1 [abcd]", "  [efgh]", "  [ij]", "2 [klmn]", "  [o]"]);
+    // The cursorline background is set on every span of every row of the cursor line, and on no other.
+    let mut e = w("abcdefghij\nx", "");
+    let f = e.frame(6, 6);
+    let mut out = Vec::new();
+    draw(&f, &mut out).unwrap();
+    let out = String::from_utf8(out).unwrap();
+    assert_eq!(f.cursor_line, Some(0..3));
+    assert_eq!(out.matches("\x1b[48;5;236m").count(), f.rows[..3].iter().map(Vec::len).sum::<usize>(), "{out:?}");
 }
 
 #[test]
@@ -576,7 +677,7 @@ fn draw_emits_text_and_cursor_shape() {
 fn cursor_line_is_padded_and_drawn_on_its_background() {
     let mut e = run("a\nb日\nc", "j");
     let f = e.frame(10, 4);
-    assert_eq!(f.cursor_line, Some(1));
+    assert_eq!(f.cursor_line, Some(1..2));
     let row: String = f.rows[1].iter().map(|s| s.text.as_str()).collect();
     assert_eq!(row, "2 b日     ");
     assert_eq!(f.rows[0].iter().map(|s| s.text.as_str()).collect::<String>(), "1 a");
@@ -591,7 +692,7 @@ fn cursor_line_is_padded_and_drawn_on_its_background() {
     assert_eq!(out.matches("\x1b[38;5;214m").count(), 1);
     assert_eq!(out.matches("\x1b[38;5;243m").count(), 2);
     let mut e = run(&"x\n".repeat(10), "8j");
-    assert_eq!(e.frame(10, 4).cursor_line, Some(2));
+    assert_eq!(e.frame(10, 4).cursor_line, Some(2..3));
 }
 
 #[test]
@@ -1377,4 +1478,236 @@ fn char_info_and_byte_motions() {
     assert_eq!(pos(&run(s, "j99|")), (1, 6));
     assert_eq!(pos(&run(s, "j$|")), (1, 0));
     assert_eq!(text(&run(s, "j$d3|")), "ab é\nfor\n");
+}
+
+#[test]
+fn segments_fast_path_matches_the_generic_one() {
+    use super::layout::segments;
+    // Same rows with and without the ASCII fast path (a trailing non-ASCII char forces the generic one).
+    for (line, w) in [("", 4), ("abc", 4), ("abcd", 4), ("abcde", 4), ("abcdefgh", 4), ("abcdefghi", 1), ("abc", usize::MAX)] {
+        let fast = segments(line, w, 4);
+        let padded = format!("{line}é");
+        let slow = segments(&padded, w, 4);
+        let strip = |v: &[(usize, &str)]| v.iter().map(|&(i, s)| (i, s.trim_end_matches('é').to_string())).collect::<Vec<_>>();
+        let mut want = strip(&slow);
+        if want.last().is_some_and(|(_, s)| s.is_empty()) && want.len() > 1 {
+            want.pop();
+        }
+        assert_eq!(strip(&fast), want, "{line:?} {w}");
+    }
+    // Random mixed text (ASCII runs, tabs, wide, combining and control chars) against the plain per-char layout.
+    let naive = |line: &str, w: usize, ts: usize| {
+        let (mut out, mut x, mut b0, mut c0) = (Vec::new(), 0usize, 0, 0);
+        for (i, (b, c)) in line.char_indices().enumerate() {
+            let cw = super::render::cell_width(c, ts);
+            if x > 0 && x.saturating_add(cw) > w {
+                out.push((c0, line[b0..b].to_string()));
+                (x, b0, c0) = (0, b, i);
+            }
+            x += cw;
+        }
+        out.push((c0, line[b0..].to_string()));
+        out
+    };
+    let mut seed = 0x2545_F491_4F6C_DD1Du64;
+    let mut next = |n: u64| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) % n
+    };
+    for _ in 0..2000 {
+        let len = next(300);
+        let line: String = (0..len)
+            .map(|_| {
+                let range = if next(2) == 0 { 8 } else { 3 };
+                ['a', 'b', ' ', 'é', '日', '\u{301}', '\t', '\x01'][next(range) as usize]
+            })
+            .collect();
+        let (w, ts) = ([1, 2, 3, 7, 20, 100, usize::MAX][next(7) as usize], 1 + next(8) as usize);
+        let got: Vec<_> = segments(&line, w, ts).into_iter().map(|(i, s)| (i, s.to_string())).collect();
+        assert_eq!(got, naive(&line, w, ts), "{line:?} w={w} ts={ts}");
+    }
+    // A tab takes the generic path: 4 cells at ts=4.
+    assert_eq!(segments("a\tb", 4, 4), [(0, "a"), (1, "\t"), (2, "b")]);
+}
+
+#[test]
+fn layout_kept_across_edits_matches_a_fresh_one() {
+    use super::layout::{Layout, segments};
+    let mut seed = 0x9E37_79B9_7F4A_7C15u64;
+    let mut next = |n: u64| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) % n
+    };
+    let alphabet = ['a', 'b', ' ', 'é', '日', '\u{301}', '\t', '\x01'];
+    for _ in 0..3000 {
+        let len = next(300);
+        let mut line: String = (0..len)
+            .map(|_| {
+                let range = if next(2) == 0 { 8 } else { 3 };
+                alphabet[next(range) as usize]
+            })
+            .collect();
+        let (w, ts) = ([1, 2, 3, 7, 20, 100][next(6) as usize], 1 + next(8) as usize);
+        let mut layout = Layout::default();
+        for _ in 0..6 {
+            // Lay out part of the line, as a frame would, then edit it.
+            let (l, rows) = layout.sync(&line, &Text::new(), 0, w, ts);
+            assert_eq!(l, line);
+            match next(3) {
+                0 => rows.ensure(l, next(8) as usize),
+                1 => drop(rows.row_of(l, next(300) as usize)),
+                _ => drop(rows.height_to(l, 1 + next(8) as usize)),
+            }
+            let at = line.char_indices().map(|(b, _)| b).chain([line.len()]).nth(next(line.chars().count() as u64 + 1) as usize).unwrap();
+            if next(2) == 0 && at < line.len() {
+                line.remove(at);
+            } else {
+                line.insert(at, alphabet[next(8) as usize]);
+            }
+        }
+        let (l, rows) = layout.sync(&line, &Text::new(), 0, w, ts);
+        rows.extend(l, |_| false);
+        let got: Vec<_> = (0..rows.len()).map(|k| rows.row(l, k)).collect();
+        assert_eq!(got, segments(&line, w, ts), "{line:?} w={w} ts={ts}");
+    }
+}
+
+#[test]
+fn typing_in_a_wrapped_line_updates_the_screen() {
+    // Same screen as laying the edited line out from scratch, after edits before and after the cursor row.
+    let line = "abcdefghij日本語klmnopqrst".repeat(20);
+    let mut e = ed(&line);
+    e.frame(10, 5);
+    feed(&mut e, "40lix\x1b");
+    e.frame(10, 5);
+    feed(&mut e, "0iy日\x1b$");
+    e.frame(10, 5);
+    feed(&mut e, "0");
+    let kept = screen(&e.frame(10, 5));
+    let fresh = screen(&ed(&text(&e)).frame(10, 5));
+    assert_eq!(kept, fresh);
+    assert_eq!(kept[0], "1 y日abcde");
+}
+
+#[test]
+fn highlight_cache_follows_text_pattern_and_view() {
+    let mut e = run("ab ab ab\nxb", "/b\n");
+    assert_eq!(screen(&e.frame(20, 4))[..2], ["1 a{b} a{b} a{b}", "1 x{b}"]);
+    // Same text and view: served from the cache; an edit, a new pattern and a smaller view are not.
+    assert_eq!(screen(&e.frame(20, 4))[..2], ["1 a{b} a{b} a{b}", "1 x{b}"]);
+    feed(&mut e, "0x");
+    assert_eq!(screen(&e.frame(20, 4))[..2], ["1 {b} a{b} a{b}", "1 x{b}"]);
+    feed(&mut e, "/x\n");
+    assert_eq!(screen(&e.frame(20, 4))[..2], ["1 b ab ab", "2 {x}b"]);
+    assert_eq!(screen(&e.frame(20, 2))[0], "2 {x}b");
+    // Many matches on one line, with wide chars before them: columns stay exact.
+    let mut e = run(&"日a".repeat(1000), "/a\n");
+    assert_eq!(screen(&e.frame(12, 2))[0], "1 日{a}日{a}日{a}");
+}
+
+#[test]
+fn lazy_char_iterators_match_the_plain_ones() {
+    let mut seed = 0xD1B5_4A32_D192_ED03u64;
+    let mut next = |n: u64| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) % n
+    };
+    for _ in 0..300 {
+        let len = next(40);
+        let text: String = (0..len)
+            .map(|_| {
+                let range = if next(3) == 0 { 8 } else { 5 };
+                ['a', 'é', '\n', '日', ' ', '🦀', '\n', 'b'][next(range) as usize]
+            })
+            .collect();
+        let e = ed(&text);
+        let lines: Vec<Vec<char>> = text.split('\n').map(|l| l.chars().collect()).collect();
+        let all: Vec<(Pos, char)> = lines
+            .iter()
+            .enumerate()
+            .flat_map(|(l, cs)| cs.iter().copied().chain((l + 1 < lines.len()).then_some('\n')).enumerate().map(move |(c, ch)| ((l, c), ch)))
+            .collect();
+        for (l, cs) in lines.iter().enumerate() {
+            // Every column of the line, its end (the `\n`) included.
+            for c in 0..=cs.len() {
+                // The last line has no `\n`, so its end is not a char: the rest is then empty or the whole line.
+                let want_fwd: Vec<_> = all.iter().filter(|&&(p, _)| p >= (l, c)).copied().collect();
+                assert_eq!(e.fwd((l, c)).collect::<Vec<_>>(), want_fwd, "fwd {text:?} {l},{c}");
+                let want_bwd: Vec<_> = all.iter().filter(|&&(p, _)| p <= (l, c)).rev().copied().collect();
+                assert_eq!(e.bwd((l, c)).collect::<Vec<_>>(), want_bwd, "bwd {text:?} {l},{c}");
+            }
+        }
+    }
+}
+
+#[test]
+fn line_scans_count_chars_not_bytes() {
+    // f/t/F/T, `%`, `*`, Ctrl-A, `iw`, `i"` after multi-byte chars (columns are chars, scans are bytes).
+    assert_eq!(pos(&run("日日é(a)", "%")), (0, 5));
+    assert_eq!(pos(&run("日é🦀xéx", "fx")), (0, 3));
+    assert_eq!(pos(&run("日é🦀xéx", "2fx")), (0, 5));
+    assert_eq!(pos(&run("日é🦀xéx", "$Fx")), (0, 3));
+    assert_eq!(pos(&run("日é🦀xéx", "tx")), (0, 2));
+    assert_eq!(pos(&run("日é🦀xéx", "$Tx")), (0, 4));
+    assert_eq!(pos(&run("日é🦀xéx", "$2Fx;")), (0, 5 - 2));
+    assert_eq!(pos(&run("日é foo é foo", "w*")), (0, 9));
+    assert_eq!(text(&run("日é 9 é", "\x01")), "日é 10 é");
+    assert_eq!(text(&run("日é -9", "$\x01")), "日é -8");
+    assert_eq!(text(&run("日 é foo bár x", "wwdiw")), "日 é  bár x");
+    assert_eq!(text(&run("日 é foo bár x", "wwdaw")), "日 é bár x");
+    assert_eq!(text(&run("日 \"é\" x \"y\"", "fédi\"")), "日 \"\" x \"y\"");
+}
+
+#[test]
+fn cached_layouts_match_fresh_ones_over_random_sessions() {
+    let mut seed = 0x1405_7B7E_F767_814Fu64;
+    let mut next = |n: u64| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) % n
+    };
+    // Several huge lines (kept in the cache), wide chars and tabs, short lines between them.
+    let long = |c: &str| format!("{}\t日本{}", c.repeat(5000), c.repeat(3000));
+    let text = format!("{}\nab\n{}\n\n{}\nz\n", long("a b"), long("é"), long("x"));
+    let keys = ["j", "k", "gj", "gk", "G", "gg", "$", "0", "w", "b", "l", "h", "\x04", "\x15", "3gj", "2gk", "x", "ixy\x1b", "u", "zz", "zt", "zb", "dd", "A!\x1b", "H", "L", "M", ":set nowrap\n", ":set wrap\n"];
+    for round in 0..40 {
+        // The same session twice, one editor forgetting every cache before each frame.
+        let (mut kept, mut fresh) = (ed(&text), ed(&text));
+        let (mut w, mut h) = (14 + next(30) as usize, 4 + next(5) as usize);
+        let mut done = String::new();
+        for _ in 0..25 {
+            if next(6) == 0 {
+                // A resize: the cached rows are for another width.
+                (w, h) = (14 + next(30) as usize, 4 + next(5) as usize);
+            }
+            let k = keys[next(keys.len() as u64) as usize];
+            done.push_str(k);
+            feed(&mut kept, k);
+            feed(&mut fresh, k);
+            *fresh.layout.borrow_mut() = Default::default();
+            *fresh.chars_memo.borrow_mut() = None;
+            *fresh.match_cache.borrow_mut() = None;
+            let want = screen(&fresh.frame(w, h));
+            assert_eq!(screen(&kept.frame(w, h)), want, "round {round} keys {done:?} size {w}x{h}");
+            assert_eq!((kept.line, kept.col, kept.top, kept.top_sub), (fresh.line, fresh.col, fresh.top, fresh.top_sub), "{done:?}");
+        }
+    }
+}
+
+#[test]
+fn wide_fast_path_agrees_with_unicode_width() {
+    use unicode_width::UnicodeWidthChar;
+    for c in ('\u{4E00}'..='\u{9FFF}').chain('\u{3041}'..='\u{3096}').chain('\u{30A1}'..='\u{30FA}').chain('\u{AC00}'..='\u{D7A3}').chain('\0'..='\u{7F}') {
+        let slow = if c == '\t' { 4 } else if c.is_control() { 1 } else { c.width().unwrap_or(1) };
+        assert_eq!(super::render::cell_width(c, 4), slow, "{c:?}");
+    }
+}
+
+#[test]
+fn first_non_blank_reads_past_long_indents() {
+    // Longer than one window, with 3-byte blanks that a window edge could split.
+    let indent = format!("{}{}\t", " ".repeat(300), "\u{3000}".repeat(200));
+    let e = run(&format!("{indent}x\n  y\n{indent}\n\nz"), "");
+    assert_eq!(e.first_non_blank(0), 501);
+    assert_eq!((e.first_non_blank(1), e.first_non_blank(2), e.first_non_blank(3), e.first_non_blank(4)), (2, 501, 0, 0));
+    assert_eq!(pos(&run(&format!("{indent}x"), "$0^")), (0, 501));
 }

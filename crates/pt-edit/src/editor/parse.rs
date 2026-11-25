@@ -16,7 +16,7 @@ pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
 pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
 /// `g<c>` motions and commands, as keys `g_key(c)`.
-pub(super) const G_MOTIONS: &str = "onN";
+pub(super) const G_MOTIONS: &str = "onNjk";
 pub(super) const G_COMMANDS: &str = "-+\x07a8&";
 
 /// Internal key for `g<c>`: a private-use char, so it never collides with a typed key.
