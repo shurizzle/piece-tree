@@ -10,14 +10,14 @@ pub(super) const MAX_COUNT: usize = 1_000_000;
 /// Normal-mode keys after `normal_char` mapping. Ctrl+D, Ctrl+U, Ctrl+R, Ctrl+A, Ctrl+X, Ctrl+V
 /// are `\x04`, `\x15`, `\x12`, `\x01`, `\x18`, `\x16`.
 pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'|";
-pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07";
+pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&";
 /// Keys followed by a char argument.
 pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
 pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
 /// `g<c>` motions and commands, as keys `g_key(c)`.
-pub(super) const G_MOTIONS: &str = "o";
-pub(super) const G_COMMANDS: &str = "-+\x07a8";
+pub(super) const G_MOTIONS: &str = "onN";
+pub(super) const G_COMMANDS: &str = "-+\x07a8&";
 
 /// Internal key for `g<c>`: a private-use char, so it never collides with a typed key.
 pub(super) const fn g_key(c: char) -> char {

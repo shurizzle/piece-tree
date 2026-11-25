@@ -146,6 +146,9 @@ All are iterative root-to-leaf walks using subtree totals.
   - `backtrack`: the mirror image;
   - both check first whether a neighbour exists (`offset + chunk.len() < len`, `offset > 0`), so a failed move changes nothing;
   - `cursor_at(off)` descends like `offset_to_line`, stopping at the piece containing `off`, or the last piece when `off == len`.
+- **`rfind_before(off)`**: windows `[off - w, off)` with `w` doubling from 4 KiB; in each, repeated `find_from` jumps enumerate the match starts and the last one wins. It stops at the first window with a hit.
+- **`find_iter_in(range)`**: the regex runs over `cursor_at(range.start)` with the input range bounded, so look-around still sees the text before it.
+- **`replacement_at`**: one `search_captures` at `off`, expanded with `interpolate::string`.
 - **`replace_all`** (= `replace_matching` keeping every match):
   1. matches are collected as (match range, range in the replacement buffer), skipping those the `keep` filter rejects (rejected matches are not expanded);
   2. the buffer is stored once;

@@ -20,7 +20,7 @@ pub(super) struct Addr {
     pub offset: isize,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Sub {
     /// First and last line; `None` is the cursor line.
     pub range: Option<(Addr, Addr)>,
@@ -31,6 +31,22 @@ pub(super) struct Sub {
     pub all: bool,
     /// `Some(true)` for `i`, `Some(false)` for `I`.
     pub ignore_case: Option<bool>,
+    /// `c`: ask before each replacement.
+    pub confirm: bool,
+    /// `n`: only count the matches.
+    pub count: bool,
+    /// `:&`: reuse the pattern and replacement of the last substitute.
+    pub repeat: bool,
+    /// `&` flag (`:&&`): also keep the flags of the last substitute.
+    pub keep: bool,
+}
+
+impl Sub {
+    /// `&` (cursor line) or `g&` (whole text): the last substitute again, `g&` keeping its flags.
+    pub fn again(whole: bool) -> Sub {
+        let range = whole.then_some((Addr { base: Base::Line(1), offset: 0 }, Addr { base: Base::Last, offset: 0 }));
+        Sub { range, pat: String::new(), rep: String::new(), all: false, ignore_case: None, confirm: false, count: false, repeat: true, keep: whole }
+    }
 }
 
 fn number(s: &mut &str) -> Option<usize> {
@@ -120,35 +136,44 @@ pub(super) fn parse(cmd: &str) -> Option<Result<Sub, String>> {
             },
         }
     };
-    let rest = s.strip_prefix('s')?;
-    let d = rest.chars().next()?;
-    if d.is_alphanumeric() || d.is_whitespace() || matches!(d, '\\' | '"' | '|') {
-        return None;
-    }
-    let mut s = &rest[d.len_utf8()..];
-    // Other escapes belong to the regex (`\d`, `\b`): keep them.
-    let (pat, _) = field(&mut s, d, |c, out| {
-        out.push('\\');
-        out.push(c);
-    });
-    let (rep, _) = field(&mut s, d, |c, out| match c {
-        'n' => out.push('\n'),
-        't' => out.push('\t'),
-        // `$` is the group syntax of the replacement, so a literal one is `$$`.
-        '$' => out.push_str("$$"),
-        c => out.push(c),
-    });
-    let (mut all, mut ignore_case) = (false, None);
-    for (i, c) in s.char_indices() {
+    let (pat, rep, repeat, flags) = if let Some(rest) = s.strip_prefix('&') {
+        (String::new(), String::new(), true, rest)
+    } else {
+        let rest = s.strip_prefix('s')?;
+        let d = rest.chars().next()?;
+        if d.is_alphanumeric() || d.is_whitespace() || matches!(d, '\\' | '"' | '|') {
+            return None;
+        }
+        let mut s = &rest[d.len_utf8()..];
+        // Other escapes belong to the regex (`\d`, `\b`): keep them.
+        let (pat, _) = field(&mut s, d, |c, out| {
+            out.push('\\');
+            out.push(c);
+        });
+        let (rep, _) = field(&mut s, d, |c, out| match c {
+            'n' => out.push('\n'),
+            't' => out.push('\t'),
+            // `$` is the group syntax of the replacement, so a literal one is `$$`.
+            '$' => out.push_str("$$"),
+            c => out.push(c),
+        });
+        (pat, rep, false, s)
+    };
+    let mut sub = Sub { range, pat, rep, all: false, ignore_case: None, confirm: false, count: false, repeat, keep: false };
+    for (i, c) in flags.char_indices() {
         match c {
-            'g' => all = true,
-            'i' => ignore_case = Some(true),
-            'I' => ignore_case = Some(false),
+            'g' => sub.all = true,
+            'i' => sub.ignore_case = Some(true),
+            'I' => sub.ignore_case = Some(false),
+            'c' => sub.confirm = true,
+            'n' => sub.count = true,
+            // Only meaningful first, as in vim; later it is just redundant.
+            '&' => sub.keep = true,
             c if c.is_whitespace() => {}
-            _ => return Some(Err(format!("Trailing characters: {}", &s[i..]))),
+            _ => return Some(Err(format!("Trailing characters: {}", &flags[i..]))),
         }
     }
-    Some(Ok(Sub { range, pat, rep, all, ignore_case }))
+    Some(Ok(sub))
 }
 
 #[cfg(test)]
@@ -156,7 +181,7 @@ mod tests {
     use super::*;
 
     fn sub(range: Option<(Addr, Addr)>, pat: &str, rep: &str, all: bool, ignore_case: Option<bool>) -> Option<Result<Sub, String>> {
-        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case }))
+        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false }))
     }
 
     fn at(base: Base, offset: isize) -> Addr {
@@ -177,6 +202,17 @@ mod tests {
         assert_eq!(parse(r"s/a\"), sub(None, r"a\", "", false, None));
         assert_eq!(parse("s//x/"), sub(None, "", "x", false, None));
         assert_eq!(parse("s/a/b/gx"), Some(Err("Trailing characters: x".into())));
+    }
+
+    #[test]
+    fn confirm_count_and_repeat() {
+        let flags = parse("s/a/b/cn").unwrap().unwrap();
+        assert!(flags.confirm && flags.count && !flags.repeat);
+        let r = parse("&&g").unwrap().unwrap();
+        assert!(r.repeat && r.keep && r.all && r.range.is_none());
+        let r = parse("%&").unwrap().unwrap();
+        assert!(r.repeat && !r.keep && r.range.is_some());
+        assert_eq!(parse("&x"), Some(Err("Trailing characters: x".into())));
     }
 
     #[test]

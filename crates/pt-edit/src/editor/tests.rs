@@ -713,8 +713,8 @@ fn star_and_hash_search_whole_words() {
     assert_eq!((pos(&e), e.msg.as_str()), ((0, 0), "search hit BOTTOM, continuing at TOP"));
     feed(&mut e, "#");
     assert_eq!((pos(&e), e.msg.as_str()), ((1, 0), "search hit TOP, continuing at BOTTOM"));
-    feed(&mut e, "n");
-    assert_eq!(pos(&e), (0, 0));
+    feed(&mut e, "n"); // follows the last direction (backward)
+    assert_eq!(pos(&e), (0, 9));
     assert_eq!(pos(&run(s, "ll2*")), (1, 0));
     // From blanks: the next word in the line.
     assert_eq!(pos(&run("  foo x foo", "*")), (0, 8));
@@ -760,6 +760,103 @@ fn hlsearch_and_incsearch() {
     // The selection draws over matches; whole-word matches for `*`.
     assert_eq!(screen(&run("ab ab", "/b\nv").frame(20, 2))[0], "1 a[b] a{b}");
     assert_eq!(screen(&run("ab abc ab", "*").frame(20, 2))[0], "1 {ab} abc {ab}");
+}
+
+#[test]
+fn backward_search_and_offsets() {
+    let s = "ab cd\nab cd\nab";
+    // `?` goes backward, `n` keeps going that way and `N` reverses.
+    let mut e = run(s, "G$?cd\n");
+    assert_eq!(pos(&e), (1, 3));
+    feed(&mut e, "n");
+    assert_eq!(pos(&e), (0, 3));
+    feed(&mut e, "N");
+    assert_eq!(pos(&e), (1, 3));
+    // Wrapping backward.
+    let e = run(s, "?cd\n");
+    assert_eq!((pos(&e), e.msg.as_str()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
+    // Offsets: end, start, lines; `//` reuses the pattern with a new offset.
+    assert_eq!(pos(&run(s, "/cd/e\n")), (0, 4));
+    assert_eq!(pos(&run(s, "/cd/s+1\n")), (0, 4));
+    assert_eq!(pos(&run(s, "/cd/b-1\n")), (0, 2));
+    assert_eq!(pos(&run(s, "/cd/+1\n")), (1, 0));
+    assert_eq!(pos(&run(s, "/cd/e-1\n")), (0, 3));
+    let mut e = run(s, "/cd\n//e\n");
+    assert_eq!(pos(&e), (1, 4));
+    // `n` reapplies the offset.
+    feed(&mut e, "n");
+    assert_eq!(pos(&e), (0, 4));
+    assert_eq!(run(s, "/cd/x\n").msg, "Invalid search offset: x");
+    // An escaped delimiter belongs to the pattern.
+    assert_eq!(pos(&run("a/b\nc", "/a\\/b\n")), (0, 0));
+    assert_eq!(pos(&run("a/b\nc/b", "j/\\/b\n")), (1, 1));
+}
+
+#[test]
+fn multi_line_matches_are_highlighted() {
+    let mut e = run("ab\ncd", "/b\\nc\n");
+    assert_eq!(screen(&e.frame(20, 3))[..2], ["1 a{b}", "1 {c}d"]);
+}
+
+#[test]
+fn substitute_confirm_count_and_repeat() {
+    let s = "aa aa\nb\naa";
+    // Count only.
+    let e = run(s, ":%s/a/x/gn\n");
+    assert_eq!((text(&e).as_str(), e.msg.as_str()), (s, "6 matches on 2 lines"));
+    assert_eq!(run(s, ":s/q/x/n\n").msg, "Pattern not found: q");
+    // Confirm: y n a q l, one undo step, per-line without `g`.
+    let mut e = run(s, ":%s/a/x/c\n");
+    assert_eq!((pos(&e), e.msg.as_str()), ((0, 0), "replace with x (y/n/a/q/l)?"));
+    feed(&mut e, "y");
+    assert_eq!(pos(&e), (2, 0));
+    feed(&mut e, "n");
+    assert_eq!((text(&e).as_str(), &e.mode), ("xa aa\nb\naa", &Mode::Normal));
+    assert_eq!(e.msg, "1 substitution on 1 line");
+    feed(&mut e, "u");
+    assert_eq!(text(&e), s);
+    let mut e = run(s, ":%s/a/x/gc\nyn");
+    feed(&mut e, "z"); // other keys are ignored
+    assert_eq!(e.mode, Mode::Confirm);
+    feed(&mut e, "a");
+    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("xa xx\nb\nxx", "5 substitutions on 2 lines"));
+    feed(&mut e, "u");
+    assert_eq!(text(&e), s);
+    assert_eq!(text(&run(s, ":%s/a/x/gc\nl")), "xa aa\nb\naa");
+    assert_eq!(text(&run(s, ":%s/a/x/gc\ny\x1b")), "xa aa\nb\naa");
+    assert_eq!(text(&run(s, ":%s/a/x/gc\nq")), s);
+    assert_eq!(run(s, ":s/q/x/c\n").msg, "Pattern not found: q");
+    // Empty matches advance; replacements that grow the text keep the range.
+    assert_eq!(text(&run("ab", ":s/x*/-/gc\nyyy")), "-a-b-");
+    assert_eq!(text(&run("ab\ncd", ":1,1s/b/XYZ/gc\ny")), "aXYZ\ncd");
+    // `&`, `:&`, `:&&`, `g&`.
+    assert_eq!(run(s, "&").msg, "No previous substitute");
+    let mut e = run(s, ":s/a/x/g\n");
+    assert_eq!(text(&e), "xx xx\nb\naa");
+    feed(&mut e, "G&");
+    assert_eq!(text(&e), "xx xx\nb\nxa");
+    feed(&mut e, ":&&\n");
+    assert_eq!(text(&e), "xx xx\nb\nxx");
+    let mut e = run("aa\naa\naa", ":s/a/x/g\nj:&\n");
+    assert_eq!(text(&e), "xx\nxa\naa");
+    feed(&mut e, "g&");
+    assert_eq!(text(&e), "xx\nxx\nxa");
+}
+
+#[test]
+fn gn_selects_the_match() {
+    let s = "foo bar foo bar foo";
+    assert_eq!(run(s, "gn").msg, "No previous search pattern");
+    assert_eq!(text(&run(s, "/foo\ngg0dgn")), " bar foo bar foo");
+    // On the match, it is that match; `gN` goes backward.
+    assert_eq!(text(&run(s, "/foo\ngg0wwdgn")), "foo bar  bar foo");
+    assert_eq!(text(&run(s, "/bar\n$dgN")), "foo bar foo  foo");
+    assert_eq!(text(&run(s, "/foo\nggcgnX\x1b")), "X bar foo bar foo");
+    // `.` repeats `cgn` on the next match.
+    assert_eq!(text(&run(s, "/foo\nggcgnX\x1b..")), "X bar X bar X");
+    assert_eq!(pos(&run(s, "/bar\ngg0gn")), (0, 6));
+    assert_eq!(run(s, "/bar\ngg0gn").mode, Mode::Visual(VKind::Char));
+    assert_eq!(run(s, "/zzz\ngn").msg, "Pattern not found: zzz");
 }
 
 fn lines(n: usize) -> String {
@@ -1116,7 +1213,7 @@ fn regex_search() {
     feed(&mut e, "n");
     assert_eq!(pos(&e), (0, 5));
     feed(&mut e, "ggN");
-    assert_eq!((pos(&e), e.msg.as_str()), ((1, 1), "search hit TOP, continuing at BOTTOM"));
+    assert_eq!((pos(&e), e.msg.as_str()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
     feed(&mut e, "G$n");
     assert_eq!((pos(&e), e.msg.as_str()), ((0, 1), "search hit BOTTOM, continuing at TOP"));
     assert_eq!(pos(&run(s, "/(?i)C\n")), (1, 0));

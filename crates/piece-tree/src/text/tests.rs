@@ -499,10 +499,9 @@ fn from_string_normalizes_and_handles_small_texts() {
     assert!(Text::from(String::new()).is_empty());
 }
 
-/// Sealed chunks are indexed every `CHAR_BLOCK` bytes; long pieces of them use the index.
+/// Char metrics on a long piece of a sealed chunk, through edits.
 #[test]
-fn char_metrics_on_indexed_chunks() {
-    use crate::chunk::{CHAR_BLOCK, MAX_ADD_BYTES};
+fn char_metrics_on_long_pieces() {
     let mut rng = Rng(11);
     let big: String = (0..).map(|_| rng.text(4)).take_while({
         let mut n = 0;
@@ -511,7 +510,6 @@ fn char_metrics_on_indexed_chunks() {
             n < 3 * MAX_ADD_BYTES
         }
     }).collect();
-    assert!(big.len() > 2 * CHAR_BLOCK);
     let (mut t, mut m) = (Text::from(big.clone()), big);
     assert!(t.chunks().count() == 1);
     assert_same(&t, &m, &mut rng, false);
@@ -528,8 +526,8 @@ fn char_metrics_on_indexed_chunks() {
         assert_same(&t, &m, &mut rng, false);
     }
     // Every char position of a long indexed piece, both ways.
-    let t = Text::from("é".repeat(3 * CHAR_BLOCK));
-    for ch in (0..=3 * CHAR_BLOCK).step_by(7) {
+    let t = Text::from("é".repeat(768));
+    for ch in (0..=768).step_by(7) {
         assert_eq!((t.char_to_offset(ch), t.offset_to_char(2 * ch)), (2 * ch, ch));
     }
 }

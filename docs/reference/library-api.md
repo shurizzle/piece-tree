@@ -20,16 +20,16 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `offset_to_line(off)` | 0-based line | `out of bounds` (off > len) | offset at a `\n` → line it ends |
 | `line_to_offset(line)` | start byte | `out of bounds` (line ≥ line_count) | |
 | `line(i)` | `Cow<str>` without `\n` | `out of bounds` | one descent and borrowed if the line is inside one piece |
-| `char_count()` | chars | — | O(1) |
-| `offset_to_char(off)` / `char_to_offset(ch)` | char index / byte offset | `out of bounds`, `char boundary` | O(log n) plus at most ~2 KiB scanned |
+| `char_count()` | chars | — | O(n) |
+| `offset_to_char(off)` / `char_to_offset(ch)` | char index / byte offset | `out of bounds`, `char boundary` | O(n) scan of the pieces up to the offset |
 | `line_end(line)` | byte offset of the line's `\n` (or the end) | `out of bounds` | |
-| `line_char_len(line)` | chars in the line | `out of bounds` | O(log n), not O(line length) |
-| `line_col_to_offset(line, col)` / `offset_to_line_col(off)` | char columns ↔ bytes | `out of bounds` (line, or col > line length), `char boundary` | |
+| `line_char_len(line)` | chars in the line | `out of bounds` | O(line length) |
+| `line_col_to_offset(line, col)` / `offset_to_line_col(off)` | char columns ↔ bytes | `out of bounds` (line, or col > line length), `char boundary` | O(line length) |
 | `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |
 | `Display` / `to_string()` | full text | — | |
-| `find_iter`, `find_from`, `replace_all`, `replace_matching`, `cursor`, `cursor_at` | — | `out of bounds` (`find_from`/`cursor_at`) | regex search; see [search.md](search.md) |
+| `find_iter`, `find_from`, `find_iter_in`, `rfind_before`, `replacement_at`, `replace_all`, `replace_matching`, `cursor`, `cursor_at` | — | `out of bounds` (`find_from`/`rfind_before`/`replacement_at`/`cursor_at`), `invalid range` (`find_iter_in`) | regex search; see [search.md](search.md) |
 
 ## `Document`
 

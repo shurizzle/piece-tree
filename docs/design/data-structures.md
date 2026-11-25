@@ -12,7 +12,6 @@ struct Chunk {
     nl_cap: u32,
     fill: AtomicU64,         // reserved prefix, packed Fill { len, nl }
     storage: Storage,        // Words(NonNull<[MaybeUninit<u32>]>) | Owned { text_cap, nl_cap }
-    char_index: Box<[u32]>,  // sealed chunks: chars before byte i * CHAR_BLOCK; empty for add chunks
 }
 ```
 
@@ -23,7 +22,6 @@ struct Chunk {
   - `for_add(prev, len, lf)`: `Words` storage, one allocation (bytes, then newline slots). Capacity `max(len.next_power_of_two(), min(2 * prev.cap, 64 KiB))`, starting at `MIN_ADD_BYTES` = 256, with `max(cap / 4, lf)` newline slots.
   - `from_string(s)`: `Owned` storage, sealed, taking over the `String`'s buffer (as `Vec<u8>`) and the collected newline `Vec<u32>`, with no copy. Pointers come from `Vec::as_mut_ptr` (full-capacity provenance). `Drop` rebuilds both `Vec`s.
   - `exact(s: &str)` = `from_string(s.to_owned())`.
-- Char index: `from_string` stores, for every `CHAR_BLOCK` = 1024 bytes (16 under Miri), the number of chars (UTF-8 lead bytes) before it, in one pass at load. `char_index()` returns a sealed chunk's bytes (published in full at creation) and the index; add chunks have none, because their pieces are at most 64 KiB and are scanned directly. `count_chars` counts lead bytes (vectorized).
 - `MAX_ADD_BYTES` = 64 KiB, the threshold above which an insert gets an exact chunk (1 KiB under Miri, to keep the tests fast).
 - `Send + Sync` by `unsafe impl` (safety argument in [decisions.md](decisions.md) D9).
 - Limits: `cap <= u32::MAX` (`assert_fits_u32`, panics `"buffer larger than 4 GiB"`); non-empty (panics `"empty chunk"`).
@@ -31,13 +29,12 @@ struct Chunk {
 ## `Piece` (`tree.rs`)
 
 ```rust
-struct Piece { chunk: Arc<Chunk>, start: u32, len: u32, lf: u32, nl_first: u32, chars: u32 } // 32 bytes
+struct Piece { chunk: Arc<Chunk>, start: u32, len: u32, lf: u32, nl_first: u32 } // 24 bytes
 ```
 
 - A published byte range `[start, start + len)` of a chunk.
   - `lf` = number of `\n` in it.
   - `nl_first` = index in the chunk's newline cache of its first `\n`. Its own newlines are `newlines(nl_first, lf)`.
-  - `chars` = number of chars in it.
 - Soundness invariant: the range and slots are published, and both ends are char boundaries.
 - Constructors:
   - `whole(chunk)`: everything published (used for exact chunks).
@@ -46,7 +43,6 @@ struct Piece { chunk: Arc<Chunk>, start: u32, len: u32, lf: u32, nl_first: u32, 
 - Queries:
   - `nth_newline(k)`: O(1).
   - `lf_before(off)`: O(log lf), binary search over the piece's own newlines.
-  - `chars_before(off)` and `byte_of_char(k)`: on a long piece of an indexed chunk, an index lookup plus a scan of at most one block (two for `chars_before`); otherwise a scan of the piece (at most 64 KiB for add-chunk pieces, or 2 blocks).
   - `split(at)` and `sub(from, to)`: O(log lf). They assert the range (`invalid piece split` / `invalid sub-piece`) and the char boundaries (`offset not on a char boundary`). These are real `assert!`s, because the results feed `from_utf8_unchecked`, and they are the only boundary check edits need.
 
 ## `Node` and `Tree` (`tree.rs`)
@@ -58,11 +54,10 @@ struct Node {
     height: u8,  // AVL height, leaf = 1, empty = 0
     len: usize,  // bytes in the whole subtree
     lf: usize,   // '\n' in the whole subtree
-    chars: usize,// chars in the whole subtree
 }
 ```
 
-- Accessors on `&Tree`: `height`, `len`, `lf`, `chars` (0 for `None`).
+- Accessors on `&Tree`: `height`, `len`, `lf` (0 for `None`).
 - `Arc` is `triomphe::Arc` (no weak count) for nodes and chunks.
 - `node(l, piece, r)` builds a node computing the aggregates; it does **not** rebalance.
 - In-order traversal of pieces = document text.
@@ -104,8 +99,8 @@ Versions are whole `Text` roots. They share structure and chunks, so memory per 
 | I1 | No `\r` in any chunk range reachable from a `Text` | `normalize` on every input path |
 | I2 | Every piece non-empty | `tree::check` |
 | I3 | `|h(left) − h(right)| ≤ 1` | `tree::check` |
-| I4 | `height`, `len`, `lf`, `chars` equal recomputed values | `tree::check` |
-| I5 | `piece.lf` and `piece.chars` equal the actual `\n` and char counts | `tree::check` |
+| I4 | `height`, `len`, `lf` equal recomputed values | `tree::check` |
+| I5 | `piece.lf` equals the actual `\n` count | `tree::check` |
 | I6 | Published chunk bytes, pieces and nodes never change | append-only chunks; `edits_copy_only_a_path`, history checks, `diverging_versions_do_not_extend_each_other` |
 | I7 | Pieces cover only published ranges with char-boundary ends | constructors, `Piece::split` assert, Miri |
 
@@ -118,7 +113,7 @@ n = pieces, k = bytes touched or returned, s = inserted bytes, f = newlines in o
 | `Text::clone`, `ptr_eq`, `len`, `line_count`, `is_empty` | O(1) |
 | `insert(off, s)` | one path copy (`extend_at` or `insert_at`), O(log n + s); extension adds no piece; s > 64 KiB allocates an exact chunk |
 | `delete(range)` | one path copy (`delete_in`) when inside a piece; otherwise split + split + join2; O(log n + log f) |
-| `Text::from(String)` | one memchr scan, no copy (large texts without `\r`) |
+| `Text::from(String)` | one SIMD newline scan (`newlines.rs`, D16), no copy (large texts without `\r`) |
 | `offset_to_line` | O(log n + log f) |
 | `line_to_offset` | O(log n) |
 | `line(i)` | one descent + borrowed slice when the line is inside one piece; otherwise O(log n + pieces in line) with a concat |

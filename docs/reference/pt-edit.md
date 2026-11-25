@@ -49,7 +49,10 @@ Grammar: `["x] [count] cmd [char]` or `["x] [count] op [count] (motion [char] | 
 | `H` `M` `L` | linewise | top/middle/bottom screen line; count = lines from the top/bottom |
 | `%` | inclusive | the bracket matching the first `()[]{}` at or after the cursor in the line, across lines |
 | `N%` | linewise | line at N percent of the text |
-| `n` `N` | exclusive | next/previous match of the last search, wrapping; the next match may start inside the current one (vim) |
+| `n` `N` | exclusive | next/previous match of the last search in its direction (`?` reverses `n`), wrapping, with its offset; the next match may start inside the current one (vim) |
+| `gn` `gN` | exclusive | with an operator: the match under the cursor, else the next/previous one (`dgn`, `cgn` then `.` repeats on the next match). Alone: selects it in Visual. Ignored inside Visual (`shortcut:`) |
+| `N\|` | exclusive | to char column N of the line |
+| `go` | exclusive | to byte N (count) of the text |
 | `*` `#` | exclusive | search `\b<word>\b` for the word under the cursor (or the next one in the line), forward/backward |
 | `f<c>` `t<c>` | inclusive | to the `count`-th `c` in the line / one char before it |
 | `F<c>` `T<c>` | exclusive | same, backward |
@@ -168,11 +171,16 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 | `:undol[ist]` | `at <current> of <newest> \| seq:changes:age` for each branch tip |
 | `:[range]s/pat/rep/[flags]` | substitute, below |
 | `:set …` | options, below |
-| `/pat` | search forward from the cursor, wrapping; empty `pat` reuses the last one |
+| `/pat[/off]` `?pat[?off]` | search forward/backward from the cursor, wrapping; empty `pat` reuses the last one; `off` below |
+| `:s…` `:&` `:&&` | substitute / repeat the last one (`:&&` keeps its flags) |
+| `:go[to] N` | to byte N of the text |
+| `Ctrl+G` | file name, line, size; `g Ctrl+G` counts: lines, words, chars, bytes (of the selection in Visual) |
+| `ga` `g8` | codepoint of the char under the cursor in decimal/hex/octal; its UTF-8 bytes |
+| `&` `g&` | `:s` again on the line / `:%s//~/&` (last substitute, same flags, whole text) |
 
 Unknown commands report `Not an editor command: <cmd>`.
 
-**Search**: patterns are Rust `regex` syntax (piece-tree's `Regex`): `\d+`, `(?i)foo`, `^`/`$` per line, `\b`. While typing (incsearch) the cursor previews the first match from where `/` started and the typed pattern is highlighted; a pattern that does not compile yet (`(`) previews nothing; Esc goes back. On Enter an invalid pattern shows `Invalid pattern: <cause>` and keeps the last search. After Enter every non-empty match on screen is highlighted (hlsearch, yellow) until `:noh`.
+**Search**: patterns are Rust `regex` syntax (piece-tree's `Regex`): `\d+`, `(?i)foo`, `^`/`$` per line, `\b`. While typing (incsearch) the cursor previews the first match from where `/` started and the typed pattern is highlighted; a pattern that does not compile yet (`(`) previews nothing; Esc goes back. **Search offset** after the closing delimiter: `/pat/e` cursor on the last char of the match, `e+1`/`e-1` chars from there, `s+N`/`b+N` from the start, `+N`/`-N` linewise N lines down/up. `//e` reuses the last pattern with a new offset; `n` reapplies the offset. `\/` in the pattern is a literal delimiter. Matches can span lines and are highlighted across them. On Enter an invalid pattern shows `Invalid pattern: <cause>` and keeps the last search. After Enter every non-empty match on screen is highlighted (hlsearch, yellow) until `:noh`.
 
 ### Substitute (`:s`)
 
@@ -182,7 +190,9 @@ Unknown commands report `Not an editor command: <cmd>`.
 - **Pattern**: Rust regex; other `\` escapes go to the regex. Empty: the last search. Flags `i`/`I` prefix `(?i)`/`(?-i)`.
 - **Replacement**: `$1`, `${name}`, `$0` as `regex`; `\n` line break, `\t` tab, `\\` backslash, `\$` literal `$`, other `\x` is `x`.
 - **Range**: none = cursor line; `%`; `N`, `.`, `$`, `'m` (marks, `'<`/`'>` from Visual), each with `+N`/`-N` (`+` alone is `.+1`); `a,b`, swapped if backwards. Out of the text → `Invalid range`; an unset mark → `Mark not set`.
-- **Flags**: `g` every match on a line (default: the first on each line); `i`, `I`; anything else → `Trailing characters: <rest>`.
+- **Flags**: `g` every match on a line (default: the first on each line); `i`, `I`; `n` only count (`N matches on M lines`, no change); `c` confirm each one (below); `&` (first) keep the flags of the last substitute; anything else → `Trailing characters: <rest>`.
+- **Confirm** (`c`): the cursor goes to each match and the status asks `replace with X (y/n/a/q/l)?`: `y` replace, `n` skip, `a` replace this and all the rest, `l` replace this and stop, `q`/Esc stop; other keys are ignored. The whole session is one undo step. The current match is the cursor position among the highlighted ones (`shortcut:` no distinct highlight).
+- **Repeat**: `:&` is the last pattern and replacement with the flags reset, `:&&` (or the `&` flag) keeps them; `&` = `:&` on the line, `g&` = whole text keeping flags. Without a previous substitute: `No previous substitute`.
 - A match belongs to the line where it starts, so `:s/\n//` joins lines and `:s/$/!/` appends.
 - Result: `N substitution(s) on M line(s)` or `Pattern not found: pat`; the pattern becomes the last search (`n`, highlights); the cursor goes to the first non-blank of the line where the last substitution ends.
 
@@ -209,7 +219,7 @@ Palettes (`Palette::new`): dark — cursor line 236, numbers 243, cursor line nu
 - **Key parsing**: Normal keys accumulate in `pending` (Ctrl+D/U/R/A/X/V mapped to `\x04`/`\x15`/`\x12`/`\x01`/`\x18`/`\x16`, arrows to `hjkl`) and `parse` re-reads them on every key: `Incomplete`, `Invalid`, or `Cmd { reg, count, op, key, arg }`. `gu`/`gU`/`g~` become private-use operator chars. Visual mode handles its own keys (`VISUAL_KEYS`, `r<c>`, `i`/`a` + object, `"x`) and parses the rest as motions.
 - **Motions** return a target `(line, col)` and a kind (exclusive, inclusive, linewise); operators turn it into a byte range. Word, bracket and sentence scans walk char iterators over lines (`fwd`/`bwd`) that yield `\n` at line ends.
 - **Text objects**: `text_object` returns an `Obj`, a byte range or a line range; operators apply it as an exclusive or linewise motion, Visual mode turns it into anchor and cursor (`select_object`, `visual_object` for growth). Sentences are split per paragraph (`sentences`); tags are paired by one scan with a stack (`tag_pairs`, `shortcut:` it reads the whole text).
-- **Search**: a `Search` keeps the pattern and its compiled `piece_tree::Regex` (`Rc`, compiled once). Forward: `Text::find_from` just past the char under the cursor, else from 0 (wrapped). Backward: the library has no reverse search, so `find_iter` keeps the last match before the cursor (`shortcut:`, O(n)). Highlights run `find_iter` on each visible line alone (`search::line_matches`, `shortcut:`: matches spanning lines are not highlighted).
+- **Search**: a `Search` keeps the pattern and its compiled `piece_tree::Regex` (`Rc`, compiled once). Forward: `Text::find_from` just past the char under the cursor, else from 0 (wrapped). Backward: `Text::rfind_before` (windowed, see [search.md](search.md)). Highlights: `Text::find_iter_in` over the visible lines, split per line (`search::visible_matches`), so multi-line matches are highlighted. `/` and `?` offsets live in `search::Offset`; `n`/`N`/`*`/`#` go through `search_motion`. `:s///c` keeps a `Confirm` session (`Mode::Confirm`) stepping with `Text::replacement_at` + `Document::splice` in one group; `gn` is `Editor::select_match`.
 - **Substitute**: `substitute::parse` returns `None` for other commands, so `:set`, `:3`, `:q` are untouched. `Editor::substitute` resolves the range to a byte span and calls `Document::replace_matching` with a filter: match start inside the span and, without `g`, the first match per start line (`Text::offset_to_line`). The editor counts it as one tracked edit, so it is one undo group. Marks are not moved, only clamped (`shortcut:`).
 - **Registers**: `Registers::store` writes the named target (or `0`/the `1`–`9` shift) and `"`; `cur_reg` holds the command's `"x` until the first store or paste.
 - **Marks**: byte offsets. After every `Document` call (edits, `:s`, undo, redo, time travel) they are mapped through `Document::last_edits` with `piece_tree::map_offset` (a mark inside a removed range moves to its start). `mark` still clamps to the text and a char boundary.
@@ -233,4 +243,4 @@ Palettes (`Palette::new`): dark — cursor line 236, numbers 243, cursor line nu
 
 ## Limits
 
-See [limitations.md](limitations.md): vim subset only, widths per char rather than per grapheme, block columns in chars, `"+p` uses the editor's copy, macros apart from registers, backward search and tag scan O(n), highlights per line, save breaks hard links.
+See [limitations.md](limitations.md): vim subset only, widths per char rather than per grapheme, block columns in chars, `"+p` uses the editor's copy, macros apart from registers, tag scan O(n), save breaks hard links.

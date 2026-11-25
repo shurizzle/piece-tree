@@ -119,6 +119,7 @@ pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> V
 }
 
 #[cfg(test)]
+#[allow(clippy::single_range_in_vec_init)] // expected per-line match lists
 mod tests {
     use super::*;
     use piece_tree::Document;
@@ -184,12 +185,12 @@ mod tests {
         let re = |p| Regex::new(p).unwrap();
         let t = Text::from("日a日a\nfoo\nbar foo");
         assert_eq!(visible_matches(&t, &re("a"), 0..3), [vec![1..2, 3..4], vec![], vec![1..2]]);
-        assert_eq!(visible_matches(&t, &re("x*"), 0..3), [vec![], vec![], vec![]]);
+        assert_eq!(visible_matches(&t, &re("x*"), 0..3), vec![Vec::<Range<usize>>::new(); 3]);
         // Spanning a line break: split per line; only the visible lines.
         assert_eq!(visible_matches(&t, &re("o\nb"), 1..3), [vec![2..3], vec![0..1]]);
         assert_eq!(visible_matches(&t, &re("a\nf"), 0..1), [vec![3..4]]);
         assert_eq!(visible_matches(&t, &re(r"\bfoo\b"), 2..3), [vec![4..7]]);
         assert!(visible_matches(&t, &re("a"), 1..1).is_empty());
-        assert_eq!(visible_matches(&t, &re("\n"), 0..2), [vec![], vec![]]);
+        assert_eq!(visible_matches(&t, &re("\n"), 0..2), vec![Vec::<Range<usize>>::new(); 2]);
     }
 }

@@ -5,7 +5,7 @@
 
 use triomphe::Arc;
 
-use crate::chunk::{CHAR_BLOCK, Chunk, Fill, MAX_ADD_BYTES, count_chars, is_char_start};
+use crate::chunk::{Chunk, Fill, MAX_ADD_BYTES};
 
 /// A published range of a [`Chunk`], with its line feeds located in the chunk cache.
 ///
@@ -18,10 +18,8 @@ pub(crate) struct Piece {
     start: u32,
     len: u32,
     lf: u32,
-    /// Index in the chunk's newline cache of the piece's first `\n`.
+    /// Index in the chunk's newline cache of the piece's first `\n`; fills padding, so `Piece` stays 24 bytes.
     nl_first: u32,
-    /// Chars in the piece.
-    chars: u32,
 }
 
 impl Piece {
@@ -29,9 +27,7 @@ impl Piece {
     pub(crate) fn whole(chunk: Arc<Chunk>) -> Self {
         let fill = chunk.fill();
         debug_assert!(fill.len > 0);
-        let mut p = Self { chunk, start: 0, len: fill.len, lf: fill.nl, nl_first: 0, chars: 0 };
-        p.chars = p.chars_before(p.len()) as u32;
-        p
+        Self { chunk, start: 0, len: fill.len, lf: fill.nl, nl_first: 0 }
     }
 
     /// Stores non-empty `s` (at most `MAX_ADD_BYTES`, with `lf` newlines, no `\r`)
@@ -49,9 +45,7 @@ impl Piece {
     }
 
     fn at(chunk: Arc<Chunk>, at: Fill, len: usize, lf: usize) -> Self {
-        let mut p = Self { chunk, start: at.len, len: len as u32, lf: lf as u32, nl_first: at.nl, chars: 0 };
-        p.chars = count_chars(p.text().as_bytes()) as u32;
-        p
+        Self { chunk, start: at.len, len: len as u32, lf: lf as u32, nl_first: at.nl }
     }
 
     /// This piece extended by `s` when it ends exactly at the published end of
@@ -61,44 +55,7 @@ impl Piece {
             return None;
         }
         add.try_append(s, lf, Some(self.start + self.len))?;
-        let chars = self.chars + count_chars(s.as_bytes()) as u32;
-        Some(Piece { len: self.len + s.len() as u32, lf: self.lf + lf as u32, chars, ..self.clone() })
-    }
-
-    pub(crate) fn chars(&self) -> usize {
-        self.chars as usize
-    }
-
-    /// Chars in the first `off` bytes. Sealed chunks: index lookups at both ends and scans of at
-    /// most one block each; add-chunk pieces (at most `MAX_ADD_BYTES`) are scanned.
-    pub(crate) fn chars_before(&self, off: usize) -> usize {
-        match self.chunk.char_index() {
-            Some((bytes, index)) if off > 2 * CHAR_BLOCK => {
-                let at = |p: usize| index[p / CHAR_BLOCK] as usize + count_chars(&bytes[p / CHAR_BLOCK * CHAR_BLOCK..p]);
-                let s = self.start as usize;
-                at(s + off) - at(s)
-            }
-            _ => count_chars(&self.text().as_bytes()[..off]),
-        }
-    }
-
-    /// Byte offset in the piece where its `k`-th char starts. Requires `k < chars`.
-    pub(crate) fn byte_of_char(&self, k: usize) -> usize {
-        let starts = |bytes: &[u8], from: usize, to: usize, nth: usize| {
-            (from..to).filter(|&p| is_char_start(bytes[p])).nth(nth).expect("k < chars")
-        };
-        match self.chunk.char_index() {
-            Some((bytes, index)) if self.len() > 2 * CHAR_BLOCK => {
-                let s = self.start as usize;
-                let base = index[s / CHAR_BLOCK] as usize + count_chars(&bytes[s / CHAR_BLOCK * CHAR_BLOCK..s]);
-                let target = base + k;
-                // Scan from the last block start (inside the piece) with at most `target` chars before it.
-                let block = index.partition_point(|&c| c as usize <= target).saturating_sub(1);
-                let (pos, seen) = if block * CHAR_BLOCK > s { (block * CHAR_BLOCK, index[block] as usize) } else { (s, base) };
-                starts(bytes, pos, s + self.len(), target - seen) - s
-            }
-            _ => starts(self.text().as_bytes(), 0, self.len(), k),
-        }
+        Some(Piece { len: self.len + s.len() as u32, lf: self.lf + lf as u32, ..self.clone() })
     }
 
     /// The piece's own entries of the chunk's newline cache.
@@ -138,14 +95,12 @@ impl Piece {
         assert!(from < to && to <= self.len(), "invalid sub-piece {from}..{to}");
         assert!(text.is_char_boundary(from) && text.is_char_boundary(to), "offset not on a char boundary");
         let (lf_from, lf_to) = (self.lf_before(from) as u32, self.lf_before(to) as u32);
-        let chars = (self.chars_before(to) - self.chars_before(from)) as u32;
         Piece {
             chunk: self.chunk.clone(),
             start: self.start + from as u32,
             len: (to - from) as u32,
             lf: lf_to - lf_from,
             nl_first: self.nl_first + lf_from,
-            chars,
         }
     }
 
@@ -155,16 +110,14 @@ impl Piece {
         assert!(at > 0 && at < self.len(), "invalid piece split at {at}");
         assert!(self.text().is_char_boundary(at), "offset not on a char boundary");
         let lf = self.lf_before(at) as u32;
-        let chars = self.chars_before(at) as u32;
         let at = at as u32;
-        let left = Piece { len: at, lf, chars, ..self.clone() };
+        let left = Piece { len: at, lf, ..self.clone() };
         let right = Piece {
             chunk: self.chunk.clone(),
             start: self.start + at,
             len: self.len - at,
             lf: self.lf - lf,
             nl_first: self.nl_first + lf,
-            chars: self.chars - chars,
         };
         (left, right)
     }
@@ -181,8 +134,6 @@ pub(crate) struct Node {
     len: usize,
     /// Total `\n` in this subtree.
     lf: usize,
-    /// Total chars in this subtree.
-    chars: usize,
 }
 
 pub(crate) fn height(t: &Tree) -> u8 {
@@ -197,17 +148,12 @@ pub(crate) fn lf(t: &Tree) -> usize {
     t.as_ref().map_or(0, |n| n.lf)
 }
 
-pub(crate) fn chars(t: &Tree) -> usize {
-    t.as_ref().map_or(0, |n| n.chars)
-}
-
 /// Builds a node without rebalancing.
 fn node(left: Tree, piece: Piece, right: Tree) -> Tree {
     Some(Arc::new(Node {
         height: 1 + height(&left).max(height(&right)),
         len: len(&left) + piece.len() + len(&right),
         lf: lf(&left) + piece.lf() + lf(&right),
-        chars: chars(&left) + piece.chars() + chars(&right),
         left,
         right,
         piece,
@@ -430,8 +376,6 @@ pub(crate) fn check(t: &Tree) -> (u8, usize, usize) {
     assert!(hl.abs_diff(hr) <= 1, "unbalanced: {hl} vs {hr}");
     assert!(n.piece.len() > 0, "empty piece");
     assert_eq!(n.piece.lf(), n.piece.text().matches('\n').count());
-    assert_eq!(n.piece.chars(), n.piece.text().chars().count());
-    assert_eq!(n.chars, chars(&n.left) + n.piece.chars() + chars(&n.right));
     let (h, l, f) = (1 + hl.max(hr), ll + n.piece.len() + lr, fl + n.piece.lf() + fr);
     assert_eq!((n.height, n.len, n.lf), (h, l, f));
     (h, l, f)

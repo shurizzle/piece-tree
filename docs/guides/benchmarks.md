@@ -128,3 +128,74 @@ New scenario `Document typing 10k chars in 1MB`: the typing loop through `Docume
 **Kept**: the tree with timestamps, ~+15% per ungrouped key. The difference is all `Instant::now()` (measured alone: ~22 ns); the tree and the log cost nothing measurable. Time travel (`earlier_time`) needs the stamp.
 
 **Rejected**: a `Vec<Edit>` per version (first version): one allocation per key, ~+30%. Replaced by the flat log.
+
+## Char metrics cache (tried and removed, D15)
+
+A/B against a standalone copy of `fa02467` (before the undo tree, char metrics and search work), both built the same way, `cargo bench -p piece-tree`, min of 7 runs, ns/op. The corpus has a `✓` on every line.
+
+**Attempt: `chars` cached in every `Piece` and `Node`, plus a char index (chars before every N bytes) in sealed chunks. Rejected.**
+
+| Scenario | v1 (1 KiB blocks) | v4 (best: `Node` 64 B, 256-byte blocks) |
+|---|---|---|
+| load 50MB (per byte) | +100% | +100% |
+| paste mid-piece 1k on 10MB | +37% | +12% |
+| random edits 1k+1k on 10MB | +65% | +20% |
+| replace_all literal (per match) | +126% | +32% |
+| backspace 10k | +431% | +5% |
+
+- v1 → v2: an all-ASCII piece (`chars == len`) skips the scan in `chars_before` (backspace +431% → +11%).
+- v3: `Node` back to 64 bytes (`height` in `Piece`'s padding, `u32` totals, which limited a text to 4 Gi lines and chars).
+- v4: blocks 1024 → 256 bytes (index 1.6% of the text).
+- Same bench on an ASCII-only corpus (the shortcut applies): paste +17%, random edits +23%, `replace_all` +8%/+5%, load +100%. So the scan explained most of `replace_all` and the index pass all of the load cost, but a floor of +17..23% on edits remained.
+- samply profile of `edits` (1787 → 2088 samples, +17%): `Piece::chars_before` 0 → 159 (53% of the increase), `tree::node` 57 → 131 (25%: totals, `height`, overflow check, `Piece` 24 → 32 bytes), the rest unresolved addresses.
+
+**Result of removing it** (char conversions scan, no cache; `chunk.rs`/`tree.rs` back to their `fa02467` form):
+
+| Scenario | `fa02467` | now | |
+|---|---|---|---|
+| load 50MB (per byte), owned, Document | 0.2 / 0.2 / 0.3 | 0.2 / 0.2 / 0.3 | +0% |
+| typing 10k chars in 1MB | 65.5 | 65.7 | +0% |
+| backspace 10k | 56.3 | 54.3 | -4% |
+| paste mid-piece 1k on 10MB | 752.1 | 627.0 | -17% |
+| random edits 1k+1k on 10MB | 778.4 | 613.4 | -21% |
+| replace_all literal / $1 (per match) | 168.9 / 578.9 | 157.4 / 571.2 | -7% / -1% |
+| line()/offset_to_line/find_iter scenarios | | | -27% to +3% |
+
+The gains over `fa02467` (paste, edits, `line() random`) are within what code placement alone moves in this setup (see Methodology); the point is that no scenario is slower. What is lost: column conversions are O(line length) and global char conversions O(n).
+
+## SIMD newline index (`newlines.rs`, D16)
+
+A/B, both sides the same example (`Text::from(String)` of 50 MB, min of 7 loads per run), built against a standalone copy of the tree before the change and against the working tree after it, 5 alternating runs each, aarch64 (Apple M1 Pro), min over the runs. "exp avg N": line lengths exponentially distributed with mean N, like real text.
+
+| Corpus | before (ns/B) | after (ns/B) | speedup |
+|---|---|---|---|
+| Rust sources (a newline every ~34 B) | 0.385 | 0.106 | 3.6x |
+| synthetic (59 B) | 0.180 | 0.101 | 1.8x |
+| CJK (89 B) | 0.112 | 0.064 | 1.75x |
+| exp avg 100 | 0.223 | 0.123 | 1.8x |
+| exp avg 200 | 0.127 | 0.084 | 1.5x |
+| exp avg 400 | 0.079 | 0.060 | 1.3x |
+| exp avg 1000 | 0.050 | 0.042 | 1.19x |
+| exp avg 5000 | 0.035 | 0.034 | 1.03x |
+| one line, no newline | 0.033 | 0.034 | 0.97x (noise: 0.034-0.036 over the runs) |
+
+Edits are unchanged (harness, synthetic: typing 69, backspace 57, paste 661, random edits 653 ns, as before within noise).
+
+Prototype, newline offsets only (ns/B, 32 MB texts, same output asserted against `memchr`), exponentially distributed lines unless noted:
+
+| Mean line | `memchr_iter` + `collect` (before) | `memchr` portable code | NEON 64 B mask, no skip | SWAR 64 B mask, no skip | NEON + empty-block skip (kept) | SWAR + skip (kept) |
+|---|---|---|---|---|---|---|
+| 16 B | 0.825 | 1.039 | 0.065 | 0.139 | 0.093 | 0.162 |
+| 34 B (Rust sources) | 0.373 | 0.426 | 0.061 | 0.139 | 0.074 | 0.135 |
+| 64 B | 0.287 | 0.290 | 0.059 | 0.136 | 0.102 | 0.166 |
+| 128 B | 0.172 | 0.167 | 0.061 | 0.134 | 0.096 | 0.153 |
+| 256 B | 0.093 | 0.105 | 0.061 | 0.134 | 0.057 | 0.100 |
+| 512 B | 0.054 | 0.078 | 0.061 | 0.139 | 0.038 | 0.076 |
+| 1000 B | 0.035 | 0.063 | 0.059 | 0.139 | 0.028 | 0.061 |
+| one line | 0.017 | 0.046 | 0.060 | 0.135 | 0.017 | 0.042 |
+
+(The "no skip" columns are fixed cost per block; the skip columns are the whole function, `Vec` growth included. Without the skip the mask scan loses to `memchr` on long lines, which is why the first design needed a heuristic.) Other prototype results: `memchr_iter().count()` 0.024 ns/B; preallocating the `Vec` (exact count or `len / 32`) 0.388/0.355 against 0.368, **no** gain; 16-byte NEON mask with a `while mask != 0` loop 0.232 against 0.067, **no**.
+
+**Rejected: choosing the scan by sampled mean line length.** Built and tested first (mask below a threshold, `memchr_iter` above). Calibrated on lines of equal length it gave thresholds of ~160 B (NEON) and ~32-64 B (SWAR); with exponentially distributed lengths the crossovers are ~450 B and ~190 B, because equal lengths make the per-hit iterators' branches predictable. Dropped when the early-out version proved never slower than `memchr_iter` at any length. **Lesson**: calibrate on line-length distributions of real text, not on equal-length lines.
+
+`Chunk::try_append` (add chunk) keeps `memchr_iter`: it cannot write junk slots past its reserved range, and appends are small. x86_64 was only run under QEMU emulation (SSE2, correctness, not speed), so the x86_64 numbers are unknown. AVX2 and AVX-512BW are not implemented and **still have to be tried on a real x86_64 host** (procedure and acceptance criteria in D16). Other architectures (wasm32, 32-bit x86, loongarch64, s390x, riscv64, powerpc64, `std::simd`) are listed in D16 with their `std::arch` status, also still to try.

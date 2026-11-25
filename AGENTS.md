@@ -29,7 +29,7 @@ cargo test -p pt-edit                          # editor tests (keys, frames, sub
 - **Dependencies are welcome** when they are the best tool. House choices: `parking_lot` for every `Mutex`/`RwLock` (never `std::sync` locks), `memchr` for byte searches. Reach for `aho-corasick` for multi-pattern search, and similar well-known crates, instead of hand-rolling. Test randomness currently uses `test_util::Rng` (fixed seeds).
 - Keep the invariants listed in ARCHITECTURE.md. Any new tree-producing code must be exercised under `tree::check`.
 - Never break persistence: `Piece` and `Node` have no interior mutability; a `Chunk` only ever writes past its published end, under its lock.
-- **`unsafe`** is allowed for performance (it lives in `chunk.rs`). Every `unsafe` block and `unsafe impl` has a `// SAFETY:` comment; every `unsafe fn` has a `# Safety` section. Any change touching `unsafe` code or the invariant it relies on must pass Miri.
+- **`unsafe`** is allowed for performance (it lives in `chunk.rs` and `newlines.rs`). Every `unsafe` block and `unsafe impl` has a `// SAFETY:` comment; every `unsafe fn` has a `# Safety` section. Any change touching `unsafe` code or the invariant it relies on must pass Miri.
 - Under Miri, heavy tests are `#[cfg_attr(miri, ignore = ...)]` or scaled. In coverage-counted files (`src/*.rs`), scale with `#[cfg(miri)]`/`#[cfg(not(miri))]` consts, not `if cfg!(miri)`, which leaves a dead region.
 - Performance claims need numbers: A/B against a standalone copy of the previous version built the same way (never the workspace against a copy: code placement alone moved reads by 20%), keep a change only if it beats the noise, and record kept **and rejected** attempts in [docs/guides/benchmarks.md](docs/guides/benchmarks.md). Profile with samply before guessing.
 - `vendor/regex-cursor` is upstream 0.1.5 plus the patches listed in its `PATCHES.md`, wired in with `[patch.crates-io]`. Keep the diff minimal and documented, never lint or reformat it, and drop it once upstream has the fix.
@@ -47,6 +47,7 @@ cargo test -p pt-edit                          # editor tests (keys, frames, sub
 | Need | File |
 |---|---|
 | Chunk storage, `unsafe` | `crates/piece-tree/src/chunk.rs` |
+| SIMD newline index, `unsafe` | `crates/piece-tree/src/newlines.rs` |
 | Pieces, balancing, split/join | `crates/piece-tree/src/tree.rs` |
 | Public text API | `crates/piece-tree/src/text.rs` |
 | Line endings | `crates/piece-tree/src/eol.rs` |

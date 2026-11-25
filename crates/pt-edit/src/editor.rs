@@ -37,6 +37,9 @@ const G_COUNTS: char = parse::g_key('\x07');
 const G_ASCII: char = parse::g_key('a');
 const G_UTF8: char = parse::g_key('8');
 const G_BYTE: char = parse::g_key('o');
+const G_NEXT: char = parse::g_key('n');
+const G_PREV: char = parse::g_key('N');
+const G_SUBST: char = parse::g_key('&');
 
 /// Nesting limit for macros calling macros (`qa@aq@a` would never end).
 const MAX_MACRO_DEPTH: usize = 100;
@@ -58,6 +61,8 @@ pub enum Mode {
     Visual(VKind),
     Command(String),
     Search(String),
+    /// Answering the prompt of `:s///c`.
+    Confirm,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -133,6 +138,29 @@ pub fn read_doc(path: &Path, eol: Option<LineEnding>) -> io::Result<Document> {
     Ok(doc)
 }
 
+/// State of a `:s///c` session. Offsets are in the current text: every replacement moves `next`
+/// and `end` by its size change.
+struct Confirm {
+    search: Search,
+    rep: String,
+    all: bool,
+    next: usize,
+    end: usize,
+    n: usize,
+    lines: usize,
+    last_line: Option<usize>,
+}
+
+impl Confirm {
+    /// Next match (and its replacement) in range; `next` past the text means none.
+    fn find(&self, text: &Text) -> Option<(Range<usize>, String)> {
+        if self.next > text.len() {
+            return None;
+        }
+        text.replacement_at(&self.search.re, self.next, &self.rep).filter(|(m, _)| m.start <= self.end)
+    }
+}
+
 pub struct Editor {
     doc: Document,
     path: PathBuf,
@@ -158,6 +186,10 @@ pub struct Editor {
     /// Register named by the current command's `"x` prefix.
     cur_reg: Option<char>,
     last_search: Option<Search>,
+    /// Last `:s` (pattern, replacement, flags) for `&`, `:&`, `g&`.
+    last_sub: Option<substitute::Sub>,
+    /// `:s///c` in progress (mode `Confirm`).
+    confirm: Option<Confirm>,
     /// incsearch: the pattern being typed after `/`, when it compiles.
     inc_search: Option<Search>,
     /// hlsearch: matches of `last_search` are highlighted until `:noh`.
@@ -220,6 +252,8 @@ impl Editor {
             regs: Registers::default(),
             cur_reg: None,
             last_search: None,
+            last_sub: None,
+            confirm: None,
             inc_search: None,
             hl: false,
             search_origin: (0, 0),
@@ -406,12 +440,14 @@ impl Editor {
             Mode::Insert => self.insert_key(key),
             Mode::Visual(kind) => self.visual_key(key, kind),
             Mode::Command(_) | Mode::Search(_) => self.line_key(key),
+            Mode::Confirm => self.confirm_key(key),
         }
         !self.quit
     }
 
     fn finish(&mut self) {
-        if self.mode != Mode::Insert {
+        // A confirm session is one command (one undo step) across its keys.
+        if !matches!(self.mode, Mode::Insert | Mode::Confirm) {
             self.end_command();
             self.cur_reg = None;
         }
@@ -457,6 +493,9 @@ impl Editor {
         if op == Some(key) {
             let last = (self.line + n - 1).min(self.line_count() - 1);
             return self.operate(key, (self.line, 0), (last, 0), Kind::Linewise);
+        }
+        if matches!(key, G_NEXT | G_PREV) {
+            return self.select_match(op, key == G_NEXT);
         }
         if parse::is_motion(key) {
             let Some((to, kind)) = self.motion(&cmd) else { return };
@@ -516,6 +555,9 @@ impl Editor {
             '.' => self.repeat(count),
             G_EARLIER => self.history(1, |d| d.earlier(n), "Already at oldest change"),
             '\x07' => self.msg = self.file_info(),
+            // `&` is `:s`, `g&` is `:%s//~/&` (last substitute on the whole text, same flags).
+            '&' => self.substitute(substitute::Sub::again(false)),
+            G_SUBST => self.substitute(substitute::Sub::again(true)),
             G_COUNTS => self.msg = self.counts(),
             G_ASCII | G_UTF8 => {
                 let c = self.char_at((self.line, self.col));
@@ -893,6 +935,8 @@ impl Editor {
             if let Parse::Cmd(cmd) = parsed
                 && cmd.op.is_none()
                 && parse::is_motion(cmd.key)
+                // shortcut: `gn`/`gN` do nothing in Visual mode (no selection extension), when someone needs it
+                && !matches!(cmd.key, G_NEXT | G_PREV)
                 && let Some((to, _)) = self.motion(&cmd)
             {
                 self.move_to(cmd.key, to);
@@ -1380,7 +1424,7 @@ impl Editor {
     }
 
     /// `:[range]s/pat/rep/[flags]`: one undo step through `Document::replace_matching`.
-    fn substitute(&mut self, s: substitute::Sub) {
+    fn substitute(&mut self, mut s: substitute::Sub) {
         let (first, last) = match s.range {
             None => (self.line, self.line),
             Some((a, b)) => match (self.resolve(a), self.resolve(b)) {
@@ -1388,6 +1432,16 @@ impl Editor {
                 (Err(e), _) | (_, Err(e)) => return self.msg = e,
             },
         };
+        if s.repeat || s.keep {
+            let Some(last) = &self.last_sub else { return self.msg = "No previous substitute".into() };
+            if s.repeat {
+                (s.pat, s.rep) = (last.pat.clone(), last.rep.clone());
+            }
+            if s.keep {
+                s.all |= last.all;
+                s.ignore_case = s.ignore_case.or(last.ignore_case);
+            }
+        }
         let pat = if s.pat.is_empty() {
             match &self.last_search {
                 Some(l) => l.pat.clone(),
@@ -1396,6 +1450,7 @@ impl Editor {
         } else {
             s.pat
         };
+        self.last_sub = Some(substitute::Sub { range: None, pat: pat.clone(), rep: s.rep.clone(), all: s.all, ignore_case: s.ignore_case, confirm: false, count: false, repeat: false, keep: false });
         let pattern = match s.ignore_case {
             Some(true) => format!("(?i){pat}"),
             Some(false) => format!("(?-i){pat}"),
@@ -1407,9 +1462,20 @@ impl Editor {
         };
         let text = self.doc.text().clone();
         let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
+        let plural = |k: usize| if k == 1 { "" } else { "s" };
+        if s.confirm && !s.count {
+            self.last_search = Some(search.clone());
+            self.hl = true;
+            self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None });
+            self.mode = Mode::Confirm;
+            if !self.confirm_prompt() {
+                self.msg = format!("Pattern not found: {pat}");
+            }
+            return;
+        }
         // A match belongs to the line it starts on; without `g` only the first per line counts.
         let mut lines: Vec<usize> = Vec::new();
-        let n = self.edit(|d| d.replace_matching(&search.re, &s.rep, |m| {
+        let mut pick = |m: Range<usize>| {
             if m.start < start || m.start > end {
                 return false;
             }
@@ -1421,7 +1487,18 @@ impl Editor {
                 lines.push(l);
             }
             true
-        }));
+        };
+        if s.count {
+            let n = text.find_iter_in(&search.re, start..end).filter(|m| pick(m.clone())).count();
+            self.last_search = Some(search);
+            self.hl = true;
+            return self.msg = if n == 0 {
+                format!("Pattern not found: {pat}")
+            } else {
+                format!("{n} match{} on {} line{}", if n == 1 { "" } else { "es" }, lines.len(), plural(lines.len()))
+            };
+        }
+        let n = self.edit(|d| d.replace_matching(&search.re, &s.rep, pick));
         self.last_search = Some(search);
         self.hl = true;
         if n == 0 {
@@ -1435,11 +1512,114 @@ impl Editor {
         self.line = l;
         self.set_col(self.first_non_blank(l));
         self.clamp_normal();
-        let plural = |k: usize| if k == 1 { "" } else { "s" };
         self.msg = format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len()));
         // `.` does not repeat `:` commands (vim), so this undo group is not the last change.
         self.rec_cmd = None;
         self.end_command();
+    }
+
+    /// `gn`/`gN`: the match under the cursor, else the next/previous one, as an operator target
+    /// or a Visual selection.
+    fn select_match(&mut self, op: Option<char>, forward: bool) {
+        let Some(s) = self.last_search.clone() else { return self.msg = "No previous search pattern".into() };
+        self.hl = true;
+        let text = self.doc.text().clone();
+        let cur = self.offset();
+        let after = text.char_to_offset((text.offset_to_char(cur) + 1).min(text.char_count()));
+        let here = search::find_backward(&text, &s.re, after).filter(|(m, w)| !w && m.end > cur);
+        let found = here.or_else(|| if forward { search::find_forward(&text, &s.re, cur, after) } else { search::find_backward(&text, &s.re, cur) });
+        let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.msg = format!("Pattern not found: {}", s.pat) };
+        let (a, b) = (self.pos_of(m.start), self.pos_of(m.end));
+        match op {
+            Some(op) => self.operate(op, a, b, Kind::Exclusive),
+            None => {
+                self.anchor = a;
+                self.mode = Mode::Visual(VKind::Char);
+                (self.line, self.col) = self.pos_of(text.floor_char_boundary(m.end - 1));
+                self.want_col = self.col;
+            }
+        }
+    }
+
+    /// Moves the cursor to the next match of the confirm session and asks; false when none is left.
+    fn confirm_prompt(&mut self) -> bool {
+        let Some(c) = &self.confirm else { return false };
+        let text = self.doc.text();
+        let Some((m, _)) = c.find(text) else { return false };
+        let (l, col) = text.offset_to_line_col(m.start);
+        self.msg = format!("replace with {} (y/n/a/q/l)?", c.rep);
+        (self.line, self.col) = (l, col);
+        self.want_col = col;
+        true
+    }
+
+    /// Ends a confirm session: cursor on the last replacement's line, summary message.
+    fn confirm_finish(&mut self) {
+        let Some(c) = self.confirm.take() else { return };
+        self.mode = Mode::Normal;
+        if let Some(l) = c.last_line {
+            self.set_jump();
+            self.line = l;
+            self.set_col(self.first_non_blank(l));
+        }
+        self.clamp_normal();
+        let plural = |k: usize| if k == 1 { "" } else { "s" };
+        self.msg = format!("{} substitution{} on {} line{}", c.n, plural(c.n), c.lines, plural(c.lines));
+        self.rec_cmd = None;
+    }
+
+    /// `y` replaces, `n` skips, `a` replaces this and all the rest, `l` replaces this and stops,
+    /// `q`/Esc stop.
+    fn confirm_key(&mut self, key: KeyEvent) {
+        let k = if key.code == KeyCode::Esc { 'q' } else { normal_char(key).unwrap_or(' ') };
+        if !matches!(k, 'y' | 'n' | 'a' | 'l' | 'q') {
+            self.confirm_prompt();
+            return;
+        }
+        loop {
+            let Some(c) = &mut self.confirm else { return };
+            let text = self.doc.text().clone();
+            let Some((m, rep)) = c.find(&text) else {
+                return self.confirm_finish();
+            };
+            if k == 'q' {
+                return self.confirm_finish();
+            }
+            let at = if k == 'n' {
+                m.end
+            } else {
+                c.n += 1;
+                c.end = (c.end + rep.len()).saturating_sub(m.len());
+                let l = text.offset_to_line(m.start);
+                if c.last_line != Some(l) {
+                    c.lines += 1;
+                }
+                c.last_line = Some(l);
+                self.edit(|d| d.splice(m.clone(), &rep));
+                m.start + rep.len()
+            };
+            let c = self.confirm.as_mut().expect("session is open");
+            let text = self.doc.text();
+            // Without `g` the rest of the line is skipped; an empty match steps a char so the
+            // search always advances. `len + 1` means "nothing left".
+            c.next = if !c.all {
+                let l = text.offset_to_line(at);
+                if l + 1 < text.line_count() { text.line_to_offset(l + 1) } else { text.len() + 1 }
+            } else if m.is_empty() {
+                if at >= text.len() { text.len() + 1 } else { text.char_to_offset(text.offset_to_char(at) + 1) }
+            } else {
+                at
+            };
+            if k == 'l' {
+                return self.confirm_finish();
+            }
+            if k != 'a' {
+                break;
+            }
+        }
+        if !self.confirm_prompt() {
+            self.confirm_finish();
+        }
     }
 
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.

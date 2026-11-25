@@ -319,7 +319,8 @@ fn find_iter_in_matches_regex_in_a_range() {
         }
     }
     let t = Text::from("ab");
-    assert!(std::panic::catch_unwind(|| t.find_iter_in(&Regex::new("a").unwrap(), 2..1).count()).is_err());
+    let (hi, lo) = (2, 1); // bindings: a literal reversed range trips clippy
+    assert!(std::panic::catch_unwind(|| t.find_iter_in(&Regex::new("a").unwrap(), hi..lo).count()).is_err());
     let e = std::panic::catch_unwind(|| t.find_iter_in(&Regex::new("a").unwrap(), 0..3).count()).unwrap_err();
     assert!(e.downcast_ref::<String>().unwrap().contains("invalid range"));
 }

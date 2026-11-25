@@ -27,6 +27,7 @@
 mod chunk;
 mod document;
 mod eol;
+mod newlines;
 mod search;
 mod text;
 mod tree;

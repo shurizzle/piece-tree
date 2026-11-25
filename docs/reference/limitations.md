@@ -9,8 +9,9 @@
 | Add chunk allocated in full | Up to 64 KiB bytes + 64 KiB newline slots reserved per add chunk (untouched pages are usually not committed by the OS) | Smaller maximum, or a separate growable newline area |
 | Mixed line endings normalized to one | Saving rewrites the other endings | Track original endings per line if fidelity is ever required |
 | Chunk ≤ 4 GiB (`u32`) | Files over 4 GiB cannot load (one exact chunk) | Split large loads into several exact chunks |
+| `rfind_before` worst case O(n log n) | Backward search with few matches and none after the cursor rescans doubling windows to the start | A reverse regex engine, or an index of match starts |
+| Char conversions scan | Per-line ones are O(line length), global ones (`char_count`, `offset_to_char`, `char_to_offset`) O(n); on a 1 MB single line every column conversion scans the line | A char index per sealed chunk built lazily on the first char query (see D15) |
 | History is never freed | Every version (and the chunks it references) lives until the `Document` is dropped | Drop versions older than a seq or a time |
-| Node layout not compacted | `Node` is 80 bytes (with the char totals) + 8 of `triomphe::Arc` header | Inline piece fields or `u32` totals; a node pool is not worth it while allocation is ~5% of the edit profile |
 | Atomic refcount traffic | Path copies clone sibling and chunk `Arc`s; drop of old versions dominates benchmarks that discard every version | Non-atomic `Rc` would lose `Send + Sync` snapshots; batch edits (one version per group) if needed |
 | Recursion in `join`/`split` | Depth O(log n), not an issue in practice | — |
 
@@ -20,9 +21,7 @@
 |---|---|---|
 | Widths per char, not per grapheme (`shortcut:` in `editor/render.rs`) | A cluster (emoji with modifiers, combining marks) takes several cursor positions; some emoji sequences may misalign | Grapheme segmentation (`unicode-segmentation`) |
 | Save via temp file + rename | Permissions are copied and symlinks followed, but hard links are broken, owner is kept only when allowed (root or same user), ACLs and xattrs are lost | Write in place after a backup |
-| Vim subset only | No vim regex syntax (Rust `regex` only), `?`, `:s` `c` flag, `&`/`:&`, `gv`, uppercase (file) marks, jump list, `-` small-delete register, block `O`, multi-cursor | Add on demand |
-| Backward search is a forward scan (`shortcut:` in `editor/search.rs`) | `N` and `#` run `find_iter` from the start (no copy, but O(n)) | Reverse search in the library |
-| Highlights per visible line (`shortcut:` in `editor/search.rs`) | Matches spanning a line break are found by `/` and `:s` but not highlighted | Search the visible byte range |
+| Vim subset only | No vim regex syntax (Rust `regex` only), `gv`, `gn` inside Visual, a distinct highlight for the current `:s///c` match, uppercase (file) marks, jump list, `-` small-delete register, block `O`, multi-cursor | Add on demand |
 | Tag objects scan the whole text (`shortcut:` in `editor/objects.rs`) | `it`/`at` slice and scan the text on every use | Scan outward from the cursor |
 | `"+`/`"*` paste the editor's own copy (`shortcut:` in `editor/registers.rs`) | OSC 52 is write-only in most terminals: text copied elsewhere cannot be pasted with `"+p` | Read the clipboard (`arboard`) |
 | Macros apart from text registers | `"ap` does not paste macro `a`, `"ay` does not edit it | Store macros as register text |

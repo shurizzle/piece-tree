@@ -37,39 +37,16 @@ Goal: make the library complete by building editor features that need it. The us
 - Docs updated: `library-api.md`, `data-structures.md`, `algorithms.md`, `decisions.md` (D7 rewritten), `limitations.md`, `testing.md`, `ARCHITECTURE.md`, `pt-edit.md`.
 
 ### M3 — char metrics (`chunk.rs`, `tree.rs`, `text.rs`)
-- Sealed chunks carry `char_index: Box<[u32]>`: the chars before every `CHAR_BLOCK` (1024 bytes, 16 under Miri). `Chunk::char_index()` returns the bytes and the index. Helpers: `count_chars`, `is_char_start`.
-- Each `Piece` caches `chars: u32` (the struct grows from 24 to 32 bytes), with `chars_before(off)` and `byte_of_char(k)` (requires `k < chars`). Each `Node` caches `chars` (it grows from 64 to 80 bytes). `tree::check` verifies chars.
+- **Char cache REMOVED** (D15, `benchmarks.md`): it cost +12..32% on paste/edits/`replace_all` and +50..100% on load. `Text` keeps the char API (`char_count`, `offset_to_char`, `char_to_offset`, `line_end`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`, `is_char_boundary`, `floor_char_boundary`) implemented by scanning: per line O(line), global O(n). `chunk.rs`/`tree.rs` are back to `fa02467`.
 - `Text` API: `char_count`, `offset_to_char`, `char_to_offset`, `line_end`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`, `is_char_boundary`, `floor_char_boundary`.
-- Tests: `assert_same` → `assert_chars` (every differential step), `char_metrics_on_indexed_chunks`, `char_metrics_panics`, `char_boundaries`. Coverage 100%.
+- Tests: `assert_same` → `assert_chars` (every differential step), `char_metrics_on_long_pieces`, `char_metrics_panics`, `char_boundaries`. Coverage 100%.
 - Editor: `line_chars`, `offset_of` and `pos_of` use the lib. New commands: `Ctrl+G`, `g Ctrl+G`, `ga`, `g8`, `go`, `:goto`, `N|`. There is a test for them.
-- Docs: `data-structures.md`, `library-api.md`, decision D15, the invariants in `ARCHITECTURE.md`, `testing.md`, and the Node size in `limitations.md`.
-- **Still to do for M3:**
-  - Miri result: run `cargo +nightly-2026-11-20 miri test -p piece-tree --lib`. It was started but its result was never read. `chunk.rs` changed, so this is required.
-  - Bench A/B of the hot paths (Piece/Node got bigger, load does an extra pass). The standalone copies are in the scratchpad (`.../scratchpad/ab/{new,m1}`) and may be gone: recreate a pre-M3 copy from `git stash`/diff if needed. Record kept/rejected in `benchmarks.md` (D15 points there).
-  - `pt-edit.md`: document `Ctrl+G`, `g Ctrl+G`, `ga`, `g8`, `go`, `:goto` and `|`.
+- Docs: `data-structures.md`, `library-api.md`, decision D15, the invariants in `ARCHITECTURE.md`, `testing.md`, and a char-conversion row in `limitations.md`.
+- M3 closed: bench A/B vs `fa02467` shows no slower scenario after removing the cache. Miri re-run after the removal: 130 passed, 0 failed, 7 ignored.
 
-### M4 — search (lib part DONE, editor part IN PROGRESS)
-- Lib (`search.rs`):
-  - `find_iter_in(re, range)`;
-  - `rfind_before(re, off)`, exact and windowed (doubling from 4 KiB);
-  - `replacement_at(re, off, rep)`;
-  - private `expand`.
-- Lib tests use oracles (brute force for `rfind_before`, `regex` for the others). Coverage 100%.
-- **Lib docs for M4 not written yet:** `search.md`, `library-api.md`, `algorithms.md`, `testing.md`, plus a limitations row for the `rfind_before` worst case.
-- Editor, done but **not compiling in tests yet**:
-  - `editor/search.rs` rewritten: `Offset` (`e`, `s`/`b`, lines) and `Offset::parse`; `Search { pat, re, back, offset }`; `split_typed`; `find_forward`/`find_backward` (via `rfind_before`) return ranges; `visible_matches` (via `find_iter_in`, split per line). The old `line_matches` is removed.
-  - `motion.rs`: `search_motion(forward, n, from)` applies offsets and sets `search_landing`; `find_match`. `n`/`N`/`*`/`#` use them, and `n`/`N` follow the last direction.
-  - `editor.rs`: the `?` command; fields `search_back` and `search_landing`; the Enter handler parses pattern and offset; incsearch works in both directions.
-  - `render.rs`: the `?` prompt; highlights come from `visible_matches`, so multi-line matches are highlighted.
-  - **Current compile error** (only in tests, `editor/search.rs` around lines 187 and 193): `[vec![], vec![], vec![]]` needs a type, e.g. `[Vec::<Range<usize>>::new(), ...]` or `vec![Vec::<Range<usize>>::new(); 3]`. The binary builds.
-- After the fix:
-  - Run `cargo test -p pt-edit` and fix the existing tests that change. `N`/`#` wrap semantics may differ slightly; `incsearch` / `hlsearch` frame tests may shift.
-  - Add tests for `?`, the offsets (`/pat/e`, `/pat/s+1`, `/pat/+1`, `//e`), `n` after an offset, and multi-line highlights.
-- Editor M4 not started:
-  - `:s` flags `c` (confirm `y/n/a/q/l`, current match highlighted; use `Text::replacement_at` + `splice` in one group) and `n` (count only);
-  - `&`, `:&`, `:&&`, `g&` (store `last_sub`);
-  - `gn`/`gN` (add `n`/`N` to `G_MOTIONS`; with an operator act on the match range; `cgn` + `.`).
-- Then the M4 editor docs (`pt-edit.md`, `limitations.md`): remove the "backward search is a forward scan" and "highlights per visible line" rows and their `shortcut:` comments; add `?` to the `limitations.md` vim-subset row.
+### M4 — search: DONE
+- Lib (`find_iter_in`, `rfind_before`, `replacement_at`) and editor (`?`, offsets, `:s` flags `c` `n` `&`, `&`, `:&`, `:&&`, `g&`, `gn`/`gN`) done, tested, documented. Coverage 100% (2-region residue), clippy clean, pty smoke test of `:s///c` passed.
+- Known gaps (in `limitations.md`): `gn` ignored in Visual; no distinct highlight for the current `:s///c` match.
 
 ## Not started
 - **M5:** shared ex range parser in `ex.rs`, with `/pat/` and `?pat?` addresses. Commands `:d :y :m :t/:co :> :< :j :p := :normal :sort :g :v :r :w file :w >> :sav :retab :set ff`. Lib `splice` exists already; possibly `Text::slice_text`/`append_text`.

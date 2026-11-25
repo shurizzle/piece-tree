@@ -49,7 +49,7 @@ Each entry: decision, why, consequences. Ordered by importance.
 
 **Sizing**:
 - Add chunks start at 256 bytes and double up to 64 KiB, with `max(cap / 4, lf)` newline slots. A chunk is sealed when either the bytes or the newline slots are full.
-- Inserts over 64 KiB get an exact chunk, scanned once with memchr. `Text::from(String)` takes over the `String`'s buffer instead of copying it (see D12).
+- Inserts over 64 KiB get an exact chunk, scanned once (SIMD newline scan, D16). `Text::from(String)` takes over the `String`'s buffer instead of copying it (see D12).
 - Many small texts therefore stay cheap, and large documents allocate in 64 KiB steps.
 
 **Consequences**:
@@ -127,7 +127,7 @@ Writes go through raw pointers into reserved, unreferenced ranges. `Piece::text`
 
 ## D12. Owned loads
 
-**Decision**: `Text::from(String)` and `Document::from_string(String)` keep a large text (over 64 KiB, after normalization) in an `Owned` chunk built from the `String`'s own buffer. Only the memchr newline scan remains. `LineEnding::detect` uses `memchr2` instead of a byte loop. pt-edit loads this way.
+**Decision**: `Text::from(String)` and `Document::from_string(String)` keep a large text (over 64 KiB, after normalization) in an `Owned` chunk built from the `String`'s own buffer. Only the newline scan remains (SIMD since D16). `LineEnding::detect` uses `memchr2` instead of a byte loop. pt-edit loads this way.
 
 **Why**: the 50 MB load went from 1.0 to 0.3 ns/byte, and a full `Document` load from 1.6 to 0.5 ns/byte.
 
@@ -162,12 +162,38 @@ Writes go through raw pointers into reserved, unreferenced ranges. `Piece::text`
 
 **Replace**: one edit per match would create k versions and k path copies. Collecting the matches and assembling `pieces_in` gaps plus sub-pieces of one stored replacement buffer gives one version, one undo step and an O(n + k) build. The `$` expansion uses `regex_automata::util::interpolate::string`, the same code `regex` uses.
 
-## D15. Char metrics cached in the tree
+## D15. Char conversions by scanning, no char cache in the tree
 
-**Decision**: every piece caches its char count and every node the subtree's. Sealed chunks (loads, large inserts) get an immutable char index at creation (chars before every 1 KiB), so splitting or querying a long piece scans at most a block; add-chunk pieces (≤ 64 KiB) are scanned. `char_to_offset`, `offset_to_char` and the line/column conversions are O(log n).
+**Decision**: `Text` offers char conversions (`char_count`, `offset_to_char`, `char_to_offset`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`) but the tree caches nothing about chars. Per-line ones scan the line (`Text::line`), global ones scan the pieces: O(line length) and O(n). `is_char_boundary`, `floor_char_boundary` and `line_end` need no scan.
 
-**Why**: editors address text by columns; without the cache every column conversion is O(line length) on the caller's side (pt-edit's `chars().count()`), and char offsets in the whole text are O(n). Counting on demand at split time would scan the whole loaded piece (MBs) per edit.
+**Why**: an editor converts columns of one line (the cursor line, visible lines), and `Text::line` is already O(line length) there. The global conversions serve single commands (`Ctrl+G` counts, `/pat/e+1`, `gn`).
 
-**Rejected**: an index in add chunks: their pieces are short, and keeping it would need writes past the published end of a second area (more `unsafe`).
+**Rejected**: caching `chars` in every `Piece` and `Node` plus an index (chars before every 256 bytes) in sealed chunks. It made conversions O(log n) but cost, measured against `fa02467` with the same build: paste +12%, random edits +20%, `replace_all` +32%/+8%, load +50..100%. A samply profile of `edits` showed +17% samples: `Piece::chars_before` 53% of the increase, `tree::node` 25% (more work per rebuilt node, `Piece` 24 → 32 bytes). `Node` also needed `u32` totals to stay at 64 bytes, which limited a text to 4 Gi lines and chars. Details in [../guides/benchmarks.md](../guides/benchmarks.md).
 
-**Cost**: `Piece` 24 → 32 bytes, `Node` 64 → 80, one extra pass over the text at load; numbers in [../guides/benchmarks.md](../guides/benchmarks.md).
+**Cost of this choice**: a column conversion on a very long line (a minified 1 MB file) is O(line length) per call. Upgrade path: a per-chunk index again, built lazily on the first char query, or a cache for the cursor line only.
+
+## D16. SIMD newline index for owned chunks
+
+**Decision**: `Chunk::from_string` (so every load and every exact chunk) builds its newline offsets with `newlines::positions`. Each 64-byte block becomes one 64-bit mask (bit `i` set when byte `i` is `\n`); a block without a newline is skipped after one test; otherwise the mask is flattened into offsets with 8 unconditional writes (plus a loop only for the rare block with more than 8 newlines), because a loop over the set bits mispredicts once per block. Only `mask64` is architecture specific: NEON on aarch64 and SSE2 on x86_64 (both baseline, no runtime detection); every other architecture and Miri use a portable SWAR mask (plain `u64` arithmetic). The `Vec` starts with `len / 64 + 64` slots and calls `reserve(64)` before each non-empty block, so the junk writes of `flatten` stay inside the capacity whatever the mask says. There is no density heuristic and no `memchr` fallback. `Chunk::try_append` keeps `memchr_iter`: it writes into slots reserved by one atomic step, and the junk writes past the real ones would land in another writer's reservation.
+
+**Why**: studying `memchr` (`arch/generic/memchr.rs`) showed where `memchr_iter` loses. The iterator calls `find_raw(start, end)` once per hit and restarts at `hit + 1`; `find_raw` compares an unaligned head vector, realigns, runs a 4-vector loop and returns the *first* hit only, throwing away the compares of the other vectors, so the next call computes them again. That is ~12 ns per newline, and on source code (a newline every ~35 bytes) it was ~90% of `Text::from(String)`. Its `count` is a separate function with no per-hit state (0.02 ns/B). The one idea worth taking from `find_raw` is its early out: it ORs the four vector compares and tests once, so blocks without a newline cost almost nothing. With that, the mask scan in the prototype was faster than `memchr_iter` + `collect` on blank lines and at mean line lengths of 16 to 1000 bytes, and tied on a single line without newlines, and `Text::from(String)` of 50 MB went (ns/B, min of 5 alternating runs): Rust sources 0.385 -> 0.106 (3.6x), synthetic 0.180 -> 0.101, CJK 0.112 -> 0.064, exponential lines of mean 100/200/400/1000/5000: 1.8x/1.5x/1.3x/1.19x/1.03x, one line without newlines 0.033 -> 0.034 (noise). See benchmarks.md.
+
+**Rejected** (measured, benchmarks.md): preallocating the `Vec` from an exact count or a `len / 32` estimate: no gain, the growth is not the cost. A 16-byte NEON mask with a `while mask != 0` loop: 3.8x slower than the 64-byte mask, one misprediction per block. A first design chose between the mask and `memchr_iter` from the mean line length of a 64 KiB sample: dropped because the early out removed the need, and because the crossovers it was tuned on were wrong by 3x (lines of equal length hide the branch mispredictions of the per-hit iterators; exponentially distributed lengths, like real text, put them at ~450 B for NEON and ~190 B for SWAR). A counting pass for an exact capacity (~0.02 ns/B): not needed.
+
+**Cost of this choice**: `unsafe` in a second file (`newlines.rs`, with SAFETY comments). A wrong mask cannot write out of bounds (`reserve(64)` comes first) but would give wrong newline offsets, and those feed `from_utf8_unchecked`; so correctness rests on the tests: a per-lane test of every `mask64` (each of the 64 lanes alone, all lanes, none, with noise bytes such as 0x0B and 0x8A), differential tests against a naive scan at every length around the 16/64-byte boundaries and the zero-padded tail, and a `debug_assert_eq!` against `memchr`'s counter that runs in every test. Miri runs the SWAR mask, hence `positions`, `push_block` and `flatten`; the NEON and SSE2 bodies are checked natively (SSE2 under emulation, see testing.md).
+
+**To try (pending, needs a real x86_64 host)**: an AVX2 (two 32-byte compares, `_mm256_movemask_epi8`) or AVX-512BW (`_mm512_cmpeq_epi8_mask`, which yields the 64-bit mask directly) `mask64` with `is_x86_feature_detected!` dispatch. Both must be tried: they are not implemented yet only because the development machine (Apple M1) cannot run or time them and the x86_64 emulation used for tests has SSE2 only. Expect a small gain (not measured): the flatten step, not the mask, is the cost. Acceptance: A/B against the SSE2 path with the load example of `benchmarks.md` (Rust, synthetic and CJK corpora, same host, min of 7, alternating runs); keep a path only if it beats the noise, and record the rejected ones too. For AVX-512 also check for frequency throttling on older Intel parts (time something else on the same host afterwards). The lane test and the differential tests cover any new `mask64`; they must run natively on that host.
+
+**Other architectures (not implemented, to try)**: aarch64 (NEON), x86_64 (SSE2) and the portable SWAR mask (every other architecture, and Miri) are implemented. Anything below replaces SWAR where it wins, so compare against SWAR (flat ~0.13 ns/B on the Apple M1), not against `memchr`. Status checked on 2026-11-25 against the `std::arch` sources of `nightly-2026-11-20` (stable rustc 1.100.0); re-check before starting, these change every release:
+
+| Architecture | Mask step (idea) | `std::arch` status | Needs to test |
+|---|---|---|---|
+| wasm32 (simd128) | `i8x16_eq` + `i8x16_bitmask` (returns `u16`), four per block | stable since 1.54, compile-time only: `-C target-feature=+simd128` and `cfg(target_feature = "simd128")` | a wasm runtime (wasmtime or node) as test runner |
+| x86 (32-bit) | reuse the SSE2 `mask64` under `target_arch = "x86"` and `target_feature = "sse2"` (default on i686, not on i586) | stable | a 32-bit x86 build and run |
+| loongarch64 (LSX/LASX) | compare, then `lsx_vmskltz_b` (16 bits per 128-bit vector) or `lasx_xvmskltz_b` (256-bit) | `vmskltz_b` is marked stable since 1.101.0 (`stdarch_loongarch_simd`), so not in 1.100.0; LSX/LASX are not baseline, needs runtime detection | LoongArch host or QEMU |
+| s390x (vector facility) | `vec_cmpeq` + `vec_bperm_u128` | unstable (`stdarch_s390x`): nightly only | s390x host or QEMU |
+| riscv64 (RVV) | `vmseq` writes a mask register, then `vcpop`/`vfirst` | no vector intrinsics found in `std::arch` (only unstable scalar-extension ones, `riscv_ext_intrinsics`) | wait for intrinsics; QEMU can run RVV meanwhile |
+| powerpc64 (AltiVec/VSX) | compare + bit gather (`vec_bperm`) | only 8 unstable items (`stdarch_powerpc`), no compare or gather: not usable yet | wait |
+| any (`std::simd`) | `Simd<u8, 64>::simd_eq(..).to_bitmask()`: one code path for every architecture | `portable_simd`, nightly only | wait for stabilization; would replace the per-architecture functions |
+
+Not checked: aarch64 SVE/SVE2 (NEON is baseline and enough for a 128-bit compare). Suggested order: wasm32 and 32-bit x86 first (stable intrinsics), the rest as `std::arch` stabilizes. Every new path follows the same acceptance as AVX2/AVX-512: A/B against the current path on that architecture with the load example of `benchmarks.md`, keep only winners, record rejected ones; the lane test and the differential tests cover any new `mask64`.

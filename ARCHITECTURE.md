@@ -17,6 +17,7 @@ crates/
       lib.rs               public re-exports + crate docs (doctest)
       chunk.rs             Chunk: append-only bytes + newline cache, one allocation (unsafe)
       chunk/tests.rs
+      newlines.rs          SIMD newline offsets for owned chunks (NEON / SSE2 / portable SWAR, unsafe)
       tree.rs              Piece, Node, join/split (persistent AVL)
       tree/tests.rs
       text.rs              Text: immutable value, public queries and edits
@@ -24,7 +25,7 @@ crates/
       eol.rs               LineEnding, detection, normalization (+ tests)
       document.rs          Document: undo tree of Text versions, groups, edit log, output EOL
       document/tests.rs
-      search.rs            Regex, TextCursor, find_iter/find_from/replace_all/replace_matching
+      search.rs            Regex, TextCursor, find_iter/find_from/find_iter_in/rfind_before/replacement_at/replace_all/replace_matching
       search/tests.rs
       test_util.rs         deterministic LCG and random text (cfg(test))
     benches/bench.rs       benchmarks (harness = false)
@@ -66,7 +67,7 @@ pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of 
 1. Text inside the tree contains **no `\r`**: all input passes through `eol::normalize`.
 2. Every piece is **non-empty**.
 3. AVL balance: `|height(left) - height(right)| <= 1` at every node.
-4. Node `len`, `lf` and `chars` are **totals of the whole subtree** (not left-only as in VS Code); pieces cache their own `lf` and `chars`.
+4. Node `len` and `lf` are **totals of the whole subtree** (not left-only as in VS Code); pieces cache their own `lf`. Chars are not cached: char conversions scan (see D15).
 5. Public offsets are **bytes** and must be on UTF-8 char boundaries (asserted).
 6. A `Text` is never mutated; edits return a new `Text`.
 7. **Soundness**: a piece only covers published chunk bytes and newline slots, and its ends are char boundaries. `Piece::text` relies on it (`from_utf8_unchecked`); `Piece::split` asserts it.
