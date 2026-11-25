@@ -362,6 +362,35 @@ Is the drift real? Two binaries built from different code differ 5-10% by placem
 
 The current code is within 1% of HEAD on every row on the minima (the medians of paste are 4% higher, 650 -> 674, with a spread between rounds of the same size), so no regression is established: a small real cost of 1-4% on paste cannot be excluded, the harness drift being mostly placement and load. **Rejected: `#[inline(never)]` on the scan.** It does not move the edit rows (paste and random edits within 2%, typing 57.6 against 60.8 is a single-binary placement effect that the medians do not confirm), and the paste rows with newlines are 1-6% slower (256 B - 64 KiB, 1.00-1.06x of the inlined version): the scan is cheap enough that the call costs more than the code growth. The same attribute fixed the batch code (round 5, above) because that code is large; this one is not.
 
+## Estimate for wide leaves (W1, throwaway prototype)
+
+Question: how much would a B-tree-like tree (several pieces per node, `Arc` per node, path copying) gain over the binary AVL of `tree.rs`? Prototype outside the workspace (`piece-tree-bench/w1proto`, a standalone crate, not part of the library): the same 24-byte `Piece` with an `Arc<Chunk>`, the same `triomphe::Arc`, the AVL copied from `tree.rs` (`node`, `join`, `insert_at`, `extend_at`) against a persistent B-tree with up to `L` pieces per leaf and `F` children per inner node (insert and the typing extension only). Built the same way (fat LTO), system allocator and mimalloc, min of 3 runs of 40 rounds. "Insert" = `t = t.insert(random offset, piece)` dropping the previous version each step (the paste scenario); "typing" = growing one piece by one byte per key (`extend_at`, no structural change); "lookup" = `lf_before` at a random offset. The AVL of the prototype reproduces the library (3000 pieces: 511 ns against 660 ns of the real paste, the rest being the chunk append and the line-feed counts), which fixes the part that a tree change cannot touch at about 120 ns (system) and 80 ns (mimalloc) per paste.
+
+Best shape, `L = 8, F = 8` (about 5.5 pieces per leaf when random inserts fill it), ns, AVL -> wide:
+
+| | pieces | system allocator | mimalloc |
+|---|---|---|---|
+| insert | 1 (a loaded text) | 365 -> 240 (-34%) | 269 -> 199 (-26%) |
+| | 1000 | 433 -> 281 (-35%) | 325 -> 235 (-28%) |
+| | 3000 | 511 -> 341 (-33%) | 363 -> 270 (-26%) |
+| | 30000 | 627 -> 419 (-33%) | 480 -> 321 (-33%) |
+| typing | 3 (1 MB text) | 21 -> 40 (**+90%**) | 21 -> 40 (**+90%**) |
+| | 1000 | 210 -> 188 (-10%) | 161 -> 171 (+6%) |
+| | 3000 | 249 -> 232 (-7%) | 209 -> 210 (0%) |
+| | 30000 | 314 -> 271 (-14%) | 271 -> 276 (+2%) |
+| lookup | 1000 | 35 -> 26 (-25%) | 36 -> 26 (-27%) |
+| | 3000 | 52.5 -> 33.7 (-36%) | 52.4 -> 34.0 (-35%) |
+| | 30000 | 106 -> 59 (-44%) | 104 -> 59 (-43%) |
+
+Other shapes: `L = 4, F = 4` gains less on insert (-10% to -14% at 3000 pieces) and adds more nodes; `L = 16` (either `F`) is no better than the AVL on insert (-14% to +10% at 3000 pieces, depending on `F` and the allocator) and clearly worse on typing (+8% to +55% on fragmented trees, 2.7x on a 3-piece tree): copying 16 pieces costs 16 atomic increments. A wide node is also smaller per piece: 240 bytes for 8 slots (about 44 bytes per stored piece at the observed fill) against 72 bytes per AVL node.
+
+Reading of the numbers:
+- **Paste and random edits**: the path copy gets 26-35% cheaper (4 allocations instead of ~14). Subtracting the untouched part, the end-to-end paste would go from about 660 to 485 ns (-27%) with the system allocator and from about 443 to 350 ns (-21%) with mimalloc, i.e. from a tie with ropey 2 beta to 1.4x ahead (system) and from 1.3x to 1.7x ahead (mimalloc). Random edits (insert plus delete) are expected to follow, but delete is not prototyped.
+- **Typing gets worse in the harness scenario**: on the 1 MB text the tree has 3 pieces, the AVL path copy is two small nodes (21 ns) and a wide leaf costs 40 ns (its 8 slots are copied and initialized): typing 59 -> about 78 ns (system) and 51 -> about 70 ns (mimalloc), against ropey 2 beta's 47: the gap would grow from 1.16-1.30x to 1.5-1.7x. In a fragmented text typing gains 0-14%. A real implementation could narrow it (a smaller first leaf, an in-place path for unshared nodes) but not by a measured amount.
+- **Reads** are 25-44% faster, which does not matter much: `line()` is already 10-34x ahead.
+
+What the prototype does not include and what would eat part of the gain: delete with merge/borrow of underfull nodes, `split` and `join` of two B-trees of different heights (the AVL `join` is the base of `delete_range`, `apply_edits`, the clustered batch of D17), `from_pieces`, `pieces_in`, and the piece-count bounds of D17 (`min_pieces`, `max_pieces`, `has_at_most`), which are defined on the AVL height. The prototype's own overheads (a scratch array of 20 slots per node) were reduced for `extend` but not for `insert`, so the insert gain is, if anything, understated.
+
 ## Allocator: mimalloc against the system allocator (D18)
 
 Harness feature `mimalloc` (`cargo run --release --features mimalloc`): `mimalloc::MiMalloc` as the global allocator of the whole binary, so all four libraries get it. macOS (Apple M1 Pro) only; the macOS system allocator may be slower than glibc's (not compared), so the effect on Linux may be smaller or larger (not measured). Profiles (macOS `sample`) before the change: 294 of 519 samples in `malloc`/`free` for random edits, 618 of 1157 for paste.
