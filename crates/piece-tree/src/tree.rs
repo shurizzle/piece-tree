@@ -304,6 +304,29 @@ pub(crate) fn split(t: Tree, off: usize) -> (Tree, Tree) {
     }
 }
 
+/// Whether at most `limit` pieces overlap bytes `[s, e)` of `t`, by a walk that stops as soon as
+/// the count exceeds it and clones nothing: O(min(pieces in range, limit)).
+pub(crate) fn has_at_most_in(t: &Tree, s: usize, e: usize, limit: usize) -> bool {
+    fn walk(t: &Tree, s: usize, e: usize, n: &mut usize, limit: usize) -> bool {
+        let Some(node) = t else { return true };
+        if s >= e {
+            return true;
+        }
+        let (ll, pl) = (len(&node.left), node.piece.len());
+        if s < ll && !walk(&node.left, s, e.min(ll), n, limit) {
+            return false;
+        }
+        if s.max(ll) < e.min(ll + pl) {
+            *n += 1;
+            if *n > limit {
+                return false;
+            }
+        }
+        e <= ll + pl || walk(&node.right, s.saturating_sub(ll + pl), e - ll - pl, n, limit)
+    }
+    walk(t, s, e, &mut 0, limit)
+}
+
 /// Appends to `out` the pieces covering bytes `[s, e)` of `t`, cut at the ends.
 pub(crate) fn pieces_in(t: &Tree, s: usize, e: usize, out: &mut Vec<Piece>) {
     let Some(n) = t else { return };

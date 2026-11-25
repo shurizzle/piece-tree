@@ -664,6 +664,28 @@ fn apply_edits_uses_both_strategies() {
 }
 
 #[test]
+fn apply_edits_clustered_in_a_fragmented_text() {
+    let mut rng = Rng(21);
+    let (frag, fm) = fragmented(&mut rng, FRAG_STEPS);
+    assert!(tree::min_pieces(frag.root()) > 5 * REBUILD_PIECES_PER_EDIT);
+    let texts: Vec<String> = ["a", "xyz\n", "é", "\n\n", "line one\nline two\n"].map(String::from).to_vec();
+    // Windows at the start, in the middle and at the end: a small span takes the cluster path, a
+    // wide one (whole text) falls back to path copies; both must match the model.
+    let (end, mid) = (fm.len(), fm.len() / 2);
+    for (lo, hi) in [(0, 40), (mid, mid + 60), (end - 40, end), (0, end)] {
+        let (lo, hi) = (fm.floor_char_boundary(lo), fm.floor_char_boundary(hi));
+        let mut batch = random_batch(&mut rng, &fm[lo..hi], 6, &texts);
+        batch.iter_mut().for_each(|(r, _)| *r = r.start + lo..r.end + lo);
+        let edits = as_refs(&batch);
+        let out = frag.apply_edits(&edits);
+        let mut model = fm.clone();
+        apply_to_model(&mut model, &edits);
+        assert_same(&out, &model, &mut rng, false);
+        assert_same(&frag, &fm, &mut rng, false);
+    }
+}
+
+#[test]
 fn apply_edits_edge_cases() {
     let mut rng = Rng(4);
     let t = Text::from("hello\nworld\n");

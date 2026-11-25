@@ -435,9 +435,13 @@ fn pieces_in_every_range() {
             let mut out = Vec::new();
             pieces_in(&t, a, b, &mut out);
             assert_eq!(text_of(&out), &s[a..b]);
+            // The counting walk agrees with the pieces collected, right at the limit.
+            assert!(has_at_most_in(&t, a, b, out.len()));
+            assert!(out.is_empty() || !has_at_most_in(&t, a, b, out.len() - 1));
         }
     }
     let mut out = Vec::new();
     pieces_in(&None, 0, 1, &mut out);
     assert!(out.is_empty());
+    assert!(has_at_most_in(&None, 0, 1, 0));
 }

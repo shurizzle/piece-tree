@@ -145,7 +145,10 @@ impl Text {
         let piece = |o: &Range<usize>| buf.as_ref().expect("non-empty replacements were stored").sub(o.start, o.end);
         let root = if self.rebuild_wins(spans.len()) {
             // Dense: one linear rebuild beats a path copy per edit.
-            self.rebuilt(buf.as_ref(), &spans)
+            self.rebuilt(buf.as_ref(), &spans, 0, self.len())
+        } else if let Some(root) = self.rebuilt_cluster(buf.as_ref(), &spans) {
+            // Clustered: only the span between the first and the last edit is rebuilt.
+            root
         } else {
             // Sparse: one path copy per edit, from the end so that earlier offsets stay valid.
             let mut root = self.root.clone();
@@ -193,13 +196,13 @@ impl Text {
             .collect()
     }
 
-    /// The tree of this text with each `(range, stored range)` of `edits` replaced by the matching
-    /// part of `buf` (`edits` sorted and not overlapping): the untouched pieces and the
-    /// replacement pieces in order, built into a balanced tree in one go.
+    /// The tree of bytes `[lo, hi)` of this text with each `(range, stored range)` of `edits`
+    /// (sorted, not overlapping, inside `[lo, hi)`) replaced by the matching part of `buf`: the
+    /// untouched pieces and the replacement pieces in order, built into a balanced tree in one go.
     #[inline(never)] // see `tree::delete_range`: batch code stays out of the edit paths' inlining
-    pub(crate) fn rebuilt(&self, buf: Option<&Piece>, edits: &[Span]) -> Tree {
+    pub(crate) fn rebuilt(&self, buf: Option<&Piece>, edits: &[Span], lo: usize, hi: usize) -> Tree {
         let mut pieces = Vec::new();
-        let mut pos = 0;
+        let mut pos = lo;
         for (m, r) in edits {
             tree::pieces_in(&self.root, pos, m.start, &mut pieces);
             if !r.is_empty() {
@@ -207,8 +210,35 @@ impl Text {
             }
             pos = m.end;
         }
-        tree::pieces_in(&self.root, pos, self.len(), &mut pieces);
+        tree::pieces_in(&self.root, pos, hi, &mut pieces);
         tree::from_pieces(pieces)
+    }
+
+    /// Clustered batch: rebuilds only the span from the first edit to the last when it is small
+    /// (same budget as `rebuild_wins`), and joins it with the untouched text on both sides, so a
+    /// batch inside one region of a big fragmented text costs the span, not one path per edit.
+    /// `None` when the span has too many pieces.
+    #[inline(never)] // see `tree::delete_range`
+    fn rebuilt_cluster(&self, buf: Option<&Piece>, edits: &[Span]) -> Option<Tree> {
+        if edits.len() < REBUILD_MIN_EDITS {
+            return None;
+        }
+        let (lo, hi) = (edits[0].0.start, edits[edits.len() - 1].0.end);
+        let budget = edits.len().saturating_mul(REBUILD_PIECES_PER_EDIT);
+        // O(1) rejection by estimated density (the fewest pieces a tree of this height can have,
+        // spread evenly), then a walk that clones nothing: a rebuild attempt that fails clones up
+        // to `budget` pieces for nothing, which cost scattered batches on a fragmented text
+        // +27-60% (benchmarks.md). The estimate is a heuristic: an uneven text just takes the
+        // other strategy.
+        if (hi - lo) as u128 * tree::min_pieces(&self.root) as u128 > budget as u128 * self.len() as u128
+            || !tree::has_at_most_in(&self.root, lo, hi, budget)
+        {
+            return None;
+        }
+        let mid = self.rebuilt(buf, edits, lo, hi);
+        let left = tree::split(self.root.clone(), lo).0;
+        let right = tree::split(self.root.clone(), hi).1;
+        Some(tree::join2(tree::join2(left, mid), right))
     }
 
     /// 0-based line containing byte `off`.

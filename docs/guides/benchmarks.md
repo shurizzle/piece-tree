@@ -53,7 +53,7 @@ Load average ~2, minimum of 7 runs. "regex+copy" is `regex::Regex` on `Text::to_
 
 ## Comparison with other implementations
 
-Same scenarios run over four libraries in one binary, same profile (fat LTO, `codegen-units = 1`), same allocator, on an Apple M1 Pro (load average 8-18, results repeat within ~3% for the same binary; one binary per corpus, so differences below ~10% are not established). Harness: a separate repository (`piece-tree-bench`, not part of this workspace and not to be published as is: it vendors Zed's GPL-3.0-or-later `rope` crate). Libraries: piece-tree (this tree), ropey 1.6.1, ropey 2.0.0-beta.1, and Zed's `Rope` on top of its `sum_tree` (commit `77228009dd267dcf8ab9a20eef5802b2a8ea4afa`, tests and tracing stripped). Last full run: after the SIMD newline scan (D16), the batch API (D17) and the `#[inline(never)]` fix, system allocator.
+Same scenarios run over four libraries in one binary, same profile (fat LTO, `codegen-units = 1`), same allocator, on an Apple M1 Pro (load average 8-18, results repeat within ~3% for the same binary; one binary per corpus; the 3-run spreads are under "Noise of the cross-library harness"). Harness: a separate repository (`piece-tree-bench`, not part of this workspace and not to be published as is: it vendors Zed's GPL-3.0-or-later `rope` crate). Libraries: piece-tree (this tree), ropey 1.6.1, ropey 2.0.0-beta.1, and Zed's `Rope` on top of its `sum_tree` (commit `77228009dd267dcf8ab9a20eef5802b2a8ea4afa`, tests and tracing stripped). Last full run: after the SIMD newline scan (D16), the batch API (D17) and the `#[inline(never)]` fix, system allocator.
 
 How each scenario is measured:
 - Every library works with byte offsets. ropey 1.x indexes by char, so it pays `byte_to_char` on every edit, as an editor working in bytes would.
@@ -286,13 +286,17 @@ Scratch program, 10 MB synthetic text, min over 15 reps of a whole batch and 3 r
 | | 997 | 417 | 92 | 4.53x |
 | | 4925 | 448 | 87 | 5.15x |
 | fragmented, scattered | 1-32 | 411-500 | 419-500 | 0.96-1.00x |
-| | 128 | 479 | 527 | 0.91x |
+| | 128 | 458 | 574 | 0.80x |
 | | 997 | 512 | 302 | 1.70x |
 | | 4925 | 548 | 145 | 3.78x |
 | single piece, clustered | 4 / 15 / 51 | 198 / 233 / 251 | 125 / 106 / 83 | 1.58x / 2.20x / 3.02x |
-| fragmented, clustered | 4 / 15 / 51 | 448 / 439 / 426 | 438 / 439 / 427 | 1.02x / 1.00x / 1.00x |
+| fragmented, clustered | 4 / 15 / 51 | 427 / 425 / 420 | 469 / 203 / 118 | 0.91x / 2.09x / 3.56x |
 
-Below 3 edits it is the sparse path plus the fixed cost of validating, normalizing and storing the replacements (~40 ns per edit at 1-2 edits): use `insert`/`delete` there. The 0.91x row is the bounded count walk of D17 (1280 pieces visited, ~7 ns each); it is the worst band.
+Below 3 edits it is the sparse path plus the fixed cost of validating, normalizing and storing the replacements (~40 ns per edit at 1-2 edits): use `insert`/`delete` there. The 0.91x row is the bounded count walk of D17 (1280 pieces visited, ~7 ns each); it is the worst band (the 128-edit row is 521 -> 574 against the version before the clustered path, +10%: the failed attempt of the clustered path, see below; within the ~10% noise).
+
+**Clustered batches (W2).** The 4437-piece rows "fragmented, clustered" took the sparse path and gained nothing (1.0x). Now, when the batch is sparse, `Text::rebuilt_cluster` rebuilds only the span from the first to the last edit (`rebuilt` over `[lo, hi)`), and joins it with the untouched left and right parts obtained by `split`. A/B against a standalone copy of the previous version, same example built the same way, 7 alternating rounds, min, ns per edit (`apply_edits`): 15 edits 439 -> 203 (2.2x), 51 edits 426 -> 118 (3.6x); 4 edits 427 -> 469 (+10%: the span has more than the 40 pieces of the budget, so the attempt fails). Single piece and scattered rows unchanged (0.99-1.04x; the 1-2 edit rows move by +-10% between builds, code placement: they never reach the new code). Hot paths, same A/B, 12 alternating rounds, min / median: paste 629 / 671 -> 597 / 639, random edits 652 / 681 -> 643 / 666, typing 60.9 -> 60.9, backspace 52.2 -> 51.8, `line()` 4.0 -> 4.0 (no regression).
+
+**Rejected / reworked in W2**: (1) the span rebuild tried on every sparse batch with only a piece limit while cloning pieces: scattered batches on the fragmented text became +40-60% slower (417-438 -> 547-703 ns at 4-128 edits), because a failed attempt clones up to `edits * 10` pieces (an atomic increment each) for nothing, much more than the ~7 ns per piece of a count. (2) Adding the O(1) density estimate (`span * min_pieces <= budget * len`) removed it except at 128 edits (+27%). (3) Adding a count walk that clones nothing (`tree::has_at_most_in`) before the rebuild brought that to +10%, the cost kept.
 
 Strategy calibration (forced one way or the other, same scratch program): rebuilding costs ~135 µs on 4437 pieces regardless of the number of edits (~30 ns per piece) plus ~100 ns per edit, a path copy ~500 ns per edit, so they cross near 1 edit per 12 pieces (the code uses 1 per 10); on a single piece the rebuild wins from 3-4 edits (k=1: 0.58x, 2: 0.78x, 4: 1.53x).
 
@@ -318,6 +322,19 @@ The resulting text is identical across the four libraries (the harness sanity ch
 | final tree with that fix, vs base in the same run (12 rounds) | 629 / 651 (base 612 / 642) | 632 / 667 (base 634 / 649) | 60.9 / 61.0 | 52.3 / 52.3 | 4.0 / 4.0 |
 
 The batch API made paste and random edits +4-8% slower although the `insert` path source did not change. Bisected: base plus only the SIMD files is not slower (paste 593-682 over 6 rounds against 605-628 for base, i.e. noise), a copy of the tree with the old `memchr` scan is as slow as the current one, and reverting `Text::delete` to its inline form does not help; putting `#[inline(never)]` on `tree::delete_range`, `Text::rebuilt` and `Text::apply_edits_spans` brings both rows back to base level (within ~3%, the spread of the base itself between runs is 5-10%). So the cause was inlining of batch code into shared paths, not the SIMD scan or the algorithm. Typing, backspace and reads never moved. The attributes carry a comment pointing here.
+
+## Noise of the cross-library harness (3 runs per cell)
+
+The same harness binary run 3 times per corpus (synthetic, Rust sources, CJK), alternating the system-allocator and the mimalloc build, on the M1 Pro with a quiet machine (load ~2). Spread = (max / min - 1) over the 3 runs of one cell, on the per-run minimum. Reads, loads and typing: 1-10% for piece-tree, 1-9% for the others. Edit rows are noisier: paste 2-9%, random edits 2-11% for piece-tree, up to 52% (ropey 1.x), 27% (ropey 2 beta, CJK) and 12% (SumTree); "typing, clone per key" up to 20% (mimalloc). What the repeats establish (min of the 3 minima, ns/op, piece-tree against the best other):
+
+| Row | system allocator (synthetic / Rust / CJK) | mimalloc (synthetic / Rust / CJK) |
+|---|---|---|
+| typing 10k in 1 MB | 59.3 / 59.2 / 59.2 against ropey 2 beta 47.0 / 50.9 / 45.7: **ropey 2 ahead by 1.16-1.30x**, established (spreads <= 8%) | 50.7 / 50.7 / 50.5 against 48.2 / 50.8 / 45.2: tie on Rust, ropey 2 ahead by 1.05x and 1.12x (within the spreads of 3-7%) |
+| paste mid-piece 1k | 660 / 661 / 631 against 663 / 648 / 666: tie | 442 / 451 / 436 against 587 / 600 / 568: **piece-tree ahead by 1.3x**, established |
+| random edits 1k+1k | 631 / 643 / 615 against 578 / 570 / 572: ropey 2 ahead by 1.07-1.13x, at the edge of the spreads (4-27%) | 424 / 431 / 417 against 585 / 561 / 559: **piece-tree ahead by 1.3x**, established |
+| backspace | 51 / 51 / 51 against 74 / 83 / 77 | 39 / 40 / 39 against 74 / 83 / 77 |
+
+So the typing gap against ropey 2 beta is real with the system allocator and mostly closes with mimalloc (D18); the paste and random-edit differences with the system allocator are not established (ropey 2 is at most 13% ahead on random edits, a tie on paste), and with mimalloc piece-tree is clearly ahead. The full tables of the earlier single runs stay valid.
 
 ## Allocator: mimalloc against the system allocator (D18)
 

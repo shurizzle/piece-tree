@@ -291,7 +291,7 @@ impl Text {
             return (self.clone(), Vec::new());
         }
         let (buf, add) = self.store_replacements(out);
-        let root = self.rebuilt(buf.as_ref(), &edits);
+        let root = self.rebuilt(buf.as_ref(), &edits, 0, self.len());
         let changes = Text::edits_of(&edits);
         (Text::from_parts(root, add), changes)
     }
