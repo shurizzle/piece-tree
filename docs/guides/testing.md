@@ -89,4 +89,4 @@ RUSTFLAGS="-C linker=rust-lld -C linker-flavor=ld.lld -C link-self-contained=yes
 docker run --rm --platform linux/amd64 -v <dir with the test binary>:/b alpine /b/<test binary>
 ```
 
-The directory must be under `$HOME` (the VM does not see `/private/tmp`). The emulator reports SSE2 only (no AVX2/AVX-512), so a future AVX2 or AVX-512 `mask64` needs a real x86_64 host: the lane test and the differential tests already exercise whatever `mask64` is compiled in.
+The directory must be under `$HOME` (the VM does not see `/private/tmp`). The emulator reports SSE2 only. On a native x86_64 Linux host the plain `cargo test -p piece-tree` runs the SSE2 `mask64` directly (done on an Intel i5-8365U, W4). An AVX2 `mask64` was tried there and rejected (D16); a future AVX-512 one needs a host with AVX-512BW: the lane test and the differential tests exercise whatever `mask64` is compiled in.

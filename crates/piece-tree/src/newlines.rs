@@ -27,9 +27,8 @@
 //! baseline there, no runtime detection). Everything else, and Miri (which does not run the
 //! intrinsics), uses the portable SWAR mask, plain integer arithmetic.
 //!
-//! To try: AVX2 and AVX-512 paths do not exist yet. Both must still be tried and timed against SSE2 on a real
-//! x86_64 host (not possible on the development machine): add one `mask64` + `is_x86_feature_detected!`
-//! dispatch per feature, keep it only if it wins (D16). Other architectures (wasm32, 32-bit x86,
+//! AVX2 was tried and rejected (no gain with `target-cpu=native`, up to 28% slower behind
+//! `is_x86_feature_detected!`, D16); AVX-512BW is untried (no host). Other architectures (wasm32, 32-bit x86,
 //! loongarch64, s390x, riscv64, powerpc64, `std::simd`) use SWAR and are listed in D16 as to-try.
 
 use memchr::memchr_iter;

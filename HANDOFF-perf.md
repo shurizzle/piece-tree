@@ -8,7 +8,7 @@ Goal: make `piece-tree` as fast as possible, SIMD included if it pays. Numbers d
 
 Each item: what, why, how to measure, where to look. IDs are stable, refer to them by ID.
 
-**Order and dependencies.** W2 and W3 are done (uncommitted, see Done). W5/W6 are independent (W5 needs a real x86_64 host). W4 needs a Linux host (none is known to exist: ask the user). W1 is decided after W3 and W4. W7 only if W1 is not done and W4 shows a slow system allocator. No W1 acceptance threshold is set: the user decides how much gain justifies a rewrite of `tree.rs`, so bring a measured estimate and ask.
+**Order and dependencies.** W2 and W3 are done (uncommitted, see Done). W4 is done (Linux, see Done), W5 is down to AVX-512BW (needs such a host). W6 is independent. W1 is the user's decision. W7 has no case: glibc is not slow (W4). No W1 acceptance threshold is set: the user decides how much gain justifies a rewrite of `tree.rs`, so bring a measured estimate and ask.
 
 **Profiling**: `samply` (named in AGENTS.md) is not installed here; use macOS `sample <process> 5 -file out.txt` on a looping run of an `examples/` program (the harness `examples/edits.rs` loops per scenario) and count samples in `malloc`/`free`.
 
@@ -22,23 +22,23 @@ Each item: what, why, how to measure, where to look. IDs are stable, refer to th
 - **Estimate done** (prototype `piece-tree-bench/w1proto`, section "Estimate for wide leaves" of `benchmarks.md`): path copy of an insert 26-35% cheaper with 8-piece leaves and fanout 8 (paste about -27% system / -21% mimalloc end to end, from a tie to 1.4x ahead of ropey 2 beta with the system allocator), reads 25-44% faster, **typing on a small tree +90% (21 -> 40 ns), which widens the typing gap against ropey 2 to about 1.5-1.7x**; delete, split/join of B-trees and the D17 bounds are not prototyped. The decision is the user's.
 - **Measure with**: the harness rows typing, paste, random edits, backspace, `offset_to_line`, `line()` (reads must not regress: 10-34x lead today), plus `cargo bench -p piece-tree`.
 
-### W4. Linux (nothing was measured outside macOS)
-- Re-measure the allocator effect (mimalloc vs system, D18) and the load path (SSE2) on a Linux x86_64 host. The macOS allocator may behave differently from glibc's: not compared.
-
-### W5. x86_64 real host: AVX2 and AVX-512BW newline scan
-- Not implemented: the development machine is an Apple M1 and the QEMU emulation (Colima) reports SSE2 only. On a real host: run the test suite natively (SSE2 path), implement one `mask64` per feature in `crates/piece-tree/src/newlines.rs` behind `is_x86_feature_detected!` (AVX2: two `_mm256_cmpeq_epi8` + `_mm256_movemask_epi8` combined into a `u64`; AVX-512BW: `_mm512_cmpeq_epi8_mask` returns the mask directly), A/B each against SSE2 with the load example (Rust, synthetic, CJK; min of 7, alternating), keep only winners, record kept and rejected in `benchmarks.md` and D16. Check AVX-512 frequency throttling on older Intel parts. Expectation, not measured: small gain, the flatten step dominates.
+### W5. AVX-512BW newline scan (AVX2 done and rejected, see Done)
+- Needs a host with AVX-512BW (the Linux machine, an i5-8365U, has AVX2 only). `_mm512_cmpeq_epi8_mask` gives the 64-bit mask directly; whole scan under `#[target_feature]`, dispatch once per scan. Expect nothing: AVX2 gained nothing statically and lost up to 28% behind runtime dispatch (`benchmarks.md`, "Linux x86_64"). Check frequency throttling on older Intel parts.
 
 ### W6. Other architectures for the newline scan
 - Table with mechanism, `std::arch` status (checked 2026-11-25) and test needs in D16 (`docs/design/decisions.md`). The portable SWAR mask already serves every other architecture and Miri. Candidates in order: wasm32 simd128 and 32-bit x86 (stable intrinsics), then loongarch64, s390x, riscv64, powerpc64, `std::simd` once stable. Compare against SWAR (~0.13 ns/B on the M1), same acceptance as W5.
 
 ### W7. Node pool / free list inside the library (allocator-independent)
-- mimalloc gives -20..-29% on edits (D18) but only where the application sets it. A pool would help under any allocator, but `triomphe::Arc` takes no custom allocator, so it needs an own `Arc` or an arena: large change. Only worth it if W1 is not done and W4 shows the system allocator is slow on Linux too.
+- mimalloc gives -20..-29% on edits (D18) but only where the application sets it. A pool would help under any allocator, but `triomphe::Arc` takes no custom allocator, so it needs an own `Arc` or an arena: large change. W4 showed glibc is not slow (mimalloc -6..-13%, and +10-22% on clone per key): no case left.
 
 ### W8. Small items (W8a and W8c are done, see Done)
 - **W8b (done as D19, see Done; the text below is the original assessment)** Typing 1.2-1.3x gap against ropey 2 beta: would need in-place mutation when the root is unshared (`Arc::get_mut` down the path). In an editor with undo the old versions stay alive so the copy is needed anyway. Low value, high risk: skip unless W1 and W7 are done.
 - **W8d** Housekeeping (not performance work): the harness repo ([`piece-tree-bench`](https://github.com/shurizzle/piece-tree-bench)) is published under **GPL-3.0-or-later** (it vendors Zed's GPL `rope`): `LICENSE`, `NOTICE.md`, `README.md`, SPDX headers, modification notices on the vendored files, `.gitignore`, `RUST_CORPUS_DIR`. Its `piece-tree` dependency is the GitHub repo (the revision pinned in its `Cargo.lock`); `PIECE_TREE_PATH` measures a local checkout. pt-edit with mimalloc was never benchmarked end to end (the gain is the library-level measurement).
 
 ## Done (details in `docs/`)
+
+- **W4 Linux** (uncommitted docs): Intel i5-8365U, glibc 2.44, governor `performance`. Native test suite passes (174 debug / 173 release). Cross-library (3 runs per corpus and allocator): piece-tree best in 36/39 rows with glibc (loses only "load from &str" to ropey 2 beta, 1.5x) and 39/39 with mimalloc; tables in `docs/guides/comparison-tables-linux.md` (`tools/tables.py` takes the host as 3rd argument, harness change uncommitted). mimalloc on glibc: -6..-13% on edits, +10-22% on clone per key. Load with SSE2: 0.26 ns/B Rust sources (M1 NEON 0.11).
+- **W5 AVX2** (rejected, code removed): `target-cpu=native` 0.94-1.05x, runtime dispatch up to 1.28x slower (Rust sources). Recorded in `benchmarks.md` ("Linux x86_64") and D16.
 
 - **Insert and delete in place (D20, uncommitted)**: `Text::insert_mut` for every insert, `Text::delete_mut`, `Document` insert/delete/splice inside a group, via `Arc::make_mut` along the path (`tree::insert_mut`, `tree::delete_mut`, in-place rotations). A/B against HEAD: paste 611 -> 330 ns (system) / 455 -> 316 (mimalloc), random edits 611 -> 316 / 436 -> 304, backspace 51.6 -> 19.5 / 38.6 -> 19.7; persistent API unchanged. Cross-library: paste 1.73-2.05x, random edits 1.78-1.98x, backspace 3.68-4.29x, typing 3.3-3.8x ahead of ropey 2 beta in all six cells. No new `unsafe`; differential tests against the persistent code with kept versions, coverage 100%, Miri. Estimate (projected -44% / -39% paste) in `benchmarks.md`. Not done: whole-piece and cross-piece deletes stay persistent; `Document` outside a group; `apply_edits`/`replace_all` (already a linear rebuild).
 

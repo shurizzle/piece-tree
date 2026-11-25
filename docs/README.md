@@ -16,3 +16,4 @@ One topic per file. Fetch only what the task needs.
 | [guides/testing.md](guides/testing.md) | You add or change tests, check coverage, or run Miri |
 | [guides/benchmarks.md](guides/benchmarks.md) | You change performance-sensitive code or need the numbers |
 | [guides/comparison-tables.md](guides/comparison-tables.md) | You want the full cross-library tables (every row, four libraries, both allocators, three corpora) of the last run |
+| [guides/comparison-tables-linux.md](guides/comparison-tables-linux.md) | The same tables measured on Linux x86_64 (glibc, Intel laptop, W4) |

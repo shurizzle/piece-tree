@@ -478,7 +478,7 @@ What the prototype does not include and what would eat part of the gain: delete 
 
 ## Allocator: mimalloc against the system allocator (D18)
 
-Harness feature `mimalloc` (`cargo run --release --features mimalloc`): `mimalloc::MiMalloc` as the global allocator of the whole binary, so all four libraries get it. macOS (Apple M1 Pro) only; the macOS system allocator may be slower than glibc's (not compared), so the effect on Linux may be smaller or larger (not measured). Profiles (macOS `sample`) before the change: 294 of 519 samples in `malloc`/`free` for random edits, 618 of 1157 for paste.
+Harness feature `mimalloc` (`cargo run --release --features mimalloc`): `mimalloc::MiMalloc` as the global allocator of the whole binary, so all four libraries get it. Measured first on macOS (Apple M1 Pro), before the in-place edits (D19, D20); Linux x86_64 with glibc is in "Linux x86_64: allocator and newline scan (W4, W5)" below. Profiles (macOS `sample`) before the change: 294 of 519 samples in `malloc`/`free` for random edits, 618 of 1157 for paste.
 
 piece-tree alone, `edits` scratch program, 10 alternating rounds, ns/op, min / median:
 
@@ -549,6 +549,41 @@ Full comparison under mimalloc (same method as "Comparison with other implementa
 | batch 1k edits, one pass, 10MB | **73** | 613 | 522 | 5 386 | piece-tree (7.16x) |
 
 Wins or ties over the 39 rows with mimalloc: piece-tree 37, ropey 2 beta 3, ropey 1.x 0, SumTree 0 (33 / 10 / 0 / 0 with the system allocator). Adopted by pt-edit (application decision, D18); `cargo bench -p piece-tree` and the examples stay on the system allocator.
+
+## Linux x86_64: allocator and newline scan (W4, W5)
+
+Host: Intel Core i5-8365U (Whiskey Lake laptop, 4 cores / 8 threads, AVX2, no AVX-512), Linux 7.3 (CachyOS), glibc 2.44, intel_pstate governor `performance`, turbo on, on AC power, nothing else running. The first native run of the library suite on x86_64 (before: SSE2 under QEMU only) passes: 174 tests debug, 173 release (`cargo test -p piece-tree`, `--release`).
+
+**Cross-library** (`tools/run.sh`, 3 runs per corpus and allocator, HEAD `cc38c5b`, harness built without `target-cpu=native`, so the SSE2 newline scan): full tables in [comparison-tables-linux.md](comparison-tables-linux.md); the macOS tables were not re-run. Sanity check `ok` in all 18 runs. piece-tree is best in 36 of 39 rows with glibc (the 3 others are "load 50MB from &str", where ropey 2 beta is 1.5x faster: 0.4 against 0.6 ns/B) and 39 of 39 with mimalloc. Absolute times are about 1.5-2x the M1 ones (edits) and 2x (loads, `line()`), the ranking is the same.
+
+**Allocator** (mimalloc / glibc, piece-tree, min over the 3 runs, ns/op, synthetic / Rust / CJK):
+
+| row | glibc | mimalloc | macOS after D20 (system / mimalloc, synthetic) |
+|---|---|---|---|
+| typing 10k chars in 1MB | 30 / 30 / 30 | 26 / 26 / 27 | 14 / 14 |
+| typing 10k, clone per key | 130 / 128 / 145 | 158 / 141 / 164 | 68 / 51 |
+| backspace 10k | 42 / 42 / 45 | 47 / 40 / 43 | 20 / 20 |
+| paste mid-piece 1k on 10MB | 528 / 553 / 564 | 496 / 493 / 510 | 341 / 326 |
+| random edits 1k+1k on 10MB | 508 / 487 / 489 | 466 / 450 / 496 | 329 / 304 |
+| batch 1k edits, one pass | 188 / 168 / 158 | 154 / 146 / 138 | 90 / 78 |
+
+Over the non-load rows the mimalloc/glibc ratio of piece-tree is 0.82 / 0.95 / 1.22 (min / median / max; macOS after D20: 0.75 / 0.98 / 1.06), ropey 1.x 0.71 / 0.97 / 1.16, ropey 2 beta 0.87 / 1.02 / 1.22, SumTree 0.90 / 1.02 / 1.15. Reading: with the in-place edits (D19, D20) allocation is no longer the cost it was when D18 measured -20..-29%; on glibc mimalloc is worth -6..-13% on paste, random edits, typing and the batch (mostly within the 10% noise of these rows), and the "clone per key" row, the one that still allocates a path per key, is 10-22% *slower* with mimalloc. glibc is not a slow allocator for this workload, so a node pool (W7) has no case on Linux.
+
+**Load with the SSE2 scan** (`examples/load.rs`, `Text::from(String)` of 50 MB, min of 7 per run, 5 alternating runs, portable build): Rust sources 0.263 ns/B, synthetic 0.286, CJK 0.246, exponential lines of mean 100/200/400/1000/5000: 0.277/0.234/0.205/0.188/0.192, one line 0.188 (M1 NEON: 0.106 / 0.101 / 0.064, ..., 0.034). The floor (~0.19 ns/B on a text without newlines) is the copy-free load itself (normalization check and chunk setup), not the scan.
+
+**AVX2 newline mask (W5, rejected)**: `mask64_avx2` (two `_mm256_cmpeq_epi8`, OR + one `_mm256_movemask_epi8` early out, two movemasks combined into the `u64`), the whole scan compiled under `#[target_feature(enable = "avx2")]` (`positions_avx2`, `each_avx2`, so the mask is inlined, checked in the disassembly) and chosen once per scan with `is_x86_feature_detected!("avx2")`. It passed the lane and differential tests (both the AVX2 and the SSE2 arm). A/B against a standalone copy of HEAD, `examples/load.rs`, 5 alternating rounds, min (ns/B), new / old:
+
+| corpus | portable build (runtime dispatch) | `target-cpu=native` (AVX2 static) |
+|---|---|---|
+| Rust sources | 0.336 / 0.263 = 1.28x | 0.277 / 0.263 = 1.05x |
+| synthetic | 0.316 / 0.286 = 1.10x | 0.284 / 0.287 = 0.99x |
+| CJK | 0.293 / 0.246 = 1.19x | 0.243 / 0.245 = 0.99x |
+| exp avg 100 | 1.12x | 0.94x |
+| exp avg 200 / 400 | 1.06x / 1.05x | 1.01x / 0.99x |
+| exp avg 1000 / 5000 | 0.99x / 0.98x | 0.98x / 1.02x |
+| one line | 0.95x | 0.96x |
+
+With the whole build on AVX2 the wider compare is worth nothing (the flatten step, not the mask, is the cost, as D16 expected); behind runtime dispatch it is up to 28% slower on dense text. Not established why (the mask is inlined; candidates: the `target_feature` function's different code for `flatten` and the `Vec` growth around non-AVX calls such as `reserve`, or AVX/SSE transitions). Pastes of 256 B-64 KiB (`examples/paste.rs`, 3 rounds, `positions_callback`) moved 0.77-1.19x in both builds with no consistent sign. Code removed; AVX-512BW not tried (no host with it).
 
 ## Editor frame with `wrap` (`pt-edit`, `render.rs`)
 
