@@ -11,7 +11,7 @@ One topic per file. Fetch only what the task needs.
 | [design/line-endings.md](design/line-endings.md) | You touch `LineEnding`, detection tie rules, normalization, output conversion |
 | [reference/library-api.md](reference/library-api.md) | You use or extend the public API of `piece-tree` (signatures, panics, costs) |
 | [reference/search.md](reference/search.md) | You search or replace with regexes in a `Text`/`Document` |
-| [reference/rim.md](reference/rim.md) | You work on the editor: modes, keys, registers, macros, marks, text objects, search, `:set`, `.`, undo grouping, rendering, saving, reloading |
+| [reference/rim.md](reference/rim.md) | You work on the editor: modes, keys, buffers, windows, registers, macros, marks, text objects, search, `:set`, `.`, undo grouping, rendering, background saving, reloading |
 | [reference/limitations.md](reference/limitations.md) | Known shortcuts, risks and the roadmap |
 | [guides/testing.md](guides/testing.md) | You add or change tests, check coverage, or run Miri |
 | [guides/benchmarks.md](guides/benchmarks.md) | You change performance-sensitive code or need the numbers |

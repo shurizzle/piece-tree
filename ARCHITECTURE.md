@@ -31,9 +31,9 @@ crates/
     benches/bench.rs       benchmarks (harness = false)
     examples/profile.rs    long single-scenario loops for samply
   rim/                 minimal vim-like terminal editor (crossterm, unicode-width, memchr, str_indices, base64, terminal-colorsaurus, mimalloc as global allocator)
-    src/main.rs            CLI, theme detection, terminal guard, event loop (`Editor::idle` after 1 s without events)
+    src/main.rs            CLI, theme detection, terminal guard, event loop (`Editor::idle` after 1 s without events, `poll_saves` every 50 ms while a `:w` runs)
     src/editor.rs          Editor state, modes, edits/undo groups, operators, `:s`, save/reload (+ editor/tests.rs)
-    src/editor/            parse.rs (grammar), motion.rs, objects.rs, search.rs (regex search via piece-tree), ex.rs (ex ranges, `:` dispatcher, line commands, `:g`/`:normal` line marks), substitute.rs (:s arguments), registers.rs, options.rs (:set), layout.rs (lazy wrap rows, kept for the cursor line), render.rs (Frame, draw)
+    src/editor/            buffers.rs (Buffer, :e/:b/:ls/:bd, background :w), windows.rs (Window, Split layout, Ctrl+W), parse.rs (grammar), motion.rs, objects.rs, search.rs (regex search via piece-tree), ex.rs (ex ranges, `:` dispatcher, line commands, `:g`/`:normal` line marks), substitute.rs (:s arguments), registers.rs, options.rs (:set), layout.rs (lazy wrap rows, kept for the cursor line), render.rs (Frame, draw)
 vendor/regex-cursor/       upstream regex-cursor 0.1.5 + documented fix (PATCHES.md)
 docs/                      detailed knowledge base, see docs/README.md
 ```
@@ -60,7 +60,7 @@ rim (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of Text
 | `Node`/`Tree` | balanced ordering of pieces, subtree totals (`len`, `lf`, `height`) | immutable, shared via `Arc` |
 | `Text` | public API: byte offsets, lines, slices, chunks; holds the current add chunk | immutable value, `Clone` is O(1) |
 | `Document` | undo tree, groups, edit log, output line ending, writing | mutable wrapper |
-| `rim` | cursor, rendering, keys, file I/O | application |
+| `rim` | buffers, windows, cursor, rendering, keys, file I/O (`:w` on a thread from a `Text` snapshot) | application |
 
 ## Core invariants
 

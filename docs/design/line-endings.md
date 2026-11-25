@@ -48,4 +48,4 @@ Tie rules (all tested in `eol::tests::detect_ties`):
 
 ## Editor
 
-`rim` uses the detected ending unless `--eol` overrides it; the status bar shows it; saving writes with it. Reloading a file saved with a single ending reproduces the same bytes (round-trip tested for all three).
+`rim` uses the detected ending (`:set ff` changes it); the status bar shows it; saving writes with it. Reloading a file saved with a single ending reproduces the same bytes (round-trip tested for all three).

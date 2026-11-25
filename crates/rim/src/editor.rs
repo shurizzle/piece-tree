@@ -3,6 +3,7 @@
 //! Key handling never touches the terminal, and rendering builds a `Frame`
 //! before drawing it, so both are tested without a terminal.
 
+mod buffers;
 mod ex;
 mod layout;
 mod motion;
@@ -13,6 +14,7 @@ mod registers;
 mod render;
 mod search;
 mod substitute;
+mod windows;
 
 use std::{
     collections::HashMap,
@@ -24,7 +26,7 @@ use std::{
 };
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use piece_tree::{Document, LineEnding, Text};
+use piece_tree::{Document, Text};
 
 use objects::Obj;
 pub use options::Background;
@@ -32,6 +34,8 @@ use options::Options;
 use parse::{Cmd, MAX_COUNT, OP_LOWER, OP_TOGGLE, OP_UPPER, Parse, VISUAL_KEYS, char_key, normal_char, parse, strip_counts, valid_reg};
 use registers::{Reg, RegKind, Registers};
 use search::Search;
+use buffers::Buffer;
+use windows::Window;
 
 const G_EARLIER: char = parse::g_key('-');
 const G_LATER: char = parse::g_key('+');
@@ -132,18 +136,14 @@ fn byte_of_col(s: &str, col: usize) -> usize {
     str_indices::chars::to_byte_idx(s, col)
 }
 
-/// Loads `path` (missing file → empty), applying the `--eol` override.
-pub fn read_doc(path: &Path, eol: Option<LineEnding>) -> io::Result<Document> {
+/// Loads `path` (missing file → empty).
+pub fn read_doc(path: &Path) -> io::Result<Document> {
     let content = match fs::read_to_string(path) {
         Ok(s) => s,
         Err(e) if e.kind() == io::ErrorKind::NotFound => String::new(),
         Err(e) => return Err(e),
     };
-    let mut doc = Document::from_string(content);
-    if let Some(eol) = eol {
-        doc.set_eol(eol);
-    }
-    Ok(doc)
+    Ok(Document::from_string(content))
 }
 
 /// State of a `:s///c` session. Offsets are in the current text: every replacement moves `next`
@@ -175,36 +175,24 @@ impl Confirm {
 type MatchCache = (Text, std::rc::Rc<piece_tree::Regex>, Range<usize>, std::rc::Rc<Vec<Vec<Range<usize>>>>);
 
 pub struct Editor {
-    doc: Document,
-    path: PathBuf,
-    eol_override: Option<LineEnding>,
-    /// Version and line ending last written to disk; dirty is a pointer comparison.
-    saved: Text,
-    saved_eol: LineEnding,
-    /// Cursor line and column, in chars.
-    line: usize,
-    col: usize,
-    /// Column kept across vertical moves; `usize::MAX` after `$`.
-    want_col: usize,
-    top: usize,
-    /// Screen rows of line `top` scrolled off the top (a cursor line taller than the screen).
-    top_sub: usize,
-    left: usize,
-    rows: usize,
-    /// Text width of the last frame: the wrap width of `gj`/`gk`, `Ctrl-D`/`Ctrl-U`, `H`/`M`/`L`
-    /// (`usize::MAX` before the first frame).
-    text_w: usize,
-    /// Screen column kept by consecutive `gj`/`gk`, valid while the cursor stays at the position stored.
-    want_x: Option<(usize, Pos)>,
-    /// Rows of the cursor line and of recent huge lines, kept between frames (`wrap`).
-    layout: std::cell::RefCell<layout::Layouts>,
-    /// Text version, line and char count of the last `line_chars`.
-    /// Highlight matches of the last frame: text version, pattern, lines, result.
-    match_cache: std::cell::RefCell<Option<MatchCache>>,
-    chars_memo: std::cell::RefCell<Option<(Text, usize, usize)>>,
+    /// The current buffer and window; the others are parked in `buffers` and `windows`.
+    buf: Buffer,
+    win: Window,
+    buffers: Vec<Buffer>,
+    windows: Vec<Window>,
+    split: windows::Split,
+    /// Last ids given to a buffer and a window.
+    next_buf: usize,
+    next_win: usize,
+    /// Buffer `Ctrl+^` goes back to.
+    alt: Option<usize>,
+    /// `:w` writes running on threads.
+    saves: Vec<buffers::Saving>,
+    /// Window area and cursor cell of the last frame, for `Ctrl+W hjkl`.
+    screen: windows::Rect,
+    cursor_cell: (usize, usize),
     msg: String,
     mode: Mode,
-    opts: Options,
     /// Visual-mode selection end opposite the cursor.
     anchor: Pos,
     /// Normal-mode keys typed so far, re-parsed on every key.
@@ -229,8 +217,6 @@ pub struct Editor {
     search_landing: Option<(Pos, usize)>,
     /// Last `f`/`F`/`t`/`T` and its char, for `;` and `,`.
     last_find: Option<(char, char)>,
-    /// `a`–`z` and `'` (position before the last jump), as byte offsets shifted by edits.
-    marks: HashMap<char, usize>,
     /// Keys of the command in progress; its counts, keys without counts and key count.
     rec: Vec<KeyEvent>,
     rec_cmd: Option<(Option<usize>, String, usize)>,
@@ -263,26 +249,19 @@ pub struct Editor {
 impl Editor {
     pub fn new(doc: Document, path: PathBuf) -> Self {
         Self {
-            saved: doc.text().clone(),
-            saved_eol: doc.eol(),
-            doc,
-            path,
-            eol_override: None,
-            line: 0,
-            col: 0,
-            want_col: 0,
-            top: 0,
-            top_sub: 0,
-            left: 0,
-            rows: 1,
-            text_w: usize::MAX,
-            want_x: None,
-            layout: Default::default(),
-            chars_memo: Default::default(),
-            match_cache: Default::default(),
+            buf: Buffer::new(1, doc, path, Options::default()),
+            win: Window::new(1, 1),
+            buffers: Vec::new(),
+            windows: Vec::new(),
+            split: windows::Split::Win(1),
+            next_buf: 1,
+            next_win: 1,
+            alt: None,
+            saves: Vec::new(),
+            screen: windows::Rect { x: 0, y: 0, w: 1, h: 1 },
+            cursor_cell: (0, 0),
             msg: "i insert | Esc normal | :w save | :q quit".into(),
             mode: Mode::Normal,
-            opts: Options::default(),
             anchor: (0, 0),
             pending: String::new(),
             regs: Registers::default(),
@@ -296,7 +275,6 @@ impl Editor {
             search_back: false,
             search_landing: None,
             last_find: None,
-            marks: HashMap::new(),
             rec: Vec::new(),
             rec_cmd: None,
             last_change: None,
@@ -318,21 +296,19 @@ impl Editor {
         }
     }
 
-    pub fn open(path: PathBuf, eol: Option<LineEnding>) -> io::Result<Self> {
-        let mut e = Self::new(read_doc(&path, eol)?, path);
-        e.eol_override = eol;
-        Ok(e)
+    pub fn open(path: PathBuf) -> io::Result<Self> {
+        Ok(Self::new(read_doc(&path)?, path))
     }
 
     pub fn set_background(&mut self, bg: Background) {
-        self.opts.background = bg;
+        self.buf.opts.background = bg;
     }
 
     /// Work for when no key came for a while (`main`): compacts the text once its piece count
     /// passes `compactat`, between commands only.
     pub fn idle(&mut self) {
-        let at = self.opts.compactat;
-        if at > 0 && self.mode == Mode::Normal && !self.grouping && self.doc.text().piece_count() > at {
+        let at = self.buf.opts.compactat;
+        if at > 0 && self.mode == Mode::Normal && !self.grouping && self.buf.doc.text().piece_count() > at {
             self.compact();
         }
     }
@@ -340,18 +316,18 @@ impl Editor {
     /// `:compact`: `Document::compact`, keeping a clean buffer clean. Returns the piece counts
     /// before and after.
     fn compact(&mut self) -> (usize, usize) {
-        let before = self.doc.text().piece_count();
+        let before = self.buf.doc.text().piece_count();
         let clean = !self.is_dirty();
-        self.doc.compact(COMPACT_MAX);
+        self.buf.doc.compact(COMPACT_MAX);
         if clean {
-            self.saved = self.doc.text().clone();
+            self.buf.saved = self.buf.doc.text().clone();
         }
-        (before, self.doc.text().piece_count())
+        (before, self.buf.doc.text().piece_count())
     }
 
     /// `:stats`: the current version's structure, its size, and the history length.
     fn stats(&self) -> String {
-        let t = self.doc.text();
+        let t = self.buf.doc.text();
         format!(
             "{} pieces, {} chunks, {} bytes in memory, {} bytes, {} chars, {} lines, {} versions",
             t.piece_count(),
@@ -360,22 +336,22 @@ impl Editor {
             t.len(),
             t.char_count(),
             t.line_count(),
-            self.doc.history_len(),
+            self.buf.doc.history_len(),
         )
     }
 
     fn is_dirty(&self) -> bool {
-        !self.doc.text().ptr_eq(&self.saved) || self.doc.eol() != self.saved_eol
+        self.buf.is_dirty()
     }
 
     fn line_count(&self) -> usize {
-        self.doc.text().line_count()
+        self.buf.doc.text().line_count()
     }
 
     /// Chars in `line`. Counting is O(line length), so the last answer is kept for the same text version.
     fn line_chars(&self, line: usize) -> usize {
-        let text = self.doc.text();
-        let mut memo = self.chars_memo.borrow_mut();
+        let text = self.buf.doc.text();
+        let mut memo = self.buf.chars_memo.borrow_mut();
         match &*memo {
             Some((t, l, n)) if *l == line && t.ptr_eq(text) => *n,
             _ => {
@@ -388,7 +364,7 @@ impl Editor {
 
     /// Leading blanks of `line`, read in growing windows so a huge line is not read past its indent.
     fn first_non_blank(&self, line: usize) -> usize {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let end = text.line_end(line);
         let (mut cols, mut from, mut window) = (0, text.line_to_offset(line), 256);
         loop {
@@ -404,27 +380,27 @@ impl Editor {
     }
 
     fn indent_of(&self, line: usize) -> String {
-        self.doc.text().line(line).chars().take_while(|c| c.is_whitespace()).collect()
+        self.buf.doc.text().line(line).chars().take_while(|c| c.is_whitespace()).collect()
     }
 
     /// Byte offset of `(line, col)`; a column past the line end means the end.
     fn offset_of(&self, (line, col): Pos) -> usize {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         text.line_col_to_offset(line, col.min(text.line_char_len(line)))
     }
 
     /// Byte offset of the cursor.
     fn offset(&self) -> usize {
-        self.offset_of((self.line, self.col))
+        self.offset_of((self.win.line, self.win.col))
     }
 
     fn pos_of(&self, off: usize) -> Pos {
-        self.doc.text().offset_to_line_col(off)
+        self.buf.doc.text().offset_to_line_col(off)
     }
 
     /// Offset of the `\n` ending `line`, or the text length on the last line.
     fn line_end_offset(&self, line: usize) -> usize {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         text.line_to_offset(line) + text.line(line).len()
     }
 
@@ -435,24 +411,24 @@ impl Editor {
 
     fn char_at(&self, (line, col): Pos) -> char {
         {
-            let l = self.doc.text().line(line);
+            let l = self.buf.doc.text().line(line);
             l[str_indices::chars::to_byte_idx(&l, col)..].chars().next().unwrap_or('\n')
         }
     }
 
     /// Visual block columns, inclusive.
     fn block_cols(&self) -> (usize, usize) {
-        (self.anchor.1.min(self.col), self.anchor.1.max(self.col))
+        (self.anchor.1.min(self.win.col), self.anchor.1.max(self.win.col))
     }
 
     /// Byte range covered by a motion from `a` to `b` (`a <= b`).
     fn range(&self, a: Pos, b: Pos, kind: Kind) -> Range<usize> {
         if kind == Kind::Linewise {
-            return self.doc.text().line_to_offset(a.0)..self.line_end_offset(b.0);
+            return self.buf.doc.text().line_to_offset(a.0)..self.line_end_offset(b.0);
         }
         let mut e = self.offset_of(b);
         if kind == Kind::Inclusive {
-            let line = self.doc.text().line(b.0);
+            let line = self.buf.doc.text().line(b.0);
             e += line[byte_of_col(&line, b.1)..].chars().next().map_or(0, char::len_utf8);
         }
         self.offset_of(a)..e
@@ -461,11 +437,11 @@ impl Editor {
     /// Runs one `Document` edit inside the command's group and moves the marks with it.
     fn edit<R>(&mut self, f: impl FnOnce(&mut Document) -> R) -> R {
         if !self.grouping {
-            self.doc.begin_group();
+            self.buf.doc.begin_group();
             self.grouping = true;
         }
-        let r = f(&mut self.doc);
-        if !self.doc.last_edits().is_empty() {
+        let r = f(&mut self.buf.doc);
+        if !self.buf.doc.last_edits().is_empty() {
             self.changed = true;
             self.map_marks();
         }
@@ -474,12 +450,15 @@ impl Editor {
 
     /// Moves every mark through the last `Document` call's edits.
     fn map_marks(&mut self) {
-        let edits = self.doc.last_edits();
-        for m in self.marks.values_mut() {
+        let edits = self.buf.doc.last_edits();
+        for m in self.buf.marks.values_mut() {
             *m = piece_tree::map_offset(edits, *m);
         }
         for m in &mut self.line_marks {
             m.map(edits);
+        }
+        for w in self.windows.iter_mut().filter(|w| w.buf == self.buf.id) {
+            w.off = piece_tree::map_offset(edits, w.off);
         }
     }
 
@@ -499,7 +478,7 @@ impl Editor {
     /// Closes the undo group; a command that changed the text becomes the one `.` repeats.
     fn end_command(&mut self) {
         if mem::take(&mut self.grouping) {
-            self.doc.end_group();
+            self.buf.doc.end_group();
         }
         if mem::take(&mut self.changed)
             && !self.replaying
@@ -543,6 +522,11 @@ impl Editor {
             Mode::Visual(kind) => self.visual_key(key, kind),
             Mode::Command(_) | Mode::Search(_) => self.line_key(key),
             Mode::Confirm => self.confirm_key(key),
+        }
+        if self.quit {
+            self.wait_saves();
+        } else {
+            self.poll_saves();
         }
         !self.quit
     }
@@ -593,8 +577,8 @@ impl Editor {
             return;
         }
         if op == Some(key) {
-            let last = (self.line + n - 1).min(self.line_count() - 1);
-            return self.operate(key, (self.line, 0), (last, 0), Kind::Linewise);
+            let last = (self.win.line + n - 1).min(self.line_count() - 1);
+            return self.operate(key, (self.win.line, 0), (last, 0), Kind::Linewise);
         }
         if matches!(key, G_NEXT | G_PREV) {
             return self.select_match(op, key == G_NEXT);
@@ -602,16 +586,16 @@ impl Editor {
         if parse::is_motion(key) {
             let Some((to, kind)) = self.motion(&cmd) else { return };
             match op {
-                Some(op) => self.operate(op, (self.line, self.col), to, kind),
+                Some(op) => self.operate(op, (self.win.line, self.win.col), to, kind),
                 None => self.move_to(key, to),
             }
             return;
         }
-        let len = self.line_chars(self.line);
+        let len = self.line_chars(self.win.line);
         match key {
-            'i' => self.insert_at(self.col),
-            'a' => self.insert_at((self.col + 1).min(len)),
-            'I' => self.insert_at(self.first_non_blank(self.line)),
+            'i' => self.insert_at(self.win.col),
+            'a' => self.insert_at((self.win.col + 1).min(len)),
+            'I' => self.insert_at(self.first_non_blank(self.win.line)),
             'A' => self.insert_at(len),
             'o' => self.open_line(true),
             'O' => self.open_line(false),
@@ -626,13 +610,13 @@ impl Editor {
             '\x12' => self.redo(n),
             ':' => self.mode = Mode::Command(String::new()),
             '/' | '?' => {
-                self.search_origin = (self.line, self.col);
+                self.search_origin = (self.win.line, self.win.col);
                 self.search_back = key == '?';
                 self.inc_search = None;
                 self.mode = Mode::Search(String::new());
             }
             'v' | 'V' | '\x16' => {
-                self.anchor = (self.line, self.col);
+                self.anchor = (self.win.line, self.win.col);
                 self.mode = Mode::Visual(match key {
                     'v' => VKind::Char,
                     'V' => VKind::Line,
@@ -640,29 +624,31 @@ impl Editor {
                 });
             }
             '~' => {
-                let end = (self.col + n).min(len);
-                let range = self.range((self.line, self.col), (self.line, end), Kind::Exclusive);
-                let s = toggle_case(&self.doc.text().slice(range.clone()));
+                let end = (self.win.col + n).min(len);
+                let range = self.range((self.win.line, self.win.col), (self.win.line, end), Kind::Exclusive);
+                let s = toggle_case(&self.buf.doc.text().slice(range.clone()));
                 self.edit_replace(range, &s);
                 self.set_col(end);
             }
             'r' => {
                 // Vim refuses when fewer than `count` chars remain.
-                if self.col + n <= len {
-                    let range = self.range((self.line, self.col), (self.line, self.col + n), Kind::Exclusive);
+                if self.win.col + n <= len {
+                    let range = self.range((self.win.line, self.win.col), (self.win.line, self.win.col + n), Kind::Exclusive);
                     self.edit_replace(range, &arg().to_string().repeat(n));
-                    self.set_col(self.col + n - 1);
+                    self.set_col(self.win.col + n - 1);
                 }
             }
             '.' => self.repeat(count),
             G_EARLIER => self.history(1, |d| d.earlier(n), "Already at oldest change"),
             '\x07' => self.msg = self.file_info(),
+            '\x17' => self.window_cmd(arg(), n),
+            '\x1e' => self.alternate_buffer(),
             // `&` is `:s`, `g&` is `:%s//~/&` (last substitute on the whole text, same flags).
             '&' => self.substitute(substitute::Sub::again(false)),
             G_SUBST => self.substitute(substitute::Sub::again(true)),
             G_COUNTS => self.msg = self.counts(),
             G_ASCII | G_UTF8 => {
-                let c = self.char_at((self.line, self.col));
+                let c = self.char_at((self.win.line, self.win.col));
                 self.msg = match (key, c) {
                     (_, '\n') => "NUL".into(),
                     (G_ASCII, c) => format!("<{c}> {0}, Hex {0:04x}, Oct {0:o}", c as u32),
@@ -674,7 +660,7 @@ impl Editor {
             '\x18' => self.add_number(-(n as i64)),
             'm' => match arg() {
                 m @ 'a'..='z' => {
-                    self.marks.insert(m, self.offset());
+                    self.buf.marks.insert(m, self.offset());
                 }
                 _ => self.msg = "Invalid mark name".into(),
             },
@@ -693,11 +679,11 @@ impl Editor {
                 r => self.play_macro(r, n),
             },
             'z' => {
-                self.top_sub = 0;
+                self.win.top_sub = 0;
                 match arg() {
-                    'z' => self.top = self.line.saturating_sub((self.rows - 1) / 2),
-                    't' => self.top = self.line,
-                    'b' => self.top = (self.line + 1).saturating_sub(self.rows),
+                    'z' => self.win.top = self.win.line.saturating_sub((self.win.rows - 1) / 2),
+                    't' => self.win.top = self.win.line,
+                    'b' => self.win.top = (self.win.line + 1).saturating_sub(self.win.rows),
                     _ => {}
                 }
             }
@@ -753,22 +739,22 @@ impl Editor {
 
     /// `o`/`O`: a new line below/above with the current line's indent (autoindent).
     fn open_line(&mut self, below: bool) {
-        let indent = self.indent_of(self.line);
+        let indent = self.indent_of(self.win.line);
         if below {
-            self.edit_insert(self.line_end_offset(self.line), &format!("\n{indent}"));
-            self.line += 1;
+            self.edit_insert(self.line_end_offset(self.win.line), &format!("\n{indent}"));
+            self.win.line += 1;
         } else {
-            self.edit_insert(self.doc.text().line_to_offset(self.line), &format!("{indent}\n"));
+            self.edit_insert(self.buf.doc.text().line_to_offset(self.win.line), &format!("{indent}\n"));
         }
         self.insert_at(indent.chars().count());
-        self.auto_indent = (!indent.is_empty()).then_some(self.line);
+        self.auto_indent = (!indent.is_empty()).then_some(self.win.line);
     }
 
     /// Empties the cursor line if it only holds an unused auto indent (vim).
     fn clear_auto_indent(&mut self) {
-        if self.auto_indent.take() == Some(self.line) && self.doc.text().line(self.line).trim().is_empty() {
-            let start = self.doc.text().line_to_offset(self.line);
-            self.edit_delete(start..self.line_end_offset(self.line));
+        if self.auto_indent.take() == Some(self.win.line) && self.buf.doc.text().line(self.win.line).trim().is_empty() {
+            let start = self.buf.doc.text().line_to_offset(self.win.line);
+            self.edit_delete(start..self.line_end_offset(self.win.line));
             self.set_col(0);
         }
     }
@@ -780,34 +766,34 @@ impl Editor {
         }
         let range = self.range(a, b, kind);
         if let Some(f) = case_fn(op) {
-            let s = f(&self.doc.text().slice(range.clone()));
+            let s = f(&self.buf.doc.text().slice(range.clone()));
             self.edit_replace(range, &s);
-            self.line = a.0;
+            self.win.line = a.0;
             if kind != Kind::Linewise {
                 self.set_col(a.1);
             }
             return;
         }
-        let mut yanked = self.doc.text().slice(range.clone()).into_owned();
+        let mut yanked = self.buf.doc.text().slice(range.clone()).into_owned();
         if kind == Kind::Linewise {
             yanked.push('\n');
         }
         self.store_reg(yanked, if kind == Kind::Linewise { RegKind::Line } else { RegKind::Char }, op == 'y');
         match (op, kind) {
-            ('y', Kind::Linewise) => self.line = a.0,
+            ('y', Kind::Linewise) => self.win.line = a.0,
             ('d', Kind::Linewise) => {
                 // The last line has no `\n` after it: take the one before.
                 let Range { start, end } = range;
-                let range = if end < self.doc.text().len() { start..end + 1 } else { start.saturating_sub(1)..end };
+                let range = if end < self.buf.doc.text().len() { start..end + 1 } else { start.saturating_sub(1)..end };
                 self.edit_delete(range);
-                self.line = a.0.min(self.line_count() - 1);
-                self.set_col(self.first_non_blank(self.line));
+                self.win.line = a.0.min(self.line_count() - 1);
+                self.set_col(self.first_non_blank(self.win.line));
             }
             ('c', Kind::Linewise) => {
                 // Autoindent: the first line keeps its indent.
                 let indent = self.indent_of(a.0);
                 self.edit_delete(range.start + indent.len()..range.end);
-                self.line = a.0;
+                self.win.line = a.0;
                 self.insert_at(indent.chars().count());
                 self.auto_indent = (!indent.is_empty()).then_some(a.0);
             }
@@ -815,7 +801,7 @@ impl Editor {
                 if op != 'y' {
                     self.edit_delete(range);
                 }
-                self.line = a.0;
+                self.win.line = a.0;
                 self.set_col(a.1);
                 if op == 'c' {
                     self.mode = Mode::Insert;
@@ -827,18 +813,18 @@ impl Editor {
     /// `>`/`<`: indents lines by `times` × `tabstop` spaces (empty lines untouched), or removes up to
     /// that much leading blank (a tab counts as `tabstop`).
     fn shift(&mut self, first: usize, last: usize, right: bool, times: usize) {
-        let ts = self.opts.tabstop;
+        let ts = self.buf.opts.tabstop;
         let width = ts * times;
         for l in first..=last {
-            let start = self.doc.text().line_to_offset(l);
+            let start = self.buf.doc.text().line_to_offset(l);
             if right {
-                if !self.doc.text().line(l).is_empty() {
+                if !self.buf.doc.text().line(l).is_empty() {
                     self.edit_insert(start, &" ".repeat(width));
                 }
                 continue;
             }
             let (mut w, mut bytes) = (0, 0);
-            for c in self.doc.text().line(l).chars() {
+            for c in self.buf.doc.text().line(l).chars() {
                 let cw = match c {
                     ' ' => 1,
                     '\t' => ts,
@@ -852,7 +838,7 @@ impl Editor {
             }
             self.edit_delete(start..start + bytes);
         }
-        self.line = first;
+        self.win.line = first;
         self.set_col(self.first_non_blank(first));
     }
 
@@ -860,15 +846,15 @@ impl Editor {
     /// put one space between (`J`), else just remove the line breaks (`:j!`).
     fn join(&mut self, times: usize, spaces: bool) {
         for _ in 0..times {
-            if self.line + 1 >= self.line_count() {
+            if self.win.line + 1 >= self.line_count() {
                 break;
             }
-            let off = self.line_end_offset(self.line);
-            let next = self.doc.text().line(self.line + 1);
+            let off = self.line_end_offset(self.win.line);
+            let next = self.buf.doc.text().line(self.win.line + 1);
             let trimmed = if spaces { next.trim_start() } else { &next };
             let blanks = next.len() - trimmed.len();
-            let space = spaces && !trimmed.is_empty() && off > self.doc.text().line_to_offset(self.line);
-            let col = self.line_chars(self.line);
+            let space = spaces && !trimmed.is_empty() && off > self.buf.doc.text().line_to_offset(self.win.line);
+            let col = self.line_chars(self.win.line);
             self.edit_delete(off..off + 1 + blanks);
             if space {
                 self.edit_insert(off, " ");
@@ -889,34 +875,34 @@ impl Editor {
         match kind {
             RegKind::Line => {
                 let s = text.repeat(n);
-                let line = if after { self.line + 1 } else { self.line };
+                let line = if after { self.win.line + 1 } else { self.win.line };
                 if line < self.line_count() {
-                    self.edit_insert(self.doc.text().line_to_offset(line), &s);
+                    self.edit_insert(self.buf.doc.text().line_to_offset(line), &s);
                 } else {
                     // Past the last line: move the register's trailing `\n` to the front.
-                    self.edit_insert(self.doc.text().len(), &format!("\n{}", &s[..s.len() - 1]));
+                    self.edit_insert(self.buf.doc.text().len(), &format!("\n{}", &s[..s.len() - 1]));
                 }
-                self.line = line;
+                self.win.line = line;
                 self.set_col(self.first_non_blank(line));
             }
             RegKind::Char => {
                 let s = text.repeat(n);
                 let mut off = self.offset();
-                if after && self.col < self.line_chars(self.line) {
-                    off += self.char_at((self.line, self.col)).len_utf8();
+                if after && self.win.col < self.line_chars(self.win.line) {
+                    off += self.char_at((self.win.line, self.win.col)).len_utf8();
                 }
                 self.edit_insert(off, &s);
                 let last = s.chars().next_back().map_or(0, char::len_utf8);
-                (self.line, self.col) = self.pos_of(off + s.len() - last);
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = self.pos_of(off + s.len() - last);
+                self.win.want_col = self.win.col;
             }
             RegKind::Block => {
                 // Each register line goes into the next text line at one column, padding and adding lines.
-                let col = if after && self.line_chars(self.line) > 0 { self.col + 1 } else { self.col };
+                let col = if after && self.line_chars(self.win.line) > 0 { self.win.col + 1 } else { self.win.col };
                 for (i, piece) in text.split('\n').enumerate() {
-                    let l = self.line + i;
+                    let l = self.win.line + i;
                     if l >= self.line_count() {
-                        self.edit_insert(self.doc.text().len(), "\n");
+                        self.edit_insert(self.buf.doc.text().len(), "\n");
                     }
                     let len = self.line_chars(l);
                     if len < col {
@@ -942,33 +928,33 @@ impl Editor {
     fn history(&mut self, n: usize, mut step: impl FnMut(&mut Document) -> bool, at_end: &str) {
         let mut first = None;
         for _ in 0..n {
-            if !step(&mut self.doc) {
+            if !step(&mut self.buf.doc) {
                 self.msg = at_end.into();
                 break;
             }
             self.map_marks();
-            let edits = self.doc.last_edits();
+            let edits = self.buf.doc.last_edits();
             first = edits
                 .first()
                 .map(|e| {
                     let off = piece_tree::map_offset(&edits[1..], e.start);
                     // Restored lines that start with their line break begin on the next line.
-                    let nl = e.new_len > 0 && off < self.doc.text().len() && self.char_at(self.pos_of(off)) == '\n';
+                    let nl = e.new_len > 0 && off < self.buf.doc.text().len() && self.char_at(self.pos_of(off)) == '\n';
                     off + usize::from(nl)
                 })
                 .or(first);
         }
         if let Some(off) = first {
-            (self.line, self.col) = self.pos_of(off.min(self.doc.text().len()));
-            self.want_col = self.col;
+            (self.win.line, self.win.col) = self.pos_of(off.min(self.buf.doc.text().len()));
+            self.win.want_col = self.win.col;
         }
         self.clamp();
     }
 
     /// `Ctrl+A`/`Ctrl+X`: adds `delta` to the decimal number at or after the cursor in the line.
     fn add_number(&mut self, delta: i64) {
-        let line = self.doc.text().line(self.line);
-        let from = byte_of_col(&line, self.col);
+        let line = self.buf.doc.text().line(self.win.line);
+        let from = byte_of_col(&line, self.win.col);
         let Some(k) = line[from..].find(|c: char| c.is_ascii_digit()) else { return };
         // Digits are ASCII: byte and char counts agree inside the number.
         let mut i = from + k;
@@ -982,17 +968,17 @@ impl Editor {
             return;
         };
         let v = v.to_string();
-        let off = self.doc.text().line_to_offset(self.line);
+        let off = self.buf.doc.text().line_to_offset(self.win.line);
         self.edit_replace(off + start..off + end, &v);
         self.set_col(col + v.chars().count() - 1);
     }
 
     fn visual_key(&mut self, key: KeyEvent, kind: VKind) {
         // `'<`/`'>`: the selection's first and last lines, kept after leaving Visual (vim).
-        let (a, b) = sorted(self.anchor, (self.line, self.col));
-        let (sa, sb) = (self.doc.text().line_to_offset(a.0), self.doc.text().line_to_offset(b.0));
-        self.marks.insert('<', sa);
-        self.marks.insert('>', sb);
+        let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
+        let (sa, sb) = (self.buf.doc.text().line_to_offset(a.0), self.buf.doc.text().line_to_offset(b.0));
+        self.buf.marks.insert('<', sa);
+        self.buf.marks.insert('>', sb);
         if key.code == KeyCode::Esc {
             self.pending.clear();
             self.mode = Mode::Normal;
@@ -1069,7 +1055,7 @@ impl Editor {
     }
 
     fn visual_op(&mut self, c: char, kind: VKind, n: usize) {
-        let cur = (self.line, self.col);
+        let cur = (self.win.line, self.win.col);
         let (a, b) = sorted(self.anchor, cur);
         self.mode = Mode::Normal;
         match c {
@@ -1085,12 +1071,12 @@ impl Editor {
             }
             'o' => {
                 self.mode = Mode::Visual(kind);
-                (self.line, self.col) = self.anchor;
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = self.anchor;
+                self.win.want_col = self.win.col;
                 self.anchor = cur;
             }
             'J' => {
-                self.line = a.0;
+                self.win.line = a.0;
                 self.join((b.0 - a.0).max(1), true);
             }
             // `visual_key` has set marks `<` and `>` for the range.
@@ -1098,11 +1084,11 @@ impl Editor {
             '<' | '>' => self.shift(a.0, b.0, c == '>', n),
             _ if kind == VKind::Block => self.block_op(c),
             'I' => {
-                self.line = a.0;
+                self.win.line = a.0;
                 self.insert_at(if kind == VKind::Line { self.first_non_blank(a.0) } else { a.1 });
             }
             'A' => {
-                self.line = b.0;
+                self.win.line = b.0;
                 let len = self.line_chars(b.0);
                 self.insert_at(if kind == VKind::Line { len } else { (b.1 + 1).min(len) });
             }
@@ -1126,9 +1112,9 @@ impl Editor {
 
     /// Visual block operators on lines × columns.
     fn block_op(&mut self, c: char) {
-        let (a, b) = sorted(self.anchor, (self.line, self.col));
+        let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
         let (c0, c1) = self.block_cols();
-        let dollar = self.want_col == usize::MAX;
+        let dollar = self.win.want_col == usize::MAX;
         let lines = a.0..b.0 + 1;
         let cols = |e: &Self, l: usize| {
             let len = e.line_chars(l);
@@ -1138,25 +1124,25 @@ impl Editor {
         match c {
             'd' | 'x' | 'y' | 'c' | 's' => {
                 let parts: Vec<String> =
-                    lines.clone().map(|l| self.doc.text().slice(self.cols_range(l, cols(self, l))).into_owned()).collect();
+                    lines.clone().map(|l| self.buf.doc.text().slice(self.cols_range(l, cols(self, l))).into_owned()).collect();
                 self.store_reg(parts.join("\n"), RegKind::Block, c == 'y');
                 if c != 'y' {
                     for l in lines.clone() {
                         self.edit_delete(self.cols_range(l, cols(self, l)));
                     }
                 }
-                self.line = a.0;
+                self.win.line = a.0;
                 self.set_col(c0.min(self.line_chars(a.0)));
                 if matches!(c, 'c' | 's') {
                     self.start_block_insert(a.0 + 1..b.0 + 1, c0, false);
                 }
             }
             'I' => {
-                self.line = a.0;
+                self.win.line = a.0;
                 self.start_block_insert(a.0 + 1..b.0 + 1, c0, false);
             }
             'A' => {
-                self.line = a.0;
+                self.win.line = a.0;
                 let col = if dollar { usize::MAX } else { c1 + 1 };
                 let len = self.line_chars(a.0);
                 if !dollar && len < col {
@@ -1173,18 +1159,18 @@ impl Editor {
                 .expect("case operator");
                 for l in lines {
                     let range = self.cols_range(l, cols(self, l));
-                    let s = f(&self.doc.text().slice(range.clone()));
+                    let s = f(&self.buf.doc.text().slice(range.clone()));
                     self.edit_replace(range, &s);
                 }
-                self.line = a.0;
+                self.win.line = a.0;
                 self.set_col(c0);
             }
         }
     }
 
     fn start_block_insert(&mut self, lines: Range<usize>, col: usize, pad: bool) {
-        let c = col.min(self.line_chars(self.line));
-        self.block_insert = Some(BlockInsert { start: (self.line, c), lines, col, pad });
+        let c = col.min(self.line_chars(self.win.line));
+        self.block_insert = Some(BlockInsert { start: (self.win.line, c), lines, col, pad });
         self.insert_at(c);
     }
 
@@ -1192,8 +1178,8 @@ impl Editor {
     fn finish_block_insert(&mut self) -> Option<Pos> {
         let bi = self.block_insert.take()?;
         // Only text typed on the first line without a line break is copied (vim).
-        if self.line == bi.start.0 && self.col >= bi.start.1 {
-            let typed = self.doc.text().slice(self.offset_of(bi.start)..self.offset()).into_owned();
+        if self.win.line == bi.start.0 && self.win.col >= bi.start.1 {
+            let typed = self.buf.doc.text().slice(self.offset_of(bi.start)..self.offset()).into_owned();
             for l in bi.lines.clone().filter(|_| !typed.is_empty()) {
                 let len = self.line_chars(l);
                 let col = if bi.col == usize::MAX { len } else { bi.col };
@@ -1211,11 +1197,11 @@ impl Editor {
 
     /// Visual `r<c>`: every selected char (not line breaks) becomes `ch`.
     fn visual_replace(&mut self, ch: char, kind: VKind) {
-        let (a, b) = sorted(self.anchor, (self.line, self.col));
+        let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
         let (c0, c1) = self.block_cols();
         self.mode = Mode::Normal;
         let replace = |e: &mut Self, r: Range<usize>| {
-            let s: String = e.doc.text().slice(r.clone()).chars().map(|x| if x == '\n' { x } else { ch }).collect();
+            let s: String = e.buf.doc.text().slice(r.clone()).chars().map(|x| if x == '\n' { x } else { ch }).collect();
             e.edit_replace(r, &s);
         };
         if kind == VKind::Block {
@@ -1224,13 +1210,13 @@ impl Editor {
                 let r = self.cols_range(l, c0.min(len)..(c1 + 1).min(len).max(c0.min(len)));
                 replace(self, r);
             }
-            self.line = a.0;
+            self.win.line = a.0;
             self.set_col(c0);
         } else {
             let (from, to, k) = self.visual_range(kind, a, b);
             let r = self.range(from, to, k);
             replace(self, r);
-            self.line = a.0;
+            self.win.line = a.0;
             self.set_col(if kind == VKind::Line { 0 } else { a.1 });
         }
     }
@@ -1247,7 +1233,7 @@ impl Editor {
             KeyCode::Char(c) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
                 self.insert(c.encode_utf8(&mut [0; 4]));
             }
-            KeyCode::Tab => self.insert(&" ".repeat(self.opts.tabstop)),
+            KeyCode::Tab => self.insert(&" ".repeat(self.buf.opts.tabstop)),
             KeyCode::Enter => self.newline(),
             KeyCode::Backspace => {
                 let end = self.offset();
@@ -1257,10 +1243,10 @@ impl Editor {
             }
             KeyCode::Delete => {
                 let start = self.offset();
-                if start < self.doc.text().len() {
-                    let line = self.doc.text().line(self.line);
+                if start < self.buf.doc.text().len() {
+                    let line = self.buf.doc.text().line(self.win.line);
                     // At line end the next char is the `\n`.
-                    let len = line[byte_of_col(&line, self.col)..].chars().next().map_or(1, char::len_utf8);
+                    let len = line[byte_of_col(&line, self.win.col)..].chars().next().map_or(1, char::len_utf8);
                     self.edit_delete(start..start + len);
                 }
             }
@@ -1268,20 +1254,20 @@ impl Editor {
             KeyCode::Right => self.move_right(),
             KeyCode::Up => self.move_vertical(-1),
             KeyCode::Down => self.move_vertical(1),
-            KeyCode::PageUp => self.move_vertical(-(self.rows as isize)),
-            KeyCode::PageDown => self.move_vertical(self.rows as isize),
+            KeyCode::PageUp => self.move_vertical(-(self.win.rows as isize)),
+            KeyCode::PageDown => self.move_vertical(self.win.rows as isize),
             KeyCode::Home => self.set_col(0),
-            KeyCode::End => self.set_col(self.line_chars(self.line)),
+            KeyCode::End => self.set_col(self.line_chars(self.win.line)),
             _ => {}
         }
     }
 
     /// Enter: splits the line; the new one gets the indent before the cursor (autoindent).
     fn newline(&mut self) {
-        let indent: String = self.doc.text().line(self.line).chars().take(self.col).take_while(|c| c.is_whitespace()).collect();
+        let indent: String = self.buf.doc.text().line(self.win.line).chars().take(self.win.col).take_while(|c| c.is_whitespace()).collect();
         self.clear_auto_indent();
         self.insert(&format!("\n{indent}"));
-        self.auto_indent = (!indent.is_empty()).then_some(self.line);
+        self.auto_indent = (!indent.is_empty()).then_some(self.win.line);
     }
 
     fn leave_insert(&mut self) {
@@ -1302,10 +1288,10 @@ impl Editor {
         self.mode = Mode::Normal;
         match block {
             Some(p) => {
-                (self.line, self.col) = p;
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = p;
+                self.win.want_col = self.win.col;
             }
-            None => self.set_col(self.col.saturating_sub(1)),
+            None => self.set_col(self.win.col.saturating_sub(1)),
         }
         self.clamp_normal();
     }
@@ -1336,7 +1322,7 @@ impl Editor {
                     }
                 }
                 Mode::Search(typed) => {
-                    (self.line, self.col) = self.search_origin;
+                    (self.win.line, self.win.col) = self.search_origin;
                     self.inc_search = None;
                     let (pat, off) = search::split_typed(&typed, if self.search_back { '?' } else { '/' });
                     let offset = match search::Offset::parse(off) {
@@ -1377,7 +1363,7 @@ impl Editor {
         }
         // incsearch: the cursor previews the first match from where `/` started; Esc goes back.
         // A pattern that does not compile yet (`(`) shows nothing.
-        (self.line, self.col) = self.search_origin;
+        (self.win.line, self.win.col) = self.search_origin;
         let delim = if self.search_back { '?' } else { '/' };
         self.inc_search = match &self.mode {
             Mode::Search(typed) => Some(search::split_typed(typed, delim).0).filter(|p| !p.is_empty()).and_then(|p| Search::new(p).ok()),
@@ -1386,7 +1372,7 @@ impl Editor {
         if let Some(s) = self.inc_search.clone()
             && let Some((m, _)) = self.find_match(&s.re, !self.search_back, self.offset())
         {
-            (self.line, self.col) = self.pos_of(m.start);
+            (self.win.line, self.win.col) = self.pos_of(m.start);
         }
     }
 
@@ -1424,17 +1410,17 @@ impl Editor {
         let lines = self.line_count();
         format!(
             "\"{}\"{} {lines} line{} --{}%--",
-            self.path.display(),
+            self.buf.path.display(),
             if self.is_dirty() { " [Modified]" } else { "" },
             if lines == 1 { "" } else { "s" },
-            (self.line + 1) * 100 / lines,
+            (self.win.line + 1) * 100 / lines,
         )
     }
 
     /// `g Ctrl+G`: cursor position against the text's totals (columns and chars from the
     /// library's char metrics; words are blank-separated, counted by a scan).
     fn counts(&self) -> String {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let off = self.offset();
         let all = text.slice(0..text.len());
         // The cursor's word is the last one starting at or before it.
@@ -1442,9 +1428,9 @@ impl Editor {
         let (words, word) = (starts.len(), starts.partition_point(|&s| s <= off));
         format!(
             "Col {} of {}; Line {} of {}; Word {} of {}; Char {} of {}; Byte {} of {}",
-            self.col + 1,
-            self.line_chars(self.line),
-            self.line + 1,
+            self.win.col + 1,
+            self.line_chars(self.win.line),
+            self.win.line + 1,
             self.line_count(),
             word,
             words,
@@ -1457,9 +1443,9 @@ impl Editor {
 
     /// `:undolist`: the branch tips (vim's list), as `seq:changes:age`, newest last.
     fn undolist(&self) -> String {
-        let versions: Vec<_> = self.doc.versions().collect();
+        let versions: Vec<_> = self.buf.doc.versions().collect();
         let now = std::time::Instant::now();
-        let mut out = format!("at {} of {} |", self.doc.seq(), versions.len() - 1);
+        let mut out = format!("at {} of {} |", self.buf.doc.seq(), versions.len() - 1);
         for v in versions.iter().filter(|v| v.leaf && v.seq > 0) {
             // Changes: the number of versions from the root to this one.
             let (mut depth, mut s) = (0, v.seq);
@@ -1510,7 +1496,7 @@ impl Editor {
             Ok(r) => r,
             Err(e) => return self.msg = e,
         };
-        let text = self.doc.text().clone();
+        let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
         let plural = |k: usize| if k == 1 { "" } else { "s" };
         if s.confirm && !s.count {
@@ -1556,10 +1542,10 @@ impl Editor {
         }
         // The line where the last replacement ends (the edits are in order, each in the text
         // left by the previous ones, so the last one is already in final coordinates).
-        let last_edit = *self.doc.last_edits().last().expect("n > 0");
-        let l = self.doc.text().offset_to_line(last_edit.start + last_edit.new_len);
+        let last_edit = *self.buf.doc.last_edits().last().expect("n > 0");
+        let l = self.buf.doc.text().offset_to_line(last_edit.start + last_edit.new_len);
         self.set_jump();
-        self.line = l;
+        self.win.line = l;
         self.set_col(self.first_non_blank(l));
         self.clamp_normal();
         self.msg = format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len()));
@@ -1573,7 +1559,7 @@ impl Editor {
     fn select_match(&mut self, op: Option<char>, forward: bool) {
         let Some(s) = self.last_search.clone() else { return self.msg = "No previous search pattern".into() };
         self.hl = true;
-        let text = self.doc.text().clone();
+        let text = self.buf.doc.text().clone();
         let cur = self.offset();
         let after = text.char_to_offset((text.offset_to_char(cur) + 1).min(text.char_count()));
         // In Visual the match must reach past the cursor, so a repeated `gn`/`gN` moves on.
@@ -1588,14 +1574,14 @@ impl Editor {
             Some(op) => self.operate(op, a, b, Kind::Exclusive),
             // In Visual, the selection is extended to the match's end (`gN`: its start), like vim.
             None if matches!(self.mode, Mode::Visual(_)) => {
-                (self.line, self.col) = if forward { self.pos_of(text.floor_char_boundary(m.end - 1)) } else { a };
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = if forward { self.pos_of(text.floor_char_boundary(m.end - 1)) } else { a };
+                self.win.want_col = self.win.col;
             }
             None => {
                 self.anchor = a;
                 self.mode = Mode::Visual(VKind::Char);
-                (self.line, self.col) = self.pos_of(text.floor_char_boundary(m.end - 1));
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = self.pos_of(text.floor_char_boundary(m.end - 1));
+                self.win.want_col = self.win.col;
             }
         }
     }
@@ -1603,13 +1589,13 @@ impl Editor {
     /// Moves the cursor to the next match of the confirm session and asks; false when none is left.
     fn confirm_prompt(&mut self) -> bool {
         let Some(c) = &mut self.confirm else { return false };
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let Some((m, _)) = c.find(text) else { return false };
         let (l, col) = text.offset_to_line_col(m.start);
         self.msg = format!("replace with {} (y/n/a/q/l)?", c.rep);
         c.cur = m;
-        (self.line, self.col) = (l, col);
-        self.want_col = col;
+        (self.win.line, self.win.col) = (l, col);
+        self.win.want_col = col;
         true
     }
 
@@ -1619,7 +1605,7 @@ impl Editor {
         self.mode = Mode::Normal;
         if let Some(l) = c.last_line {
             self.set_jump();
-            self.line = l;
+            self.win.line = l;
             self.set_col(self.first_non_blank(l));
         }
         self.clamp_normal();
@@ -1638,7 +1624,7 @@ impl Editor {
         }
         loop {
             let Some(c) = &mut self.confirm else { return };
-            let text = self.doc.text().clone();
+            let text = self.buf.doc.text().clone();
             let Some((m, rep)) = c.find(&text) else {
                 return self.confirm_finish();
             };
@@ -1659,7 +1645,7 @@ impl Editor {
                 m.start + rep.len()
             };
             let c = self.confirm.as_mut().expect("session is open");
-            let text = self.doc.text();
+            let text = self.buf.doc.text();
             // Without `g` the rest of the line is skipped; an empty match steps a char so the
             // search always advances. `len + 1` means "nothing left".
             c.next = if !c.all {
@@ -1684,13 +1670,13 @@ impl Editor {
 
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.
     fn reload(&mut self) {
-        match read_doc(&self.path, self.eol_override) {
+        match read_doc(&self.buf.path) {
             Ok(doc) => {
-                (self.saved, self.saved_eol) = (doc.text().clone(), doc.eol());
-                self.doc = doc;
+                (self.buf.saved, self.buf.saved_eol) = (doc.text().clone(), doc.eol());
+                self.buf.doc = doc;
                 (self.grouping, self.changed) = (false, false);
                 self.clamp();
-                self.msg = format!("Reloaded ({})", self.doc.eol());
+                self.msg = format!("Reloaded ({})", self.buf.doc.eol());
             }
             Err(e) => self.msg = format!("Reload failed: {e}"),
         }
@@ -1700,69 +1686,59 @@ impl Editor {
         self.edit_insert(self.offset(), s);
         for c in s.chars() {
             if c == '\n' {
-                self.line += 1;
-                self.col = 0;
+                self.win.line += 1;
+                self.win.col = 0;
             } else {
-                self.col += 1;
+                self.win.col += 1;
             }
         }
-        self.want_col = self.col;
+        self.win.want_col = self.win.col;
     }
 
     fn set_col(&mut self, col: usize) {
-        self.col = col;
-        self.want_col = col;
+        self.win.col = col;
+        self.win.want_col = col;
     }
 
     fn move_left(&mut self) {
-        if self.col > 0 {
-            self.set_col(self.col - 1);
-        } else if self.line > 0 {
-            self.line -= 1;
-            self.set_col(self.line_chars(self.line));
+        if self.win.col > 0 {
+            self.set_col(self.win.col - 1);
+        } else if self.win.line > 0 {
+            self.win.line -= 1;
+            self.set_col(self.line_chars(self.win.line));
         }
     }
 
     fn move_right(&mut self) {
-        if self.col < self.line_chars(self.line) {
-            self.set_col(self.col + 1);
-        } else if self.line + 1 < self.line_count() {
-            self.line += 1;
+        if self.win.col < self.line_chars(self.win.line) {
+            self.set_col(self.win.col + 1);
+        } else if self.win.line + 1 < self.line_count() {
+            self.win.line += 1;
             self.set_col(0);
         }
     }
 
     fn move_vertical(&mut self, delta: isize) {
         let last = self.line_count() - 1;
-        self.line = self.line.saturating_add_signed(delta).min(last);
-        self.col = self.want_col.min(self.line_chars(self.line));
+        self.win.line = self.win.line.saturating_add_signed(delta).min(last);
+        self.win.col = self.win.want_col.min(self.line_chars(self.win.line));
     }
 
     /// Keeps the cursor inside the text after undo/redo or reload.
     fn clamp(&mut self) {
-        self.line = self.line.min(self.line_count() - 1);
-        self.set_col(self.col.min(self.line_chars(self.line)));
+        self.win.line = self.win.line.min(self.line_count() - 1);
+        self.set_col(self.win.col.min(self.line_chars(self.win.line)));
         self.clamp_normal();
     }
 
     /// Normal mode keeps the cursor on a char, not past the line end (vim).
     fn clamp_normal(&mut self) {
-        self.col = self.col.min(self.line_chars(self.line).saturating_sub(1));
+        self.win.col = self.win.col.min(self.line_chars(self.win.line).saturating_sub(1));
     }
 
-    /// Returns true on success.
-    fn save(&mut self) -> bool {
-        match ex::write_atomic(&self.path, &self.doc) {
-            Ok(()) => {
-                (self.saved, self.saved_eol) = (self.doc.text().clone(), self.doc.eol());
-                self.msg = format!("Saved ({})", self.doc.eol());
-                true
-            }
-            Err(e) => {
-                self.msg = format!("Save failed: {e}");
-                false
-            }
-        }
+    /// Writes the current buffer on a thread; with `wait`, waits and returns false on failure.
+    fn save(&mut self, wait: bool) -> bool {
+        self.save_buffer(self.buf.id, wait)
     }
 }
 

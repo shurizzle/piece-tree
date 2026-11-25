@@ -1,4 +1,5 @@
 use std::{
+    fmt,
     io::{self, Write},
     mem,
     ops::Range,
@@ -420,21 +421,21 @@ impl Document {
     }
 
     /// Writes the text with `\n` converted to the document's line ending.
-    pub fn write_to(&self, mut w: impl Write) -> io::Result<()> {
-        let eol = self.eol.as_str().as_bytes();
-        for chunk in self.text().chunks() {
+    pub fn write_to(&self, w: impl Write) -> io::Result<()> {
+        self.text().write_to(w, self.eol)
+    }
+}
+
+/// The text with `\n` converted to the document's line ending, as `write_to` writes it.
+impl fmt::Display for Document {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let eol = self.eol.as_str();
+        self.text().chunks().try_for_each(|chunk| {
             if self.eol == LineEnding::Lf {
-                w.write_all(chunk.as_bytes())?;
-                continue;
+                return f.write_str(chunk);
             }
-            for (i, part) in chunk.split('\n').enumerate() {
-                if i > 0 {
-                    w.write_all(eol)?;
-                }
-                w.write_all(part.as_bytes())?;
-            }
-        }
-        Ok(())
+            chunk.split('\n').enumerate().try_for_each(|(i, part)| if i > 0 { f.write_str(eol) } else { Ok(()) }.and_then(|()| f.write_str(part)))
+        })
     }
 }
 

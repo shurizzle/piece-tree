@@ -32,6 +32,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |
+| `write_to(impl Write, LineEnding)` | `io::Result<()>` | — | writes with `\n` converted to the ending; propagates writer errors. A clone is a snapshot: write it on another thread while the original is edited (rim's background `:w`) |
 | `piece_count()` / `chunk_count()` | pieces (tree nodes) / distinct chunks referenced, the add chunk included | — | O(pieces) walks |
 | `memory_bytes()` | approximate heap bytes kept alive: chunks at capacity plus tree nodes | — | O(pieces); versions share both, so a sum over versions overcounts |
 | `compact(max)` | `Text` | — | runs of consecutive pieces copied into new owned chunks of at most `max` bytes (longer pieces stay shared, balanced rebuild); same content, `self` and other versions untouched; returns `self` (same version) when no run has two pieces; O(pieces + bytes copied) |
@@ -60,7 +61,8 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `replace_matching(&Regex, &str, keep) -> usize` | same, only the matches `keep(range)` accepts; `last_edits` has one edit per replaced match |
 | `compact(max)` | the current version's text becomes `Text::compact(max)` (same content; `last_edits` empty); history kept, other versions keep their own pieces |
 | `drop_history_before(seq) -> bool` | forgets every version that is neither `seq` nor made from it, freeing their texts and the chunks only they use; `seq` becomes version 0, the rest renumbered in creation order; false (no change) when `seq` does not exist or the current version is not in its subtree; closes open groups |
-| `write_to(impl Write) -> io::Result<()>` | writes with `eol()`; propagates writer errors |
+| `write_to(impl Write) -> io::Result<()>` | `Text::write_to` with `eol()`; propagates writer errors |
+| `Display` / `to_string()` | the text with `eol()` line endings, the same bytes as `write_to` (for I/O use `write_to`) |
 
 ## `Edit`, `map_offset`
 

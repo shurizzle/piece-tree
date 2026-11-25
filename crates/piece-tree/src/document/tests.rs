@@ -5,6 +5,7 @@ use super::*;
 fn output(doc: &Document) -> Vec<u8> {
     let mut out = Vec::new();
     doc.write_to(&mut out).unwrap();
+    assert_eq!(doc.to_string().as_bytes(), out, "Display writes what write_to writes");
     out
 }
 
@@ -120,6 +121,12 @@ impl Write for FailAt {
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
+}
+
+#[test]
+fn is_send_sync() {
+    fn assert<T: Send + Sync>() {}
+    assert::<Document>();
 }
 
 #[test]

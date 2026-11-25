@@ -22,6 +22,8 @@
 
 | Limit | Impact | Upgrade path |
 |---|---|---|
+| Every option is buffer-local (`shortcut:` in `editor/buffers.rs`) | `:set` changes the current buffer only; a new buffer copies the current one's options; `wrap`/`number` cannot differ between two windows on one buffer | Split window-local options into `Window` |
+| The last buffer cannot be deleted (`shortcut:` in `editor/buffers.rs`) | `:bd` on the only buffer reports `Cannot delete the last buffer` | An unnamed empty buffer |
 | Widths per char, not per grapheme (`shortcut:` in `editor/render.rs`) | A cluster (emoji with modifiers, combining marks) takes several cursor positions; some emoji sequences may misalign | Grapheme segmentation (`unicode-segmentation`) |
 | Huge lines are not free (`editor/layout.rs`, `editor/render.rs`, `editor/search.rs`) | Typing, motions, objects and scrolling in a line of millions of chars cost the window around the cursor (see `rim.md`, Huge lines). Still O(line): the first jump deep into a line (2 MB of CJK: about 2.3 ms to lay out its prefix once), `gk`/`k` into a huge line above (it is laid out whole, then kept), a failed `ci(`-style search (scans back to the text start), sentence objects, `yy`/`p`, and a text change on a visible huge line with `hlsearch` (the regex runs from the line start so matches stay exactly vim's: 100 000 matches about 7 ms, none about 0.2 ms) | Checkpoints of the row layout and of the match state per line |
 | Save via temp file + rename | Permissions are copied and symlinks followed, but hard links are broken, owner is kept only when allowed (root or same user), ACLs and xattrs are lost | Write in place after a backup |

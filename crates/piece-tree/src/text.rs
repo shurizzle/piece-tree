@@ -2,6 +2,7 @@ use std::{
     borrow::Cow,
     collections::HashMap,
     fmt,
+    io::{self, Write},
     ops::{ControlFlow, Range},
 };
 
@@ -9,6 +10,7 @@ use triomphe::Arc;
 
 use crate::chunk::{Chunk, MAX_ADD_BYTES, count_lf};
 use crate::document::Edit;
+use crate::LineEnding;
 use crate::eol::{normalize, normalize_owned};
 use crate::tree::{self, Node, Piece, Tree};
 
@@ -663,6 +665,25 @@ impl Text {
         let mut c = Chunks { stack: Vec::new() };
         c.push_left(&self.root);
         c
+    }
+
+    /// Writes the text with `\n` converted to `eol`. A clone is a snapshot, so this can run on
+    /// another thread while the original keeps being edited.
+    pub fn write_to(&self, mut w: impl Write, eol: LineEnding) -> io::Result<()> {
+        let sep = eol.as_str().as_bytes();
+        for chunk in self.chunks() {
+            if eol == LineEnding::Lf {
+                w.write_all(chunk.as_bytes())?;
+                continue;
+            }
+            for (i, part) in chunk.split('\n').enumerate() {
+                if i > 0 {
+                    w.write_all(sep)?;
+                }
+                w.write_all(part.as_bytes())?;
+            }
+        }
+        Ok(())
     }
 }
 

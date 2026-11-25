@@ -18,7 +18,7 @@ cargo +nightly-2026-11-20 llvm-cov -p piece-tree --lib --branch --show-missing-l
 cargo +nightly-2026-11-20 miri test -p piece-tree --lib   # unsafe checks (~4 min)
 cargo bench -p piece-tree                      # benchmarks, min of 7 runs
 cargo build --release -p piece-tree --example profile && samply record target/release/examples/profile typing   # profile
-cargo run -p rim -- <file> [--eol lf|cr|crlf]
+cargo run -p rim -- <file>...
 cargo test -p rim                          # editor tests (keys, frames, submodule units)
 ```
 
@@ -55,4 +55,4 @@ cargo test -p rim                          # editor tests (keys, frames, submodu
 | Undo/redo, writing | `crates/piece-tree/src/document.rs` |
 | Regex search/replace | `crates/piece-tree/src/search.rs` |
 | Benchmarks | `crates/piece-tree/benches/bench.rs` |
-| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (grammar, motions, objects, search, ex ranges and line commands, `:s`, registers, options, layout (wrap rows), render; CLI/terminal in `main.rs`) |
+| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (buffers and background save, windows and split layout, grammar, motions, objects, search, ex ranges and line commands, `:s`, registers, options, layout (wrap rows), render; CLI/terminal in `main.rs`) |

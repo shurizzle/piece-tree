@@ -55,7 +55,7 @@ impl Editor {
     /// Chars from `p` forward; each line but the last ends with `\n`. Lazy: a line is read in place and
     /// only as far as the caller consumes it, so a word motion in a huge line costs the word.
     pub(super) fn fwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let lines = text.line_count();
         (p.0..lines).flat_map(move |l| {
             let s = text.line(l);
@@ -67,7 +67,7 @@ impl Editor {
 
     /// Chars from `p` backward, `p` included.
     pub(super) fn bwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let lines = text.line_count();
         (0..=p.0).rev().flat_map(move |l| {
             let s = text.line(l);
@@ -136,51 +136,51 @@ impl Editor {
 
     /// `f`/`F`/`t`/`T` in the cursor line. Repeated `t`/`T` skip an adjacent match (vim default `cpo`).
     fn find(&self, kind: char, ch: char, n: usize, repeat: bool) -> Option<(Pos, Kind)> {
-        let line = self.doc.text().line(self.line);
+        let line = self.buf.doc.text().line(self.win.line);
         let skip = usize::from(repeat && matches!(kind, 't' | 'T'));
         let mut buf = [0; 4];
         let needle = ch.encode_utf8(&mut buf).as_bytes();
         // Byte searches (UTF-8 is self-synchronizing, so a hit is a char); columns are counted per hit.
         let hit = if matches!(kind, 'f' | 't') {
-            let from = self.col + 1 + skip;
+            let from = self.win.col + 1 + skip;
             let b = super::byte_of_col(&line, from);
             let k = memchr::memmem::find_iter(&line.as_bytes()[b..], needle).nth(n - 1)?;
             from + str_indices::chars::count(&line[b..b + k])
         } else {
-            let to = self.col.checked_sub(skip)?;
+            let to = self.win.col.checked_sub(skip)?;
             let k = memchr::memmem::rfind_iter(&line.as_bytes()[..super::byte_of_col(&line, to)], needle).nth(n - 1)?;
             str_indices::chars::count(&line[..k])
         };
         Some(match kind {
-            'f' => ((self.line, hit), Kind::Inclusive),
-            't' => ((self.line, hit - 1), Kind::Inclusive),
-            'F' => ((self.line, hit), Kind::Exclusive),
-            _ => ((self.line, hit + 1), Kind::Exclusive),
+            'f' => ((self.win.line, hit), Kind::Inclusive),
+            't' => ((self.win.line, hit - 1), Kind::Inclusive),
+            'F' => ((self.win.line, hit), Kind::Exclusive),
+            _ => ((self.win.line, hit + 1), Kind::Exclusive),
         })
     }
 
     /// `%`: the bracket matching the first `()[]{}` at or after the cursor in its line.
     fn match_bracket(&self) -> Option<Pos> {
-        let line = self.doc.text().line(self.line);
-        let b = super::byte_of_col(&line, self.col);
+        let line = self.buf.doc.text().line(self.win.line);
+        let b = super::byte_of_col(&line, self.win.col);
         let hay = &line.as_bytes()[b..];
         let k = [memchr::memchr3(b'(', b')', b'[', hay), memchr::memchr3(b']', b'{', b'}', hay)].into_iter().flatten().min()?;
-        let (i, ch) = (self.col + str_indices::chars::count(&line[b..b + k]), hay[k] as char);
+        let (i, ch) = (self.win.col + str_indices::chars::count(&line[b..b + k]), hay[k] as char);
         let (open, close) = match ch {
             '(' | ')' => ('(', ')'),
             '[' | ']' => ('[', ']'),
             _ => ('{', '}'),
         };
-        self.matching((self.line, i), open, close, ch == open)
+        self.matching((self.win.line, i), open, close, ch == open)
     }
 
     /// `*`/`#`: the word under the cursor (or the next one in the line) and its start column.
     fn word_under_cursor(&self) -> Option<(String, usize)> {
-        let line = self.doc.text().line(self.line);
-        let b = super::byte_of_col(&line, self.col);
+        let line = self.buf.doc.text().line(self.win.line);
+        let b = super::byte_of_col(&line, self.win.col);
         let (skipped, _) = line[b..].char_indices().find(|&(_, c)| class(c) == 1)?;
         let mut start = b + skipped;
-        let mut col = self.col + line[b..start].chars().count();
+        let mut col = self.win.col + line[b..start].chars().count();
         // Back to the word start, then on to its end.
         while let Some(p) = line[..start].chars().next_back().filter(|&p| class(p) == 1) {
             (start, col) = (start - p.len_utf8(), col - 1);
@@ -191,8 +191,8 @@ impl Editor {
 
     /// Byte offset of mark `m`, kept inside the text and on a char boundary (undo does not move marks).
     pub(super) fn mark(&self, m: char) -> Option<usize> {
-        let off = (*self.marks.get(&m)?).min(self.doc.text().len());
-        let text = self.doc.text();
+        let off = (*self.buf.marks.get(&m)?).min(self.buf.doc.text().len());
+        let text = self.buf.doc.text();
         let line = text.offset_to_line(off);
         let start = text.line_to_offset(line);
         Some(start + text.line(line).floor_char_boundary(off - start))
@@ -201,11 +201,11 @@ impl Editor {
     pub(super) fn motion(&mut self, cmd: &Cmd) -> Option<(Pos, Kind)> {
         let Cmd { key, count, op, arg, .. } = *cmd;
         let n = count.unwrap_or(1);
-        let (line, col) = (self.line, self.col);
+        let (line, col) = (self.win.line, self.win.col);
         let last = self.line_count() - 1;
-        let vertical = |e: &Self, l: usize| ((l, e.want_col.min(e.line_chars(l))), Kind::Linewise);
+        let vertical = |e: &Self, l: usize| ((l, e.win.want_col.min(e.line_chars(l))), Kind::Linewise);
         let first = |e: &Self, l: usize| ((l, e.first_non_blank(l)), Kind::Linewise);
-        let half = (self.rows / 2).max(1);
+        let half = (self.win.rows / 2).max(1);
         Some(match key {
             'h' => ((line, col.saturating_sub(n)), Kind::Exclusive),
             'l' => ((line, (col + n).min(self.line_chars(line))), Kind::Exclusive),
@@ -219,11 +219,11 @@ impl Editor {
             }
             G_DOWN | G_UP => {
                 let (k, x) = self.cursor_row();
-                let x = self.want_x.filter(|&(_, p)| p == (line, col)).map_or(x, |(x, _)| x);
+                let x = self.win.want_x.filter(|&(_, p)| p == (line, col)).map_or(x, |(x, _)| x);
                 let (l, k) = self.step_rows(line, k, key == G_DOWN, n);
                 let pos = (l, self.col_at(l, k, x));
                 // Stored as Normal mode will clamp it, so the next `gj` recognizes the cursor.
-                self.want_x = Some((x, (l, pos.1.min(self.line_chars(l).saturating_sub(1)))));
+                self.win.want_x = Some((x, (l, pos.1.min(self.line_chars(l).saturating_sub(1)))));
                 (pos, Kind::Exclusive)
             }
             '0' => ((line, 0), Kind::Exclusive),
@@ -233,18 +233,18 @@ impl Editor {
                 ((l, self.line_chars(l).saturating_sub(1)), Kind::Inclusive)
             }
             'g' | 'G' => first(self, count.map_or(if key == 'g' { 0 } else { last }, |c| (c - 1).min(last))),
-            'H' => first(self, (self.top + n - 1).min(self.bottom_line())),
+            'H' => first(self, (self.win.top + n - 1).min(self.bottom_line())),
             'L' => {
                 let bottom = self.bottom_line();
-                first(self, bottom.saturating_sub(n - 1).max(self.top.min(bottom)))
+                first(self, bottom.saturating_sub(n - 1).max(self.win.top.min(bottom)))
             }
             'M' => {
                 // The line on the middle screen row of what is shown.
-                let (top, bottom) = (self.top.min(last), self.bottom_line());
-                let shown: usize = (top..=bottom).map(|l| self.height_to(l, self.rows + 1)).sum::<usize>().saturating_sub(self.top_sub);
-                let (mut row, mut l) = ((shown.max(1) - 1) / 2 + self.top_sub, top);
-                while l < bottom && row >= self.height_to(l, self.rows + 1) {
-                    row -= self.height_to(l, self.rows + 1);
+                let (top, bottom) = (self.win.top.min(last), self.bottom_line());
+                let shown: usize = (top..=bottom).map(|l| self.height_to(l, self.win.rows + 1)).sum::<usize>().saturating_sub(self.win.top_sub);
+                let (mut row, mut l) = ((shown.max(1) - 1) / 2 + self.win.top_sub, top);
+                while l < bottom && row >= self.height_to(l, self.win.rows + 1) {
+                    row -= self.height_to(l, self.win.rows + 1);
                     l += 1;
                 }
                 first(self, l)
@@ -339,21 +339,21 @@ impl Editor {
 
     /// Char boundary at or before byte `b`, clamped to the text (`go`, `:goto`).
     pub(super) fn byte_pos(&self, b: usize) -> usize {
-        self.doc.text().floor_char_boundary(b)
+        self.buf.doc.text().floor_char_boundary(b)
     }
 
     /// Moves the cursor to a motion's target in Normal or Visual mode; jumps set the `''` mark.
     pub(super) fn move_to(&mut self, key: char, to: Pos) {
-        if JUMPS.contains(key) && to != (self.line, self.col) {
+        if JUMPS.contains(key) && to != (self.win.line, self.win.col) {
             self.set_jump();
         }
-        self.line = to.0;
+        self.win.line = to.0;
         let col = to.1.min(self.line_chars(to.0).saturating_sub(1));
         match key {
-            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP => self.col = col,
+            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP => self.win.col = col,
             '$' => {
-                self.col = col;
-                self.want_col = usize::MAX;
+                self.win.col = col;
+                self.win.want_col = usize::MAX;
             }
             _ => self.set_col(col),
         }
@@ -361,7 +361,7 @@ impl Editor {
 
     /// Records the cursor as the `''` mark before a jump.
     pub(super) fn set_jump(&mut self) {
-        self.marks.insert('\'', self.offset());
+        self.buf.marks.insert('\'', self.offset());
     }
 
     /// The `n`-th match of `last_search` forward or backward from byte `from` (the cursor by
@@ -375,7 +375,7 @@ impl Editor {
         // Repeating after an offset moved the cursor off the match: continue from the match.
         let mut cur = match (from, self.search_landing) {
             (Some(f), _) => f,
-            (None, Some((p, start))) if p == (self.line, self.col) => start,
+            (None, Some((p, start))) if p == (self.win.line, self.win.col) => start,
             _ => self.offset(),
         };
         let mut found = None;
@@ -391,7 +391,7 @@ impl Editor {
             found = Some(m);
         }
         let m = found?;
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let at_char = |c: isize| self.pos_of(text.char_to_offset(c.clamp(0, text.char_count() as isize) as usize));
         let target = match s.offset {
             search::Offset::None => (self.pos_of(m.start), Kind::Exclusive),
@@ -412,7 +412,7 @@ impl Editor {
 
     /// The match of `re` after byte `cur` (or the last before it), and whether it wrapped.
     pub(super) fn find_match(&self, re: &piece_tree::Regex, forward: bool, cur: usize) -> Option<(std::ops::Range<usize>, bool)> {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         if !forward {
             return search::find_backward(text, re, cur);
         }

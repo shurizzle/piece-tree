@@ -63,9 +63,17 @@ Goal: make the library complete by building editor features that need it. The us
 - Miri scope cut (`testing.md`, AGENTS.md): only tests reaching `unsafe` in a new way run; safe-logic oracles are ignored with a reason. 154 tests, ~4 min.
 - Editor renamed `pt-edit` → `rim` (crate `crates/rim`, `docs/reference/rim.md`).
 
+### M7 — buffers, windows, background save: DONE
+- Lib: `Text::write_to(w, eol)` (`Document::write_to` delegates); tests `snapshot_written_on_a_thread_while_editing_in_place` (runs under Miri) and `Document` `Send + Sync`. No hot path changed: no bench A/B. Coverage 100% (2-region residue, now in `text.rs`), Miri 156 passed, 0 failed.
+- Editor: per-buffer state in `Buffer` (`editor/buffers.rs`), per-window in `Window` (`editor/windows.rs`); `Editor` keeps the current ones in `buf`/`win` and parks the others (`mem::swap`). Parked windows on the current buffer keep a byte offset mapped by `map_marks`.
+- Commands: `:e file`, `:bn`/`:bp`/`:bN`, `:b N`, `:ls`, `:bd[!] [N]`, `Ctrl+^`, `:sp`/`:vs [file]`, `:clo`, `:on`, `Ctrl+W h j k l w c o s v`, `:qa[!]`, `:wqa`/`:xa`; `:q` closes a window, and on the last one refuses while any buffer is modified (hidden buffers allowed).
+- `Split` layout tree, `Frame` composed from per-window rows, per-window status rows with several windows, `Frame::cursor_cols`.
+- `rim a b ...` loads every file into a buffer (`Editor::open_more`).
+- `:w` writes a `Text` clone on a thread; `poll_saves` after each key and every 50 ms from `main`; `:wq`/`:x`/`:wqa`/`:sav`/`:bd`/`:e`/quit wait; the `written` message replaces only its own `writing...`.
+- Tests: `buffers_switch_list_and_delete`, `windows_split_move_and_close`, `insert_mode_survives_drawing_other_windows`, `background_save_writes_the_snapshot`, `Split`/`neighbor` units. Pty smoke test (`:vs b.txt`, edits in both, `Ctrl+W l`, `:w`, `:wqa`) wrote the right bytes.
+
 ## Not started
-- **M7:** buffers and windows, background save from a `Text` snapshot.
-- **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, wrap/list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, clipboard read via OSC 52 query only (no `arboard`, no fallback: a terminal without OSC 52 is unsupported), macros as registers, virtual-column blocks, cmdline history/completion, init file.
+- **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, clipboard read via OSC 52 query only (no `arboard`, no fallback: a terminal without OSC 52 is unsupported), macros as registers, virtual-column blocks, cmdline history/completion, init file.
 
 ## Parser notes (editor)
 - `g<c>` keys map to the private-use char `parse::g_key(c)` (0xE100 + c). Add `c` to `G_MOTIONS` or `G_COMMANDS`; `parse::is_motion` covers both sets.

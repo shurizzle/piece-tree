@@ -1,10 +1,13 @@
+use piece_tree::LineEnding;
+
 use super::{registers::*, render::*, *};
 
 fn ed(s: &str) -> Editor {
     Editor::new(Document::new(s), PathBuf::from("/nonexistent/rim-test"))
 }
 
-/// Feeds keys; `\x1b` is Esc, `\n` Enter, `\x7f` Backspace, `\t` Tab, `\x04`/`\x12`/`\x15` Ctrl+D/R/U.
+/// Feeds keys; `\x1b` is Esc, `\n` Enter, `\x7f` Backspace, `\t` Tab, `\x04`/`\x12`/`\x15` Ctrl+D/R/U,
+/// `\x17` Ctrl+W, `\x1e` Ctrl+^.
 /// Returns false if the editor asked to quit.
 fn feed(e: &mut Editor, keys: &str) -> bool {
     keys.chars().all(|c| {
@@ -14,13 +17,14 @@ fn feed(e: &mut Editor, keys: &str) -> bool {
             '\x7f' => KeyCode::Backspace.into(),
             '\t' => KeyCode::Tab.into(),
             '\x04' | '\x12' | '\x15' => KeyEvent::new(KeyCode::Char((c as u8 + b'a' - 1) as char), KeyModifiers::CONTROL),
+            '\x17' | '\x1e' => char_key(c),
             c => KeyCode::Char(c).into(),
         })
     })
 }
 
 fn text(e: &Editor) -> String {
-    let t = e.doc.text();
+    let t = e.buf.doc.text();
     t.slice(0..t.len()).into_owned()
 }
 
@@ -31,7 +35,7 @@ fn run(s: &str, keys: &str) -> Editor {
 }
 
 fn pos(e: &Editor) -> Pos {
-    (e.line, e.col)
+    (e.win.line, e.win.col)
 }
 
 /// Unnamed register as `(text, linewise)`.
@@ -98,11 +102,11 @@ fn line_motions() {
     assert_eq!(pos(&run(s, "llljj")), (2, 0));
     assert_eq!(pos(&run(s, "llljjk")), (1, 3));
     let mut e = ed(&"x\n".repeat(20));
-    e.rows = 10;
+    e.win.rows = 10;
     feed(&mut e, "\x04");
-    assert_eq!(e.line, 5);
+    assert_eq!(e.win.line, 5);
     feed(&mut e, "\x15\x15");
-    assert_eq!(e.line, 0);
+    assert_eq!(e.win.line, 0);
 }
 
 #[test]
@@ -255,6 +259,7 @@ fn save_writes_and_cleans() {
     assert_eq!(fs::read_to_string(&path).unwrap(), "b");
     let mut e = Editor::new(Document::new("a"), path.clone());
     feed(&mut e, "x:w\n");
+    assert!(e.wait_saves());
     assert!(!e.is_dirty());
     assert!(!feed(&mut e, ":q\n"));
     fs::remove_dir_all(dir).unwrap();
@@ -270,9 +275,9 @@ fn env_dir() -> PathBuf {
 fn command_line_editing_and_goto() {
     let e = run("a\nb\nc", ":3\n");
     assert_eq!((pos(&e), &e.mode), ((2, 0), &Mode::Normal));
-    assert_eq!(run("a\nb\nc", ":99\n").line, 2);
+    assert_eq!(run("a\nb\nc", ":99\n").win.line, 2);
     assert_eq!(run("a", ":foo\n").msg, "Not an editor command: foo");
-    assert_eq!(run("a\nb", ":x\x7f2\n").line, 1);
+    assert_eq!(run("a\nb", ":x\x7f2\n").win.line, 1);
     assert_eq!(run("a", ":\x7f").mode, Mode::Normal);
     assert_eq!(run("a", ":q\x1b").mode, Mode::Normal);
     assert_eq!(run("a", ":\n").mode, Mode::Normal);
@@ -300,7 +305,7 @@ fn search_wraps_and_repeats() {
 #[test]
 fn esc_and_unknown_keys_cancel_pending() {
     let e = run("a\nb", "d\x1bj");
-    assert_eq!((text(&e).as_str(), e.line), ("a\nb", 1));
+    assert_eq!((text(&e).as_str(), e.win.line), ("a\nb", 1));
     assert_eq!(text(&run("a\nb", "dzj")), "a\nb");
     assert_eq!(run("a", "3").pending, "3");
 }
@@ -440,7 +445,7 @@ fn reload_from_disk() {
     let dir = temp_dir("reload");
     let path = dir.join("f.txt");
     fs::write(&path, "one\r\ntwo").unwrap();
-    let mut e = Editor::open(path.clone(), None).unwrap();
+    let mut e = Editor::open(path.clone()).unwrap();
     feed(&mut e, "jdd:e\n");
     assert_eq!((text(&e).as_str(), e.msg.as_str()), ("one", "No write since last change (add ! to override)"));
     feed(&mut e, ":e!\n");
@@ -451,14 +456,10 @@ fn reload_from_disk() {
     fs::write(&path, "x").unwrap();
     feed(&mut e, ":e\n");
     assert_eq!(text(&e), "x");
-    // The `--eol` override survives a reload.
-    let mut e = Editor::open(path.clone(), Some(LineEnding::Cr)).unwrap();
-    feed(&mut e, ":e!\n");
-    assert_eq!(e.doc.eol(), LineEnding::Cr);
     fs::remove_dir_all(&dir).unwrap();
     feed(&mut e, ":e!\n");
     assert_eq!(text(&e), "");
-    let mut e = Editor::open(dir.join("missing-dir/f"), None).unwrap();
+    let mut e = Editor::open(dir.join("missing-dir/f")).unwrap();
     fs::create_dir_all(dir.join("missing-dir/f")).unwrap();
     feed(&mut e, ":e!\n");
     assert!(e.msg.starts_with("Reload failed"), "{}", e.msg);
@@ -475,9 +476,10 @@ fn save_keeps_permissions_and_symlinks() {
     fs::set_permissions(&path, fs::Permissions::from_mode(0o640)).unwrap();
     let link = dir.join("link.txt");
     symlink(&path, &link).unwrap();
-    let mut e = Editor::open(link.clone(), None).unwrap();
+    let mut e = Editor::open(link.clone()).unwrap();
     feed(&mut e, "rb:w\n");
-    assert_eq!(e.msg, "Saved (LF)");
+    assert!(e.wait_saves());
+    assert_eq!(e.msg, format!("\"{}\" written (LF)", link.display()));
     assert!(fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
     assert_eq!(fs::read_to_string(&path).unwrap(), "b");
     assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o640);
@@ -797,10 +799,10 @@ fn bracket_match_and_percent() {
     assert_eq!(pos(&run("abc", "%")), (0, 0));
     assert_eq!(text(&run("x(a)y", "ld%")), "xy");
     let s = "a\nb\nc\nd";
-    assert_eq!(run(s, "50%").line, 1);
-    assert_eq!(run(s, "100%").line, 3);
-    assert_eq!(run(s, "1%").line, 0);
-    assert_eq!(run(s, "500%").line, 3);
+    assert_eq!(run(s, "50%").win.line, 1);
+    assert_eq!(run(s, "100%").win.line, 3);
+    assert_eq!(run(s, "1%").win.line, 0);
+    assert_eq!(run(s, "500%").win.line, 3);
 }
 
 #[test]
@@ -981,7 +983,7 @@ fn screen_line_motions_and_scrolling() {
     e.frame(10, 6);
     let mut at = |keys: &str| {
         feed(&mut e, keys);
-        e.line
+        e.win.line
     };
     assert_eq!(at("L"), 4);
     assert_eq!(at("H"), 0);
@@ -1695,12 +1697,12 @@ fn cached_layouts_match_fresh_ones_over_random_sessions() {
             done.push_str(k);
             feed(&mut kept, k);
             feed(&mut fresh, k);
-            *fresh.layout.borrow_mut() = Default::default();
-            *fresh.chars_memo.borrow_mut() = None;
-            *fresh.match_cache.borrow_mut() = None;
+            *fresh.win.layout.borrow_mut() = Default::default();
+            *fresh.buf.chars_memo.borrow_mut() = None;
+            *fresh.win.match_cache.borrow_mut() = None;
             let want = screen(&fresh.frame(w, h));
             assert_eq!(screen(&kept.frame(w, h)), want, "round {round} keys {done:?} size {w}x{h}");
-            assert_eq!((kept.line, kept.col, kept.top, kept.top_sub), (fresh.line, fresh.col, fresh.top, fresh.top_sub), "{done:?}");
+            assert_eq!((kept.win.line, kept.win.col, kept.win.top, kept.win.top_sub), (fresh.win.line, fresh.win.col, fresh.win.top, fresh.win.top_sub), "{done:?}");
         }
     }
 }
@@ -1741,7 +1743,7 @@ fn ex_addresses() {
     assert_eq!(run(s, ":9d\n").msg, "Invalid range");
     // `/pat/` sets the last search; `^` matches at line starts.
     let e = run("xa\na", ":/^a/\n");
-    assert_eq!((e.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
+    assert_eq!((e.win.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
     assert_eq!(pos(&run(s, ":'q\n")), (0, 0));
     assert_eq!(run(s, ":'q\n").msg, "Mark not set");
     assert_eq!(run(s, ":3|\n").msg, "Not an editor command: 3|");
@@ -1758,20 +1760,20 @@ fn ex_delete_yank_move_copy() {
     let e = run(s, "j:3,4y\n");
     assert_eq!((text(&e).as_str(), reg(&e), pos(&e)), (s, ("c\nd\n".into(), true), (1, 0)));
     let e = run(s, ":2,3m0\n");
-    assert_eq!((text(&e).as_str(), e.line), ("b\nc\na\nd\ne", 1));
+    assert_eq!((text(&e).as_str(), e.win.line), ("b\nc\na\nd\ne", 1));
     let e = run(s, ":1m$\n");
-    assert_eq!((text(&e).as_str(), e.line), ("b\nc\nd\ne\na", 4));
+    assert_eq!((text(&e).as_str(), e.win.line), ("b\nc\nd\ne\na", 4));
     let e = run(s, ":1m2\n");
-    assert_eq!((text(&e).as_str(), e.line), ("b\na\nc\nd\ne", 1));
+    assert_eq!((text(&e).as_str(), e.win.line), ("b\na\nc\nd\ne", 1));
     assert_eq!(text(&run(s, ":2,3m1\n")), s);
     assert_eq!(run(s, ":1,2m1\n").msg, "Cannot move a range of lines into itself");
     assert_eq!(run(s, ":m\n").msg, "Invalid address");
     let e = run(s, ":1t.\n");
-    assert_eq!((text(&e).as_str(), e.line), ("a\na\nb\nc\nd\ne", 1));
+    assert_eq!((text(&e).as_str(), e.win.line), ("a\na\nb\nc\nd\ne", 1));
     let e = run(s, ":1,2t$\n");
-    assert_eq!((text(&e).as_str(), e.line), ("a\nb\nc\nd\ne\na\nb", 6));
+    assert_eq!((text(&e).as_str(), e.win.line), ("a\nb\nc\nd\ne\na\nb", 6));
     let e = run(s, ":3co0\n");
-    assert_eq!((text(&e).as_str(), e.line), ("c\na\nb\nc\nd\ne", 0));
+    assert_eq!((text(&e).as_str(), e.win.line), ("c\na\nb\nc\nd\ne", 0));
     // One undo step each; `.` does not repeat them.
     assert_eq!(text(&run(s, ":2,3m0\nu")), s);
     assert_eq!(text(&run("ab\nc\nd", "x:3d\n.")), "b\n");
@@ -1780,7 +1782,7 @@ fn ex_delete_yank_move_copy() {
 #[test]
 fn ex_shift_join_print() {
     let e = run("a\nb\nc", ":>> 2\n");
-    assert_eq!((text(&e).as_str(), e.line), ("        a\n        b\nc", 1));
+    assert_eq!((text(&e).as_str(), e.win.line), ("        a\n        b\nc", 1));
     assert_eq!(text(&run("        a", ":<\n")), "    a");
     assert_eq!(run("a", ":> 0\n").msg, "Positive count required");
     let s = "a\n  b\nc";
@@ -1790,7 +1792,7 @@ fn ex_shift_join_print() {
     assert_eq!(text(&run(s, ":j 3\n")), "a b c");
     assert_eq!(text(&run(s, ":3j\n")), s);
     let e = run("a\nb\nc", ":2p\n");
-    assert_eq!((e.msg.as_str(), e.line), ("b", 1));
+    assert_eq!((e.msg.as_str(), e.win.line), ("b", 1));
     assert_eq!(run("a\nb\nc", ":=\n").msg, "3");
     assert_eq!(run("a\nb\nc", "j:.=\n").msg, "2");
 }
@@ -1828,7 +1830,7 @@ fn ex_global() {
     assert_eq!(text(&run("a\nb\na", ":g/a/norm Ax\n")), "ax\nb\nax");
     assert_eq!(text(&run("a\nb\na", ":g/a/t.\n")), "a\na\nb\na\na");
     let e = run(s, ":g/b\n");
-    assert_eq!((e.msg.as_str(), e.line), ("ab", 2));
+    assert_eq!((e.msg.as_str(), e.win.line), ("ab", 2));
     assert_eq!(run(s, ":g/zz/d\n").msg, "Pattern not found: zz");
     assert_eq!(run(s, ":v/./d\n").msg, "Pattern found in every line: .");
     assert_eq!(run(s, ":g\n").msg, "Regular expression missing from :global");
@@ -1895,7 +1897,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":sav {}\n", out.display()));
     assert_eq!(e.msg, "File exists (add ! to override)");
     feed(&mut e, &format!(":sav {}\n", new.display()));
-    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.path.as_path(), e.is_dirty()), ("xy", new.as_path(), false));
+    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_path(), e.is_dirty()), ("xy", new.as_path(), false));
     feed(&mut e, ":sav\n");
     assert_eq!(e.msg, "Argument required");
     fs::remove_dir_all(&dir).unwrap();
@@ -1904,16 +1906,16 @@ fn ex_read_write_saveas() {
 #[test]
 fn ex_retab_and_fileformat() {
     let e = run("\tx", ":retab 8\n");
-    assert_eq!((text(&e).as_str(), e.opts.tabstop), ("    x", 8));
+    assert_eq!((text(&e).as_str(), e.buf.opts.tabstop), ("    x", 8));
     assert_eq!(text(&run("        x", ":ret!\n")), "\t\tx");
     assert_eq!(run("x", ":retab 0\n").msg, "Invalid argument: 0");
     let mut e = ed("a\nb");
     feed(&mut e, ":set ff=dos\n");
-    assert_eq!((e.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
+    assert_eq!((e.buf.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
     feed(&mut e, ":set ff?\n");
     assert_eq!(e.msg, "fileformat=dos");
     feed(&mut e, ":set ff=mac nu\n");
-    assert_eq!((e.doc.eol(), e.opts.number), (LineEnding::Cr, true));
+    assert_eq!((e.buf.doc.eol(), e.buf.opts.number), (LineEnding::Cr, true));
     feed(&mut e, ":set ff=unix fileformat\n");
     assert_eq!((e.msg.as_str(), e.is_dirty()), ("fileformat=unix", false));
     assert_eq!(run("a", ":set ff=xx\n").msg, "Invalid argument: ff=xx");
@@ -1925,7 +1927,7 @@ fn stats_compact_and_idle() {
     let mut e = run("abcdefgh", "xlxlxlx");
     assert_eq!(text(&e), "bdfh");
     feed(&mut e, ":stats\n");
-    let pieces = e.doc.text().piece_count();
+    let pieces = e.buf.doc.text().piece_count();
     assert!(pieces > 1);
     assert!(e.msg.starts_with(&format!("{pieces} pieces, ")), "{}", e.msg);
     assert!(e.msg.ends_with("4 bytes, 4 chars, 1 lines, 5 versions"), "{}", e.msg);
@@ -1936,20 +1938,199 @@ fn stats_compact_and_idle() {
     assert_eq!(text(&e), "bdfgh");
     // A clean buffer stays clean.
     let mut e = run("ab", "x");
-    e.saved = e.doc.text().clone();
+    e.buf.saved = e.buf.doc.text().clone();
     feed(&mut e, ":compact\n");
     assert!(!e.is_dirty());
     // Idle compaction: only past `compactat`, only in Normal mode.
     let mut e = run("abcdefgh", "xlxlxlx:set compactat=100\n");
     e.idle();
-    assert_eq!(e.doc.text().piece_count(), pieces);
+    assert_eq!(e.buf.doc.text().piece_count(), pieces);
     feed(&mut e, ":set compactat=2\ni");
     e.idle();
-    assert_eq!(e.doc.text().piece_count(), pieces);
+    assert_eq!(e.buf.doc.text().piece_count(), pieces);
     feed(&mut e, "\x1b");
     e.idle();
-    assert_eq!(e.doc.text().piece_count(), 1);
+    assert_eq!(e.buf.doc.text().piece_count(), 1);
     feed(&mut e, ":set compactat=0\n:set compactat?\n");
     assert_eq!(e.msg, "compactat=0");
     assert_eq!(run("a", ":set compactat=x\n").msg, "Invalid argument: compactat=x");
+}
+
+#[test]
+fn buffers_switch_list_and_delete() {
+    let dir = temp_dir("buffers");
+    let (a, b) = (dir.join("a.txt"), dir.join("b.txt"));
+    fs::write(&a, "a1\na2").unwrap();
+    fs::write(&b, "b1\nb2\nb3").unwrap();
+    let mut e = Editor::open(a.clone()).unwrap();
+    feed(&mut e, &format!("jmx:e {}\n", b.display()));
+    assert_eq!((text(&e).as_str(), e.buf.id), ("b1\nb2\nb3", 2));
+    // A modified buffer can be left (hidden); each keeps its cursor and marks.
+    feed(&mut e, "Gdd\x1e");
+    assert_eq!((text(&e).as_str(), pos(&e), e.buf.marks.get(&'x')), ("a1\na2", (1, 0), Some(&3)));
+    feed(&mut e, ":ls\n");
+    assert_eq!(e.msg, format!("  1 %a \"{}\" line 2 |   2 #  + \"{}\" line 2", a.display(), b.display()));
+    feed(&mut e, &format!(":e {}\n", a.display()));
+    assert_eq!((e.buf.id, e.buffers.len()), (1, 1), "the same file is not loaded twice");
+    feed(&mut e, ":bn\n");
+    assert_eq!((e.buf.id, text(&e).as_str(), pos(&e)), (2, "b1\nb2", (1, 0)));
+    feed(&mut e, ":bp\n");
+    assert_eq!(e.buf.id, 1);
+    feed(&mut e, ":bn 3\n");
+    assert_eq!(e.buf.id, 2);
+    feed(&mut e, ":b 1\n");
+    assert_eq!(e.buf.id, 1);
+    feed(&mut e, ":b\n");
+    assert_eq!(e.buf.id, 1);
+    for (cmd, msg) in [
+        (":b 9", "Buffer 9 does not exist"),
+        (":b x", "Invalid buffer number: x"),
+        (":bn x", "Invalid count: x"),
+        (":bd x", "Invalid buffer number: x"),
+        (":bd 9", "Buffer 9 does not exist"),
+        (":bd 2", "No write since last change for buffer 2 (add ! to override)"),
+    ] {
+        feed(&mut e, &format!("{cmd}\n"));
+        assert_eq!(e.msg, msg, "{cmd}");
+    }
+    // The last window refuses to quit while a hidden buffer is modified.
+    feed(&mut e, ":q\n");
+    assert_eq!(e.msg, format!("No write since last change for buffer 2 \"{}\" (add ! to override)", b.display()));
+    assert!(feed(&mut e, ":qa\n"));
+    feed(&mut e, ":b 2\n:bd!\n");
+    assert_eq!((e.buf.id, e.buffers.len(), e.alt), (1, 0, None));
+    feed(&mut e, ":bd\n");
+    assert_eq!(e.msg, "Cannot delete the last buffer");
+    feed(&mut e, "\x1e");
+    assert_eq!(e.msg, "No alternate file");
+    feed(&mut e, ":e /nonexistent/dir/x\n");
+    assert_eq!(e.buf.id, 3, "a missing file is a new empty buffer");
+    feed(&mut e, ":e /\n");
+    assert!(e.msg.starts_with("\"/\": "), "{}", e.msg);
+    // `:bd` of another buffer moves the windows showing it.
+    feed(&mut e, ":sp\n:b 1\n:bd 3\n");
+    assert_eq!((e.buf.id, e.windows[0].buf), (1, 1));
+    assert!(!feed(&mut e, ":qa!\n"));
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn windows_split_move_and_close() {
+    let mut e = ed("one\ntwo\nthree");
+    feed(&mut e, "jj:sp\n");
+    assert_eq!((e.window_ids(), pos(&e)), (vec![2, 1], (2, 0)));
+    // An edit above it in one window moves the cursor of the other one.
+    feed(&mut e, "ggOzero\x1b");
+    let f = e.frame(20, 9);
+    assert_eq!(
+        screen(&f),
+        [
+            "1 zero",
+            "1 one",
+            "2 two",
+            "[ /nonexistent/rim-te]",
+            "2 one",
+            "1 two",
+            "4 three",
+            " /nonexistent/rim-te",
+            "[ NORMAL |           ]",
+        ]
+    );
+    assert_eq!(f.cursor, (5, 0));
+    feed(&mut e, "\x17j");
+    assert_eq!((e.win.id, pos(&e)), (1, (3, 0)));
+    feed(&mut e, "\x17k\x17k");
+    assert_eq!(e.win.id, 2, "no window above");
+    feed(&mut e, ":vs\n");
+    assert_eq!(e.window_ids(), [3, 2, 1]);
+    let f = e.frame(21, 7);
+    assert_eq!(screen(&f)[..3], ["1 zero    │1 zero", "1 one     │1 one", "[ /nonexist]│ /nonexist"]);
+    assert_eq!(f.cursor_cols, 0..10);
+    feed(&mut e, "\x17l");
+    assert_eq!(e.win.id, 2);
+    feed(&mut e, "\x17h3\x17w");
+    assert_eq!(e.win.id, 1, "a count picks the window");
+    feed(&mut e, "\x17w");
+    assert_eq!(e.win.id, 3, "w wraps around");
+    feed(&mut e, "\x17c");
+    assert_eq!((e.window_ids(), e.win.id), (vec![2, 1], 2));
+    feed(&mut e, "\x17s\x17v\x17x");
+    assert_eq!(e.window_ids().len(), 4);
+    feed(&mut e, "\x17o");
+    assert_eq!(e.window_ids(), [e.win.id]);
+    feed(&mut e, ":clo\n");
+    assert_eq!(e.msg, "Cannot close last window");
+    feed(&mut e, ":sp\n:on\n");
+    assert_eq!(e.window_ids().len(), 1);
+    // `:q` closes a window, the last one quits.
+    feed(&mut e, ":sp\n");
+    assert!(feed(&mut e, ":q\n"));
+    assert_eq!(e.window_ids().len(), 1);
+    assert!(!feed(&mut e, ":q!\n"));
+}
+
+#[test]
+fn insert_mode_survives_drawing_other_windows() {
+    let mut e = ed("ab");
+    feed(&mut e, ":vs\nA");
+    e.frame(20, 4);
+    feed(&mut e, "c");
+    assert_eq!(text(&e), "abc");
+}
+
+#[test]
+fn background_save_writes_the_snapshot() {
+    let dir = temp_dir("bgsave");
+    let (path, other) = (dir.join("f.txt"), dir.join("g.txt"));
+    let mut e = Editor::new(Document::new("a"), path.clone());
+    feed(&mut e, "rb:w\nic\x1b");
+    assert!(e.wait_saves());
+    assert!(!e.saving());
+    assert_eq!(fs::read_to_string(&path).unwrap(), "b", "the version of `:w`, not the later edit");
+    assert!(e.is_dirty(), "edits made during the write keep the buffer modified");
+    // `:wqa` writes every modified buffer, then quits.
+    feed(&mut e, &format!(":e {}\nix\x1b", other.display()));
+    assert!(!feed(&mut e, ":wqa\n"));
+    assert_eq!((fs::read_to_string(&path).unwrap().as_str(), fs::read_to_string(&other).unwrap().as_str()), ("cb", "x"));
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn reload_clamps_a_parked_window_cursor() {
+    let dir = temp_dir("repro");
+    let path = dir.join("f.txt");
+    fs::write(&path, "aé").unwrap();
+    let mut e = Editor::open(path.clone()).unwrap();
+    feed(&mut e, "$:sp\n");
+    fs::write(&path, "éé").unwrap();
+    feed(&mut e, ":e!\n");
+    e.frame(20, 8);
+    feed(&mut e, "\x17j");
+    assert_eq!(pos(&e), (0, 0), "byte 1 was inside the new first char");
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn saves_waited_for_and_their_messages() {
+    let dir = temp_dir("savewait");
+    let (a, b) = (dir.join("a.txt"), dir.join("b.txt"));
+    let mut e = Editor::new(Document::new("a"), a.clone());
+    e.open_more(b.clone()).unwrap();
+    e.open_more(a.clone()).unwrap();
+    assert_eq!(e.buffers.len(), 1, "a file already loaded is skipped");
+    // `:bd` and `:e` right after `:w` wait for it instead of refusing a modified buffer.
+    feed(&mut e, ":b 2\nix\x1b:w\n:bd\n");
+    assert_eq!((e.buf.id, e.buffers.len()), (1, 0), "{}", e.msg);
+    feed(&mut e, "x:w\n:e\n");
+    assert_eq!(e.msg, "Reloaded (LF)");
+    // A write ending later does not cover the message of a later command, but replaces its own.
+    feed(&mut e, "ix\x1b:w\n:ls\n");
+    assert!(e.wait_saves());
+    assert!(e.msg.starts_with("  1 %a"), "{}", e.msg);
+    feed(&mut e, ":w\n");
+    assert!(e.wait_saves());
+    assert_eq!(e.msg, format!("\"{}\" written (LF)", a.display()));
+    assert!(e.open_more(dir.join("no/such/dir")).is_ok(), "a missing file is an empty buffer");
+    assert!(e.open_more(dir.clone()).is_err());
+    fs::remove_dir_all(dir).unwrap();
 }

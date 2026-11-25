@@ -7,12 +7,12 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 /// Caps counts so a typo like `99999999999p` cannot exhaust memory.
 pub(super) const MAX_COUNT: usize = 1_000_000;
 
-/// Normal-mode keys after `normal_char` mapping. Ctrl+D, Ctrl+U, Ctrl+R, Ctrl+A, Ctrl+X, Ctrl+V
-/// are `\x04`, `\x15`, `\x12`, `\x01`, `\x18`, `\x16`.
+/// Normal-mode keys after `normal_char` mapping. Ctrl+D, Ctrl+U, Ctrl+R, Ctrl+A, Ctrl+X, Ctrl+V,
+/// Ctrl+G, Ctrl+W, Ctrl+^ are `\x04`, `\x15`, `\x12`, `\x01`, `\x18`, `\x16`, `\x07`, `\x17`, `\x1e`.
 pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'|";
-pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&";
+pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&\x17\x1e";
 /// Keys followed by a char argument.
-pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@";
+pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@\x17";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
 pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
 /// `g<c>` motions and commands, as keys `g_key(c)`.
@@ -209,6 +209,9 @@ pub(super) fn normal_char(key: KeyEvent) -> Option<char> {
             'x' => '\x18',
             'v' => '\x16',
             'g' => '\x07',
+            'w' => '\x17',
+            // Terminals send Ctrl+^ as 0x1e, which crossterm reports as Ctrl+6.
+            '6' | '^' => '\x1e',
             _ => return None,
         },
         KeyCode::Char(c) => c,
@@ -235,6 +238,8 @@ pub(super) fn char_key(c: char) -> KeyEvent {
         '\x18' => ctrl('x'),
         '\x16' => ctrl('v'),
         '\x07' => ctrl('g'),
+        '\x17' => ctrl('w'),
+        '\x1e' => ctrl('6'),
         c => KeyCode::Char(c).into(),
     }
 }
@@ -319,7 +324,7 @@ mod tests {
 
     #[test]
     fn keys_round_trip() {
-        for c in ['a', '\x04', '\x15', '\x12', '\x01', '\x18', '\x16', '\x07'] {
+        for c in ['a', '\x04', '\x15', '\x12', '\x01', '\x18', '\x16', '\x07', '\x17', '\x1e'] {
             assert_eq!(normal_char(char_key(c)), Some(c));
         }
         assert_eq!(normal_char(KeyEvent::new(KeyCode::Char('z'), KeyModifiers::CONTROL)), None);

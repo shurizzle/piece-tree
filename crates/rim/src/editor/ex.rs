@@ -180,6 +180,8 @@ pub(super) fn parse(cmd: &str) -> Result<ExCmd<'_>, String> {
 }
 
 /// `name` is `long` or an abbreviation of it at least as long as `short` (vim's `:d[elete]`).
+const DIRTY: &str = "No write since last change (add ! to override)";
+
 fn abbr(name: &str, short: &str, long: &str) -> bool {
     name.len() >= short.len() && long.starts_with(name)
 }
@@ -276,7 +278,7 @@ fn retab_line(s: &str, old: usize, new: usize, all: bool) -> String {
 
 /// Writes through a temp file renamed over the target, so a failed write never truncates it.
 /// Symlinks are followed so the link survives and the temp file sits on the target's filesystem.
-pub(super) fn write_atomic(path: &Path, doc: &Document) -> io::Result<()> {
+pub(super) fn write_atomic(path: &Path, text: &Text, eol: LineEnding) -> io::Result<()> {
     let target = fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     let mut tmp = target.clone().into_os_string();
     tmp.push(".rim.tmp");
@@ -292,15 +294,15 @@ pub(super) fn write_atomic(path: &Path, doc: &Document) -> io::Result<()> {
         }
     }
     let mut w = BufWriter::new(file);
-    doc.write_to(&mut w)?;
+    text.write_to(&mut w, eol)?;
     w.into_inner().map_err(io::IntoInnerError::into_error)?.sync_all()?;
     fs::rename(&tmp, &target)
 }
 
-fn append_to(path: &Path, doc: &Document) -> io::Result<()> {
+fn append_to(path: &Path, text: &Text, eol: LineEnding) -> io::Result<()> {
     let file = fs::OpenOptions::new().append(true).create(true).open(path)?;
     let mut w = BufWriter::new(file);
-    doc.write_to(&mut w)?;
+    text.write_to(&mut w, eol)?;
     w.into_inner().map_err(io::IntoInnerError::into_error)?.sync_all()
 }
 
@@ -361,7 +363,6 @@ impl LineMarks {
 impl Editor {
     /// Runs one command line; returns false to quit.
     pub(super) fn command(&mut self, line: &str) -> bool {
-        const DIRTY: &str = "No write since last change (add ! to override)";
         let c = match parse(line) {
             Ok(c) => c,
             Err(e) => {
@@ -386,17 +387,39 @@ impl Editor {
         let res = match n {
             "" if a.is_empty() && r.is_some() => self.goto_line(r),
             "" if a.is_empty() => Ok(()),
-            "wq" => return !self.save(),
-            "x" | "xi" | "xit" => return self.is_dirty() && !self.save(),
-            _ if abbr(n, "w", "write") => self.write_cmd(r, bang, a),
-            _ if abbr(n, "q", "quit") => {
-                if !bang && self.is_dirty() {
-                    Err(DIRTY.into())
-                } else {
-                    return false;
-                }
+            "wq" => return !self.save(true) || self.quit(false, false),
+            "x" | "xi" | "xit" => return self.is_dirty() && !self.save(true) || self.quit(false, false),
+            "wqa" | "wqal" | "wqall" | "xa" | "xal" | "xall" => {
+                let dirty: Vec<usize> = [&self.buf].into_iter().chain(&self.buffers).filter(|b| b.is_dirty()).map(|b| b.id).collect();
+                let ok = dirty.into_iter().all(|id| self.save_buffer(id, true));
+                return !ok || self.quit(false, true);
             }
+            _ if abbr(n, "w", "write") => self.write_cmd(r, bang, a),
+            _ if abbr(n, "q", "quit") => return self.quit(bang, false),
+            _ if abbr(n, "qa", "qall") || abbr(n, "quita", "quitall") => return self.quit(bang, true),
+            _ if abbr(n, "clo", "close") => self.close_window(),
+            _ if abbr(n, "on", "only") => {
+                self.only_window();
+                Ok(())
+            }
+            _ if abbr(n, "sp", "split") || abbr(n, "vs", "vsplit") => {
+                self.split_window(n.starts_with('v'));
+                if a.is_empty() { Ok(()) } else { self.edit_file(a) }
+            }
+            _ if abbr(n, "e", "edit") && !a.is_empty() => self.edit_file(a),
+            _ if abbr(n, "bn", "bnext") || abbr(n, "bp", "bprevious") || abbr(n, "bN", "bNext") => {
+                let count = if a.is_empty() { Ok(1) } else { a.parse().map_err(|_| format!("Invalid count: {a}")) };
+                count.map(|k| self.cycle_buffer(if n.starts_with("bn") { 1 } else { -1 }, k))
+            }
+            _ if abbr(n, "b", "buffer") && a.is_empty() => Ok(()),
+            _ if abbr(n, "b", "buffer") => self.goto_buffer(a),
+            _ if abbr(n, "ls", "ls") || abbr(n, "buffers", "buffers") || abbr(n, "files", "files") => {
+                self.msg = self.list_buffers();
+                Ok(())
+            }
+            _ if abbr(n, "bd", "bdelete") => self.delete_buffer(bang, a),
             _ if abbr(n, "e", "edit") && a.is_empty() => {
+                self.wait_saves();
                 if !bang && self.is_dirty() {
                     Err(DIRTY.into())
                 } else {
@@ -488,7 +511,7 @@ impl Editor {
     /// `/pat/`: the next line (after 1-based `cur`) with a match, wrapping; `?pat?`: the previous.
     fn address_search(&mut self, pat: &str, back: bool, cur: usize) -> Result<usize, String> {
         let s = self.ex_regex(pat)?;
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let found = if back {
             search::find_backward(text, &s.re, text.line_to_offset(cur.saturating_sub(1)))
         } else {
@@ -506,7 +529,7 @@ impl Editor {
 
     fn lines_clamped(&mut self, r: Option<&LineRange>, default: (usize, usize), clamp: bool) -> Result<(usize, usize), String> {
         let Some(r) = r else { return Ok(default) };
-        let cur = self.line + 1;
+        let cur = self.win.line + 1;
         let a = self.resolve(&r.first, cur, clamp)?;
         let b = match &r.last {
             None => a,
@@ -518,7 +541,7 @@ impl Editor {
     /// 0-based first and last lines; the default is the cursor line, or every line with `whole`.
     /// Line 0 counts as line 1.
     pub(super) fn range0(&mut self, r: Option<&LineRange>, whole: bool) -> Result<(usize, usize), String> {
-        let default = if whole { (1, self.line_count()) } else { (self.line + 1, self.line + 1) };
+        let default = if whole { (1, self.line_count()) } else { (self.win.line + 1, self.win.line + 1) };
         let (a, b) = self.lines(r, default)?;
         Ok((a.max(1) - 1, b.max(1) - 1))
     }
@@ -532,7 +555,7 @@ impl Editor {
     }
 
     fn first_line(&mut self, l: usize) {
-        self.line = l;
+        self.win.line = l;
         self.set_col(self.first_non_blank(l));
     }
 
@@ -550,13 +573,13 @@ impl Editor {
         match n.parse::<usize>() {
             Ok(n) => {
                 self.set_jump();
-                (self.line, self.col) = self.pos_of(self.byte_pos(n.saturating_sub(1)));
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = self.pos_of(self.byte_pos(n.saturating_sub(1)));
+                self.win.want_col = self.win.col;
                 self.clamp_normal();
             }
             Err(_) if n.is_empty() => {
                 self.set_jump();
-                (self.line, self.col) = (0, 0);
+                (self.win.line, self.win.col) = (0, 0);
             }
             Err(_) => return Err(format!("Invalid argument: {n}")),
         }
@@ -568,18 +591,18 @@ impl Editor {
         let (mut shown, mut rest) = (Vec::new(), Vec::new());
         for tok in arg.split_whitespace() {
             match tok.split_once('=') {
-                Some(("ff" | "fileformat", v)) => self.doc.set_eol(match v {
+                Some(("ff" | "fileformat", v)) => self.buf.doc.set_eol(match v {
                     "unix" => LineEnding::Lf,
                     "dos" => LineEnding::CrLf,
                     "mac" => LineEnding::Cr,
                     _ => return Err(format!("Invalid argument: {tok}")),
                 }),
-                None if matches!(tok.trim_end_matches('?'), "ff" | "fileformat") => shown.push(format!("fileformat={}", ff_name(self.doc.eol()))),
+                None if matches!(tok.trim_end_matches('?'), "ff" | "fileformat") => shown.push(format!("fileformat={}", ff_name(self.buf.doc.eol()))),
                 _ => rest.push(tok),
             }
         }
         if !rest.is_empty() || arg.is_empty() {
-            shown.push(self.opts.set(&rest.join(" "))?);
+            shown.push(self.buf.opts.set(&rest.join(" "))?);
         }
         shown.retain(|s| !s.is_empty());
         self.msg = shown.join("  ");
@@ -590,18 +613,18 @@ impl Editor {
         let (reg, count) = reg_count(arg)?;
         let (a, b) = self.range0(r, false)?;
         let (a, b) = self.counted((a, b), count);
-        let keep = (self.line, self.col);
+        let keep = (self.win.line, self.win.col);
         self.cur_reg = reg;
         self.operate(if yank { 'y' } else { 'd' }, (a, 0), (b, 0), Kind::Linewise);
         if yank {
-            (self.line, self.col) = keep;
+            (self.win.line, self.win.col) = keep;
         }
         Ok(())
     }
 
     /// Lines `a..=b` without the line break after `b`.
     fn lines_text(&self, a: usize, b: usize) -> String {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         text.slice(text.line_to_offset(a)..self.line_end_offset(b)).into_owned()
     }
 
@@ -617,7 +640,7 @@ impl Editor {
 
     /// Removes lines `a..=b` with one line break (the one before, on the last line).
     fn delete_lines(&mut self, a: usize, b: usize) {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let range = if b + 1 < text.line_count() {
             text.line_to_offset(a)..text.line_to_offset(b + 1)
         } else if a > 0 {
@@ -631,7 +654,7 @@ impl Editor {
     /// Destination of `:m`/`:t`: a 1-based line, 0 for the top.
     fn dest(&mut self, arg: &str) -> Result<usize, String> {
         let a = parse_addr(arg)?;
-        self.resolve(&a, self.line + 1, false)
+        self.resolve(&a, self.win.line + 1, false)
     }
 
     /// `:m {address}`: the lines go below the address; the cursor ends on the last one.
@@ -693,7 +716,7 @@ impl Editor {
             None => (a, b),
         };
         let b = b.min(self.line_count() - 1);
-        self.line = a;
+        self.win.line = a;
         self.join(b.saturating_sub(a), !bang);
         Ok(())
     }
@@ -703,7 +726,7 @@ impl Editor {
     fn print(&mut self, r: Option<&LineRange>) -> Result<(), String> {
         let (_, b) = self.range0(r, false)?;
         self.first_line(b);
-        self.msg = self.doc.text().line(b).into_owned();
+        self.msg = self.buf.doc.text().line(b).into_owned();
         Ok(())
     }
 
@@ -731,9 +754,9 @@ impl Editor {
         }
         let keys = normal_keys(keys);
         if r.is_none() {
-            self.doc.begin_group();
+            self.buf.doc.begin_group();
             self.run_keys(&keys);
-            self.doc.end_group();
+            self.buf.doc.end_group();
             return Ok(());
         }
         let (a, b) = self.range0(r, false)?;
@@ -743,17 +766,17 @@ impl Editor {
 
     /// Runs `f` with the cursor at the start of each of `lines` still there, in one undo step.
     fn for_lines(&mut self, lines: impl Iterator<Item = usize>, mut f: impl FnMut(&mut Self)) {
-        let marks = LineMarks::new(self.doc.text(), lines);
+        let marks = LineMarks::new(self.buf.doc.text(), lines);
         self.line_marks.push(marks);
-        self.doc.begin_group();
-        while let Some(s) = self.line_marks.last_mut().expect("pushed above").pop(self.doc.text()) {
-            (self.line, self.col) = self.pos_of(s);
+        self.buf.doc.begin_group();
+        while let Some(s) = self.line_marks.last_mut().expect("pushed above").pop(self.buf.doc.text()) {
+            (self.win.line, self.win.col) = self.pos_of(s);
             f(self);
             if self.quit {
                 break;
             }
         }
-        self.doc.end_group();
+        self.buf.doc.end_group();
         self.line_marks.pop();
     }
 
@@ -770,7 +793,7 @@ impl Editor {
         let (a, b) = self.range0(r, true)?;
         let search = self.ex_regex(&pat)?;
         self.hl = true;
-        let text = self.doc.text().clone();
+        let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(a), self.line_end_offset(b));
         let mut hit = vec![invert; b - a + 1];
         for m in text.find_iter_in(&search.re, start..end).take_while(|m| m.start <= end) {
@@ -808,7 +831,7 @@ impl Editor {
             }
         }
         let (a, b) = self.range0(r, true)?;
-        let text = self.doc.text().clone();
+        let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(a), self.line_end_offset(b));
         let body = text.slice(start..end);
         let lines: Vec<&str> = body.split('\n').collect();
@@ -866,8 +889,8 @@ impl Editor {
     /// a name. Line endings are converted like on load.
     // shortcut: the file is copied into the text (no structural sharing), when `Text::append_text` exists
     fn read(&mut self, r: Option<&LineRange>, file: &str) -> Result<(), String> {
-        let path = if file.is_empty() { self.path.clone() } else { PathBuf::from(file) };
-        let (_, after) = self.lines(r, (self.line + 1, self.line + 1))?;
+        let path = if file.is_empty() { self.buf.path.clone() } else { PathBuf::from(file) };
+        let (_, after) = self.lines(r, (self.win.line + 1, self.win.line + 1))?;
         let content = fs::read_to_string(&path).map_err(|e| format!("Can't open file {}: {e}", path.display()))?;
         let doc = Document::from_string(content);
         let t = doc.text();
@@ -884,6 +907,23 @@ impl Editor {
         Ok(())
     }
 
+    /// `:q` (`all`: `:qa`): closes the window, or quits on the last one (every one with `all`)
+    /// unless a buffer is modified and not `bang`. Returns false to quit.
+    fn quit(&mut self, bang: bool, all: bool) -> bool {
+        if !all && self.window_ids().len() > 1 {
+            self.close_window().expect("more than one window");
+            return true;
+        }
+        // A `:w` still running makes its buffer clean when it ends.
+        self.wait_saves();
+        match self.dirty_buffer().filter(|_| !bang) {
+            Some(b) if b.id == self.buf.id => self.msg = DIRTY.into(),
+            Some(b) => self.msg = format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.path.display()),
+            None => return false,
+        }
+        true
+    }
+
     /// `:w`, `:w!`, `:[range]w[!] file`, `:w >> file`. Writing to another file leaves the buffer's
     /// file and modified state alone; an existing other file needs `!`.
     fn write_cmd(&mut self, r: Option<&LineRange>, bang: bool, arg: &str) -> Result<(), String> {
@@ -891,10 +931,10 @@ impl Editor {
             Some(f) => (true, f.trim()),
             None => (false, arg),
         };
-        let path = if file.is_empty() { self.path.clone() } else { PathBuf::from(file) };
-        let own = path == self.path;
+        let path = if file.is_empty() { self.buf.path.clone() } else { PathBuf::from(file) };
+        let own = path == self.buf.path;
         if r.is_none() && own && !append {
-            self.save();
+            self.save(false);
             return Ok(());
         }
         if r.is_some() && own && !append && !bang {
@@ -904,12 +944,12 @@ impl Editor {
             return Err("File exists (add ! to override)".into());
         }
         let (a, b) = self.range0(r, true)?;
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         // The line break after the range's last line goes with it, as each line ends with one.
         let end = if b + 1 < text.line_count() { text.line_to_offset(b + 1) } else { text.len() };
-        let mut part = Document::new(&text.slice(text.line_to_offset(a)..end));
-        part.set_eol(self.doc.eol());
-        let res = if append { append_to(&path, &part) } else { write_atomic(&path, &part) };
+        let part = Text::from(&*text.slice(text.line_to_offset(a)..end));
+        let eol = self.buf.doc.eol();
+        let res = if append { append_to(&path, &part, eol) } else { write_atomic(&path, &part, eol) };
         res.map_err(|e| format!("Save failed: {e}"))?;
         self.msg = format!("\"{}\" {}L written", path.display(), b - a + 1);
         Ok(())
@@ -921,12 +961,12 @@ impl Editor {
             return Err("Argument required".into());
         }
         let path = PathBuf::from(file);
-        if !bang && path != self.path && path.exists() {
+        if !bang && path != self.buf.path && path.exists() {
             return Err("File exists (add ! to override)".into());
         }
-        let old = mem::replace(&mut self.path, path);
-        if !self.save() {
-            self.path = old;
+        let old = mem::replace(&mut self.buf.path, path);
+        if !self.save(true) {
+            self.buf.path = old;
         }
         Ok(())
     }
@@ -935,18 +975,18 @@ impl Editor {
     /// `tabstop`); `!` also turns runs of spaces into tabs.
     // shortcut: always tabs plus spaces (no 'expandtab' yet), when 'expandtab' lands (M8)
     fn retab(&mut self, r: Option<&LineRange>, all: bool, arg: &str) -> Result<(), String> {
-        let old = self.opts.tabstop;
+        let old = self.buf.opts.tabstop;
         let new = if arg.is_empty() { old } else { arg.parse().ok().filter(|n| (1..=32).contains(n)).ok_or_else(|| format!("Invalid argument: {arg}"))? };
         let (a, b) = self.range0(r, true)?;
         for l in a..=b {
-            let line = self.doc.text().line(l).into_owned();
+            let line = self.buf.doc.text().line(l).into_owned();
             let s = retab_line(&line, old, new, all);
             if s != line {
-                let start = self.doc.text().line_to_offset(l);
+                let start = self.buf.doc.text().line_to_offset(l);
                 self.edit_replace(start..start + line.len(), &s);
             }
         }
-        self.opts.tabstop = new;
+        self.buf.opts.tabstop = new;
         Ok(())
     }
 }

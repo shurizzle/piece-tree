@@ -26,7 +26,10 @@ static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 /// Quiet time after the last event before `Editor::idle` runs (once per quiet period).
 const IDLE: Duration = Duration::from_secs(1);
 
-const USAGE: &str = "usage: rim <file> [--eol lf|cr|crlf]";
+/// How often a running background `:w` is checked for completion.
+const SAVE_POLL: Duration = Duration::from_millis(50);
+
+const USAGE: &str = "usage: rim <file>...";
 
 fn main() -> ExitCode {
     match run() {
@@ -38,22 +41,12 @@ fn main() -> ExitCode {
     }
 }
 
-fn invalid(msg: impl std::fmt::Display) -> io::Error {
-    io::Error::new(io::ErrorKind::InvalidInput, msg.to_string())
-}
-
 fn run() -> io::Result<()> {
-    let (mut path, mut eol) = (None, None);
-    let mut args = env::args().skip(1);
-    while let Some(arg) = args.next() {
-        match arg.as_str() {
-            "--eol" => eol = Some(args.next().ok_or_else(|| invalid(USAGE))?.parse().map_err(invalid)?),
-            _ if path.is_none() => path = Some(PathBuf::from(arg)),
-            _ => return Err(invalid(USAGE)),
-        }
+    let mut paths = env::args_os().skip(1).map(PathBuf::from);
+    let mut editor = Editor::open(paths.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, USAGE))?)?;
+    for path in paths {
+        editor.open_more(path)?;
     }
-    let path = path.ok_or_else(|| invalid(USAGE))?;
-    let mut editor = Editor::open(path, eol)?;
     // Asked before raw mode and the alternate screen: the query drives the terminal itself.
     if let Ok(ThemeMode::Light) = terminal_colorsaurus::theme_mode(QueryOptions::default()) {
         editor.set_background(Background::Light);
@@ -63,9 +56,14 @@ fn run() -> io::Result<()> {
     let mut idle = true;
     loop {
         editor.render(&mut out)?;
-        if !idle && !event::poll(IDLE)? {
-            editor.idle();
-            idle = true;
+        let saving = editor.saving();
+        if (saving || !idle) && !event::poll(if saving { SAVE_POLL } else { IDLE })? {
+            if saving {
+                editor.poll_saves();
+            } else {
+                editor.idle();
+                idle = true;
+            }
             continue;
         }
         idle = false;

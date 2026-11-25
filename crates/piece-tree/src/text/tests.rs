@@ -289,6 +289,43 @@ fn snapshots_are_shareable_across_threads() {
     assert_eq!(t.to_string(), "snapshot");
 }
 
+#[cfg(not(miri))]
+const SAVE_ROUNDS: usize = 200;
+#[cfg(miri)]
+const SAVE_ROUNDS: usize = 5;
+
+/// A background save: a clone is written on another thread while the original is typed into
+/// in place, appending to the same add chunk past the clone's published end.
+#[test]
+fn snapshot_written_on_a_thread_while_editing_in_place() {
+    let mut t = Text::from("a\n").insert(2, "typed");
+    let expect = "a\r\ntyped";
+    let snapshot = t.clone();
+    let writer = thread::spawn(move || {
+        (0..SAVE_ROUNDS)
+            .map(|_| {
+                let mut out = Vec::new();
+                snapshot.write_to(&mut out, LineEnding::CrLf).unwrap();
+                out
+            })
+            .collect::<Vec<_>>()
+    });
+    let mut m = t.to_string();
+    for i in 0..SAVE_ROUNDS {
+        t.insert_mut(t.len(), "x\n");
+        m.push_str("x\n");
+        if i % 3 == 0 {
+            t.delete_mut(0..1);
+            m.remove(0);
+        }
+    }
+    for out in writer.join().unwrap() {
+        assert_eq!(out, expect.as_bytes());
+    }
+    assert_eq!(t.to_string(), m);
+    tree::check(&t.root);
+}
+
 #[test]
 fn is_send_sync() {
     fn assert<T: Send + Sync>() {}

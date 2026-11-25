@@ -120,7 +120,7 @@ impl Editor {
 
     /// Byte range of chars `cols` in `line`.
     pub(super) fn cols_range(&self, line: usize, cols: Range<usize>) -> Range<usize> {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let (start, s) = (text.line_to_offset(line), text.line(line));
         start + super::byte_of_col(&s, cols.start)..start + super::byte_of_col(&s, cols.end)
     }
@@ -128,10 +128,10 @@ impl Editor {
     /// `iw`: `n` runs of one word class (blanks are a run too); `aw`: words with their trailing
     /// blanks, or the leading ones when there are none. Stays in the cursor line.
     fn word_object(&self, around: bool, big: bool, n: usize) -> Option<Obj> {
-        let line = self.doc.text().line(self.line);
+        let line = self.buf.doc.text().line(self.win.line);
         let cls = |c: char| if big { u8::from(!c.is_whitespace()) } else { class(c) };
         // Everything works on byte positions in the line, moving only as far as the object extends.
-        let col = self.col.min(str_indices::chars::count(&line).checked_sub(1)?);
+        let col = self.win.col.min(str_indices::chars::count(&line).checked_sub(1)?);
         let at = |b: usize| line[b..].chars().next();
         let before = |b: usize| line[..b].chars().next_back();
         let blank = |b: usize| at(b).is_some_and(|c| cls(c) == 0);
@@ -160,19 +160,19 @@ impl Editor {
                 }
             }
         }
-        let off = self.doc.text().line_to_offset(self.line);
+        let off = self.buf.doc.text().line_to_offset(self.win.line);
         Some(Obj::Chars(off + start..off + end))
     }
 
     /// `i"`: between the first pair of unescaped quotes in the line that ends at or after the
     /// cursor; `a"` adds the quotes and trailing blanks.
     fn quote_object(&self, around: bool, q: char) -> Option<Obj> {
-        let line = self.doc.text().line(self.line);
+        let line = self.buf.doc.text().line(self.win.line);
         let quotes = quotes(&line, q);
         // Quotes as byte offsets; the pair is the first one ending at or after the cursor's byte.
-        let cursor = super::byte_of_col(&line, self.col);
+        let cursor = super::byte_of_col(&line, self.win.col);
         let pair = quotes.as_chunks::<2>().0.iter().find(|p| p[1] >= cursor)?;
-        let off = self.doc.text().line_to_offset(self.line);
+        let off = self.buf.doc.text().line_to_offset(self.win.line);
         if !around {
             return Some(Obj::Chars(off + pair[0] + q.len_utf8()..off + pair[1]));
         }
@@ -184,7 +184,7 @@ impl Editor {
     /// `i(`: inside the `n`-th enclosing pair, linewise when the brackets sit alone at the edges of
     /// a multi-line block; `a(` includes the brackets.
     fn bracket_object(&self, around: bool, open: char, close: char, n: usize) -> Option<Obj> {
-        let p = (self.line, self.col);
+        let p = (self.win.line, self.win.col);
         let (mut left, mut depth, mut o) = (n, 0, None);
         for (q, ch) in self.bwd(p) {
             if ch == close && q != p {
@@ -234,7 +234,7 @@ impl Editor {
 
     /// Lines `start..=end` around `line` that are all blank or all non-blank.
     fn paragraph_bounds(&self, line: usize) -> (usize, usize) {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let last = text.line_count() - 1;
         let blank = |l: usize| text.line(l).trim().is_empty();
         let b = blank(line);
@@ -251,10 +251,10 @@ impl Editor {
     /// `ip`: `n` runs of lines that are all blank or all non-blank; `ap` adds the following blank
     /// run, or the preceding one at the end of the text.
     fn paragraph_object(&self, around: bool, n: usize) -> Obj {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         let last = text.line_count() - 1;
         let blank = |l: usize| text.line(l).trim().is_empty();
-        let (mut start, mut end) = self.paragraph_bounds(self.line);
+        let (mut start, mut end) = self.paragraph_bounds(self.win.line);
         for _ in 1..if around { 2 * n } else { n } {
             if end == last {
                 break;
@@ -272,19 +272,19 @@ impl Editor {
     /// `is`: `n` sentences or blank gaps in the cursor's paragraph; `as` adds each sentence's
     /// trailing blanks, or the leading ones when there are none.
     fn sentence_object(&self, around: bool, n: usize) -> Option<Obj> {
-        let (first, last) = self.paragraph_bounds(self.line);
-        if self.doc.text().line(self.line).trim().is_empty() {
+        let (first, last) = self.paragraph_bounds(self.win.line);
+        if self.buf.doc.text().line(self.win.line).trim().is_empty() {
             return None;
         }
         // The paragraph as chars, line breaks included, with each char's position.
         let (mut chars, mut pos) = (Vec::new(), Vec::new());
         for l in first..=last {
-            for (c, ch) in self.doc.text().line(l).chars().chain((l < last).then_some('\n')).enumerate() {
+            for (c, ch) in self.buf.doc.text().line(l).chars().chain((l < last).then_some('\n')).enumerate() {
                 chars.push(ch);
                 pos.push((l, c));
             }
         }
-        let cur = pos.iter().position(|&p| p == (self.line, self.col)).unwrap_or(chars.len() - 1);
+        let cur = pos.iter().position(|&p| p == (self.win.line, self.win.col)).unwrap_or(chars.len() - 1);
         let spans = sentences(&chars);
         let k = spans.iter().position(|(r, _)| r.contains(&cur))?;
         let mut start = spans[k].0.start;
@@ -309,7 +309,7 @@ impl Editor {
 
     /// `it`: between the tags of the `n`-th element enclosing the cursor; `at` includes the tags.
     fn tag_object(&self, around: bool, n: usize) -> Option<Obj> {
-        let text = self.doc.text();
+        let text = self.buf.doc.text();
         // shortcut: scans the whole text (O(n)) for tags on every use; scan only around the cursor if large files need it.
         let all = text.slice(0..text.len());
         let cur = self.offset();
@@ -324,15 +324,15 @@ impl Editor {
         match obj {
             Obj::Lines(a, b) => {
                 self.anchor = (a, 0);
-                self.line = b;
-                self.set_col(self.col.min(self.line_chars(b)));
+                self.win.line = b;
+                self.set_col(self.win.col.min(self.line_chars(b)));
                 self.mode = super::Mode::Visual(super::VKind::Line);
             }
             Obj::Chars(r) if !r.is_empty() => {
-                let last = self.doc.text().slice(r.clone()).chars().next_back().map_or(0, char::len_utf8);
+                let last = self.buf.doc.text().slice(r.clone()).chars().next_back().map_or(0, char::len_utf8);
                 self.anchor = self.pos_of(r.start);
-                (self.line, self.col) = self.pos_of(r.end - last);
-                self.want_col = self.col;
+                (self.win.line, self.win.col) = self.pos_of(r.end - last);
+                self.win.want_col = self.win.col;
                 self.mode = super::Mode::Visual(super::VKind::Char);
             }
             Obj::Chars(_) => {}
@@ -342,7 +342,7 @@ impl Editor {
     /// Visual `i<obj>`/`a<obj>`: a nested object (brackets, tags) that would not grow the current
     /// selection is retried one level further out.
     pub(super) fn visual_object(&mut self, around: bool, obj: char, n: usize) {
-        let (a, b) = super::sorted(self.anchor, (self.line, self.col));
+        let (a, b) = super::sorted(self.anchor, (self.win.line, self.win.col));
         let sel = self.range(a, b, super::Kind::Inclusive);
         let grows = NESTED.contains(obj) && a != b;
         let mut n = n;
