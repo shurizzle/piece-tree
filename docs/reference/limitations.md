@@ -10,7 +10,7 @@
 | Mixed line endings normalized to one | Saving rewrites the other endings | Track original endings per line if fidelity is ever required |
 | Chunk ≤ 4 GiB (`u32`) | Files over 4 GiB cannot load (one exact chunk) | Split large loads into several exact chunks |
 | `rfind_before` worst case O(n log n) | Backward search with few matches and none after the cursor rescans doubling windows to the start | A reverse regex engine, or an index of match starts |
-| Char conversions scan | Per-line ones are O(line length), global ones (`char_count`, `offset_to_char`, `char_to_offset`) O(n), measured 0.04-0.08 ns/B (2-4 ms for 50 MB); on a 1 MB single line every column conversion scans the line | A char index per sealed chunk built lazily on the first char query (see D15) |
+| Char conversions scan | Per-line ones are O(line length), global ones (`char_count`, `offset_to_char`, `char_to_offset`) O(n), measured 0.008-0.034 ns/B (0.4-1.7 ms for 50 MB, SIMD counting from `str_indices`); on a 1 MB single line every column conversion scans the line | A char index per sealed chunk built lazily on the first char query (see D15) |
 | History is never freed | Every version (and the chunks it references) lives until the `Document` is dropped | Drop versions older than a seq or a time |
 | Atomic refcount traffic | Path copies clone sibling and chunk `Arc`s; drop of old versions dominates benchmarks that discard every version | Non-atomic `Rc` would lose `Send + Sync` snapshots; batch edits (one version per group) if needed |
 | Recursion in `join`/`split` | Depth O(log n), not an issue in practice | — |

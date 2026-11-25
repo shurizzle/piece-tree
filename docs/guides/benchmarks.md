@@ -283,7 +283,23 @@ Rejected in W8a: (1) **temporary buffer + copy** (`positions` into a `Vec`, then
 
 Both scans share one block loop (`blocks_by`, the sink gets `(mask, base)`): `positions` passes `push_block` (`flatten`), `positions_callback` a loop per hit. A/B of that refactor against the version with two block loops, 5 alternating rounds, min: load 0.102-0.034 ns/B on every density row, 1.00x (Rust sources 0.99x); paste 0.94-1.00x (noise).
 
-**`char_to_offset` (W8c).** `char_count` and `offset_to_char` already run at 0.040 ns/B (2.1 ms for 50 MB, the speed of `chars().count()` on a `&str`), so no SIMD char counter (`str_indices`) is needed. `char_to_offset` took 0.72 (ASCII) / 0.85 (mixed) / 1.02 (CJK) ns/B: after counting the chunks before the target it walked `char_indices().nth(left)` through the whole target chunk, and a loaded text is one chunk. It now skips the chunk in blocks of `CHAR_SKIP_BLOCK` (4096) bytes counted with `chars().count()` and walks chars only in the last block: 0.082-0.084 ns/B (9-12x, 4 ms for 50 MB). Block sizes of 4096 and 65536 give the same time, so the remaining 2x over a plain count is not per-block overhead. Scratch program `examples/chars.rs` of the harness, min of 9, 3 alternating runs per version.
+**Char counting and `char_to_offset` (W8c).** Scratch program `examples/chars2.rs` of the harness (50 MB text of one loaded chunk, ns per byte, min of 4 alternating runs x 9 reps; "edited" = the same text after 1000 inserts, ~1000 pieces of 50 KB). Reference points: `chars().count()` on a `&str` 0.040 (the old `char_count`), `str_indices::chars::count` 0.017 (2.4x; the SIMD counter does pay, a first reading that it was not needed was wrong).
+
+| | HEAD (before) | now |
+|---|---|---|
+| `char_count` (and `offset_to_char`) | 0.040 | 0.017 |
+| `char_to_offset`, last char: ASCII / mixed / CJK | 0.081 / 0.082 / 0.082 | 0.017 / 0.022 / 0.034 |
+| `char_to_offset`, middle char (per total byte) | 0.060 / 0.061 / 0.061 | 0.008 / 0.011 / 0.017 |
+| `char_to_offset`, last char, edited text | 0.043 / 0.043 / 0.042 | 0.032 / 0.032 / 0.031 |
+
+`char_to_offset` was the one that mattered: it counted the whole chunk (`c.chars().count()`) to decide whether the target was in it and then walked chars through the target chunk (0.72 / 0.85 / 1.02 ns/B before the first W8c step). It now asks `str_indices::chars::to_byte_idx(chunk, left)` first: a result below `chunk.len()` is the answer (one SIMD scan up to the target); `chunk.len()` means the char is not in the chunk (or is the one just past it), so the chunk is skipped by `chars::count`. Counting, skipping and the lookup all use `str_indices` (`count_chars`, `to_byte_idx` in `text.rs`; plain std under Miri, which does not implement the NEON intrinsic `vaddlvq_u8` it needs). The per-line functions (`line_char_len`, `line_col_to_offset`, `offset_to_line_col`) use `count_chars` too: on strings of 4-40 B the two counters are within ~1-1.4 ns of each other (noise), from 100 B up `str_indices` takes 0.7x, 0.3x from 400 B (scratch `chars3.rs`).
+
+**Rejected / reworked in W8c**, ns/B on the last char (ASCII / mixed / CJK), same program:
+1. First W8c step: skip the chunk in blocks of `CHAR_SKIP_BLOCK` (4096 B) counted with `chars().count()`, walking chars only in the last block, but after counting the whole chunk (a second scan): 0.081 / 0.083 / 0.083, 9-12x better than the 0.72-1.02 before but 2x the cost of one count. Block sizes of 1 KiB to 256 KiB gave the same time, which hid the cause (the leading full count) at first.
+2. Same loop in one pass (no leading count): 0.042 / 0.043 / 0.043.
+3. One-pass block loop with `str_indices` (`count` per 4096 B block, `to_byte_idx` in the target block): 0.017 / 0.018 / 0.017, the best everywhere (middle 0.009, edited 0.018); 256 B blocks 0.021-0.047, 1-64 KiB 0.017-0.025. **Not kept**: it needs a constant and a loop for a gain of 0-0.017 ns/B (at most ~1 ms per call on 50 MB, only on CJK and on texts of many pieces) over the 5-line version below.
+4. `count` of each chunk, then `to_byte_idx` in the target chunk: 0.033 / 0.039 / 0.052 (two scans of the target chunk, and `to_byte_idx` is slower than `count`, 3x on CJK).
+5. **Kept**: `to_byte_idx` first, `count` only for chunks that do not hold the char: 0.017 / 0.022 / 0.034 (CJK is 2x the block loop because `to_byte_idx` scans slower than `count` there), edited text 0.032 against 0.018 (each skipped piece is scanned by `to_byte_idx` and then counted). Edited text with ~1000 pieces of 50 KB gains nothing over HEAD from the first W8c steps (0.043 in every variant); a text with a few huge pieces keeps the full gain.
 
 ## Batch edits (`Text::apply_edits`, D17)
 
@@ -329,6 +345,22 @@ The same harness binary run 3 times per corpus (synthetic, Rust sources, CJK), a
 | backspace | 51 / 51 / 51 against 74 / 83 / 77 | 39 / 40 / 39 against 74 / 83 / 77 |
 
 So the typing gap against ropey 2 beta is real with the system allocator and mostly closes with mimalloc (D18); the paste and random-edit differences with the system allocator are not established (ropey 2 is at most 13% ahead on random edits, a tie on paste), and with mimalloc piece-tree is clearly ahead. The full tables of the earlier single runs stay valid.
+
+## Rerun after the clustered batches, the add-chunk scan and `char_to_offset` (W2, W8a, W8c)
+
+The cross-library harness again, 3 runs per corpus and allocator (the same procedure as the noise section above), against those 3-run minima. Reads, `line()`, `offset_to_line`, load and the batch row: 0.95-1.04x, unchanged. The edit rows (typing, backspace, paste, random edits) came out 0-5% slower with the system allocator and up to +10% on the CJK corpus (paste 631 -> 694, random edits 615 -> 676), with mimalloc 0-5%. The ranking does not change: ropey 2 beta stays ahead on typing with the system allocator (1.18-1.37x) and on random edits (1.10-1.18x), piece-tree stays ahead with mimalloc on paste (1.22-1.26x) and random edits (1.26-1.34x), and by 1.4-34x everywhere else.
+
+Is the drift real? Two binaries built from different code differ 5-10% by placement alone, and another process was building during that run, so it was checked with the A/B that controls both: the `edits` example of the harness, 15 alternating rounds of three standalone builds (HEAD, the current code, and the current code with the newline scan of `try_append` moved into an `#[inline(never)]` method), min / median in ns:
+
+| | HEAD | current | `#[inline(never)]` scan |
+|---|---|---|---|
+| paste | 621.8 / 649.8 | 620.7 / 674.2 | 631.2 / 682.6 |
+| random edits | 639.2 / 660.9 | 645.1 / 664.1 | 634.4 / 682.0 |
+| typing | 62.1 / 62.3 | 60.8 / 61.8 | 57.6 / 60.0 |
+| backspace | 53.1 / 53.3 | 53.2 / 53.4 | 53.1 / 53.9 |
+| `line()` | 4.1 / 4.2 | 4.1 / 4.2 | 4.0 / 4.1 |
+
+The current code is within 1% of HEAD on every row on the minima (the medians of paste are 4% higher, 650 -> 674, with a spread between rounds of the same size), so no regression is established: a small real cost of 1-4% on paste cannot be excluded, the harness drift being mostly placement and load. **Rejected: `#[inline(never)]` on the scan.** It does not move the edit rows (paste and random edits within 2%, typing 57.6 against 60.8 is a single-binary placement effect that the medians do not confirm), and the paste rows with newlines are 1-6% slower (256 B - 64 KiB, 1.00-1.06x of the inlined version): the scan is cheap enough that the call costs more than the code growth. The same attribute fixed the batch code (round 5, above) because that code is large; this one is not.
 
 ## Allocator: mimalloc against the system allocator (D18)
 

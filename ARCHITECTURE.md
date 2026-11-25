@@ -12,7 +12,7 @@ The tree is a **join-based AVL** instead of a red-black tree. Edits are one pers
 ```
 Cargo.toml                 workspace (resolver 3, edition 2024)
 crates/
-  piece-tree/              library (memchr, triomphe, regex-cursor), 100% test coverage
+  piece-tree/              library (memchr, str_indices, triomphe, regex-cursor), 100% test coverage
     src/
       lib.rs               public re-exports + crate docs (doctest)
       chunk.rs             Chunk: append-only bytes + newline cache, one allocation (unsafe)

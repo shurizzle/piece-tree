@@ -18,12 +18,25 @@ pub(crate) type Span = (Range<usize>, Range<usize>);
 /// edits (below that its fixed cost loses).
 const REBUILD_MIN_EDITS: usize = 3;
 const REBUILD_PIECES_PER_EDIT: usize = 10;
-/// `char_to_offset` skips big chunks in blocks of about this many bytes (benchmarks.md).
-const CHAR_SKIP_BLOCK: usize = 4096;
 /// Fewest edits for the clustered rebuild (`Text::rebuilt_cluster`): it pays two splits and two
 /// joins (~4 path copies) on top of the span, so it lost 12% at 4 edits and won 20% at 6
 /// (benchmarks.md).
 const CLUSTER_MIN_EDITS: usize = 6;
+
+/// Char count and char index to byte offset of a string: SIMD from `str_indices` (0.017 ns/B against
+/// 0.041 for `chars().count()`, benchmarks.md), plain std under Miri, which does not implement the
+/// NEON intrinsics it uses.
+#[cfg(not(miri))]
+use str_indices::chars::{count as count_chars, to_byte_idx};
+#[cfg(miri)]
+fn count_chars(s: &str) -> usize {
+    s.chars().count()
+}
+/// Byte offset of char `n` of `s`, `s.len()` when `n` is past its last char.
+#[cfg(miri)]
+fn to_byte_idx(s: &str, n: usize) -> usize {
+    s.char_indices().nth(n).map_or(s.len(), |(i, _)| i)
+}
 
 /// Immutable text value. `clone` is O(1) and edits return a new `Text` that
 /// shares unchanged structure with the old one.
@@ -275,7 +288,7 @@ impl Text {
 
     /// Number of chars (Unicode scalar values). O(n): a pass over the pieces.
     pub fn char_count(&self) -> usize {
-        self.chunks().map(|c| c.chars().count()).sum()
+        self.chunks().map(count_chars).sum()
     }
 
     /// Chars before byte `off` (a char boundary). O(`off`): a pass over the pieces.
@@ -286,9 +299,9 @@ impl Text {
         let mut chars = 0;
         for c in self.chunks() {
             if left < c.len() {
-                return chars + c[..left].chars().count();
+                return chars + count_chars(&c[..left]);
             }
-            chars += c.chars().count();
+            chars += count_chars(c);
             left -= c.len();
         }
         chars
@@ -298,25 +311,15 @@ impl Text {
     pub fn char_to_offset(&self, ch: usize) -> usize {
         let (mut left, mut base) = (ch, 0);
         for c in self.chunks() {
-            let n = c.chars().count();
-            if left < n {
-                // A loaded text is one huge chunk: skip it in blocks counted at memory speed
-                // (`chars().count()`), and walk chars (~20x slower per byte) only in the last one.
-                let (mut pos, mut left) = (0, left);
-                while c.len() - pos > CHAR_SKIP_BLOCK {
-                    let mut end = pos + CHAR_SKIP_BLOCK;
-                    while !c.is_char_boundary(end) {
-                        end += 1;
-                    }
-                    let k = c[pos..end].chars().count();
-                    if left < k {
-                        break;
-                    }
-                    (pos, left) = (end, left - k);
-                }
-                return base + pos + c[pos..].char_indices().nth(left).expect("left < n").0;
+            // `to_byte_idx` gives `c.len()` when `left` is not a char of `c` (also for the char just
+            // past it): then the chunk is skipped by its char count. The target chunk is scanned
+            // once; a block loop that counts and only then looks up the char is 2x faster on CJK
+            // and on skipped pieces, and was rejected as not worth its constant (benchmarks.md).
+            let off = to_byte_idx(c, left);
+            if off < c.len() {
+                return base + off;
             }
-            left -= n;
+            left -= count_chars(c);
             base += c.len();
         }
         assert!(left == 0, "char {ch} out of bounds");
@@ -358,7 +361,7 @@ impl Text {
 
     /// Chars in 0-based `line`, without its `\n`. O(line length).
     pub fn line_char_len(&self, line: usize) -> usize {
-        self.line(line).chars().count()
+        count_chars(&self.line(line))
     }
 
     /// Byte offset of char column `col` of `line`; `col` may be the line's length (its end).
@@ -368,7 +371,7 @@ impl Text {
         let in_line = match text.char_indices().nth(col) {
             Some((i, _)) => i,
             None => {
-                assert!(col == text.chars().count(), "column {col} out of bounds");
+                assert!(col == count_chars(&text), "column {col} out of bounds");
                 text.len()
             }
         };
@@ -379,7 +382,7 @@ impl Text {
     pub fn offset_to_line_col(&self, off: usize) -> (usize, usize) {
         let line = self.offset_to_line(off);
         let start = self.line_to_offset(line);
-        (line, self.slice(start..off).chars().count())
+        (line, count_chars(&self.slice(start..off)))
     }
 
     /// Byte offset where 0-based `line` starts.

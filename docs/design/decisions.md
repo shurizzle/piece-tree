@@ -164,7 +164,7 @@ Writes go through raw pointers into reserved, unreferenced ranges. `Piece::text`
 
 ## D15. Char conversions by scanning, no char cache in the tree
 
-**Decision**: `Text` offers char conversions (`char_count`, `offset_to_char`, `char_to_offset`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`) but the tree caches nothing about chars. Per-line ones scan the line (`Text::line`), global ones scan the pieces: O(line length) and O(n). `is_char_boundary`, `floor_char_boundary` and `line_end` need no scan.
+**Decision**: `Text` offers char conversions (`char_count`, `offset_to_char`, `char_to_offset`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`) but the tree caches nothing about chars. Per-line ones scan the line (`Text::line`), global ones scan the pieces: O(line length) and O(n). Counting and the char-to-byte lookup use `str_indices::chars` (SIMD, 2.4x `chars().count()`; `Text::char_to_offset` asks `to_byte_idx` per chunk and counts only the chunks it skips, 0.081 -> 0.017-0.034 ns/B on a loaded text, benchmarks.md); under Miri, which lacks its NEON intrinsic, the std equivalents run. `is_char_boundary`, `floor_char_boundary` and `line_end` need no scan.
 
 **Why**: an editor converts columns of one line (the cursor line, visible lines), and `Text::line` is already O(line length) there. The global conversions serve single commands (`Ctrl+G` counts, `/pat/e+1`, `gn`).
 

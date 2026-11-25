@@ -663,24 +663,32 @@ fn apply_edits_uses_both_strategies() {
     }
 }
 
-/// Chars stepped over in `char_to_offset_skips_big_chunks`; scaled up under Miri.
+/// Chars of the text of `char_to_offset_matches_the_model`; fewer under Miri.
 #[cfg(not(miri))]
-const CHAR_STEP: usize = 37;
+const MODEL_CHARS: usize = 3000;
 #[cfg(miri)]
-const CHAR_STEP: usize = 1009;
+const MODEL_CHARS: usize = 200;
 
 #[test]
-fn char_to_offset_skips_big_chunks() {
-    // One chunk of several skip blocks, with 1-4 byte chars so that block ends are moved to a char
-    // boundary, and with the target in the first, a middle and the last block.
-    let m: String = (0..3 * CHAR_SKIP_BLOCK).map(|i| ['a', 'é', '日', '🦀'][i * 7 % 4]).collect();
-    let t = Text::from(m.as_str());
-    assert_eq!(t.chunks().count(), 1);
+fn char_to_offset_matches_the_model() {
+    // 1-4 byte chars, long enough for the SIMD counter to leave its short-string path, in several
+    // chunks (the inserts split the loaded chunk and add their own): every char, the end, and
+    // the chars that start a chunk.
+    let mut m: String = (0..MODEL_CHARS).map(|i| ['a', 'é', '日', '🦀'][i * 7 % 4]).collect();
+    let mut t = Text::from(m.as_str());
+    for (at, ins) in [(4, "XY日"), (7, "é🦀"), (1, "z"), (9, "")] {
+        let off = t.floor_char_boundary(m.len() * at / 10);
+        t = t.insert(off, ins);
+        m.insert_str(off, ins);
+    }
+    assert!(t.chunks().count() >= 6);
     let offs: Vec<usize> = m.char_indices().map(|(o, _)| o).collect();
-    for ch in (0..offs.len()).step_by(CHAR_STEP).chain([offs.len() - 1]) {
-        assert_eq!(t.char_to_offset(ch), offs[ch], "char {ch}");
+    for (ch, &off) in offs.iter().enumerate() {
+        assert_eq!(t.char_to_offset(ch), off, "char {ch}");
     }
     assert_eq!(t.char_to_offset(offs.len()), m.len());
+    assert_eq!(t.char_count(), offs.len());
+    assert_eq!(Text::new().char_to_offset(0), 0);
 }
 
 #[test]

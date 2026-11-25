@@ -8,6 +8,7 @@ license = "MIT"
 [dependencies]
 memchr = "2.8.3"
 regex-cursor = { version = "0.1.5", default-features = false, features = ["perf-inline"] }
+str_indices = "0.4.4"
 triomphe = "0.1.17"
 
 [[bench]]
