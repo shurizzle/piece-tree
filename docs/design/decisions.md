@@ -87,7 +87,7 @@ Each entry: decision, why, consequences. Ordered by importance.
 - `parking_lot`: the house choice for any `Mutex`/`RwLock`. The crate currently has no locks (D11), so it is not a dependency right now.
 - Add others, such as `aho-corasick`, when a feature needs them.
 
-**Rejected**: `mimalloc` as global allocator, for the bench and pt-edit. A/B showed no consistent gain on edits (0.96–1.08x), because allocation is only ~5% of the edit profile. Only the copying load improved, and pt-edit loads owned.
+**Rejected at the time** (superseded by D18, which measured it again): `mimalloc` as global allocator, for the bench and pt-edit. A/B showed no consistent gain on edits (0.96–1.08x), because allocation was only ~5% of the edit profile. Only the copying load improved, and pt-edit loads owned.
 
 **Note**: an earlier version claimed a "zero dependencies" rule. It was never a requirement and was removed.
 
@@ -197,3 +197,33 @@ Writes go through raw pointers into reserved, unreferenced ranges. `Piece::text`
 | any (`std::simd`) | `Simd<u8, 64>::simd_eq(..).to_bitmask()`: one code path for every architecture | `portable_simd`, nightly only | wait for stabilization; would replace the per-architecture functions |
 
 Not checked: aarch64 SVE/SVE2 (NEON is baseline and enough for a 128-bit compare). Suggested order: wasm32 and 32-bit x86 first (stable intrinsics), the rest as `std::arch` stabilizes. Every new path follows the same acceptance as AVX2/AVX-512: A/B against the current path on that architecture with the load example of `benchmarks.md`, keep only winners, record rejected ones; the lane test and the differential tests cover any new `mask64`.
+
+## D17. Batch edits: one rebuild when dense, path copies when sparse
+
+**Decision**: `Text::apply_edits` and `Document::apply_edits` take many edits at once (sorted, non-overlapping, in offsets of the source text). The replacements are stored once; the tree is then either rebuilt in one linear pass (`Text::rebuilt`, shared with `replace_matching`) or edited with one path copy per edit, from the end. Rebuild when `edits >= 3` and `pieces <= edits * 10`. The piece count is bounded from the tree height in O(1) (`min_pieces`, `max_pieces`); when the budget `edits * 10` falls between the bounds, `has_at_most` walks the tree and stops once the count exceeds the budget.
+
+**Why**: `replace_all` already built its result in one go, but there was no way to apply a list of edits (an editor's multi-edit commands, `:g`, formatting, refactors) without one path copy per edit, ~500 ns each on a fragmented tree. A rebuild costs ~30 ns per piece plus ~100 ns per edit, so it wins when the edits are dense relative to the pieces. Measured on a 10 MB text (benchmarks.md), ns per edit, one by one -> `apply_edits`: a single piece, 1000 edits: 417 -> 92 (4.5x), 4925 edits 448 -> 87 (5.2x), from 4 edits on 1.5x; fragmented (4437 pieces), 1000 edits: 512 -> 302 (1.7x), 4925 edits: 548 -> 145 (3.8x). Against the other libraries (1000 sorted edits, one pass): piece-tree 88-99 ns, ropey 2 beta 428-537, ropey 1.x 655-708, SumTree (one cursor pass) 5710-6414.
+
+**Rejected** (measured): divide and conquer on the middle edit (split the tree around it, recurse on both sides, join): 1.1-2.8x faster on a single piece but 0.45-0.77x (up to 2x slower) on a fragmented tree below ~1000 edits, because every edit pays two splits and two joins. Choosing the strategy by edit count alone: no constant serves both a single piece (rebuild wins from 3-4 edits) and 4437 pieces (from ~400). A piece count cached in every `Node` (`u32`, fits the padding, `Node` stays 64 bytes): exact and O(1), but +3.8% on paste (6 of 6 alternating pairs), too much on the hot path for a cold feature. A walk that counts every piece: 31 µs on 4437 pieces, +53% on a 128-edit batch, which is why the walk stops at the budget. A height-only estimate: off by up to 3.7x (it missed the 1.9x gain at 1000 edits on 4437 pieces).
+
+**Cost of this choice**: in the band where the bounds do not decide and the answer is "sparse", the walk costs up to ~10% (measured 0.91x at 128 edits on 4437 pieces). A dense batch rebuilds the whole tree, so the new version shares no nodes with the old one (as `replace_all` already does). One or two edits are 13-20% slower than `insert`/`delete` (fixed overhead of normalizing and storing): use those. **Upgrade path**: rebuild only the span between the first and last edit and join it to the shared ends, for batches clustered in a large fragmented text (today they take the sparse path, which is as fast as one by one).
+
+## D18. The allocator: mimalloc is worth ~25% on edits (macOS), used by pt-edit
+
+**Decision**: `pt-edit` sets `mimalloc::MiMalloc` as its global allocator. The library stays allocator-agnostic (it cannot choose the global allocator, and an application embedding it picks its own); `cargo bench -p piece-tree` and the examples keep the system allocator, so their numbers are comparable with the older ones. This corrects the earlier rejection in D8 ("mimalloc: no").
+
+**Why it matters**: profiles with macOS `sample` of the current tree put 294 of 519 samples (random edits) and 618 of 1157 (paste) in `malloc`/`free`, ~55% of the time: an edit copies a path of the AVL tree (~12 nodes allocated, ~12 freed with the previous version). Measured with the harness feature `mimalloc` (same code, only the global allocator differs; piece-tree `edits` program, 10 alternating rounds, ns/op, min):
+
+| | system | mimalloc | |
+|---|---|---|---|
+| paste 1k on 10 MB | 582 | 440 | -24% |
+| random edits 1k+1k | 617 | 436 | -29% |
+| typing 10k | 60.8 | 48.7 | -20% |
+| backspace 10k | 52.1 | 38.5 | -26% |
+| `line()` all | 4.1 | 4.1 | 0% |
+
+Full harness (all four libraries, three corpora, `benchmarks.md`): over the non-load rows the mimalloc/system ratio has median 0.86 for piece-tree, 0.95 for ropey 1.x, 0.97 for ropey 2 beta and 0.91 for SumTree, so piece-tree gains the most because it allocates the most per edit. Under mimalloc piece-tree wins or ties 37 of 39 rows (33 with the system allocator); typing ties ropey 2 beta on Rust sources and trails it by 1.11-1.12x elsewhere, random edits are 1.5x faster than ropey 2 beta.
+
+**Why the earlier "no" differs**: D8 measured 0.96-1.08x when allocation was ~5% of the `typing` profile. The causes of the difference are not established (the tree and the workloads changed). The macOS allocator may be slower than glibc's (not compared), so the effect on Linux may be smaller or larger: not measured.
+
+**Cost**: mimalloc is a C dependency built with `cc` (needs a C compiler to build pt-edit); pt-edit itself was not benchmarked end to end, the gain is the library-level measurement above. **Open**: (a) a node pool or free list inside the library, which would help under any allocator but needs its own `Arc` or an arena (`triomphe::Arc` takes no custom allocator): a large change; (b) re-measure on Linux, where the system allocator differs.

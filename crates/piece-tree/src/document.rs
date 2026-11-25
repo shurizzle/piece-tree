@@ -136,6 +136,13 @@ impl Document {
         self.apply(next, &[Edit { start: range.start, old_len: range.len(), new_len: s.len() }]);
     }
 
+    /// [`Text::apply_edits`] as one change (one version, one undo step). [`Document::last_edits`]
+    /// lists one [`Edit`] per effective edit; with nothing to change there is no version.
+    pub fn apply_edits(&mut self, edits: &[(Range<usize>, &str)]) {
+        let (next, spans) = self.text().apply_edits_spans(edits);
+        self.apply(next, &Text::edits_of(&spans));
+    }
+
     /// Records `next` (with the edits that produced it) as a new version, or into the open group.
     fn apply(&mut self, next: Text, edits: &[Edit]) {
         self.last.clear();

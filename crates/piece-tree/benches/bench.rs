@@ -142,6 +142,33 @@ fn main() {
     println!("{:<30} {:>10}", "pieces after random edits", edited.chunks().count());
     read_all_lines("line() all, after edits", &edited);
 
+    // The same ~1000 sorted line inserts and line deletes, in original offsets: one `apply_edits`
+    // against one edit at a time from the end. `base` is a single piece (the dense strategy);
+    // `edited` is fragmented, where 1000 edits are sparse enough for path copies.
+    for (name, text) in [("10MB", &base), ("fragmented", &edited)] {
+        let mut rng = Rng(99);
+        let mut lines: Vec<usize> = (0..1_000).map(|_| rng.below(text.line_count() - 1)).collect();
+        lines.sort_unstable();
+        lines.dedup();
+        let edits: Vec<(std::ops::Range<usize>, &str)> = lines
+            .iter()
+            .enumerate()
+            .map(|(k, &l)| {
+                let s = text.line_to_offset(l);
+                if k % 2 == 0 { (s..s, "edit\n") } else { (s..text.line_to_offset(l + 1), "") }
+            })
+            .collect();
+        bench(&format!("batch {} edits {name}: apply_edits", edits.len()), edits.len(), |_| text.apply_edits(&edits));
+        bench(&format!("batch {} edits {name}: one by one", edits.len()), edits.len(), |_| {
+            let mut t = text.clone();
+            for (r, s) in edits.iter().rev() {
+                t = t.delete(r.clone());
+                t = t.insert(r.start, s);
+            }
+            t
+        });
+    }
+
     // Regex over the loaded 10 MB (one piece) and after the random edits (~3000 pieces).
     // `regex on to_string` is the contiguous baseline, copy included.
     for (name, t) in [("10MB", &base), ("edited", &edited)] {

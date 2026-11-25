@@ -291,31 +291,14 @@ impl Text {
             return (self.clone(), Vec::new());
         }
         let (buf, add) = self.store_replacements(out);
-        let mut pieces = Vec::new();
-        let mut pos = 0;
-        for (m, r) in &edits {
-            tree::pieces_in(self.root(), pos, m.start, &mut pieces);
-            if !r.is_empty() {
-                pieces.push(buf.as_ref().expect("non-empty replacements were stored").sub(r.start, r.end));
-            }
-            pos = m.end;
-        }
-        tree::pieces_in(self.root(), pos, self.len(), &mut pieces);
-        let mut shift = 0isize;
-        let changes = edits
-            .iter()
-            .map(|(m, r)| {
-                let e = Edit { start: m.start.strict_add_signed(shift), old_len: m.len(), new_len: r.len() };
-                shift += r.len() as isize - m.len() as isize;
-                e
-            })
-            .collect();
-        (Text::from_parts(tree::from_pieces(pieces), add), changes)
+        let root = self.rebuilt(buf.as_ref(), &edits);
+        let changes = Text::edits_of(&edits);
+        (Text::from_parts(root, add), changes)
     }
 
     /// Stores the concatenated replacements once; returns their piece (if any)
     /// and the add chunk the new text should use.
-    fn store_replacements(&self, out: String) -> (Option<Piece>, Option<Arc<Chunk>>) {
+    pub(crate) fn store_replacements(&self, out: String) -> (Option<Piece>, Option<Arc<Chunk>>) {
         if out.is_empty() {
             (None, self.add_chunk().cloned())
         } else if out.len() > MAX_ADD_BYTES {

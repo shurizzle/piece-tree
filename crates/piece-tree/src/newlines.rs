@@ -20,7 +20,7 @@
 //! baseline there, no runtime detection). Everything else, and Miri (which does not run the
 //! intrinsics), uses the portable SWAR mask, plain integer arithmetic.
 //!
-//! shortcut: no AVX2/AVX-512 path yet. Both must still be tried and timed against SSE2 on a real
+//! To try: AVX2 and AVX-512 paths do not exist yet. Both must still be tried and timed against SSE2 on a real
 //! x86_64 host (not possible on the development machine): add one `mask64` + `is_x86_feature_detected!`
 //! dispatch per feature, keep it only if it wins (D16). Other architectures (wasm32, 32-bit x86,
 //! loongarch64, s390x, riscv64, powerpc64, `std::simd`) use SWAR and are listed in D16 as to-try.

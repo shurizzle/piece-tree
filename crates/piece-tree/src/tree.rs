@@ -140,6 +140,37 @@ pub(crate) fn height(t: &Tree) -> u8 {
     t.as_ref().map_or(0, |n| n.height)
 }
 
+/// Fewest pieces an AVL tree of `t`'s height can have (the Fibonacci-like minimum), in O(1).
+pub(crate) fn min_pieces(t: &Tree) -> usize {
+    let (mut fewer, mut min) = (0usize, usize::from(height(t) > 0));
+    for _ in 1..height(t) {
+        (fewer, min) = (min, fewer + min + 1);
+    }
+    min
+}
+
+/// Most pieces a tree of `t`'s height can have (a full tree), in O(1).
+pub(crate) fn max_pieces(t: &Tree) -> usize {
+    (1usize << height(t)) - 1
+}
+
+/// Whether `t` has at most `limit` pieces, by a walk that stops as soon as the count exceeds it:
+/// O(min(pieces, limit)). Not cached per node, which cost ~4% on paste (benchmarks.md).
+pub(crate) fn has_at_most(t: &Tree, limit: usize) -> bool {
+    let (mut n, mut stack) = (0, vec![t]);
+    while let Some(t) = stack.pop() {
+        if let Some(node) = t {
+            n += 1;
+            if n > limit {
+                return false;
+            }
+            stack.push(&node.left);
+            stack.push(&node.right);
+        }
+    }
+    true
+}
+
 pub(crate) fn len(t: &Tree) -> usize {
     t.as_ref().map_or(0, |n| n.len)
 }
@@ -362,6 +393,21 @@ pub(crate) fn delete_in(t: &Tree, a: usize, b: usize) -> Option<Tree> {
             (false, false) => join(l, n.piece.sub(0, a), insert_at(&r, 0, n.piece.sub(b, pl))),
         })
     }
+}
+
+/// Removes bytes `[a, b)` of `t`: one path copy when they lie inside one piece, otherwise a
+/// split and a join.
+#[inline(never)] // inlined into its callers it moved paste and random edits by +4-7% (benchmarks.md)
+pub(crate) fn delete_range(t: &Tree, a: usize, b: usize) -> Tree {
+    if a == b {
+        return t.clone();
+    }
+    if let Some(root) = delete_in(t, a, b) {
+        return root;
+    }
+    let (l, rest) = split(t.clone(), a);
+    let (_, r) = split(rest, b - a);
+    join2(l, r)
 }
 
 #[cfg(test)]

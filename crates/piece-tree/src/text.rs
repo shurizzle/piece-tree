@@ -3,8 +3,21 @@ use std::{borrow::Cow, fmt, ops::Range};
 use triomphe::Arc;
 
 use crate::chunk::{Chunk, MAX_ADD_BYTES, count_lf};
+use crate::document::Edit;
 use crate::eol::{normalize, normalize_owned};
 use crate::tree::{self, Node, Piece, Tree};
+
+/// An effective edit of a batch: the replaced range of the old text, and the range of the stored
+/// replacement text (empty for a deletion).
+pub(crate) type Span = (Range<usize>, Range<usize>);
+
+/// A batch is applied by one linear rebuild instead of one path copy per edit when it has at least
+/// `REBUILD_MIN_EDITS` edits and `edits * REBUILD_PIECES_PER_EDIT >= pieces`. Measured (benchmarks.md):
+/// a rebuild costs ~30 ns per piece plus ~100 ns per edit, a path copy ~500 ns per edit on a fragmented
+/// tree, so they break even near one edit per 12 pieces; on a single piece the rebuild wins from 3-4
+/// edits (below that its fixed cost loses).
+const REBUILD_MIN_EDITS: usize = 3;
+const REBUILD_PIECES_PER_EDIT: usize = 10;
 
 /// Immutable text value. `clone` is O(1) and edits return a new `Text` that
 /// shares unchanged structure with the old one.
@@ -85,12 +98,117 @@ impl Text {
         if range.is_empty() {
             return self.clone();
         }
-        if let Some(root) = tree::delete_in(&self.root, range.start, range.end) {
-            return Text { root, add: self.add.clone() };
+        Text { root: tree::delete_range(&self.root, range.start, range.end), add: self.add.clone() }
+    }
+
+    /// Applies many edits in one pass: each `(range, replacement)` replaces `range` of *this*
+    /// text with `replacement` (an empty range inserts, an empty replacement deletes).
+    ///
+    /// The edits must be sorted by start and must not overlap (an edit may start where the previous
+    /// one ends, and several inserts may share an offset: they apply in order). Panics otherwise
+    /// (`invalid range`), when a range is out of bounds, or when a range cuts a char.
+    ///
+    /// Cheaper than one [`Text::insert`]/[`Text::delete`] per edit once the edits are many: the
+    /// replacements are stored together and the tree is rebuilt around them in one pass, sharing
+    /// every untouched subtree. With nothing to change, returns the same version.
+    pub fn apply_edits(&self, edits: &[(Range<usize>, &str)]) -> Text {
+        self.apply_edits_spans(edits).0
+    }
+
+    /// [`Text::apply_edits`] plus the effective edits as `(replaced range, range of the stored
+    /// replacement text)`; [`Text::edits_of`] turns them into [`Edit`]s.
+    #[inline(never)] // see `tree::delete_range`
+    pub(crate) fn apply_edits_spans(&self, edits: &[(Range<usize>, &str)]) -> (Text, Vec<Span>) {
+        let mut prev_end = 0;
+        for (r, _) in edits {
+            assert!(r.start <= r.end, "invalid range {r:?}");
+            assert!(r.start >= prev_end, "invalid range {r:?}: edits must be sorted and must not overlap");
+            assert!(r.end <= self.len(), "offset {} out of bounds", r.end);
+            prev_end = r.end;
         }
-        let (l, rest) = tree::split(self.root.clone(), range.start);
-        let (_, r) = tree::split(rest, range.end - range.start);
-        Text { root: tree::join2(l, r), add: self.add.clone() }
+        // All replacement texts, concatenated; each effective edit maps to a range of it.
+        let mut out = String::new();
+        let mut spans: Vec<Span> = Vec::new();
+        for (r, s) in edits {
+            let s = normalize(s);
+            if r.is_empty() && s.is_empty() {
+                continue;
+            }
+            let start = out.len();
+            out.push_str(&s);
+            spans.push((r.clone(), start..out.len()));
+        }
+        if spans.is_empty() {
+            return (self.clone(), spans);
+        }
+        let (buf, add) = self.store_replacements(out);
+        let piece = |o: &Range<usize>| buf.as_ref().expect("non-empty replacements were stored").sub(o.start, o.end);
+        let root = if self.rebuild_wins(spans.len()) {
+            // Dense: one linear rebuild beats a path copy per edit.
+            self.rebuilt(buf.as_ref(), &spans)
+        } else {
+            // Sparse: one path copy per edit, from the end so that earlier offsets stay valid.
+            let mut root = self.root.clone();
+            for (r, o) in spans.iter().rev() {
+                root = tree::delete_range(&root, r.start, r.end);
+                if !o.is_empty() {
+                    root = tree::insert_at(&root, r.start, piece(o));
+                }
+            }
+            root
+        };
+        (Text { root, add }, spans)
+    }
+
+    /// Whether a batch of `edits` edits is cheaper as one rebuild than as path copies (see
+    /// `REBUILD_MIN_EDITS`). The tree height bounds the piece count in O(1); only when the bounds
+    /// do not decide, a walk checks the count against the budget and stops once it is exceeded, so
+    /// it visits at most `edits * REBUILD_PIECES_PER_EDIT` pieces (~7 ns each, against ~500 ns per
+    /// edit of the path copies it may save).
+    pub(crate) fn rebuild_wins(&self, edits: usize) -> bool {
+        if edits < REBUILD_MIN_EDITS {
+            return false;
+        }
+        let budget = edits.saturating_mul(REBUILD_PIECES_PER_EDIT);
+        if budget >= tree::max_pieces(&self.root) {
+            true
+        } else if budget < tree::min_pieces(&self.root) {
+            false
+        } else {
+            tree::has_at_most(&self.root, budget)
+        }
+    }
+
+    /// One [`Edit`] per `(replaced range, replacement range)` span, in order: each `start` is in the
+    /// text left by the previous replacements.
+    pub(crate) fn edits_of(spans: &[Span]) -> Vec<Edit> {
+        let mut shift = 0isize;
+        spans
+            .iter()
+            .map(|(m, r)| {
+                let e = Edit { start: m.start.strict_add_signed(shift), old_len: m.len(), new_len: r.len() };
+                shift += r.len() as isize - m.len() as isize;
+                e
+            })
+            .collect()
+    }
+
+    /// The tree of this text with each `(range, stored range)` of `edits` replaced by the matching
+    /// part of `buf` (`edits` sorted and not overlapping): the untouched pieces and the
+    /// replacement pieces in order, built into a balanced tree in one go.
+    #[inline(never)] // see `tree::delete_range`: batch code stays out of the edit paths' inlining
+    pub(crate) fn rebuilt(&self, buf: Option<&Piece>, edits: &[Span]) -> Tree {
+        let mut pieces = Vec::new();
+        let mut pos = 0;
+        for (m, r) in edits {
+            tree::pieces_in(&self.root, pos, m.start, &mut pieces);
+            if !r.is_empty() {
+                pieces.push(buf.expect("non-empty replacements were stored").sub(r.start, r.end));
+            }
+            pos = m.end;
+        }
+        tree::pieces_in(&self.root, pos, self.len(), &mut pieces);
+        tree::from_pieces(pieces)
     }
 
     /// 0-based line containing byte `off`.

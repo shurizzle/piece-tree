@@ -116,6 +116,15 @@ Descends to the piece containing `[a, b)`. It returns `None` if the range spans 
 
 The `join`s on the way back rebalance, because a removed piece or an added half changes heights by at most one or two.
 
+### `apply_edits` (batches, `text.rs`)
+
+`Text::apply_edits(&[(range, replacement)])` takes sorted, non-overlapping edits in offsets of the source text. It validates them first (`invalid range` for reversed, unsorted or overlapping ranges, `out of bounds`), normalizes every replacement, and stores all of them **once**, concatenated, through `store_replacements` (the add chunk, or an exact chunk past `MAX_ADD_BYTES`), so every replacement is a `Piece::sub` of one stored piece. Edits that change nothing (empty range, empty text) are dropped; with none left the same version is returned. Then one of two strategies, chosen by `Text::rebuild_wins(edits)`: rebuild when `edits >= REBUILD_MIN_EDITS (3)` and `pieces <= edits * REBUILD_PIECES_PER_EDIT (10)`. The piece count is not stored: the tree height bounds it in O(1) (`min_pieces`, a Fibonacci minimum, and `max_pieces`, a full tree), which decides most batches; only when the budget falls between the bounds does `has_at_most(root, budget)` walk the tree, stopping as soon as the count exceeds the budget, so it visits at most `edits * 10` pieces (~7 ns each, against ~500 ns per edit of the path copies it may save).
+
+- **Dense: `Text::rebuilt`.** `pieces_in` collects the untouched pieces of each gap, the replacement pieces go between them, and `from_pieces` builds a perfectly balanced tree in O(pieces + edits). The same code as `replace_matching`, so both share it. Nothing of the old tree is shared except the chunks.
+- **Sparse: one path copy per edit**, from the last edit to the first so earlier offsets stay valid (`delete_range` then `insert_at` of the stored piece).
+
+Measured costs (benchmarks.md): a rebuild is ~30 ns per piece plus ~100 ns per edit, a path copy ~500 ns per edit on a fragmented tree, so they break even near one edit per 12 pieces; on a single piece the rebuild wins from 3-4 edits. A divide and conquer version (split around the middle edit, recurse, join) was built and rejected: it only won on a single piece and lost up to 2x on fragmented trees, where each edit pays two splits and two joins (D17).
+
 ### Piece extension
 
 `try_extend` succeeds when the piece belongs to `add` **and** `add.try_append(s, lf, Some(piece.end))` succeeds. The second condition means that no one appended since the piece's text was written, and that `s` fits; it is checked atomically with the reservation. The extended piece keeps `start` and `nl_first`, and `len`/`lf` grow.

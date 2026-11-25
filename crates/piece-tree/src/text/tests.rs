@@ -561,3 +561,205 @@ fn char_boundaries() {
     }
     assert!(Text::new().is_char_boundary(0) && !Text::new().is_char_boundary(1));
 }
+
+/// Seeds and fragmenting steps of the `apply_edits` tests; scaled down under Miri.
+#[cfg(not(miri))]
+const BATCH_SEEDS: u64 = 60;
+#[cfg(miri)]
+const BATCH_SEEDS: u64 = 4;
+#[cfg(not(miri))]
+const FRAG_STEPS: usize = 600;
+#[cfg(miri)]
+const FRAG_STEPS: usize = 150;
+
+/// `edits` applied to the model string, from the end so earlier offsets stay valid (the replacement
+/// is normalized like `Text` does).
+fn apply_to_model(m: &mut String, edits: &[(Range<usize>, &str)]) {
+    for (r, s) in edits.iter().rev() {
+        m.replace_range(r.clone(), &s.replace("\r\n", "\n").replace('\r', "\n"));
+    }
+}
+
+/// Random sorted, non-overlapping edits over `m`: empty ranges (inserts), deletions, replacements,
+/// adjacent edits and several inserts at one offset.
+fn random_batch(rng: &mut Rng, m: &str, k: usize, texts: &[String]) -> Vec<(Range<usize>, String)> {
+    let mut cuts: Vec<usize> = (0..2 * k).map(|_| rng.boundary(m)).collect();
+    cuts.sort_unstable();
+    cuts.chunks(2)
+        .map(|c| {
+            let s = match rng.below(4) {
+                0 => String::new(),
+                _ => texts[rng.below(texts.len())].clone(),
+            };
+            (c[0]..c[1], s)
+        })
+        .collect()
+}
+
+fn as_refs(batch: &[(Range<usize>, String)]) -> Vec<(Range<usize>, &str)> {
+    batch.iter().map(|(r, s)| (r.clone(), s.as_str())).collect()
+}
+
+/// A text of `pieces`-ish pieces: random single edits applied to the model in lockstep.
+fn fragmented(rng: &mut Rng, steps: usize) -> (Text, String) {
+    let (mut t, mut m) = (Text::from("seed line\nsecond ünïcode line\n"), String::from("seed line\nsecond ünïcode line\n"));
+    for _ in 0..steps {
+        let off = rng.boundary(&m);
+        let s = rng.text(3);
+        t = t.insert(off, &s);
+        m.insert_str(off, &s);
+        // Short deletes only: long ones would keep the text (and the piece count) small.
+        let a = rng.boundary(&m);
+        if rng.below(4) == 0
+            && let Some(c) = m[a..].chars().next()
+        {
+            t = t.delete(a..a + c.len_utf8());
+            m.replace_range(a..a + c.len_utf8(), "");
+        }
+    }
+    (t, m)
+}
+
+#[test]
+fn apply_edits_matches_the_model() {
+    let texts: Vec<String> = ["a", "xyz\n", "é", "\n\n", "🦀 crab", "a\r\nb\rc", "line one\nline two\n"].map(String::from).to_vec();
+    for seed in 0..BATCH_SEEDS {
+        let mut rng = Rng(seed);
+        // Small texts (few pieces: the rebuild path) and fragmented ones (the sparse path).
+        let steps = [0, 3, 40, FRAG_STEPS * 2 / 3][seed as usize % 4];
+        let (mut t, mut m) = fragmented(&mut rng, steps);
+        for round in 0..6 {
+            let k = [0, 1, 2, 3, 5, 12, 40][rng.below(7)];
+            let batch = random_batch(&mut rng, &m, k, &texts);
+            let edits = as_refs(&batch);
+            let before = (t.clone(), m.clone());
+            t = t.apply_edits(&edits);
+            apply_to_model(&mut m, &edits);
+            assert_same(&t, &m, &mut rng, m.len() < 512);
+            // The version we started from is untouched.
+            assert_same(&before.0, &before.1, &mut rng, false);
+            let _ = round;
+        }
+    }
+}
+
+#[test]
+fn apply_edits_uses_both_strategies() {
+    // Same batch on a text with one piece (dense: rebuild) and on a fragmented one (sparse: path copies).
+    let mut rng = Rng(9);
+    let base: String = (0..200).map(|i| format!("line {i} é\n")).collect();
+    let one_piece = Text::from(base.as_str());
+    assert_eq!(one_piece.chunks().count(), 1);
+    let (frag, fm) = fragmented(&mut rng, FRAG_STEPS);
+    // More than 5 edits * REBUILD_PIECES_PER_EDIT pieces: a batch of 5 takes the sparse path.
+    assert!(tree::min_pieces(frag.root()) > 5 * REBUILD_PIECES_PER_EDIT);
+    for (t, m) in [(&one_piece, &base), (&frag, &fm)] {
+        let batch = random_batch(&mut rng, m, 5, &["ins\n".into(), "é€".into()]);
+        let edits = as_refs(&batch);
+        let out = t.apply_edits(&edits);
+        let mut model = m.clone();
+        apply_to_model(&mut model, &edits);
+        assert_same(&out, &model, &mut rng, false);
+    }
+}
+
+#[test]
+fn apply_edits_edge_cases() {
+    let mut rng = Rng(4);
+    let t = Text::from("hello\nworld\n");
+    // Nothing to change: the same version, for no edits and for edits that change nothing.
+    assert!(t.apply_edits(&[]).ptr_eq(&t));
+    assert!(t.apply_edits(&[(3..3, ""), (5..5, "")]).ptr_eq(&t));
+    // Inserts at one offset apply in order; an edit may start where the previous one ends.
+    let out = t.apply_edits(&[(0..0, "a"), (0..0, "b"), (0..2, "X"), (2..2, "Y"), (12..12, "!")]);
+    assert_same(&out, "abXYllo\nworld\n!", &mut rng, true);
+    // Everything deleted; insertion into the empty text; \r\n and \r normalized.
+    assert_same(&t.apply_edits(&[(0..12, "")]), "", &mut rng, true);
+    assert_same(&Text::new().apply_edits(&[(0..0, "x\r\ny\rz")]), "x\ny\nz", &mut rng, true);
+    // A replacement past MAX_ADD_BYTES gets an exact chunk of its own, for both strategies.
+    let big = "0123456789\n".repeat(MAX_ADD_BYTES / 8);
+    let model = format!("{big}{}", "hello\nworld\n");
+    assert_same(&t.apply_edits(&[(0..0, &big)]), &model, &mut rng, false);
+    let (frag, fm) = fragmented(&mut rng, FRAG_STEPS / 2);
+    let out = frag.apply_edits(&[(1..1, &big)]);
+    assert_same(&out, &format!("{}{big}{}", &fm[..1], &fm[1..]), &mut rng, false);
+    // Persistence: the source version is unchanged.
+    assert_same(&t, "hello\nworld\n", &mut rng, true);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+fn apply_edits_rejects_unsorted_edits() {
+    Text::from("abcdef").apply_edits(&[(3..4, "x"), (1..2, "y")]);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+fn apply_edits_rejects_overlapping_edits() {
+    Text::from("abcdef").apply_edits(&[(1..4, "x"), (3..5, "y")]);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+#[allow(clippy::reversed_empty_ranges)] // the point of the test
+fn apply_edits_rejects_reversed_ranges() {
+    Text::from("abcdef").apply_edits(&[(4..2, "x")]);
+}
+
+#[test]
+#[should_panic(expected = "out of bounds")]
+fn apply_edits_rejects_out_of_bounds() {
+    Text::from("abcdef").apply_edits(&[(2..7, "x")]);
+}
+
+#[test]
+#[should_panic(expected = "char boundary")]
+fn apply_edits_rejects_cutting_a_char() {
+    // Dense strategy (one piece, three edits).
+    Text::from("aé").apply_edits(&[(0..0, "x"), (2..2, "y"), (3..3, "z")]);
+}
+
+#[test]
+#[should_panic(expected = "char boundary")]
+fn apply_edits_rejects_cutting_a_char_on_the_sparse_path() {
+    let mut rng = Rng(2);
+    let (t, m) = fragmented(&mut rng, FRAG_STEPS / 2);
+    let cut = m.find('é').expect("the seed text has an é") + 1;
+    t.apply_edits(&[(cut..cut, "x")]);
+}
+
+#[test]
+fn rebuild_choice_follows_the_piece_count() {
+    let mut rng = Rng(8);
+    // A single piece: the height alone says dense; no rebuild below the minimum batch.
+    let one = Text::from("a\nb\n");
+    assert_eq!((one.chunks().count(), one.rebuild_wins(REBUILD_MIN_EDITS - 1), one.rebuild_wins(REBUILD_MIN_EDITS)), (1, false, true));
+    assert!(!Text::new().rebuild_wins(0));
+    // Fragmented: the height bounds hold, a tiny batch is sparse by the bounds alone, and around
+    // `pieces / REBUILD_PIECES_PER_EDIT` edits the exact count decides.
+    let (t, _) = fragmented(&mut rng, FRAG_STEPS);
+    let pieces = t.chunks().count();
+    assert!(tree::min_pieces(t.root()) <= pieces && pieces < tree::max_pieces(t.root()));
+    assert!(!t.rebuild_wins(REBUILD_MIN_EDITS));
+    let threshold = pieces.div_ceil(REBUILD_PIECES_PER_EDIT);
+    assert!(t.rebuild_wins(threshold), "{threshold} edits for {pieces} pieces");
+    assert!(!t.rebuild_wins(threshold - 1), "{} edits for {pieces} pieces", threshold - 1);
+    // Plenty of edits: dense by the bounds alone.
+    assert!(t.rebuild_wins(tree::max_pieces(t.root())));
+}
+
+#[test]
+fn piece_count_bounds_hold_on_every_shape() {
+    let mut rng = Rng(21);
+    let mut t = Text::new();
+    for step in 0..400 {
+        t = t.insert(rng.boundary(&t.to_string()), "x\ny");
+        if step % 7 == 0 {
+            let (n, h) = (t.chunks().count(), tree::height(t.root()));
+            assert!(tree::min_pieces(t.root()) <= n && n <= tree::max_pieces(t.root()), "{n} pieces, height {h}");
+            assert!(tree::has_at_most(t.root(), n) && (n == 0 || !tree::has_at_most(t.root(), n - 1)));
+        }
+    }
+    assert_eq!((tree::min_pieces(&None), tree::max_pieces(&None)), (0, 0));
+    assert!(tree::has_at_most(&None, 0));
+}

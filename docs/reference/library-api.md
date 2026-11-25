@@ -17,6 +17,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `ptr_eq(&other)` | same version? | — | identity, not content equality |
 | `insert(off, &str)` | `Text` | `out of bounds`, `char boundary` | normalizes input; empty input → same version; extends the previous piece when typing contiguously; one path copy |
 | `delete(Range)` | `Text` | `invalid range` (start > end), `out of bounds`, `char boundary` | empty range → same version; one path copy when the range is inside one piece |
+| `apply_edits(&[(Range, &str)])` | `Text` | `invalid range` (reversed, unsorted or overlapping ranges), `out of bounds`, `char boundary` | many edits in one pass; ranges are offsets of *this* text, sorted by start and not overlapping (an edit may start where the previous ends; inserts at one offset apply in order); no effective edit → same version ([algorithms.md](../design/algorithms.md)) |
 | `offset_to_line(off)` | 0-based line | `out of bounds` (off > len) | offset at a `\n` → line it ends |
 | `line_to_offset(line)` | start byte | `out of bounds` (line ≥ line_count) | |
 | `line(i)` | `Cow<str>` without `\n` | `out of bounds` | one descent and borrowed if the line is inside one piece |
@@ -41,6 +42,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `eol()` / `set_eol(LineEnding)` | output ending; changing it is not an undo step |
 | `insert(off, &str)` / `delete(Range)` | same panics as `Text`; an effective edit makes a new version (a child of the current one); no-ops do nothing |
 | `splice(Range, &str)` | replace a range as one edit; same content is not a change |
+| `apply_edits(&[(Range, &str)])` | `Text::apply_edits` as one change: one version, one undo step; `last_edits` has one edit per effective edit (each start in the text left by the previous ones); nothing to change → no version |
 | `begin_group()` / `end_group() -> bool` / `group(f)` | edits in a group make one version; nestable (outermost counts); `end_group` says whether it made one; any history move closes open groups |
 | `undo() -> bool` / `redo() -> bool` | to the parent / the child last created or left; false at the ends |
 | `earlier(n)` / `later(n)` | `n` versions back/forward in creation order, across branches (vim `g-`/`g+`) |

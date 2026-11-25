@@ -434,6 +434,61 @@ fn replace_matching_logs_one_edit_per_match() {
 }
 
 #[test]
+fn apply_edits_is_one_version_with_one_edit_per_change() {
+    let mut doc = Document::new("one two three four five six");
+    let prev = doc.text().to_string();
+    let versions = doc.history_len();
+    // Replace, delete, insert (twice at one offset) and a no-op in one batch, given in original offsets.
+    let edits = [(0..3, "1"), (4..8, ""), (8..8, "<"), (8..8, ">"), (14..14, ""), (19..23, "4\r\n")];
+    doc.apply_edits(&edits);
+    let cur = "1 <>three four 4\n six";
+    assert_eq!(doc.text().to_string(), cur);
+    assert_eq!(doc.history_len(), versions + 1, "one version");
+    // The no-op edit is left out; every start is in the text left by the previous edits.
+    assert_eq!(
+        doc.last_edits(),
+        [
+            Edit { start: 0, old_len: 3, new_len: 1 },
+            Edit { start: 2, old_len: 4, new_len: 0 },
+            Edit { start: 2, old_len: 0, new_len: 1 },
+            Edit { start: 3, old_len: 0, new_len: 1 },
+            Edit { start: 15, old_len: 4, new_len: 2 },
+        ]
+    );
+    assert_edits(&prev, cur, doc.last_edits());
+    // One undo step goes back to the previous text, one redo forward again.
+    assert!(doc.undo());
+    assert_eq!(doc.text().to_string(), prev);
+    assert!(doc.redo());
+    assert_eq!(doc.text().to_string(), cur);
+}
+
+#[test]
+fn apply_edits_without_effect_makes_no_version() {
+    let mut doc = Document::new("abc");
+    doc.insert(3, "d");
+    let versions = doc.history_len();
+    doc.apply_edits(&[]);
+    assert!(doc.last_edits().is_empty());
+    doc.apply_edits(&[(1..1, ""), (2..2, "")]);
+    assert!(doc.last_edits().is_empty());
+    assert_eq!((doc.history_len(), doc.text().to_string()), (versions, "abcd".to_string()));
+}
+
+#[test]
+fn apply_edits_joins_an_open_group() {
+    let mut doc = Document::new("abc");
+    let versions = doc.history_len();
+    doc.group(|d| {
+        d.insert(0, "x");
+        d.apply_edits(&[(1..2, "B"), (3..3, "!")]);
+    });
+    // The insert at 3 is in the original "xabc": before the `c`.
+    assert_eq!(doc.text().to_string(), "xBb!c");
+    assert_eq!(doc.history_len(), versions + 1, "one group, one version");
+}
+
+#[test]
 fn versions_describe_the_tree() {
     let mut doc = Document::new("");
     doc.insert(0, "a"); // 1

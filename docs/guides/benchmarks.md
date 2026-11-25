@@ -51,6 +51,76 @@ Load average ~2, minimum of 7 runs. "regex+copy" is `regex::Regex` on `Text::to_
 
 **Kept, no regression**: `replace_all` delegating to `replace_matching(re, rep, |_| true)` (the filter for editor substitutes). A/B against a standalone copy of the previous version, both built in `bench`, 3 alternating runs each, min of 7: literal 355/428/433 ns/match before vs 403/395/406 after, `$1` 1206/1181/1217 vs 1127/1247/1198. Differences are inside the run-to-run noise (±15%).
 
+## Comparison with other implementations
+
+Same scenarios run over four libraries in one binary, same profile (fat LTO, `codegen-units = 1`), same allocator, on an Apple M1 Pro (load average 8-18, results repeat within ~3% for the same binary; one binary per corpus, so differences below ~10% are not established). Harness: a separate repository (`piece-tree-bench`, not part of this workspace and not to be published as is: it vendors Zed's GPL-3.0-or-later `rope` crate). Libraries: piece-tree (this tree), ropey 1.6.1, ropey 2.0.0-beta.1, and Zed's `Rope` on top of its `sum_tree` (commit `77228009dd267dcf8ab9a20eef5802b2a8ea4afa`, tests and tracing stripped). Last full run: after the SIMD newline scan (D16), the batch API (D17) and the `#[inline(never)]` fix, system allocator.
+
+How each scenario is measured:
+- Every library works with byte offsets. ropey 1.x indexes by char, so it pays `byte_to_char` on every edit, as an editor working in bytes would.
+- "`line()`" is the sum of the lengths of the chunks the library hands out for the line (no text copy). SumTree needs two point-to-offset descents for it, the others one.
+- "typing, clone per key" keeps every intermediate version alive (clone before each key), the cost of an undo history.
+- "batch 1k edits": about 1000 sorted line inserts and deletes in offsets of the original text. piece-tree applies them with `Text::apply_edits`, Zed in one cursor pass (its `Buffer::edit` pattern), ropey one at a time from the last edit to the first.
+- Corpora: synthetic source-like lines; Rust sources read once from `~/.cargo/registry/src` (about 64 MB, wrapped when shorter than the 50 MB load needs); CJK-heavy lines (3-byte chars).
+- Values are ns per operation, minimum of 7 runs; load rows are ns per byte and printed with one decimal, so "0.1 = 0.1" hides differences (the load A/B below has the real numbers). A tie is within 5%. The cross-library check (same text after every edit scenario) is `ok` on all three corpora.
+
+**Synthetic source-like text**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.3 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.4 | 0.2 | 0.3 | piece-tree (2.00x) |
+| line() random, loaded | **31** | 487 | 697 | 657 | piece-tree (15.67x) |
+| typing 10k chars in 1MB | 61 | 142 | **47** | 11 478 | ropey 2 beta (1.29x) |
+| typing 10k, clone per key | **61** | 751 | 518 | 15 296 | piece-tree (8.43x) |
+| line() all, after typing | **5.5** | 197 | 223 | 166 | piece-tree (30.27x) |
+| line() 10x50 windows, typed | **5.6** | 205 | 242 | 190 | piece-tree (33.96x) |
+| backspace 10k | **51** | 180 | 74 | 12 527 | piece-tree (1.46x) |
+| offset_to_line random, typed | **12** | 110 | 65 | 42 | piece-tree (3.41x) |
+| paste mid-piece 1k on 10MB | 745 | 1 002 | **702** | 18 975 | ropey 2 beta (1.06x) |
+| random edits 1k+1k on 10MB | **673** | 880 | 720 | 17 079 | piece-tree (1.07x) |
+| line() all, after edits | **18** | 207 | 248 | 192 | piece-tree (10.58x) |
+| batch 1k edits, one pass, 10MB | **93** | 653 | 535 | 5 628 | piece-tree (5.78x) |
+
+**Rust sources from the cargo registry**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.3 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.3 | **0.1** | 0.4 | piece-tree = ropey 2 beta (tie) |
+| line() random, loaded | **29** | 440 | 677 | 640 | piece-tree (15.38x) |
+| typing 10k chars in 1MB | 59 | 132 | **51** | 10 248 | ropey 2 beta (1.16x) |
+| typing 10k, clone per key | **60** | 706 | 510 | 13 782 | piece-tree (8.51x) |
+| line() all, after typing | **5.4** | 181 | 222 | 168 | piece-tree (31.13x) |
+| line() 10x50 windows, typed | **5.6** | 188 | 239 | 194 | piece-tree (33.50x) |
+| backspace 10k | **51** | 188 | 83 | 11 132 | piece-tree (1.63x) |
+| offset_to_line random, typed | **12** | 101 | 64 | 46 | piece-tree (3.75x) |
+| paste mid-piece 1k on 10MB | **657** | 997 | **680** | 18 493 | piece-tree = ropey 2 beta (tie) |
+| random edits 1k+1k on 10MB | 640 | 836 | **573** | 17 332 | ropey 2 beta (1.12x) |
+| line() all, after edits | **17** | 192 | 240 | 174 | piece-tree (10.35x) |
+| batch 1k edits, one pass, 10MB | **98** | 660 | 478 | 5 874 | piece-tree (4.87x) |
+
+**CJK-heavy text**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.3 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.3 | **0.1** | 0.3 | piece-tree = ropey 2 beta (tie) |
+| line() random, loaded | **27** | 464 | 692 | 647 | piece-tree (16.92x) |
+| typing 10k chars in 1MB | 61 | 133 | **46** | 10 595 | ropey 2 beta (1.31x) |
+| typing 10k, clone per key | **57** | 629 | 489 | 14 270 | piece-tree (8.63x) |
+| line() all, after typing | **5.7** | 202 | 231 | 181 | piece-tree (31.72x) |
+| line() 10x50 windows, typed | **5.9** | 207 | 249 | 202 | piece-tree (34.31x) |
+| backspace 10k | **52** | 181 | 80 | 11 589 | piece-tree (1.52x) |
+| offset_to_line random, typed | **12** | 104 | 67 | 44 | piece-tree (3.68x) |
+| paste mid-piece 1k on 10MB | **664** | 998 | 716 | 18 772 | piece-tree (1.08x) |
+| random edits 1k+1k on 10MB | **640** | 919 | 698 | 17 862 | piece-tree (1.09x) |
+| line() all, after edits | **20** | 216 | 242 | 212 | piece-tree (10.56x) |
+| batch 1k edits, one pass, 10MB | **89** | 689 | 427 | 6 117 | piece-tree (4.78x) |
+
+Wins or ties over the 39 rows (13 scenarios x 3 corpora): piece-tree 34, ropey 2 beta 8, ropey 1.x 0, SumTree 0.
+
+Where piece-tree does not win: typing (ropey 2 beta 1.16-1.31x faster: it mutates in place, piece-tree copies a path per key), paste on the synthetic text (1.06x) and random edits on the Rust sources (1.12x). SumTree edits cost 5.6-19 us each in every scenario, also in one cursor pass: its profile (macOS `sample`) shows real work in `Cursor::slice`, `append` and memmove, not a vendoring mistake. With mimalloc as the global allocator of the whole harness the picture changes (see "Allocator" below).
+
 ## Results, round 2 (profile-driven)
 
 Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load average ~2. "Before" is the state at the end of round 1.
@@ -72,7 +142,7 @@ Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load aver
 | 1. Path-copy insert/extend/delete instead of split + join | 1.61x | 3.15x | 1.46x | 2.05x | yes |
 | 2. `triomphe::Arc` (no weak count) for nodes and chunks | 1.25x | 1.21x | 1.18x | 1.21x | yes |
 | 3. Owned load (`From<String>`), `memchr2` line ending detection | — | — | — | — | yes (load 3.3x, Document load 3.4x) |
-| 4. mimalloc as global allocator (bench, pt-edit) | 0.99x | 1.08x | 0.98x | 0.96x | **no** |
+| 4. mimalloc as global allocator (bench, pt-edit) | 0.99x | 1.08x | 0.98x | 0.96x | **no** at the time; measured again later: 0.71-0.80x, see "Allocator" below (D18) |
 | 5. Lock-free chunk reservation (`AtomicU64`), boundary checks folded into piece asserts | 1.17x | 1.15x | 1.07x | 1.14x | yes |
 | `#[inline]` on the read path | reads ±5%, no consistent sign | | | | **no** |
 | Contiguous single allocation for `Chunk::exact(&str)` | reads unchanged | | | | **no** |
@@ -90,7 +160,7 @@ Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load aver
 
 - Total samples for the same work halved (900 → 449).
 - `drop_slow` is the benchmark freeing the previous version after every keystroke. In `pt-edit` old versions stay in the undo stack, so that cost does not occur per keystroke.
-- Allocation is ~5% of the profile, which is why mimalloc and a node pool were not worth it.
+- Allocation was ~5% of the profile then, which is why mimalloc and a node pool did not look worth it. Later profiles show ~55% on paste and random edits (see "Allocator" below, D18).
 
 ## Results, round 1
 
@@ -199,3 +269,126 @@ Prototype, newline offsets only (ns/B, 32 MB texts, same output asserted against
 **Rejected: choosing the scan by sampled mean line length.** Built and tested first (mask below a threshold, `memchr_iter` above). Calibrated on lines of equal length it gave thresholds of ~160 B (NEON) and ~32-64 B (SWAR); with exponentially distributed lengths the crossovers are ~450 B and ~190 B, because equal lengths make the per-hit iterators' branches predictable. Dropped when the early-out version proved never slower than `memchr_iter` at any length. **Lesson**: calibrate on line-length distributions of real text, not on equal-length lines.
 
 `Chunk::try_append` (add chunk) keeps `memchr_iter`: it cannot write junk slots past its reserved range, and appends are small. x86_64 was only run under QEMU emulation (SSE2, correctness, not speed), so the x86_64 numbers are unknown. AVX2 and AVX-512BW are not implemented and **still have to be tried on a real x86_64 host** (procedure and acceptance criteria in D16). Other architectures (wasm32, 32-bit x86, loongarch64, s390x, riscv64, powerpc64, `std::simd`) are listed in D16 with their `std::arch` status, also still to try.
+
+## Batch edits (`Text::apply_edits`, D17)
+
+Scratch program, 10 MB synthetic text, min over 15 reps of a whole batch and 3 runs, ns per edit. "One by one": `delete` + `insert` from the last edit to the first; `apply_edits`: the batch API. Edits are line inserts and line deletes at random lines ("scattered") or inside a 200-line window ("clustered"). Single piece: the freshly loaded text; fragmented: 4437 pieces after 3000 random edits.
+
+| Shape | edits | one by one | `apply_edits` | speedup |
+|---|---|---|---|---|
+| single piece, scattered | 1 | 291 | 333 | 0.87x |
+| | 2 | 188 | 229 | 0.82x |
+| | 4 | 219 | 146 | 1.50x |
+| | 8 | 224 | 120 | 1.87x |
+| | 16 | 253 | 109 | 2.32x |
+| | 32 | 271 | 96 | 2.82x |
+| | 128 | 372 | 93 | 4.00x |
+| | 997 | 417 | 92 | 4.53x |
+| | 4925 | 448 | 87 | 5.15x |
+| fragmented, scattered | 1-32 | 411-500 | 419-500 | 0.96-1.00x |
+| | 128 | 479 | 527 | 0.91x |
+| | 997 | 512 | 302 | 1.70x |
+| | 4925 | 548 | 145 | 3.78x |
+| single piece, clustered | 4 / 15 / 51 | 198 / 233 / 251 | 125 / 106 / 83 | 1.58x / 2.20x / 3.02x |
+| fragmented, clustered | 4 / 15 / 51 | 448 / 439 / 426 | 438 / 439 / 427 | 1.02x / 1.00x / 1.00x |
+
+Below 3 edits it is the sparse path plus the fixed cost of validating, normalizing and storing the replacements (~40 ns per edit at 1-2 edits): use `insert`/`delete` there. The 0.91x row is the bounded count walk of D17 (1280 pieces visited, ~7 ns each); it is the worst band.
+
+Strategy calibration (forced one way or the other, same scratch program): rebuilding costs ~135 µs on 4437 pieces regardless of the number of edits (~30 ns per piece) plus ~100 ns per edit, a path copy ~500 ns per edit, so they cross near 1 edit per 12 pieces (the code uses 1 per 10); on a single piece the rebuild wins from 3-4 edits (k=1: 0.58x, 2: 0.78x, 4: 1.53x).
+
+**Rejected**: (1) divide and conquer on the middle edit (split, recurse, join). Single piece 1.1-2.8x, but fragmented 0.45x at 2-8 edits, 0.57x at 32, 0.77x at 128, 1.18x at 997, 2.0x at 4925: every edit pays two splits and two joins. (2) A piece count in every `Node` (`u32` in the padding): A/B against a copy without it, 6 alternating pairs, min of 40 reps: paste 655 -> 680 ns (+3.8%, higher in 6 of 6 pairs), random edits 660 -> 672 (+1.8%), typing 62.8 -> 61.7 (noise). (3) A height-only estimate of the piece count (`3/4 * 2^height`): no hot-path cost, but off by 2.8x on 4437 pieces, so 997 edits took the sparse path (1.04x instead of 1.9x). (4) Counting every piece before deciding: +53% on a 128-edit batch.
+
+Across the other libraries (harness, "batch 1k edits, one pass, 10MB": ~1000 sorted line inserts and deletes, ns per edit; piece-tree applies them with `apply_edits`, ropey one by one from the end, Zed in one cursor pass):
+
+| Corpus | piece-tree | ropey 1.x | ropey 2 beta | SumTree |
+|---|---|---|---|---|
+| synthetic | **95** (was 415 one by one) | 655 | 537 | 5 710 |
+| Rust sources | **99** (was 427) | 669 | 458 | 6 424 |
+| CJK | **88** (was 405) | 708 | 428 | 6 414 |
+
+The resulting text is identical across the four libraries (the harness sanity check, `ok` on all three corpora).
+
+**Hot paths and the +4-7% that was found and fixed.** A/B of a scratch program (paste 1000 x on 10 MB, 1000+1000 random edits, typing 10k, backspace 10k, `line()` over all lines) against a standalone copy of the tree before the SIMD and batch work ("base"), alternating runs, ns/op, min / median:
+
+| Variant | paste | random edits | typing | backspace | `line()` |
+|---|---|---|---|---|---|
+| base | 603 / 662 | 616 / 660 | 60.8 / 61.0 | 52.4 / 52.5 | 4.0 / 4.1 |
+| tree with the batch API (12 rounds) | 642 / 684 | 653 / 676 | 60.9 / 61.0 | 52.5 / 52.5 | 4.0 / 4.1 |
+| same, batch helpers `#[inline(never)]` (12 rounds) | 614 / 645 | 629 / 638 | 60.9 / 61.0 | 52.1 / 52.2 | 4.0 / 4.0 |
+| final tree with that fix, vs base in the same run (12 rounds) | 629 / 651 (base 612 / 642) | 632 / 667 (base 634 / 649) | 60.9 / 61.0 | 52.3 / 52.3 | 4.0 / 4.0 |
+
+The batch API made paste and random edits +4-8% slower although the `insert` path source did not change. Bisected: base plus only the SIMD files is not slower (paste 593-682 over 6 rounds against 605-628 for base, i.e. noise), a copy of the tree with the old `memchr` scan is as slow as the current one, and reverting `Text::delete` to its inline form does not help; putting `#[inline(never)]` on `tree::delete_range`, `Text::rebuilt` and `Text::apply_edits_spans` brings both rows back to base level (within ~3%, the spread of the base itself between runs is 5-10%). So the cause was inlining of batch code into shared paths, not the SIMD scan or the algorithm. Typing, backspace and reads never moved. The attributes carry a comment pointing here.
+
+## Allocator: mimalloc against the system allocator (D18)
+
+Harness feature `mimalloc` (`cargo run --release --features mimalloc`): `mimalloc::MiMalloc` as the global allocator of the whole binary, so all four libraries get it. macOS (Apple M1 Pro) only; the macOS system allocator may be slower than glibc's (not compared), so the effect on Linux may be smaller or larger (not measured). Profiles (macOS `sample`) before the change: 294 of 519 samples in `malloc`/`free` for random edits, 618 of 1157 for paste.
+
+piece-tree alone, `edits` scratch program, 10 alternating rounds, ns/op, min / median:
+
+| | system | mimalloc | min ratio |
+|---|---|---|---|
+| paste 1k on 10 MB | 582 / 637 | 440 / 454 | 0.76 |
+| random edits 1k+1k | 617 / 652 | 436 / 457 | 0.71 |
+| typing 10k | 60.8 / 61.0 | 48.7 / 48.9 | 0.80 |
+| backspace 10k | 52.1 / 52.2 | 38.5 / 38.8 | 0.74 |
+| `line()` all | 4.1 / 4.1 | 4.1 / 4.1 | 1.00 |
+
+Effect on each library over the non-load rows of the full harness (mimalloc / system, one binary per allocator and corpus, min of 7 per row): piece-tree 0.54 / 0.86 / 1.06 (min / median / max), ropey 1.x 0.58 / 0.95 / 1.07, ropey 2 beta 0.52 / 0.97 / 1.05, SumTree 0.78 / 0.91 / 1.03. The cross-library text check is `ok` in all six runs.
+
+Full comparison under mimalloc (same method as "Comparison with other implementations"; the system allocator tables are there):
+
+**Synthetic (mimalloc)**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| line() random, loaded | **30** | 517 | 799 | 688 | piece-tree (17.11x) |
+| typing 10k chars in 1MB | 53 | 134 | **47** | 10 700 | ropey 2 beta (1.11x) |
+| typing 10k, clone per key | **51** | 477 | 299 | 13 171 | piece-tree (5.82x) |
+| line() all, after typing | **5.6** | 188 | 221 | 168 | piece-tree (30.05x) |
+| line() 10x50 windows, typed | **5.7** | 196 | 243 | 195 | piece-tree (34.25x) |
+| backspace 10k | **40** | 178 | 74 | 11 685 | piece-tree (1.85x) |
+| offset_to_line random, typed | **12** | 113 | 66 | 38 | piece-tree (3.07x) |
+| paste mid-piece 1k on 10MB | **549** | 1 008 | 600 | 17 873 | piece-tree (1.09x) |
+| random edits 1k+1k on 10MB | **450** | 991 | 677 | 18 743 | piece-tree (1.50x) |
+| line() all, after edits | **18** | 193 | 241 | 194 | piece-tree (10.47x) |
+| batch 1k edits, one pass, 10MB | **79** | 684 | 446 | 5 312 | piece-tree (5.68x) |
+
+**Rust sources (mimalloc)**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| line() random, loaded | **35** | 506 | 778 | 598 | piece-tree (14.36x) |
+| typing 10k chars in 1MB | **51** | 135 | **51** | 9 172 | piece-tree = ropey 2 beta (tie) |
+| typing 10k, clone per key | **48** | 417 | 274 | 11 743 | piece-tree (5.76x) |
+| line() all, after typing | **5.7** | 174 | 219 | 167 | piece-tree (29.37x) |
+| line() 10x50 windows, typed | **5.8** | 179 | 245 | 191 | piece-tree (30.83x) |
+| backspace 10k | **41** | 180 | 84 | 10 172 | piece-tree (2.07x) |
+| offset_to_line random, typed | **12** | 101 | 67 | 41 | piece-tree (3.33x) |
+| paste mid-piece 1k on 10MB | **472** | 873 | 679 | 18 478 | piece-tree (1.44x) |
+| random edits 1k+1k on 10MB | **450** | 908 | 695 | 18 264 | piece-tree (1.54x) |
+| line() all, after edits | **17** | 180 | 234 | 174 | piece-tree (10.10x) |
+| batch 1k edits, one pass, 10MB | **84** | 603 | 465 | 5 390 | piece-tree (5.55x) |
+
+**CJK (mimalloc)**
+
+| Scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree | Best |
+|---|---:|---:|---:|---:|---|
+| load 50MB from &str (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| load 50MB from String (per byte) | **0.1** | 0.3 | 0.2 | 0.2 | piece-tree (2.00x) |
+| line() random, loaded | **32** | 529 | 766 | 686 | piece-tree (16.44x) |
+| typing 10k chars in 1MB | 51 | 131 | **45** | 9 444 | ropey 2 beta (1.12x) |
+| typing 10k, clone per key | **58** | 451 | 254 | 11 919 | piece-tree (4.40x) |
+| line() all, after typing | **5.5** | 189 | 223 | 178 | piece-tree (32.45x) |
+| line() 10x50 windows, typed | **5.8** | 192 | 244 | 203 | piece-tree (33.10x) |
+| backspace 10k | **39** | 172 | 77 | 10 403 | piece-tree (1.96x) |
+| offset_to_line random, typed | **12** | 104 | 65 | 38 | piece-tree (3.25x) |
+| paste mid-piece 1k on 10MB | **441** | 907 | 654 | 17 668 | piece-tree (1.48x) |
+| random edits 1k+1k on 10MB | **427** | 925 | 662 | 19 261 | piece-tree (1.55x) |
+| line() all, after edits | **20** | 201 | 233 | 206 | piece-tree (10.07x) |
+| batch 1k edits, one pass, 10MB | **73** | 613 | 522 | 5 386 | piece-tree (7.16x) |
+
+Wins or ties over the 39 rows with mimalloc: piece-tree 37, ropey 2 beta 3, ropey 1.x 0, SumTree 0 (33 / 10 / 0 / 0 with the system allocator). Adopted by pt-edit (application decision, D18); `cargo bench -p piece-tree` and the examples stay on the system allocator.

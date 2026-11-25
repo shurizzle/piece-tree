@@ -58,6 +58,7 @@ struct Node {
 ```
 
 - Accessors on `&Tree`: `height`, `len`, `lf` (0 for `None`).
+- Piece counts are not cached (an exact per-node count cost ~4% on paste, D17): `min_pieces`/`max_pieces` bound the count from the height in O(1) (Fibonacci minimum, full tree), and `has_at_most(t, limit)` walks the tree and stops once it exceeds `limit`.
 - `Arc` is `triomphe::Arc` (no weak count) for nodes and chunks.
 - `node(l, piece, r)` builds a node computing the aggregates; it does **not** rebalance.
 - In-order traversal of pieces = document text.
