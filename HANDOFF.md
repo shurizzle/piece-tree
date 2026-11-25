@@ -1,6 +1,6 @@
 # Handoff: pt-edit as the library's driver, round 5
 
-Not committed. Delete this file when the work is done or committed.
+M1–M4 committed in `bc6a0d2` (the M4 gap fixes below are not). Delete this file when the work is done or committed.
 
 The approved plan has the full milestone list (M1–M8, with rules and verification):
 `~/.claude/plans/divieto-assoluto-non-puoi-cheeky-kitten-of-0ce138e8-7589-4b04-99a8-ad5254676d90.md`
@@ -46,13 +46,13 @@ Goal: make the library complete by building editor features that need it. The us
 
 ### M4 — search: DONE
 - Lib (`find_iter_in`, `rfind_before`, `replacement_at`) and editor (`?`, offsets, `:s` flags `c` `n` `&`, `&`, `:&`, `:&&`, `g&`, `gn`/`gN`) done, tested, documented. Coverage 100% (2-region residue), clippy clean, pty smoke test of `:s///c` passed.
-- Known gaps (in `limitations.md`): `gn` ignored in Visual; no distinct highlight for the current `:s///c` match.
+- Gaps closed: `gn`/`gN` in Visual extend the selection to the next match's end / previous match's start (a repeat moves on); the `:s///c` match being asked about is drawn reversed (`Confirm::cur`). Tests in `gn_selects_the_match`, `substitute_confirm_count_and_repeat`.
 
 ## Not started
 - **M5:** shared ex range parser in `ex.rs`, with `/pat/` and `?pat?` addresses. Commands `:d :y :m :t/:co :> :< :j :p := :normal :sort :g :v :r :w file :w >> :sav :retab :set ff`. Lib `splice` exists already; possibly `Text::slice_text`/`append_text`.
 - **M6:** lib `piece_count`/`chunk_count`/`memory_bytes`, `Text::compact`, `Document::compact`/`drop_history_before`. Editor `:stats`, `:compact`, `compactat`.
 - **M7:** buffers and windows, background save from a `Text` snapshot.
-- **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, wrap/list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, arboard, macros as registers, virtual-column blocks, cmdline history/completion, init file.
+- **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, wrap/list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, clipboard read via OSC 52 query only (no `arboard`, no fallback: a terminal without OSC 52 is unsupported), macros as registers, virtual-column blocks, cmdline history/completion, init file.
 
 ## Parser notes (editor)
 - `g<c>` keys map to the private-use char `parse::g_key(c)` (0xE100 + c). Add `c` to `G_MOTIONS` or `G_COMMANDS`; `parse::is_motion` covers both sets.

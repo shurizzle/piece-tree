@@ -51,6 +51,14 @@ pub struct Frame {
 impl Editor {
     /// Char range of `line` inside the Visual selection; `len` stands for the line break.
     fn selection(&self, line: usize) -> Range<usize> {
+        if let (Mode::Confirm, Some(c)) = (&self.mode, &self.confirm) {
+            let (a, b) = (self.pos_of(c.cur.start), self.pos_of(c.cur.end));
+            if line < a.0 || line > b.0 {
+                return 0..0;
+            }
+            let start = if line == a.0 { a.1 } else { 0 };
+            return start..if line == b.0 { b.1 } else { self.line_chars(line) + 1 };
+        }
         let Mode::Visual(kind) = self.mode else { return 0..0 };
         let (a, b) = sorted(self.anchor, (self.line, self.col));
         if line < a.0 || line > b.0 {

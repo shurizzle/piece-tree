@@ -51,7 +51,7 @@ Grammar: `["x] [count] cmd [char]` or `["x] [count] op [count] (motion [char] | 
 | `%` | inclusive | the bracket matching the first `()[]{}` at or after the cursor in the line, across lines |
 | `N%` | linewise | line at N percent of the text |
 | `n` `N` | exclusive | next/previous match of the last search in its direction (`?` reverses `n`), wrapping, with its offset; the next match may start inside the current one (vim) |
-| `gn` `gN` | exclusive | with an operator: the match under the cursor, else the next/previous one (`dgn`, `cgn` then `.` repeats on the next match). Alone: selects it in Visual. Ignored inside Visual (`shortcut:`) |
+| `gn` `gN` | exclusive | with an operator: the match under the cursor, else the next/previous one (`dgn`, `cgn` then `.` repeats on the next match). Alone: selects it in Visual. Inside Visual: extends the selection to the end of the next match (`gN`: the start of the previous one); a repeated `gn` moves on |
 | `N\|` | exclusive | to char column N of the line |
 | `go` | exclusive | to byte N (count) of the text |
 | `*` `#` | exclusive | search `\b<word>\b` for the word under the cursor (or the next one in the line), forward/backward |
@@ -192,7 +192,7 @@ Unknown commands report `Not an editor command: <cmd>`.
 - **Replacement**: `$1`, `${name}`, `$0` as `regex`; `\n` line break, `\t` tab, `\\` backslash, `\$` literal `$`, other `\x` is `x`.
 - **Range**: none = cursor line; `%`; `N`, `.`, `$`, `'m` (marks, `'<`/`'>` from Visual), each with `+N`/`-N` (`+` alone is `.+1`); `a,b`, swapped if backwards. Out of the text → `Invalid range`; an unset mark → `Mark not set`.
 - **Flags**: `g` every match on a line (default: the first on each line); `i`, `I`; `n` only count (`N matches on M lines`, no change); `c` confirm each one (below); `&` (first) keep the flags of the last substitute; anything else → `Trailing characters: <rest>`.
-- **Confirm** (`c`): the cursor goes to each match and the status asks `replace with X (y/n/a/q/l)?`: `y` replace, `n` skip, `a` replace this and all the rest, `l` replace this and stop, `q`/Esc stop; other keys are ignored. The whole session is one undo step. The current match is the cursor position among the highlighted ones (`shortcut:` no distinct highlight).
+- **Confirm** (`c`): the cursor goes to each match and the status asks `replace with X (y/n/a/q/l)?`: `y` replace, `n` skip, `a` replace this and all the rest, `l` replace this and stop, `q`/Esc stop; other keys are ignored. The whole session is one undo step. The match being asked about is drawn reversed, like a selection (`Confirm::cur`, `selection` in `render.rs`); the other matches keep the search highlight.
 - **Repeat**: `:&` is the last pattern and replacement with the flags reset, `:&&` (or the `&` flag) keeps them; `&` = `:&` on the line, `g&` = whole text keeping flags. Without a previous substitute: `No previous substitute`.
 - A match belongs to the line where it starts, so `:s/\n//` joins lines and `:s/$/!/` appends.
 - Result: `N substitution(s) on M line(s)` or `Pattern not found: pat`; the pattern becomes the last search (`n`, highlights); the cursor goes to the first non-blank of the line where the last substitution ends.

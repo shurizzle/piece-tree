@@ -926,6 +926,11 @@ fn substitute_confirm_count_and_repeat() {
     assert_eq!(text(&run(s, ":%s/a/x/gc\nl")), "xa aa\nb\naa");
     assert_eq!(text(&run(s, ":%s/a/x/gc\ny\x1b")), "xa aa\nb\naa");
     assert_eq!(text(&run(s, ":%s/a/x/gc\nq")), s);
+    // The match being asked about is drawn reversed, the others as matches.
+    let mut e = run("ab ab\ncd", ":%s/b\\ncd|b/X/gc\n");
+    assert_eq!(screen(&e.frame(20, 3))[..2], ["1 a[b] a{b}", "1 {cd}"]);
+    feed(&mut e, "y");
+    assert_eq!(screen(&e.frame(20, 3))[..2], ["1 aX a[b ]", "1 [cd]"]);
     assert_eq!(run(s, ":s/q/x/c\n").msg, "Pattern not found: q");
     // Empty matches advance; replacements that grow the text keep the range.
     assert_eq!(text(&run("ab", ":s/x*/-/gc\nyyy")), "-a-b-");
@@ -958,6 +963,12 @@ fn gn_selects_the_match() {
     assert_eq!(pos(&run(s, "/bar\ngg0gn")), (0, 6));
     assert_eq!(run(s, "/bar\ngg0gn").mode, Mode::Visual(VKind::Char));
     assert_eq!(run(s, "/zzz\ngn").msg, "Pattern not found: zzz");
+    // In Visual, `gn` extends to the next match's end, `gN` to the previous match's start.
+    let e = run(s, "/bar\ngg0vgnd");
+    assert_eq!((text(&e).as_str(), &e.mode), (" foo bar foo", &Mode::Normal));
+    assert_eq!(text(&run(s, "/bar\ngg0vgngnd")), " foo");
+    assert_eq!(text(&run(s, "/foo\n$vgNd")), "foo bar foo bar ");
+    assert_eq!(text(&run(s, "/foo\n$vgNgNd")), "foo bar ");
 }
 
 fn lines(n: usize) -> String {

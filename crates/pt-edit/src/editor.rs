@@ -152,6 +152,8 @@ struct Confirm {
     n: usize,
     lines: usize,
     last_line: Option<usize>,
+    /// Byte range of the match being asked about, drawn like a selection.
+    cur: Range<usize>,
 }
 
 impl Confirm {
@@ -990,12 +992,14 @@ impl Editor {
             self.pending.clear();
             if let Parse::Cmd(cmd) = parsed
                 && cmd.op.is_none()
-                && parse::is_motion(cmd.key)
-                // shortcut: `gn`/`gN` do nothing in Visual mode (no selection extension), when someone needs it
-                && !matches!(cmd.key, G_NEXT | G_PREV)
-                && let Some((to, _)) = self.motion(&cmd)
             {
-                self.move_to(cmd.key, to);
+                if matches!(cmd.key, G_NEXT | G_PREV) {
+                    self.select_match(None, cmd.key == G_NEXT);
+                } else if parse::is_motion(cmd.key)
+                    && let Some((to, _)) = self.motion(&cmd)
+                {
+                    self.move_to(cmd.key, to);
+                }
             }
         }
         self.finish();
@@ -1522,7 +1526,7 @@ impl Editor {
         if s.confirm && !s.count {
             self.last_search = Some(search.clone());
             self.hl = true;
-            self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None });
+            self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None, cur: 0..0 });
             self.mode = Mode::Confirm;
             if !self.confirm_prompt() {
                 self.msg = format!("Pattern not found: {pat}");
@@ -1582,12 +1586,21 @@ impl Editor {
         let text = self.doc.text().clone();
         let cur = self.offset();
         let after = text.char_to_offset((text.offset_to_char(cur) + 1).min(text.char_count()));
-        let here = search::find_backward(&text, &s.re, after).filter(|(m, w)| !w && m.end > cur);
+        // In Visual the match must reach past the cursor, so a repeated `gn`/`gN` moves on.
+        let visual = matches!(self.mode, Mode::Visual(_));
+        let here = search::find_backward(&text, &s.re, after).filter(|(m, w)| {
+            !w && m.end > cur && !(visual && if forward { m.end <= after } else { m.start >= cur })
+        });
         let found = here.or_else(|| if forward { search::find_forward(&text, &s.re, cur, after) } else { search::find_backward(&text, &s.re, cur) });
         let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.msg = format!("Pattern not found: {}", s.pat) };
         let (a, b) = (self.pos_of(m.start), self.pos_of(m.end));
         match op {
             Some(op) => self.operate(op, a, b, Kind::Exclusive),
+            // In Visual, the selection is extended to the match's end (`gN`: its start), like vim.
+            None if matches!(self.mode, Mode::Visual(_)) => {
+                (self.line, self.col) = if forward { self.pos_of(text.floor_char_boundary(m.end - 1)) } else { a };
+                self.want_col = self.col;
+            }
             None => {
                 self.anchor = a;
                 self.mode = Mode::Visual(VKind::Char);
@@ -1599,11 +1612,12 @@ impl Editor {
 
     /// Moves the cursor to the next match of the confirm session and asks; false when none is left.
     fn confirm_prompt(&mut self) -> bool {
-        let Some(c) = &self.confirm else { return false };
+        let Some(c) = &mut self.confirm else { return false };
         let text = self.doc.text();
         let Some((m, _)) = c.find(text) else { return false };
         let (l, col) = text.offset_to_line_col(m.start);
         self.msg = format!("replace with {} (y/n/a/q/l)?", c.rep);
+        c.cur = m;
         (self.line, self.col) = (l, col);
         self.want_col = col;
         true
