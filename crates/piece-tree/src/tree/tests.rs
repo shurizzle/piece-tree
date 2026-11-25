@@ -230,7 +230,7 @@ fn extend_in_place_declines_when_the_chunk_is_full() {
 #[cfg(not(miri))]
 const MUT_STEPS: usize = 600;
 #[cfg(miri)]
-const MUT_STEPS: usize = 60;
+const MUT_STEPS: usize = 30;
 
 /// `insert_mut` and `delete_mut` give the text the persistent `insert_at` / `delete_range` give, with
 /// valid balance and totals at every step, on trees of small and of big pieces; versions kept before
@@ -354,7 +354,8 @@ fn join2_every_height_combination() {
 
 #[test]
 fn split_at_every_offset() {
-    for n in [0, 1, 2, 3, 7, 30, 120] {
+    // The 120-char text adds nothing new under Miri.
+    for n in [0, 1, 2, 3, 7, 30, 120].into_iter().take(if cfg!(miri) { 6 } else { 7 }) {
         let s = sample(n);
         for t in [append_all(&mixed_pieces(&s)), prepend_all(&mixed_pieces(&s))] {
             for off in (0..=s.len()).filter(|&i| s.is_char_boundary(i)) {

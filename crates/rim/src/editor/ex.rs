@@ -279,7 +279,7 @@ fn retab_line(s: &str, old: usize, new: usize, all: bool) -> String {
 pub(super) fn write_atomic(path: &Path, doc: &Document) -> io::Result<()> {
     let target = fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     let mut tmp = target.clone().into_os_string();
-    tmp.push(".pt-edit.tmp");
+    tmp.push(".rim.tmp");
     let tmp = PathBuf::from(tmp);
     let file = fs::File::create(&tmp)?;
     if let Ok(meta) = fs::metadata(&target) {
@@ -434,6 +434,15 @@ impl Editor {
             _ if abbr(n, "r", "read") => self.read(r, a),
             _ if abbr(n, "sav", "saveas") => self.save_as(bang, a),
             _ if abbr(n, "ret", "retab") => self.retab(r, bang, a),
+            "stats" => {
+                self.msg = self.stats();
+                Ok(())
+            }
+            "compact" => {
+                let (before, after) = self.compact();
+                self.msg = format!("{before} pieces -> {after}");
+                Ok(())
+            }
             _ => Err(format!("Not an editor command: {}", line.trim())),
         };
         if let Err(e) = res {

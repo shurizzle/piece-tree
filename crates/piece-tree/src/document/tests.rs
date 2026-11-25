@@ -139,12 +139,10 @@ fn write_errors_propagate() {
     }
 }
 
-#[cfg(not(miri))]
 const UNDO_REDO_STEPS: usize = 2000;
-#[cfg(miri)]
-const UNDO_REDO_STEPS: usize = 200;
 
 #[test]
+#[cfg_attr(miri, ignore = "history bookkeeping, no unsafe: the Text edits it makes are covered by the text and tree differentials")]
 fn undo_redo_differential() {
     let mut rng = crate::test_util::Rng(99);
     let mut doc = Document::new("");
@@ -229,12 +227,10 @@ impl Model {
     }
 }
 
-#[cfg(not(miri))]
 const TREE_STEPS: usize = 600;
-#[cfg(miri)]
-const TREE_STEPS: usize = 60;
 
 #[test]
+#[cfg_attr(miri, ignore = "history bookkeeping, no unsafe: the Text edits it makes are covered by the text and tree differentials")]
 fn history_tree_differential() {
     let mut rng = crate::test_util::Rng(7);
     let mut doc = Document::new("ab\ncd");
@@ -470,6 +466,7 @@ fn splice_and_edit_mapping() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe")]
 fn replace_matching_logs_one_edit_per_match() {
     let mut doc = Document::new("a1 b22 c333");
     let prev = doc.text().to_string();
@@ -547,4 +544,64 @@ fn versions_describe_the_tree() {
     let v: Vec<_> = doc.versions().map(|v| (v.seq, v.parent, v.edits, v.leaf)).collect();
     assert_eq!(v, [(0, 0, 0, false), (1, 0, 1, false), (2, 1, 1, true), (3, 1, 1, true)]);
     assert!(doc.versions().all(|v| v.time >= doc.states[0].time));
+}
+
+#[test]
+fn compact_keeps_text_and_history() {
+    let mut doc = Document::new("abc");
+    for (i, s) in ["1", "2", "3"].iter().enumerate() {
+        doc.insert(i * 2 + 1, s);
+    }
+    let before = doc.text().to_string();
+    let pieces = doc.text().piece_count();
+    doc.insert(0, "z");
+    doc.undo();
+    doc.compact(1 << 20);
+    assert!(doc.last_edits().is_empty());
+    assert_eq!((doc.text().to_string(), doc.text().piece_count()), (before.clone(), 1));
+    assert!(pieces > 1);
+    crate::tree::check(doc.text().root());
+    assert!(doc.undo());
+    assert_edits(&doc.text().to_string(), &before, &doc.last_edits().iter().rev().map(|e| e.inverse()).collect::<Vec<_>>());
+    assert!(doc.redo() && doc.redo());
+    assert_eq!(doc.text().to_string(), format!("z{before}"));
+}
+
+/// `drop_history_before` keeps exactly the subtree of the version, renumbered, with working
+/// moves between the kept versions.
+#[test]
+fn drop_history_keeps_the_subtree() {
+    let mut doc = Document::new("r");
+    doc.insert(1, "a"); // 1: ra
+    doc.insert(2, "b"); // 2: rab
+    doc.undo();
+    doc.insert(2, "c"); // 3: rac
+    doc.insert(3, "d"); // 4: racd
+    doc.goto(2);
+    doc.insert(3, "e"); // 5: rabe
+    doc.goto(4);
+    assert!(!doc.drop_history_before(9));
+    // The current version (4) is not made from 2.
+    assert!(!doc.drop_history_before(2));
+    assert_eq!(doc.history_len(), 6);
+    doc.begin_group();
+    assert!(doc.drop_history_before(3));
+    assert!(doc.last_edits().is_empty());
+    // Kept: 3 (now 0) and 4 (now 1).
+    assert_eq!((doc.history_len(), doc.seq(), doc.text().to_string().as_str()), (2, 1, "racd"));
+    let v: Vec<_> = doc.versions().map(|v| (v.seq, v.parent, v.edits, v.leaf)).collect();
+    assert_eq!(v, [(0, 0, 0, false), (1, 0, 1, true)]);
+    assert!(doc.undo());
+    assert_eq!(doc.text().to_string(), "rac");
+    assert_edits("racd", "rac", doc.last_edits());
+    assert!(!doc.undo());
+    assert!(doc.redo());
+    assert_eq!(doc.text().to_string(), "racd");
+    // Groups were closed: this edit is a version of its own.
+    doc.insert(0, "x");
+    assert_eq!(doc.history_len(), 3);
+    // Dropping before the current version leaves only it.
+    assert!(doc.drop_history_before(doc.seq()));
+    assert_eq!((doc.history_len(), doc.seq(), doc.text().to_string().as_str()), (1, 0, "xracd"));
+    assert!(!doc.undo());
 }

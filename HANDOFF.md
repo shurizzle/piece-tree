@@ -1,4 +1,4 @@
-# Handoff: pt-edit as the library's driver, round 5
+# Handoff: rim as the library's driver, round 5
 
 Delete this file when the work is done.
 
@@ -34,7 +34,7 @@ Goal: make the library complete by building editor features that need it. The us
   - Marks are mapped through `last_edits` after every doc call: edits, `:s`, undo, redo, time travel.
   - `Editor::history()` puts the cursor at the change; if the restored text starts with `\n`, on the next line.
   - New commands: `g-`, `g+`, `:earlier`/`:later` (N, `Ns`/`m`/`h`/`d`), `:undo N`, `:undo`, `:redo`, `:undolist`.
-- Docs updated: `library-api.md`, `data-structures.md`, `algorithms.md`, `decisions.md` (D7 rewritten), `limitations.md`, `testing.md`, `ARCHITECTURE.md`, `pt-edit.md`.
+- Docs updated: `library-api.md`, `data-structures.md`, `algorithms.md`, `decisions.md` (D7 rewritten), `limitations.md`, `testing.md`, `ARCHITECTURE.md`, `rim.md`.
 
 ### M3 — char metrics (`chunk.rs`, `tree.rs`, `text.rs`)
 - **Char cache REMOVED** (D15, `benchmarks.md`): it cost +12..32% on paste/edits/`replace_all` and +50..100% on load. `Text` keeps the char API (`char_count`, `offset_to_char`, `char_to_offset`, `line_end`, `line_char_len`, `line_col_to_offset`, `offset_to_line_col`, `is_char_boundary`, `floor_char_boundary`) implemented by scanning: per line O(line), global O(n). `chunk.rs`/`tree.rs` are back to `fa02467`.
@@ -49,15 +49,21 @@ Goal: make the library complete by building editor features that need it. The us
 - Gaps closed: `gn`/`gN` in Visual extend the selection to the next match's end / previous match's start (a repeat moves on); the `:s///c` match being asked about is drawn reversed (`Confirm::cur`). Tests in `gn_selects_the_match`, `substitute_confirm_count_and_repeat`.
 
 ### M5 — ex commands on ranges: DONE
-- `crates/pt-edit/src/editor/ex.rs`: shared range parser (`%`, `.`, `$`, `N`, `'m`, `/pat/`, `?pat?`, `\/`, `\?`, `\&`, `+N`, `,`/`;`), `[range] name[!] arg` split, the dispatcher `Editor::command` (moved from `editor.rs`, vim abbreviations via `abbr`), commands `:d :y :m :t/:co :> :< :j[!] :p := :normal :g :g! :v :sort[!] [i n u r /pat/] :r :w file :w! :w >> :[range]w! :sav :retab[!] :set ff`. `substitute.rs` keeps only the `:s`/`:&` arguments.
+- `crates/rim/src/editor/ex.rs`: shared range parser (`%`, `.`, `$`, `N`, `'m`, `/pat/`, `?pat?`, `\/`, `\?`, `\&`, `+N`, `,`/`;`), `[range] name[!] arg` split, the dispatcher `Editor::command` (moved from `editor.rs`, vim abbreviations via `abbr`), commands `:d :y :m :t/:co :> :< :j[!] :p := :normal :g :g! :v :sort[!] [i n u r /pat/] :r :w file :w! :w >> :[range]w! :sav :retab[!] :set ff`. `substitute.rs` keeps only the `:s`/`:&` arguments.
 - `:g`/`:normal` lines: `LineMarks` (dead when removed whole, skipped when joined; pending shift keeps it linear: 200k lines `:g/^/d` 0.15 s, `:%norm Ax` 0.49 s release). One undo group per command line; `line_key` now closes the group and clears `rec_cmd` after every command line.
 - Behavior changes: `:0s` counts as line 1 (vim), `:99` goes to the last line, `is_dirty` also compares the line ending (`saved_eol`), `join` takes `spaces` (for `:j!`).
 - No lib changes: `Text::slice_text`/`append_text` not needed (`:r`/`:t`/`:m` copy; `shortcut:` + `limitations.md`).
-- Tests: `ex.rs` unit tests (ranges, names, reg/count, `retab_line`, `LineMarks` vs plain mapping) and `ex_*` tests in `editor/tests.rs`. `cargo test -p pt-edit` and clippy clean. Not done: pty smoke test.
-- Docs: `pt-edit.md` (ex section, internals, tests), `limitations.md`, `ARCHITECTURE.md`, `AGENTS.md`.
+- Tests: `ex.rs` unit tests (ranges, names, reg/count, `retab_line`, `LineMarks` vs plain mapping) and `ex_*` tests in `editor/tests.rs`. `cargo test -p rim` and clippy clean. Not done: pty smoke test.
+- Docs: `rim.md` (ex section, internals, tests), `limitations.md`, `ARCHITECTURE.md`, `AGENTS.md`.
+
+### M6 — maintenance and stats: DONE
+- Lib (`text.rs`, `document.rs`, accessors `Piece::chunk` in `tree.rs`, `Chunk::heap_bytes` in `chunk.rs`): `Text::piece_count`/`chunk_count`/`memory_bytes`, `Text::compact(max)` (runs of pieces merged into owned chunks of at most `max` bytes, balanced rebuild, same version when nothing merges), `Document::compact(max)` (current version only, history kept), `Document::drop_history_before(seq)` (keeps the subtree of `seq`, renumbered; false when the current version is outside it). Tests: `compact_differential`, `compact_merges_runs_up_to_max`, `piece_chunk_and_memory_counts`, `compact_keeps_text_and_history`, `drop_history_keeps_the_subtree`. Coverage 100% (2-region residue), Miri clean.
+- Editor (`rim`): `:stats`, `:compact` (64 KiB chunks, a clean buffer stays clean), `:set compactat=N` (default 10000, 0 off), `Editor::idle` called by `main` after 1 s without events. Test `stats_compact_and_idle`. `drop_history_before` has no editor command.
+- Bench: `compact edited` 1325 ns/piece (3.9 ms for 10 MB, 2974 → 174 pieces); `line()` 25.1 → 15.3 ns; literal search -7%, regex same (`benchmarks.md`, "Compaction").
+- Miri scope cut (`testing.md`, AGENTS.md): only tests reaching `unsafe` in a new way run; safe-logic oracles are ignored with a reason. 154 tests, ~4 min.
+- Editor renamed `pt-edit` → `rim` (crate `crates/rim`, `docs/reference/rim.md`).
 
 ## Not started
-- **M6:** lib `piece_count`/`chunk_count`/`memory_bytes`, `Text::compact`, `Document::compact`/`drop_history_before`. Editor `:stats`, `:compact`, `compactat`.
 - **M7:** buffers and windows, background save from a `Text` snapshot.
 - **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, wrap/list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, clipboard read via OSC 52 query only (no `arboard`, no fallback: a terminal without OSC 52 is unsupported), macros as registers, virtual-column blocks, cmdline history/completion, init file.
 

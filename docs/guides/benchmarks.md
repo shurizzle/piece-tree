@@ -142,7 +142,7 @@ Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load aver
 | 1. Path-copy insert/extend/delete instead of split + join | 1.61x | 3.15x | 1.46x | 2.05x | yes |
 | 2. `triomphe::Arc` (no weak count) for nodes and chunks | 1.25x | 1.21x | 1.18x | 1.21x | yes |
 | 3. Owned load (`From<String>`), `memchr2` line ending detection | — | — | — | — | yes (load 3.3x, Document load 3.4x) |
-| 4. mimalloc as global allocator (bench, pt-edit) | 0.99x | 1.08x | 0.98x | 0.96x | **no** at the time; measured again later: 0.71-0.80x, see "Allocator" below (D18) |
+| 4. mimalloc as global allocator (bench, rim) | 0.99x | 1.08x | 0.98x | 0.96x | **no** at the time; measured again later: 0.71-0.80x, see "Allocator" below (D18) |
 | 5. Lock-free chunk reservation (`AtomicU64`), boundary checks folded into piece asserts | 1.17x | 1.15x | 1.07x | 1.14x | yes |
 | `#[inline]` on the read path | reads ±5%, no consistent sign | | | | **no** |
 | Contiguous single allocation for `Chunk::exact(&str)` | reads unchanged | | | | **no** |
@@ -159,7 +159,7 @@ Fair A/B, both sides standalone copies, minimum of 4 alternating runs, load aver
 | `malloc` | 4% | `malloc` + `free` | 5% |
 
 - Total samples for the same work halved (900 → 449).
-- `drop_slow` is the benchmark freeing the previous version after every keystroke. In `pt-edit` old versions stay in the undo stack, so that cost does not occur per keystroke.
+- `drop_slow` is the benchmark freeing the previous version after every keystroke. In `rim` old versions stay in the undo stack, so that cost does not occur per keystroke.
 - Allocation was ~5% of the profile then, which is why mimalloc and a node pool did not look worth it. Later profiles show ~55% on paste and random edits (see "Allocator" below, D18).
 
 ## Results, round 1
@@ -548,7 +548,7 @@ Full comparison under mimalloc (same method as "Comparison with other implementa
 | line() all, after edits | **20** | 201 | 233 | 206 | piece-tree (10.07x) |
 | batch 1k edits, one pass, 10MB | **73** | 613 | 522 | 5 386 | piece-tree (7.16x) |
 
-Wins or ties over the 39 rows with mimalloc: piece-tree 37, ropey 2 beta 3, ropey 1.x 0, SumTree 0 (33 / 10 / 0 / 0 with the system allocator). Adopted by pt-edit (application decision, D18); `cargo bench -p piece-tree` and the examples stay on the system allocator.
+Wins or ties over the 39 rows with mimalloc: piece-tree 37, ropey 2 beta 3, ropey 1.x 0, SumTree 0 (33 / 10 / 0 / 0 with the system allocator). Adopted by rim (application decision, D18); `cargo bench -p piece-tree` and the examples stay on the system allocator.
 
 ## Linux x86_64: allocator and newline scan (W4, W5)
 
@@ -598,9 +598,9 @@ With the whole build on AVX2 the wider compare is worth nothing (the flatten ste
 
 Pastes (`positions_callback`): 0.95-1.05x at 256 B, 1.06-1.79x from 1 KiB up. Slower everywhere, also on sparse text, as the instruction costs predict: `pcmpestrm` is 8 uops with a throughput of one per 4 cycles on Skylake-class cores, against 1 uop for `pcmpeqb` (two or three per cycle) plus 1 for `pmovmskb`; it only pays for needle sets of 2-16 bytes or substring compares. The `_SIDD_UNIT_MASK` + `pmovmskb` variant was not built (the plan was to try it only within 10% of SSE2). Code removed.
 
-## pt-edit end to end: mimalloc against glibc (W8d)
+## rim end to end: mimalloc against glibc (W8d)
 
-Same Linux host as above. Two standalone copies of HEAD (`fdd7e9c`) built the same way (`cargo test --release -p pt-edit`, no `target-cpu=native`), one as committed (mimalloc global allocator), one with the `#[global_allocator]` lines removed; the same ignored test in both (not in the repo): a 10 MB text of source-like lines, the editor driven through `Editor::key` with a 100x50 `frame` after every key, cursor around line 50000; 5 alternating rounds, min of 5 repetitions per scenario, µs per key (median of the rounds in parentheses):
+Same Linux host as above. Two standalone copies of HEAD (`fdd7e9c`) built the same way (`cargo test --release -p rim`, no `target-cpu=native`), one as committed (mimalloc global allocator), one with the `#[global_allocator]` lines removed; the same ignored test in both (not in the repo): a 10 MB text of source-like lines, the editor driven through `Editor::key` with a 100x50 `frame` after every key, cursor around line 50000; 5 alternating rounds, min of 5 repetitions per scenario, µs per key (median of the rounds in parentheses):
 
 | scenario | glibc | mimalloc | min ratio |
 |---|---:|---:|---:|
@@ -614,9 +614,9 @@ Same Linux host as above. Two standalone copies of HEAD (`fdd7e9c`) built the sa
 | `j`/`k` scroll 10k | 104.9 (106.7) | 88.4 (93.2) | 0.84 |
 | `:%s/value/v/g` (one command, µs) | 3 085 (3 107) | 2 898 (3 013) | 0.94 |
 
-mimalloc is 6-16% faster on every key-driven row (min and median agree), load unchanged: pt-edit keeps it. The gain is the same with and without an edit (`j`/`k` scroll -16%), so it comes from the per-key work around the text: a key costs ~90-100 µs here, two to three orders of magnitude more than the library edit itself (13-500 ns, `comparison-tables-linux.md`), so the frame (layout and render of 100x50 cells, gutter, scrolling), not the piece tree, is what an editor user waits for. Not profiled further here.
+mimalloc is 6-16% faster on every key-driven row (min and median agree), load unchanged: rim keeps it. The gain is the same with and without an edit (`j`/`k` scroll -16%), so it comes from the per-key work around the text: a key costs ~90-100 µs here, two to three orders of magnitude more than the library edit itself (13-500 ns, `comparison-tables-linux.md`), so the frame (layout and render of 100x50 cells, gutter, scrolling), not the piece tree, is what an editor user waits for. Not profiled further here.
 
-## Editor frame with `wrap` (`pt-edit`, `render.rs`)
+## Editor frame with `wrap` (`rim`, `render.rs`)
 
 Release build, 100×50 screen, one run of 200 (10 for the huge line) per cell, temporary ignored test (removed); per-iteration time of `frame` alone and of key + `frame`. Compared with `nowrap` on the same build; there is no copy of the previous version because `wrap` did not exist.
 
@@ -669,7 +669,7 @@ Steps, kept and **rejected**:
 - Skip the comparison when the slice address and length are unchanged, holding the `Text` so the address is not reused: steady 52 µs. **Rejected** for the next step, which does not rely on addresses.
 - Cache keyed by `Text::ptr_eq` and line number, one `Text::line` read per frame after an edit instead of 3-4: insert + frame CJK 2.74 ms to 2.04 ms. Kept.
 
-### Position conversions, `hlsearch` and Visual on huge lines (`pt-edit`, `Text::line_col_to_offset`)
+### Position conversions, `hlsearch` and Visual on huge lines (`rim`, `Text::line_col_to_offset`)
 
 Release, a single 2 MB line (CJK: 6 MB), cursor at char 500000 after a few typed chars (several pieces), mean of 20 per cell (temporary ignored test, removed).
 
@@ -690,9 +690,9 @@ Steps, kept and **rejected**:
 - `visible_matches` converted every match with `offset_to_line_col`, which counts chars from the line start: quadratic on a line with many matches (250 000 matches in 2 MB: 20 frames did not finish in 60 s). Now the column of each match is counted from the previous one, and the highlight lookup per char is a binary search instead of a scan of the line's matches. The result is kept while the text version, pattern and lines are the same (`matches_in`). Kept; a miss with 330 000 matches costs about 20 ms, a hit nothing.
 - **Not done**: restricting the matches to the displayed window. Matches must be enumerated from the line start to stay exactly as vim finds them (a match depends on the text after it), so a miss still costs the whole line.
 
-## Editor on huge lines: A/B against HEAD (`pt-edit`, library `Text` conversions)
+## Editor on huge lines: A/B against HEAD (`rim`, library `Text` conversions)
 
-Supersedes the single-run workspace tables of the three editor sections above (kept for the steps they record). Both sides are standalone copies built the same way (`cargo test --release -p pt-edit`), the same ignored test in both (removed from the repo afterwards), 3 alternating runs, minimum of 5 repetitions per cell, µs, 100×50 screen, one 2.1 M-char line (`"abcdef ghijk, lm(no) "` or `"日本語 テスト、漢字(abc) "` repeated), cursor at char 500000 after a few typed chars (several pieces). "Before" is HEAD (`679cdb5`: no wrap, per-char `Vec<char>` scans); "after" has wrap on (default), so its frame also lays rows out.
+Supersedes the single-run workspace tables of the three editor sections above (kept for the steps they record). Both sides are standalone copies built the same way (`cargo test --release -p rim`), the same ignored test in both (removed from the repo afterwards), 3 alternating runs, minimum of 5 repetitions per cell, µs, 100×50 screen, one 2.1 M-char line (`"abcdef ghijk, lm(no) "` or `"日本語 テスト、漢字(abc) "` repeated), cursor at char 500000 after a few typed chars (several pieces). "Before" is HEAD (`679cdb5`: no wrap, per-char `Vec<char>` scans); "after" has wrap on (default), so its frame also lays rows out.
 
 | Operation | ASCII key before → after | ASCII frame before → after | CJK key before → after | CJK frame before → after |
 |---|---|---|---|---|
@@ -716,3 +716,16 @@ Supersedes the single-run workspace tables of the three editor sections above (k
 `hlsearch` on 10 000 matches in one 200 KB line (`*` on a word, then a frame): key 410 → 59 µs, frame 29 543 → 1 002 µs (HEAD converted every match from the line start, quadratic; 250 000 matches in 2 MB did not finish a frame in 60 s). Library, `Text::line_col_to_offset` (standalone copies, 5 alternating runs, min of 9, ns): 2 MB ASCII 1 piece at col 1000 694 → 52, mid-line 702 946 → 12 242, line end 1 432 744 → 48 708; the same text in about 100 pieces at col 1000 40 612 → 623, mid-line 743 977 → 26 235; 6 MB CJK in 100 pieces at col 1000 92 998 → 727, line end 5 056 594 → 129 419 (`str_indices::chars::to_byte_idx` instead of `char_indices().nth`, and the pieces read in place instead of copied by `slice`).
 
 What did not get faster: `$`/`A` on the 2.1 M-char CJK line still lays out its whole prefix once (2.2 ms, down from 8.9 ms with no layout kept), and `yy`/`p` copy the line.
+
+## Compaction (M6: `Text::compact`, `Document::compact`)
+
+New scenario in `cargo bench -p piece-tree`, Linux x86_64 (load average ~4 during the run), min of 7: the 10 MB text after the 1000+1000 random edits (2974 pieces) compacted into 64 KiB chunks (`compact(64 << 10)`, what rim's `:compact` and the idle compaction use), then the same reads and searches on the result.
+
+| Scenario | Edited (2974 pieces) | Compacted (174 pieces) |
+|---|---|---|
+| `compact` (per piece of the input) | 1325 ns (3.9 ms for the text) | |
+| `line()` all lines (per line) | 25.1 ns | 15.3 ns (-39%) |
+| `find_iter` literal (per MB) | 90.2 µs | 83.8 µs (-7%) |
+| `find_iter` regex (per MB) | 1004 µs | 998 µs (same) |
+
+The cost is the copy of the merged runs: a run of one piece (longer than `max`, or alone between two such) stays shared, so compacting a text that is already compact is a walk and returns the same version. Reads gain from fewer descents and longer borrowed slices; the regex scan was already chunk-streaming and does not change. Not a hot-path change (no existing scenario's code moved; `Chunk::heap_bytes` and `Piece::chunk` are new accessors only), so the cross-library tables were not re-run.

@@ -32,6 +32,9 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |
+| `piece_count()` / `chunk_count()` | pieces (tree nodes) / distinct chunks referenced, the add chunk included | — | O(pieces) walks |
+| `memory_bytes()` | approximate heap bytes kept alive: chunks at capacity plus tree nodes | — | O(pieces); versions share both, so a sum over versions overcounts |
+| `compact(max)` | `Text` | — | runs of consecutive pieces copied into new owned chunks of at most `max` bytes (longer pieces stay shared, balanced rebuild); same content, `self` and other versions untouched; returns `self` (same version) when no run has two pieces; O(pieces + bytes copied) |
 | `Display` / `to_string()` | full text | — | |
 | `find_iter`, `find_from`, `find_iter_in`, `rfind_before`, `replacement_at`, `replace_all`, `replace_matching`, `cursor`, `cursor_at` | — | `out of bounds` (`find_from`/`rfind_before`/`replacement_at`/`cursor_at`), `invalid range` (`find_iter_in`) | regex search; see [search.md](search.md) |
 
@@ -55,6 +58,8 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `last_edits() -> &[Edit]` | edits made by the last call (an edit, or a history move's path); empty after a no-op, including group calls |
 | `replace_all(&Regex, &str) -> usize` | regex replace as one undo step ([search.md](search.md)) |
 | `replace_matching(&Regex, &str, keep) -> usize` | same, only the matches `keep(range)` accepts; `last_edits` has one edit per replaced match |
+| `compact(max)` | the current version's text becomes `Text::compact(max)` (same content; `last_edits` empty); history kept, other versions keep their own pieces |
+| `drop_history_before(seq) -> bool` | forgets every version that is neither `seq` nor made from it, freeing their texts and the chunks only they use; `seq` becomes version 0, the rest renumbered in creation order; false (no change) when `seq` does not exist or the current version is not in its subtree; closes open groups |
 | `write_to(impl Write) -> io::Result<()>` | writes with `eol()`; propagates writer errors |
 
 ## `Edit`, `map_offset`

@@ -1,6 +1,6 @@
-# `pt-edit`
+# `rim`
 
-Minimal vim-like terminal editor in `crates/pt-edit/`. Purpose: exercise the library by hand, especially `Text::line` (the render hot path) and regex search/replace (`Text::find_from`, `find_iter`, `Document::replace_matching`). It only uses the library's public API.
+Minimal vim-like terminal editor in `crates/rim/`. Purpose: exercise the library by hand, especially `Text::line` (the render hot path) and regex search/replace (`Text::find_from`, `find_iter`, `Document::replace_matching`). It only uses the library's public API.
 
 | File | Holds |
 |---|---|
@@ -20,7 +20,7 @@ Minimal vim-like terminal editor in `crates/pt-edit/`. Purpose: exercise the lib
 ## Usage
 
 ```sh
-pt-edit <file> [--eol lf|cr|crlf]
+rim <file> [--eol lf|cr|crlf]
 ```
 
 - Missing file → empty buffer; created on first save.
@@ -170,6 +170,8 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 | `:undo N` | go to version N (0 is the loaded text), on any branch |
 | `:ea[rlier] N` / `:lat[er] N` | N versions back/forward in time (`g-`/`g+`) |
 | `:earlier Ns` (`m`, `h`, `d`) / `:later Ns` | to the version from that long before/after the current one |
+| `:stats` | pieces, chunks, memory bytes (`Text::memory_bytes`), bytes, chars, lines and versions of the current text |
+| `:compact` | `Document::compact` into 64 KiB chunks (`N pieces -> M`); history kept, a clean buffer stays clean |
 | `:undol[ist]` | `at <current> of <newest> \| seq:changes:age` for each branch tip |
 | `:[range]s/pat/rep/[flags]` | substitute, below |
 | `:[range]d …` `:m` `:t` `:g` `:sort` `:r` `:w file` … | line commands, below |
@@ -238,6 +240,7 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 | `cursorline` | `cul` | on | cursor line background |
 | `wrap` | | on | long lines continue on the next screen rows (break on cell width, a char never splits); `nowrap` scrolls sideways |
 | `tabstop` | `ts` | 4 | tab width (1–32), spaces inserted by Tab, `>`/`<` shift |
+| `compactat` | | 10000 | after 1 s without keys (`main`: `event::poll`, once per quiet period), `Editor::idle` runs `:compact` when the text has more pieces than this, in Normal mode between commands; 0 disables it |
 | `background` | `bg` | detected | `dark` or `light` palette |
 | `cursorlinebg` | `clbg` | palette | cursor line background, xterm 256-color index |
 | `numberfg` | `nufg` | palette | line number color |
@@ -265,12 +268,13 @@ Palettes (`Palette::new`): dark — cursor line 236, numbers 243, cursor line nu
 - **Huge lines**: every per-line scan avoids work proportional to the line where it can. `fwd`/`bwd` (the char iterators under word motions, bracket matching and `%`) read a line in place and lazily (`FwdChars`, `BwdChars`), `f`/`t`/`F`/`T`, `%`, `*`, `Ctrl-A` and the quote objects search bytes (`memchr`) and count chars only up to the hit, `iw`/`aw` move from the cursor, `first_non_blank` reads growing windows, columns ↔ bytes use `str_indices` (`byte_of_col`, `Text::line_col_to_offset`, `Text::chars_in`), `line_chars` keeps its last answer per text version, `matches_in` keeps the highlight ranges (computed in one pass: each match's column is counted from the previous one) and `cell_width` skips the width table for ASCII and the common CJK ranges. The rows of the cursor line and of up to 3 other lines of at least `LONG_LINE` (8 KiB) bytes are kept in `Layouts` (`layout.rs`), keyed by the `Text` version. Still proportional to the line: a first jump deep into it (its prefix is laid out once), `gk`/`k` into a huge line above, a failed bracket or text-object search (scans to the text start), sentence objects (they build the paragraph), `yy`/`p` of the line (copy), and a text change on a visible huge line with `hlsearch` (the regex runs from the line start to keep vim's matches).
 - **Rendering**: `frame(w, h)` lays out a `Frame` (rows of styled spans, cursor cell and shape, cursor line row, palette, pending clipboard text) and scrolls; `draw` turns it into crossterm commands. Search highlights are computed per visible line range and kept while the text version, pattern and lines stay the same (`matches_in`); `line_chars` keeps its last answer per text version. Only visible rows are built, each via `Text::line`, styled per char (selection over search matches over plain). Cell widths come from `unicode-width` (`cell_width`): tabs `tabstop` cells, control chars 1 (drawn as `?`), wide chars 2, combining marks 0. With `wrap` (`layout.rs`: `Rows` finds row starts lazily, only as far as the screen, the cursor row or a height cap needs; `Layout` keeps the cursor line's rows between frames, and after an edit keeps the rows ending before the first changed byte and resumes from there; a frame with the same `Text` version reads nothing) each line takes one or more rows, a gutter-wide blank prefix on continuation rows, and vertical scroll keeps the whole cursor line on screen (`top` stays a line index); the cursor line background covers every row of the cursor line; a cursor line taller than the screen scrolls by rows inside itself (`top_sub`); a cursor past a full last row (Insert at end) stays on that row's last cell. `Ctrl-D`/`Ctrl-U` move half a screen of rows, and `H`/`M`/`L` use `bottom_line`; both read the width of the last frame (`text_w`). Without `wrap`, horizontal scroll is by screen columns and keeps the whole cursor char visible; a wide char cut by the left edge shows as spaces. The cursor line row is padded to the full width with spaces (erasing with a background color is not portable), and `draw` sets colors after each span's attribute, because `Attribute::Reset` clears them; a span's own background (matches) wins over the cursor line's. The status bar is reversed, replaced by the `:`/`/` input line in those modes; `fit` cuts or pads it to the width in cells.
 - **Dirty tracking**: `saved: Text` and `saved_eol` hold the version and line ending last written; dirty = `!doc.text().ptr_eq(&saved)` or a different line ending (`:set ff`). Undoing back to the saved version makes the buffer clean again, with no diffing.
-- **Saving** (`ex::write_atomic`, also `:w file` and `:sav`; `:w >>` appends in place): resolve symlinks (`canonicalize`), write to `<target>.pt-edit.tmp` via `BufWriter`, copy the target's permissions and (best effort, unix) owner and group, `sync_all`, then `rename` over the target, so a failed write never truncates the file and a symlink stays a symlink.
+- **Saving** (`ex::write_atomic`, also `:w file` and `:sav`; `:w >>` appends in place): resolve symlinks (`canonicalize`), write to `<target>.rim.tmp` via `BufWriter`, copy the target's permissions and (best effort, unix) owner and group, `sync_all`, then `rename` over the target, so a failed write never truncates the file and a symlink stays a symlink.
+- **Compaction**: `Editor::compact` calls `Document::compact(COMPACT_MAX)` (64 KiB, the library's largest add chunk) and moves `saved` along when the buffer was clean, since dirty tracking compares versions by pointer. `:stats` reads `Text::piece_count`, `chunk_count`, `memory_bytes` (O(pieces)) and `char_count` (O(n)).
 - **Terminal safety**: `TerminalGuard` enables raw mode and the alternate screen and restores both (and the default cursor shape) in `Drop`, including on panic.
 
 ## Tests
 
-`cargo test -p pt-edit`:
+`cargo test -p rim`:
 - Unit tests in the submodules: parser (counts, registers, case operators, `strip_counts`, key round trip), regex search (wrap both ways, matches across pieces, invalid patterns), line matches, ex parser (ranges, `/pat/` and `\/` addresses, `;`, names, registers and counts), `LineMarks` against the plain mapping, `retab_line`, `:s` parser (delimiters, escapes, flags, non-commands), registers (shift, append, clipboard, OSC 52), options (`:set` grammar and errors), sentence splitting, escaped quotes, tag pairing.
 - `src/editor/tests.rs` feeds key sequences to `Editor` (no terminal) and checks text, cursor, mode, registers and messages for every command, motion, object, mode and `:` command above, including regex search and incsearch, `:s` (ranges, `g`, `i`, groups, `\n`, Visual `'<,'>`, messages, cursor, undo), undo grouping and the undo tree (`g-`, `g+`, `:earlier`/`:later` by count and time, `:undo N`, `:undolist`, redo after a branch switch), cursor after undo, `.` with counts, macros, marks following edits, undo, redo, time travel and `:s`, block inserts, reload, save (permissions, symlinks), and the ex line commands (addresses, `:d :y :m :t :> :< :j :p :=`, `:normal`, `:g`/`:v` with deleted and joined lines, `:sort` flags and patterns, `:r`, `:w file`/`>>`/partial, `:sav`, `:retab`, `:set ff`).
 - Rendering is snapshot-tested on `Frame`s turned into text (`screen`: reversed spans in `[...]`, matches in `{...}`): gutter variants, scrolling (`zz`/`zt`/`zb`), status, selections (block too), search highlights, wide chars, tabs, command line. `draw` is checked for colors, cursor shape, palettes and OSC 52.

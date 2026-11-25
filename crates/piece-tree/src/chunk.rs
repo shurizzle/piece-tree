@@ -131,6 +131,14 @@ impl Chunk {
         Arc::new(Self::with_capacity(cap, (cap / 4).max(lf)))
     }
 
+    /// Heap bytes behind the chunk: its text and newline buffers at capacity.
+    pub(crate) fn heap_bytes(&self) -> usize {
+        match self.storage {
+            Storage::Words(words) => words.len() * size_of::<u32>(),
+            Storage::Owned { text_cap, nl_cap } => text_cap + nl_cap * size_of::<u32>(),
+        }
+    }
+
     pub(crate) fn fill(&self) -> Fill {
         Fill::unpack(self.fill.load(Ordering::Acquire))
     }

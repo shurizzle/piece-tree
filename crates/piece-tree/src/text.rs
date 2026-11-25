@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    collections::HashMap,
     fmt,
     ops::{ControlFlow, Range},
 };
@@ -81,6 +82,73 @@ impl Text {
 
     pub fn line_count(&self) -> usize {
         tree::lf(&self.root) + 1
+    }
+
+    /// Number of pieces (tree nodes). O(pieces).
+    pub fn piece_count(&self) -> usize {
+        self.nodes().count()
+    }
+
+    /// Number of distinct chunks this version references, its add chunk included. O(pieces).
+    pub fn chunk_count(&self) -> usize {
+        self.chunks_used().len()
+    }
+
+    /// Approximate heap bytes this version keeps alive: its chunks (at capacity) and tree nodes.
+    /// Other versions share both, so the sum over versions overcounts. O(pieces).
+    pub fn memory_bytes(&self) -> usize {
+        let chunks: usize = self.chunks_used().values().map(|c| size_of::<Chunk>() + c.heap_bytes()).sum();
+        chunks + self.piece_count() * size_of::<Node>()
+    }
+
+    /// Every node, in no particular order.
+    fn nodes(&self) -> impl Iterator<Item = &Node> {
+        let mut stack: Vec<&Node> = self.root.as_deref().into_iter().collect();
+        std::iter::from_fn(move || {
+            let n = stack.pop()?;
+            stack.extend(n.left.as_deref().into_iter().chain(n.right.as_deref()));
+            Some(n)
+        })
+    }
+
+    fn chunks_used(&self) -> HashMap<*const Chunk, &Chunk> {
+        self.nodes().map(|n| n.piece.chunk()).chain(self.add.as_ref()).map(|c| (Arc::as_ptr(c), &**c)).collect()
+    }
+
+    /// The same text with runs of consecutive pieces copied into new chunks of at most `max`
+    /// bytes each (pieces longer than `max` stay shared): fewer pieces to walk, and chunks only
+    /// small slices of which were still used can be freed once older versions go. `self` and
+    /// every other version are untouched. O(pieces + bytes copied); `self` itself (same version)
+    /// when no run has two pieces.
+    pub fn compact(&self, max: usize) -> Text {
+        // Chunks address bytes with `u32`.
+        let max = max.min(u32::MAX as usize);
+        let mut pieces = Vec::new();
+        tree::pieces_in(&self.root, 0, self.len(), &mut pieces);
+        let count = pieces.len();
+        let (mut out, mut run, mut run_len) = (Vec::new(), Vec::new(), 0);
+        let flush = |out: &mut Vec<Piece>, run: &mut Vec<Piece>, len: usize| {
+            if run.len() > 1 {
+                let mut s = String::with_capacity(len);
+                run.drain(..).for_each(|p| s.push_str(p.text()));
+                out.push(Piece::whole(Chunk::from_string(s)));
+            } else {
+                out.append(run);
+            }
+        };
+        for p in pieces {
+            if run_len + p.len() > max {
+                flush(&mut out, &mut run, run_len);
+                run_len = 0;
+            }
+            run_len += p.len();
+            run.push(p);
+        }
+        flush(&mut out, &mut run, run_len);
+        if out.len() == count {
+            return self.clone();
+        }
+        Text { root: tree::from_pieces(out), add: self.add.clone() }
     }
 
     /// True if both values are the same version (not just equal content).

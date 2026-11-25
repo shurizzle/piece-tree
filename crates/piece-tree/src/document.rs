@@ -1,5 +1,6 @@
 use std::{
     io::{self, Write},
+    mem,
     ops::Range,
     time::{Duration, Instant},
 };
@@ -358,6 +359,58 @@ impl Document {
             self.states[p].redo = Some(s);
         }
         self.cur = target;
+        true
+    }
+
+    /// Replaces the current version's text with [`Text::compact`]`(max)`: same content, fewer
+    /// pieces. History is kept, and other versions keep their own pieces (and chunks) until
+    /// [`Document::drop_history_before`]. [`Document::last_edits`] is empty: no offset moves.
+    pub fn compact(&mut self, max: usize) {
+        self.last.clear();
+        let text = self.text().compact(max);
+        self.states[self.cur].text = text;
+    }
+
+    /// Forgets every version that is neither `seq` nor made from it (its ancestors and their
+    /// other branches), so their texts and the chunks only they use are freed. `seq` becomes
+    /// version 0 and the others are renumbered in creation order. Returns false, changing
+    /// nothing, when `seq` does not exist or the current version is not `seq` or made from it.
+    /// Closes open groups.
+    pub fn drop_history_before(&mut self, seq: usize) -> bool {
+        const DROPPED: usize = usize::MAX;
+        let n = self.states.len();
+        if seq >= n {
+            return false;
+        }
+        let mut id = vec![DROPPED; n];
+        id[seq] = 0;
+        let mut next = 1;
+        // Children come after their parent, so one pass in creation order finds the subtree.
+        for i in seq + 1..n {
+            if id[self.states[i].parent] != DROPPED {
+                id[i] = next;
+                next += 1;
+            }
+        }
+        if id[self.cur] == DROPPED {
+            return false;
+        }
+        self.close_groups();
+        self.last.clear();
+        let old_log = mem::take(&mut self.log);
+        let states = mem::take(&mut self.states);
+        for (i, mut s) in states.into_iter().enumerate().filter(|&(i, _)| id[i] != DROPPED) {
+            let start = self.log.len();
+            if i != seq {
+                self.log.extend_from_slice(&old_log[s.edits.clone()]);
+            }
+            s.edits = start..self.log.len();
+            s.parent = if i == seq { 0 } else { id[s.parent] };
+            // A redo child is made from this version, so it is kept too.
+            s.redo = s.redo.map(|r| id[r]);
+            self.states.push(s);
+        }
+        self.cur = id[self.cur];
         true
     }
 

@@ -45,6 +45,10 @@ const G_DOWN: char = parse::g_key('j');
 const G_UP: char = parse::g_key('k');
 const G_SUBST: char = parse::g_key('&');
 
+/// Most bytes `:compact` and the idle compaction copy pieces into per chunk: the size of the
+/// library's largest add chunk, so a compacted text has as many chunks as a typed one.
+const COMPACT_MAX: usize = 64 * 1024;
+
 /// Nesting limit for macros calling macros (`qa@aq@a` would never end).
 const MAX_MACRO_DEPTH: usize = 100;
 
@@ -322,6 +326,42 @@ impl Editor {
 
     pub fn set_background(&mut self, bg: Background) {
         self.opts.background = bg;
+    }
+
+    /// Work for when no key came for a while (`main`): compacts the text once its piece count
+    /// passes `compactat`, between commands only.
+    pub fn idle(&mut self) {
+        let at = self.opts.compactat;
+        if at > 0 && self.mode == Mode::Normal && !self.grouping && self.doc.text().piece_count() > at {
+            self.compact();
+        }
+    }
+
+    /// `:compact`: `Document::compact`, keeping a clean buffer clean. Returns the piece counts
+    /// before and after.
+    fn compact(&mut self) -> (usize, usize) {
+        let before = self.doc.text().piece_count();
+        let clean = !self.is_dirty();
+        self.doc.compact(COMPACT_MAX);
+        if clean {
+            self.saved = self.doc.text().clone();
+        }
+        (before, self.doc.text().piece_count())
+    }
+
+    /// `:stats`: the current version's structure, its size, and the history length.
+    fn stats(&self) -> String {
+        let t = self.doc.text();
+        format!(
+            "{} pieces, {} chunks, {} bytes in memory, {} bytes, {} chars, {} lines, {} versions",
+            t.piece_count(),
+            t.chunk_count(),
+            t.memory_bytes(),
+            t.len(),
+            t.char_count(),
+            t.line_count(),
+            self.doc.history_len(),
+        )
     }
 
     fn is_dirty(&self) -> bool {

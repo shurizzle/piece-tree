@@ -6,6 +6,9 @@ use crate::test_util::Rng;
 /// Compares every query of `t` against the model string `m`.
 /// `full` checks every line; otherwise a random sample.
 fn assert_same(t: &Text, m: &str, rng: &mut Rng, full: bool) {
+    // Under Miri the piece reads matter, not the sweeps: lines are sampled and the char metrics
+    // (safe `str_indices`/std logic) are skipped.
+    let full = full && !cfg!(miri);
     tree::check(&t.root);
     assert_eq!(t.to_string(), m);
     assert_eq!(t.chunks().collect::<String>(), m);
@@ -36,7 +39,9 @@ fn assert_same(t: &Text, m: &str, rng: &mut Rng, full: bool) {
         assert_eq!(t.slice(r.clone()), &m[r]);
     }
     assert_eq!(t.offset_to_line(m.len()), lines.len() - 1);
-    assert_chars(t, m, rng);
+    if !cfg!(miri) {
+        assert_chars(t, m, rng);
+    }
 }
 
 /// Char metrics of `t` against `m`: counts, both conversions, line columns.
@@ -101,7 +106,7 @@ fn differential(seed: u64, steps: usize, cap: usize, delete_pct: usize) {
 #[test]
 fn differential_small_texts_many_seeds() {
     for seed in 0..if cfg!(miri) { 2 } else { 40 } {
-        differential(seed, if cfg!(miri) { 60 } else { 400 }, 48, 40);
+        differential(seed, if cfg!(miri) { 40 } else { 400 }, 48, 40);
     }
 }
 
@@ -501,6 +506,7 @@ fn from_string_normalizes_and_handles_small_texts() {
 
 /// Char metrics on a long piece of a sealed chunk, through edits.
 #[test]
+#[cfg_attr(miri, ignore = "char metrics are safe str_indices/std logic: the piece reads are covered by the differentials")]
 fn char_metrics_on_long_pieces() {
     let mut rng = Rng(11);
     let big: String = (0..).map(|_| rng.text(4)).take_while({
@@ -652,6 +658,7 @@ fn fragmented(rng: &mut Rng, steps: usize) -> (Text, String) {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn apply_edits_matches_the_model() {
     let texts: Vec<String> = ["a", "xyz\n", "é", "\n\n", "🦀 crab", "a\r\nb\rc", "line one\nline two\n"].map(String::from).to_vec();
     for seed in 0..BATCH_SEEDS {
@@ -675,6 +682,7 @@ fn apply_edits_matches_the_model() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn apply_edits_uses_both_strategies() {
     // Same batch on a text with one piece (dense: rebuild) and on a fragmented one (sparse: path copies).
     let mut rng = Rng(9);
@@ -694,13 +702,11 @@ fn apply_edits_uses_both_strategies() {
     }
 }
 
-/// Chars of the text of `char_to_offset_matches_the_model`; fewer under Miri.
-#[cfg(not(miri))]
+/// Chars of the text of `char_to_offset_matches_the_model`.
 const MODEL_CHARS: usize = 3000;
-#[cfg(miri)]
-const MODEL_CHARS: usize = 200;
 
 #[test]
+#[cfg_attr(miri, ignore = "char metrics are safe str_indices/std logic: the piece reads are covered by the differentials")]
 fn char_to_offset_matches_the_model() {
     // 1-4 byte chars, long enough for the SIMD counter to leave its short-string path, in several
     // chunks (the inserts split the loaded chunk and add their own): every char, the end, and
@@ -844,6 +850,7 @@ fn insert_mut_rejects_out_of_bounds() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn apply_edits_clustered_in_a_fragmented_text() {
     let mut rng = Rng(21);
     let (frag, fm) = fragmented(&mut rng, FRAG_STEPS);
@@ -868,6 +875,7 @@ fn apply_edits_clustered_in_a_fragmented_text() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn apply_edits_edge_cases() {
     let mut rng = Rng(4);
     let t = Text::from("hello\nworld\n");
@@ -933,6 +941,7 @@ fn apply_edits_rejects_cutting_a_char_on_the_sparse_path() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn rebuild_choice_follows_the_piece_count() {
     let mut rng = Rng(8);
     // A single piece: the height alone says dense; no rebuild below the minimum batch.
@@ -953,6 +962,7 @@ fn rebuild_choice_follows_the_piece_count() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "batch and rebuild strategy logic, no unsafe: piece reads and Piece::sub are covered by the differentials and apply_edits_rejects_cutting_a_char_on_the_sparse_path")]
 fn piece_count_bounds_hold_on_every_shape() {
     let mut rng = Rng(21);
     let mut t = Text::new();
@@ -966,4 +976,90 @@ fn piece_count_bounds_hold_on_every_shape() {
     }
     assert_eq!((tree::min_pieces(&None), tree::max_pieces(&None)), (0, 0));
     assert!(tree::has_at_most(&None, 0));
+}
+
+#[cfg(not(miri))]
+const COMPACT_STEPS: usize = 400;
+#[cfg(miri)]
+const COMPACT_STEPS: usize = 60;
+
+/// `compact` keeps the content and leaves earlier versions alone; a compacted text keeps
+/// working (edits on it, compacting again).
+#[test]
+fn compact_differential() {
+    let mut rng = Rng(31);
+    let (mut t, mut m) = (Text::from("start\n"), String::from("start\n"));
+    let mut kept = Vec::new();
+    for step in 0..COMPACT_STEPS {
+        let off = rng.boundary(&m);
+        if rng.below(3) == 0 && !m.is_empty() {
+            let r = rng.range(&m);
+            t = t.delete(r.clone());
+            m.replace_range(r, "");
+        } else {
+            let s = rng.text(4);
+            t = t.insert(off, &s);
+            m.insert_str(off, &s);
+        }
+        if step % 20 == 19 {
+            let before = (t.clone(), t.piece_count());
+            let max = [0, 1, 5, 64, 1 << 20][rng.below(5)];
+            t = t.compact(max);
+            assert_same(&t, &m, &mut rng, true);
+            assert!(t.piece_count() <= before.1);
+            kept.push((before.0, m.clone()));
+        }
+    }
+    for (old, expected) in &kept {
+        assert_same(old, expected, &mut rng, false);
+    }
+}
+
+#[test]
+fn compact_merges_runs_up_to_max() {
+    let mut t = Text::from("0123456789");
+    for off in [8, 6, 4, 2] {
+        t = t.insert(off, "x");
+    }
+    assert_eq!(t.piece_count(), 9);
+    // Nothing merges: same version.
+    assert!(t.compact(0).ptr_eq(&t));
+    assert!(t.compact(1).ptr_eq(&t));
+    assert!(Text::new().compact(10).ptr_eq(&Text::new()));
+    let c = t.compact(5);
+    tree::check(&c.root);
+    assert_eq!(c.chunks().collect::<Vec<_>>(), ["01x23", "x45x", "67x89"]);
+    let one = t.compact(usize::MAX);
+    assert_eq!((one.piece_count(), one.to_string()), (1, "01x23x45x67x89".to_string()));
+    // Merged runs live in owned chunks sized to the run.
+    assert!(one.memory_bytes() >= 14);
+    // Longer pieces than `max` stay as they are, shared.
+    let big = Text::from("a".repeat(100).as_str()).insert(50, "b").insert(0, "c");
+    assert_eq!(big.compact(10).chunks().map(str::len).collect::<Vec<_>>(), [1, 50, 1, 50]);
+    assert!(big.compact(10).ptr_eq(&big));
+    assert_eq!(big.compact(60).chunks().map(str::len).collect::<Vec<_>>(), [52, 50]);
+    // The add chunk survives: typing goes on after compacting.
+    let typed = one.insert(one.len(), "!");
+    assert_eq!(typed.to_string(), "01x23x45x67x89!");
+}
+
+#[test]
+fn piece_chunk_and_memory_counts() {
+    let empty = Text::new();
+    assert_eq!((empty.piece_count(), empty.chunk_count(), empty.memory_bytes()), (0, 0, 0));
+    let t = Text::from("hello\nworld");
+    assert_eq!((t.piece_count(), t.chunk_count()), (1, 1));
+    assert!(t.memory_bytes() >= 11 + 4);
+    // A small load leaves room in its chunk, so the insert lands there: one chunk, three pieces.
+    let e = t.insert(5, "!!");
+    assert_eq!((e.piece_count(), e.chunk_count()), (3, 1));
+    assert!(e.memory_bytes() > t.memory_bytes());
+    // A large load is sealed: inserts open an add chunk, still counted once deleted.
+    let big = Text::from("a".repeat(crate::chunk::MAX_ADD_BYTES + 1).as_str());
+    let d = big.insert(5, "!!").delete(5..7);
+    assert_eq!((d.piece_count(), d.chunk_count()), (2, 2));
+    // A word-storage add chunk reports its whole allocation.
+    let typed = Text::new().insert(0, "x");
+    assert_eq!(typed.chunk_count(), 1);
+    assert!(typed.memory_bytes() >= crate::chunk::MIN_ADD_BYTES);
 }

@@ -80,6 +80,10 @@ impl Piece {
         unsafe { self.chunk.newlines(self.nl_first, self.lf) }
     }
 
+    pub(crate) fn chunk(&self) -> &Arc<Chunk> {
+        &self.chunk
+    }
+
     pub(crate) fn text(&self) -> &str {
         // SAFETY: struct invariant, the range is published and on char boundaries.
         unsafe { self.chunk.str(self.start, self.len) }

@@ -40,6 +40,8 @@ pub(super) struct Options {
     pub cursorlinebg: Option<u8>,
     pub numberfg: Option<u8>,
     pub cursornumberfg: Option<u8>,
+    /// Pieces above which the idle compaction runs (`Editor::idle`); 0 disables it.
+    pub compactat: usize,
 }
 
 impl Default for Options {
@@ -54,6 +56,7 @@ impl Default for Options {
             cursorlinebg: None,
             numberfg: None,
             cursornumberfg: None,
+            compactat: 10_000,
         }
     }
 }
@@ -70,6 +73,7 @@ fn long(name: &str) -> Option<&'static str> {
         "cursorlinebg" | "clbg" => "cursorlinebg",
         "numberfg" | "nufg" => "numberfg",
         "cursornumberfg" | "cnufg" => "cursornumberfg",
+        "compactat" => "compactat",
         _ => return None,
     })
 }
@@ -106,6 +110,7 @@ impl Options {
             "background" => format!("background={}", if self.background == Background::Dark { "dark" } else { "light" }),
             "cursorlinebg" => format!("cursorlinebg={}", p.cursorline_bg),
             "numberfg" => format!("numberfg={}", p.number_fg),
+            "compactat" => format!("compactat={}", self.compactat),
             _ => format!("cursornumberfg={}", p.current_number_fg),
         }
     }
@@ -114,7 +119,7 @@ impl Options {
     pub fn set(&mut self, args: &str) -> Result<String, String> {
         let mut shown = Vec::new();
         if args.trim().is_empty() {
-            for n in ["number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap"] {
+            for n in ["number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat"] {
                 shown.push(self.show(n));
             }
         }
@@ -135,6 +140,7 @@ impl Options {
                     "cursorlinebg" => self.cursorlinebg = Some(value.parse().map_err(|_| invalid())?),
                     "numberfg" => self.numberfg = Some(value.parse().map_err(|_| invalid())?),
                     "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
+                    "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
                 }
             } else if let Some(name) = arg.strip_suffix('?') {

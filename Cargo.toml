@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/piece-tree", "crates/pt-edit"]
+members = ["crates/piece-tree", "crates/rim"]
 exclude = ["vendor/regex-cursor"]
 
 # regex-cursor 0.1.5 with a fix for literal prefilter searches restarting from

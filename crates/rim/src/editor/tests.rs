@@ -1,7 +1,7 @@
 use super::{registers::*, render::*, *};
 
 fn ed(s: &str) -> Editor {
-    Editor::new(Document::new(s), PathBuf::from("/nonexistent/pt-edit-test"))
+    Editor::new(Document::new(s), PathBuf::from("/nonexistent/rim-test"))
 }
 
 /// Feeds keys; `\x1b` is Esc, `\n` Enter, `\x7f` Backspace, `\t` Tab, `\x04`/`\x12`/`\x15` Ctrl+D/R/U.
@@ -261,7 +261,7 @@ fn save_writes_and_cleans() {
 }
 
 fn env_dir() -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("pt-edit-test-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("rim-test-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
     dir
 }
@@ -430,7 +430,7 @@ fn visual_mode_switching() {
 }
 
 fn temp_dir(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("pt-edit-{name}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("rim-{name}-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
     dir
 }
@@ -512,10 +512,10 @@ fn snapshot(s: &str, keys: &str, w: usize, h: usize) -> (Vec<String>, (usize, us
 fn frame_shows_relative_numbers_status_and_cursor() {
     let (rows, cursor, bar) = snapshot("a\nbc\nd", "jl", 58, 5);
     assert_eq!(rows[..4], ["1 a", "2 bc", "1 d", ""]);
-    assert_eq!(rows[4], "[ NORMAL | /nonexistent/pt-edit-test | Ln 2, Col 2 | LF |  ]");
+    assert_eq!(rows[4], "[ NORMAL | /nonexistent/rim-test | Ln 2, Col 2 | LF |      ]");
     assert_eq!((cursor, bar), ((3, 1), false));
     let (rows, _, bar) = snapshot("a", "ix", 30, 2);
-    assert_eq!((rows[1].as_str(), bar), ("[ INSERT | /nonexistent/pt-edit]", true));
+    assert_eq!((rows[1].as_str(), bar), ("[ INSERT | /nonexistent/rim-tes]", true));
     assert!(snapshot("a", "V", 12, 2).0[1].starts_with("[ V-LINE"));
     assert!(snapshot("a", "2d", 80, 2).0[1].contains("| LF | 2d "));
 }
@@ -1466,8 +1466,8 @@ fn undo_tree_commands() {
 fn char_info_and_byte_motions() {
     let s = "ab é\nfoo bar\n";
     let e = run(s, "j\x07");
-    assert_eq!(e.msg, "\"/nonexistent/pt-edit-test\" 3 lines --66%--");
-    assert_eq!(run(s, "x\x07").msg, "\"/nonexistent/pt-edit-test\" [Modified] 3 lines --33%--");
+    assert_eq!(e.msg, "\"/nonexistent/rim-test\" 3 lines --66%--");
+    assert_eq!(run(s, "x\x07").msg, "\"/nonexistent/rim-test\" [Modified] 3 lines --33%--");
     let e = run(s, "jw\x07".replace('\x07', "g\x07").as_str());
     assert_eq!(e.msg, "Col 5 of 7; Line 2 of 3; Word 4 of 4; Char 10 of 13; Byte 11 of 14");
     assert_eq!(run(s, "g\x07").msg, "Col 1 of 4; Line 1 of 3; Word 1 of 4; Char 1 of 13; Byte 1 of 14");
@@ -1868,8 +1868,8 @@ fn ex_read_write_saveas() {
     assert_eq!(text(&e), "1\n2\na\n1\n2\nb\nc");
     feed(&mut e, "u");
     assert_eq!(text(&e), "a\n1\n2\nb\nc");
-    feed(&mut e, ":r /nonexistent/pt-edit\n");
-    assert!(e.msg.starts_with("Can't open file /nonexistent/pt-edit"), "{}", e.msg);
+    feed(&mut e, ":r /nonexistent/rim\n");
+    assert!(e.msg.starts_with("Can't open file /nonexistent/rim"), "{}", e.msg);
     let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
     feed(&mut e, &format!(":2,3w {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc");
@@ -1917,4 +1917,39 @@ fn ex_retab_and_fileformat() {
     feed(&mut e, ":set ff=unix fileformat\n");
     assert_eq!((e.msg.as_str(), e.is_dirty()), ("fileformat=unix", false));
     assert_eq!(run("a", ":set ff=xx\n").msg, "Invalid argument: ff=xx");
+}
+
+#[test]
+fn stats_compact_and_idle() {
+    // `x` on every other char: one piece per kept char.
+    let mut e = run("abcdefgh", "xlxlxlx");
+    assert_eq!(text(&e), "bdfh");
+    feed(&mut e, ":stats\n");
+    let pieces = e.doc.text().piece_count();
+    assert!(pieces > 1);
+    assert!(e.msg.starts_with(&format!("{pieces} pieces, ")), "{}", e.msg);
+    assert!(e.msg.ends_with("4 bytes, 4 chars, 1 lines, 5 versions"), "{}", e.msg);
+    feed(&mut e, ":compact\n");
+    assert_eq!((e.msg.clone(), text(&e)), (format!("{pieces} pieces -> 1"), "bdfh".into()));
+    // History is kept.
+    feed(&mut e, "u");
+    assert_eq!(text(&e), "bdfgh");
+    // A clean buffer stays clean.
+    let mut e = run("ab", "x");
+    e.saved = e.doc.text().clone();
+    feed(&mut e, ":compact\n");
+    assert!(!e.is_dirty());
+    // Idle compaction: only past `compactat`, only in Normal mode.
+    let mut e = run("abcdefgh", "xlxlxlx:set compactat=100\n");
+    e.idle();
+    assert_eq!(e.doc.text().piece_count(), pieces);
+    feed(&mut e, ":set compactat=2\ni");
+    e.idle();
+    assert_eq!(e.doc.text().piece_count(), pieces);
+    feed(&mut e, "\x1b");
+    e.idle();
+    assert_eq!(e.doc.text().piece_count(), 1);
+    feed(&mut e, ":set compactat=0\n:set compactat?\n");
+    assert_eq!(e.msg, "compactat=0");
+    assert_eq!(run("a", ":set compactat=x\n").msg, "Invalid argument: compactat=x");
 }

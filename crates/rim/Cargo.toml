@@ -1,5 +1,5 @@
 [package]
-name = "pt-edit"
+name = "rim"
 version = "0.1.0"
 edition = "2024"
 description = "Minimal terminal editor built on piece-tree"

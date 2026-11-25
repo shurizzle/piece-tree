@@ -245,12 +245,23 @@ mod tests {
         assert_eq!(via_public, expected, "positions_callback, {what}");
     }
 
+    /// Lengths around the 16 and 64 byte boundaries and the zero-padded tail.
+    #[cfg(not(miri))]
+    fn lengths() -> Vec<usize> {
+        (0..=200).chain([255, 256, 257, 1000, 4097]).collect()
+    }
+
+    /// Under Miri only the lengths next to a block boundary: every length took 258 s.
+    #[cfg(miri)]
+    fn lengths() -> Vec<usize> {
+        (0..=17).chain([31, 32, 33, 47, 48, 49, 63, 64, 65, 127, 128, 129, 255, 256, 257]).collect()
+    }
+
     #[test]
     fn every_mask_matches_the_naive_scan_at_every_length() {
         let mut rng = Rng(7);
-        // Lengths around the 16 and 64 byte boundaries and the zero-padded tail; densities from
-        // all newlines to none (the empty-block early out) and one per block or two.
-        for len in (0..=200).chain([255, 256, 257, 1000, 4097]) {
+        // Densities from all newlines to none (the empty-block early out) and one per block or two.
+        for len in lengths() {
             for one_in in [1, 2, 5, 64, 100, 1_000_000] {
                 check_all(&random_bytes(&mut rng, len, one_in), &format!("len {len}, one in {one_in}"));
             }

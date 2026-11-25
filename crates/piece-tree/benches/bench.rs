@@ -141,6 +141,11 @@ fn main() {
     });
     println!("{:<30} {:>10}", "pieces after random edits", edited.chunks().count());
     read_all_lines("line() all, after edits", &edited);
+    // Compacting the fragmented text into 64 KiB chunks (the editor's `:compact`): its cost per
+    // piece, then the same reads and searches on the result.
+    let compacted = bench("compact edited (per piece)", edited.piece_count(), |_| edited.compact(64 << 10));
+    println!("{:<30} {:>10}", "pieces after compact", compacted.piece_count());
+    read_all_lines("line() all, after compact", &compacted);
 
     // The same ~1000 sorted line inserts and line deletes, in original offsets: one `apply_edits`
     // against one edit at a time from the end. `base` is a single piece (the dense strategy);
@@ -169,9 +174,9 @@ fn main() {
         });
     }
 
-    // Regex over the loaded 10 MB (one piece) and after the random edits (~3000 pieces).
+    // Regex over the loaded 10 MB (one piece), after the random edits (~3000 pieces) and compacted.
     // `regex on to_string` is the contiguous baseline, copy included.
-    for (name, t) in [("10MB", &base), ("edited", &edited)] {
+    for (name, t) in [("10MB", &base), ("edited", &edited), ("compacted", &compacted)] {
         for (kind, pat) in [("literal", "value_12345"), ("regex", r"\bvalue_\d+5\b")] {
             let (ours, oracle) = (Regex::new(pat).unwrap(), regex::Regex::new(pat).unwrap());
             let mb = t.len() as f64 / (1 << 20) as f64;

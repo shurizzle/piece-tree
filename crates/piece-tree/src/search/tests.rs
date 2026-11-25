@@ -32,7 +32,7 @@ const PATTERNS: &[&str] = &[
 ];
 
 fn patterns() -> &'static [&'static str] {
-    if cfg!(miri) { &PATTERNS[..3] } else { PATTERNS }
+    PATTERNS
 }
 
 fn walk_forward(c: &mut TextCursor<'_>) -> Vec<(usize, String)> {
@@ -104,6 +104,7 @@ fn cursor_at_out_of_bounds_panics() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn find_iter_and_find_from_match_regex() {
     let mut rng = Rng(3);
     let texts = texts(&mut rng);
@@ -123,12 +124,13 @@ fn find_iter_and_find_from_match_regex() {
 const REPLACEMENTS: &[&str] = &["X", "", "<$1>", "${w}!", "$$", "[$0]", "a\r\nb\n", "$2-$1"];
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn replace_all_matches_regex() {
     let mut rng = Rng(4);
     let texts = texts(&mut rng);
     for p in patterns() {
         let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
-        for rep in if cfg!(miri) { &REPLACEMENTS[..3] } else { REPLACEMENTS } {
+        for rep in REPLACEMENTS {
             for (t, s) in &texts {
                 let (out, n) = t.replace_all(&ours, rep);
                 let expected = oracle.replace_all(s, *rep).replace("\r\n", "\n");
@@ -142,12 +144,13 @@ fn replace_all_matches_regex() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn replace_matching_matches_regex_on_the_kept_matches() {
     let mut rng = Rng(5);
     let texts = texts(&mut rng);
     for p in patterns() {
         let (ours, oracle) = (Regex::new(p).unwrap(), regex::Regex::new(p).unwrap());
-        for rep in if cfg!(miri) { &REPLACEMENTS[..3] } else { REPLACEMENTS } {
+        for rep in REPLACEMENTS {
             for (t, s) in &texts {
                 // Keep every other match: the oracle replaces kept ones and copies the rest.
                 let mut i = 0;
@@ -254,7 +257,15 @@ fn boundaries(s: &str) -> impl Iterator<Item = usize> + '_ {
     (0..=s.len()).filter(|&i| s.is_char_boundary(i))
 }
 
+/// Text before the match in `rfind_before_crosses_windows`: past the 4 KiB first window and its
+/// first doubling (several windows) without Miri interpreting 20 KB of scans.
+#[cfg(not(miri))]
+const WINDOWS_TEXT: usize = 20_000;
+#[cfg(miri)]
+const WINDOWS_TEXT: usize = 9_000;
+
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn rfind_before_matches_a_brute_force_oracle() {
     let mut rng = Rng(21);
     let texts = texts(&mut rng);
@@ -276,7 +287,7 @@ fn rfind_before_matches_a_brute_force_oracle() {
 #[test]
 fn rfind_before_crosses_windows() {
     // A match far before `off` needs several doubling windows; one at the end of the text is found too.
-    let s = format!("x{}", "-".repeat(20_000));
+    let s = format!("x{}", "-".repeat(WINDOWS_TEXT));
     let t = Text::from(s.as_str());
     let re = Regex::new("x").unwrap();
     assert_eq!(t.rfind_before(&re, t.len()), Some(0..1));
@@ -288,6 +299,7 @@ fn rfind_before_crosses_windows() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn find_iter_in_matches_regex_in_a_range() {
     let mut rng = Rng(22);
     let texts = texts(&mut rng);
@@ -326,6 +338,7 @@ fn find_iter_in_matches_regex_in_a_range() {
 }
 
 #[test]
+#[cfg_attr(miri, ignore = "regex engine logic, no unsafe: TextCursor reads are covered by cursor_* and literal_alternation_across_piece_boundaries")]
 fn replacement_at_expands_one_match() {
     let t = Text::from("k=v x=y");
     let re = Regex::new(r"(?<a>\w)=(\w)").unwrap();

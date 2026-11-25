@@ -7,6 +7,7 @@ use std::{
     io::{self, BufWriter},
     path::PathBuf,
     process::ExitCode,
+    time::Duration,
 };
 
 use crossterm::{
@@ -22,13 +23,16 @@ use terminal_colorsaurus::{QueryOptions, ThemeMode};
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
-const USAGE: &str = "usage: pt-edit <file> [--eol lf|cr|crlf]";
+/// Quiet time after the last event before `Editor::idle` runs (once per quiet period).
+const IDLE: Duration = Duration::from_secs(1);
+
+const USAGE: &str = "usage: rim <file> [--eol lf|cr|crlf]";
 
 fn main() -> ExitCode {
     match run() {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("pt-edit: {e}");
+            eprintln!("rim: {e}");
             ExitCode::FAILURE
         }
     }
@@ -56,8 +60,15 @@ fn run() -> io::Result<()> {
     }
     let _guard = TerminalGuard::enter()?;
     let mut out = BufWriter::new(io::stdout());
+    let mut idle = true;
     loop {
         editor.render(&mut out)?;
+        if !idle && !event::poll(IDLE)? {
+            editor.idle();
+            idle = true;
+            continue;
+        }
+        idle = false;
         if let Event::Key(key) = event::read()?
             && key.kind == KeyEventKind::Press
             && !editor.key(key)
