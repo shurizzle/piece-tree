@@ -663,6 +663,26 @@ fn apply_edits_uses_both_strategies() {
     }
 }
 
+/// Chars stepped over in `char_to_offset_skips_big_chunks`; scaled up under Miri.
+#[cfg(not(miri))]
+const CHAR_STEP: usize = 37;
+#[cfg(miri)]
+const CHAR_STEP: usize = 1009;
+
+#[test]
+fn char_to_offset_skips_big_chunks() {
+    // One chunk of several skip blocks, with 1-4 byte chars so that block ends are moved to a char
+    // boundary, and with the target in the first, a middle and the last block.
+    let m: String = (0..3 * CHAR_SKIP_BLOCK).map(|i| ['a', 'é', '日', '🦀'][i * 7 % 4]).collect();
+    let t = Text::from(m.as_str());
+    assert_eq!(t.chunks().count(), 1);
+    let offs: Vec<usize> = m.char_indices().map(|(o, _)| o).collect();
+    for ch in (0..offs.len()).step_by(CHAR_STEP).chain([offs.len() - 1]) {
+        assert_eq!(t.char_to_offset(ch), offs[ch], "char {ch}");
+    }
+    assert_eq!(t.char_to_offset(offs.len()), m.len());
+}
+
 #[test]
 fn apply_edits_clustered_in_a_fragmented_text() {
     let mut rng = Rng(21);

@@ -33,13 +33,14 @@ Each item: what, why, how to measure, where to look. IDs are stable, refer to th
 ### W7. Node pool / free list inside the library (allocator-independent)
 - mimalloc gives -20..-29% on edits (D18) but only where the application sets it. A pool would help under any allocator, but `triomphe::Arc` takes no custom allocator, so it needs an own `Arc` or an arena: large change. Only worth it if W1 is not done and W4 shows the system allocator is slow on Linux too.
 
-### W8. Small items (W8a-W8d)
-- **W8a** `Chunk::try_append` (add chunk) still uses `memchr_iter`: the SIMD flatten writes junk slots past the real ones, which would land in another writer's reservation. Pastes up to 64 KiB with many newlines pay the old per-hit cost. Only worth changing (temporary buffer + copy) if a profile shows it.
+### W8. Small items (W8a and W8c are done, see Done)
 - **W8b** Typing 1.2-1.3x gap against ropey 2 beta: would need in-place mutation when the root is unshared (`Arc::get_mut` down the path). In an editor with undo the old versions stay alive so the copy is needed anyway. Low value, high risk: skip unless W1 and W7 are done.
-- **W8c** `char_count` and friends scan on demand (no char cache, D15): only look at a SIMD char counter (`str_indices`) if those APIs show up in an editor profile.
 - **W8d** Housekeeping (not performance work): the harness repo is not committed and vendors Zed's GPL-3.0-or-later `rope`: never publish it as is. pt-edit with mimalloc was never benchmarked end to end (the gain is the library-level measurement).
 
 ## Done (details in `docs/`)
+
+- **W8a add-chunk newline index** (uncommitted): `Chunk::try_append` uses `newlines::positions_callback` (callback per hit, offsets written into the reserved slots, guard `k < lf`): pastes of 1-64 KiB with dense newlines 1.5-3.5x faster, small ones unchanged. Rejected: temporary buffer + threshold (heuristic, 5-8% slower at 256 B, faster only on 64 KiB dense), `positions` built on the callback (+66% on Rust sources). Hot paths +2-3% (noise).
+- **W8c `char_to_offset`** (uncommitted): `char_count` / `offset_to_char` already 0.04 ns/B, no SIMD counter needed; `char_to_offset` skips big chunks in 4096-byte blocks, 0.72-1.02 -> 0.084 ns/B.
 
 - **W2 clustered batches (D17)** (uncommitted): `Text::rebuilt_cluster` rebuilds only the span between the first and last edit when the batch is sparse and has at least 6 edits (`CLUSTER_MIN_EDITS`); fragmented clustered 6/15/51 edits 424/442/428 -> 340/208/114 ns per edit (1.25x/2.1x/3.8x). The first version cost +10% at 4 clustered edits and 128 scattered edits (failed attempt, break-even of two splits and two joins): fixed by the minimum and an O(1) span-over-half rejection (details and rejected variants in `benchmarks.md`). Hot paths unchanged (12 alternating rounds). Coverage 100%, clippy clean, Miri on the batch and `pieces_in` tests (before the last gate change, which is safe Rust only).
 - **W3 noise (3 runs per corpus and allocator)**: section "Noise of the cross-library harness" in `benchmarks.md`. Typing gap against ropey 2 beta is real on the system allocator (1.16-1.30x) and nearly closed with mimalloc; paste and random edits on the system allocator are not established, with mimalloc piece-tree leads by 1.3x.

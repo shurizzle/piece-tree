@@ -16,6 +16,13 @@
 //! 1000 bytes to a single line without newlines: faster everywhere except that last case, which
 //! ties (`benchmarks.md`), so there is no density heuristic and no memchr fallback.
 //!
+//! `positions_callback` is the same scan without the buffer: it loops over the set bits of each
+//! mask and calls back once per hit, for callers that place the offsets themselves (`Chunk::try_append`
+//! writes them straight into its reserved slots). That loop is what `flatten` avoids, so it is
+//! slower than `positions` on irregular text (Rust sources 0.103 -> 0.171 ns/B when `positions`
+//! was built on it, `benchmarks.md`) and `positions` keeps `flatten`; `try_append` handles short
+//! texts, where it wins.
+//!
 //! `mask64` is the only architecture specific part: NEON on aarch64 and SSE2 on x86_64 (both
 //! baseline there, no runtime detection). Everything else, and Miri (which does not run the
 //! intrinsics), uses the portable SWAR mask, plain integer arithmetic.
@@ -34,25 +41,55 @@ pub(crate) fn positions(bytes: &[u8]) -> Vec<u32> {
     positions_by(bytes, mask64)
 }
 
-/// `positions` with the mask given (tests run the native and the SWAR one on the same inputs).
-fn positions_by(bytes: &[u8], mask: impl Fn(&[u8; 64]) -> u64) -> Vec<u32> {
-    debug_assert!(u32::try_from(bytes.len()).is_ok());
-    // One slot per 64 bytes is enough for sparse text; denser text grows it by doubling. Unused
-    // capacity is never touched, so it costs address space, not memory.
-    let mut out: Vec<u32> = Vec::with_capacity(bytes.len() / 64 + 64);
-    let mut base = 0u32;
+/// Calls `f(i)` for every `\n` at offset `i` of `bytes`, ascending: the same scan as `positions`
+/// for callers that place the offsets themselves (no temporary buffer, and `f` only ever sees real
+/// hits, so a caller may write into slots it does not own past the last hit's).
+///
+/// `bytes.len()` must fit in `u32` like for `positions`.
+#[inline(always)]
+pub(crate) fn positions_callback(bytes: &[u8], f: impl FnMut(usize)) {
+    each_by(bytes, mask64, f);
+}
+
+/// `positions_callback` with the mask given.
+#[inline(always)]
+fn each_by(bytes: &[u8], mask: impl Fn(&[u8; 64]) -> u64, mut f: impl FnMut(usize)) {
+    blocks_by(bytes, mask, |mut m, base| {
+        while m != 0 {
+            f(base + m.trailing_zeros() as usize);
+            m &= m - 1;
+        }
+    });
+}
+
+/// Calls `sink(mask, base)` for every 64-byte block of `bytes` (the last one zero padded), where
+/// bit `i` of `mask` is set when byte `base + i` is `\n`. The one block loop of the module: the
+/// sink decides how the mask becomes offsets (`flatten` for `positions`, a loop per hit for
+/// `positions_callback`) and is inlined into it.
+#[inline(always)]
+fn blocks_by(bytes: &[u8], mask: impl Fn(&[u8; 64]) -> u64, mut sink: impl FnMut(u64, usize)) {
+    let mut base = 0usize;
     let (blocks, rest) = bytes.as_chunks::<64>();
     for block in blocks {
-        push_block(&mut out, mask(block), base);
-        // Cannot overflow: `base + 64 <= bytes.len() <= u32::MAX` after a full block.
+        sink(mask(block), base);
         base += 64;
     }
     if !rest.is_empty() {
         // Zero padding is never `\n`, so the padded block reports only real hits.
         let mut pad = [0u8; 64];
         pad[..rest.len()].copy_from_slice(rest);
-        push_block(&mut out, mask(&pad), base);
+        sink(mask(&pad), base);
     }
+}
+
+/// `positions` with the mask given (tests run the native and the SWAR one on the same inputs).
+fn positions_by(bytes: &[u8], mask: impl Fn(&[u8; 64]) -> u64) -> Vec<u32> {
+    debug_assert!(u32::try_from(bytes.len()).is_ok());
+    // One slot per 64 bytes is enough for sparse text; denser text grows it by doubling. Unused
+    // capacity is never touched, so it costs address space, not memory.
+    let mut out: Vec<u32> = Vec::with_capacity(bytes.len() / 64 + 64);
+    // Cannot overflow `u32`: `base + 64 <= bytes.len() <= u32::MAX` after a full block.
+    blocks_by(bytes, mask, |m, base| push_block(&mut out, m, base as u32));
     // Every test (all debug builds) checks the whole result against memchr's counter.
     debug_assert_eq!(out.len(), memchr_iter(b'\n', bytes).count(), "newline scan disagrees with memchr");
     out
@@ -197,6 +234,16 @@ mod tests {
         let expected = naive(bytes);
         assert_eq!(positions(bytes), expected, "native mask, {what}");
         assert_eq!(positions_by(bytes, mask64_swar), expected, "swar mask, {what}");
+        let collect = |mask: &dyn Fn(&[u8; 64]) -> u64| {
+            let mut got = Vec::new();
+            each_by(bytes, mask, |i| got.push(i as u32));
+            got
+        };
+        assert_eq!(collect(&mask64), expected, "callback, native mask, {what}");
+        assert_eq!(collect(&mask64_swar), expected, "callback, swar mask, {what}");
+        let mut via_public = Vec::new();
+        positions_callback(bytes, |i| via_public.push(i as u32));
+        assert_eq!(via_public, expected, "positions_callback, {what}");
     }
 
     #[test]

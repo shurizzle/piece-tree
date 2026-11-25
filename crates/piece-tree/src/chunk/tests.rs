@@ -82,6 +82,29 @@ fn appends_are_contiguous_and_published() {
 }
 
 #[test]
+fn appends_index_newlines_across_blocks() {
+    // Block boundaries (64 bytes) and a partial last block, at a nonzero base offset.
+    for len in [1, 63, 64, 65, 255, 256] {
+        let s: String = (0..len).map(|i| if i % 7 == 6 { '\n' } else { 'x' }).collect();
+        let lf = s.matches('\n').count();
+        let c = Chunk::for_add(None, len + 3, lf + 1);
+        c.try_append("ab\n", 1, None).unwrap();
+        let at = c.try_append(&s, lf, None).unwrap();
+        let want: Vec<u32> = (0..len as u32).filter(|i| i % 7 == 6).map(|i| 3 + i).collect();
+        assert_eq!(read(&c, at, len, lf), (s.as_str(), &want[..]));
+    }
+}
+
+/// A wrong `lf` never writes past the slots reserved for it (the debug assertion then flags it).
+#[cfg(debug_assertions)]
+#[test]
+#[should_panic(expected = "disagrees with the newline scan")]
+fn append_with_too_small_lf_stays_in_its_slots() {
+    let c = Chunk::for_add(None, 4, 1);
+    c.try_append("a\nb\n", 1, None).unwrap();
+}
+
+#[test]
 fn conditional_append_requires_the_published_end() {
     let c = Chunk::for_add(None, 1, 0);
     c.try_append("ab", 0, None).unwrap();

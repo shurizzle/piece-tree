@@ -151,9 +151,18 @@ impl Chunk {
         // SAFETY: the range is inside the byte area (capacity checked) and was
         // reserved by this call only; no piece references it yet.
         unsafe { ptr::copy_nonoverlapping(s.as_ptr(), self.bytes_ptr().add(start.len as usize), s.len()) };
-        for (k, i) in memchr_iter(b'\n', s.as_bytes()).enumerate() {
-            // SAFETY: `start.nl + k < nl_cap` (capacity checked); slot reserved by this call.
-            unsafe { self.nl_ptr().add(start.nl as usize + k).write(start.len + i as u32) };
+        if lf > 0 {
+            let (slots, mut k) = (start.nl as usize, 0);
+            crate::newlines::positions_callback(s.as_bytes(), |i| {
+                // `lf` is the caller's count; never write past the slots reserved for it.
+                if k < lf {
+                    // SAFETY: `start.nl + k < start.nl + lf <= nl_cap` (capacity checked); slot
+                    // reserved by this call.
+                    unsafe { self.nl_ptr().add(slots + k).write(start.len + i as u32) };
+                }
+                k += 1;
+            });
+            debug_assert_eq!(k, lf, "`lf` disagrees with the newline scan");
         }
         Some(start)
     }

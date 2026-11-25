@@ -268,7 +268,22 @@ Prototype, newline offsets only (ns/B, 32 MB texts, same output asserted against
 
 **Rejected: choosing the scan by sampled mean line length.** Built and tested first (mask below a threshold, `memchr_iter` above). Calibrated on lines of equal length it gave thresholds of ~160 B (NEON) and ~32-64 B (SWAR); with exponentially distributed lengths the crossovers are ~450 B and ~190 B, because equal lengths make the per-hit iterators' branches predictable. Dropped when the early-out version proved never slower than `memchr_iter` at any length. **Lesson**: calibrate on line-length distributions of real text, not on equal-length lines.
 
-`Chunk::try_append` (add chunk) keeps `memchr_iter`: it cannot write junk slots past its reserved range, and appends are small. x86_64 was only run under QEMU emulation (SSE2, correctness, not speed), so the x86_64 numbers are unknown. AVX2 and AVX-512BW are not implemented and **still have to be tried on a real x86_64 host** (procedure and acceptance criteria in D16). Other architectures (wasm32, 32-bit x86, loongarch64, s390x, riscv64, powerpc64, `std::simd`) are listed in D16 with their `std::arch` status, also still to try.
+**`Chunk::try_append` (add chunk, W8a).** It kept `memchr_iter` (12 ns per newline) because the SIMD flatten writes junk slots past the real ones, which would land in another writer's reservation. Now it uses `newlines::positions_callback`, a scan that calls back once per hit, and writes each offset straight into its reserved slot (guarded by `k < lf`): no temporary buffer, no junk, no size threshold. Scratch program `examples/paste.rs` of the harness (`Text::insert` of N bytes with exponential line lengths of the given mean at random offsets of a 10 MB text, ns per paste, min of 6 alternating rounds), HEAD against the new code:
+
+| paste | mean 8 | mean 20 | mean 60 | mean 400 |
+|---|---|---|---|---|
+| 256 B | 1047 -> 961 | 938 -> 945 | 908 -> 938 | 890 -> 919 |
+| 1 KiB | 1484 -> 898 (0.61x) | 1055 -> 835 (0.79x) | 837 -> 816 | 750 -> 792 |
+| 4 KiB | 4471 -> 1581 (0.35x) | 2814 -> 1229 (0.44x) | 1389 -> 921 (0.66x) | 874 -> 845 |
+| 64 KiB | 67057 -> 19583 (0.29x) | 44868 -> 15435 (0.34x) | 20921 -> 11919 (0.57x) | 7525 -> 5995 (0.80x) |
+
+Rows of 256 B and sparse text move by +-6% in both directions (code placement, same as the other rows without newline work). Hot paths of the A/B (`edits` example, 12 alternating rounds, min / median): paste 594 / 601 -> 609 / 615, random edits 603 / 619 -> 621 / 643, typing 60.9 -> 60.2, backspace 52.1 -> 51.4, `line()` 4.0 -> 4.0: +2-3%, inside the noise of two binaries.
+
+Rejected in W8a: (1) **temporary buffer + copy** (`positions` into a `Vec`, then copy with the base added): needs a size threshold because the allocation costs +5-8% at 256 B (kept at 1024 B, `SIMD_SCAN_MIN`); at 64 KiB it is faster than the callback (mean 20: 10.0 against 15.4 us) but slower at 1-4 KiB (1.04-1.22x of the callback), and the threshold is a heuristic. (2) **`positions` built on the callback** (so that one scan serves both): Rust sources 0.103 -> 0.171 ns/B (+66%), exponential line lengths of mean 100 +9%, equal-length lines (synthetic) 0.098 -> 0.063 and CJK 0.064 -> 0.042 (the loop over set bits predicts well there): `flatten`'s 8 unconditional writes are what keeps irregular text fast (module doc of `newlines.rs`), so `positions` keeps it. The callback pays that misprediction once per block, which is why it loses to the buffer only on big, dense pastes (64 KiB with a line every 20 bytes).
+
+Both scans share one block loop (`blocks_by`, the sink gets `(mask, base)`): `positions` passes `push_block` (`flatten`), `positions_callback` a loop per hit. A/B of that refactor against the version with two block loops, 5 alternating rounds, min: load 0.102-0.034 ns/B on every density row, 1.00x (Rust sources 0.99x); paste 0.94-1.00x (noise).
+
+**`char_to_offset` (W8c).** `char_count` and `offset_to_char` already run at 0.040 ns/B (2.1 ms for 50 MB, the speed of `chars().count()` on a `&str`), so no SIMD char counter (`str_indices`) is needed. `char_to_offset` took 0.72 (ASCII) / 0.85 (mixed) / 1.02 (CJK) ns/B: after counting the chunks before the target it walked `char_indices().nth(left)` through the whole target chunk, and a loaded text is one chunk. It now skips the chunk in blocks of `CHAR_SKIP_BLOCK` (4096) bytes counted with `chars().count()` and walks chars only in the last block: 0.082-0.084 ns/B (9-12x, 4 ms for 50 MB). Block sizes of 4096 and 65536 give the same time, so the remaining 2x over a plain count is not per-block overhead. Scratch program `examples/chars.rs` of the harness, min of 9, 3 alternating runs per version.
 
 ## Batch edits (`Text::apply_edits`, D17)
 

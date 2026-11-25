@@ -18,6 +18,8 @@ pub(crate) type Span = (Range<usize>, Range<usize>);
 /// edits (below that its fixed cost loses).
 const REBUILD_MIN_EDITS: usize = 3;
 const REBUILD_PIECES_PER_EDIT: usize = 10;
+/// `char_to_offset` skips big chunks in blocks of about this many bytes (benchmarks.md).
+const CHAR_SKIP_BLOCK: usize = 4096;
 /// Fewest edits for the clustered rebuild (`Text::rebuilt_cluster`): it pays two splits and two
 /// joins (~4 path copies) on top of the span, so it lost 12% at 4 edits and won 20% at 6
 /// (benchmarks.md).
@@ -298,7 +300,21 @@ impl Text {
         for c in self.chunks() {
             let n = c.chars().count();
             if left < n {
-                return base + c.char_indices().nth(left).expect("left < n").0;
+                // A loaded text is one huge chunk: skip it in blocks counted at memory speed
+                // (`chars().count()`), and walk chars (~20x slower per byte) only in the last one.
+                let (mut pos, mut left) = (0, left);
+                while c.len() - pos > CHAR_SKIP_BLOCK {
+                    let mut end = pos + CHAR_SKIP_BLOCK;
+                    while !c.is_char_boundary(end) {
+                        end += 1;
+                    }
+                    let k = c[pos..end].chars().count();
+                    if left < k {
+                        break;
+                    }
+                    (pos, left) = (end, left - k);
+                }
+                return base + pos + c[pos..].char_indices().nth(left).expect("left < n").0;
             }
             left -= n;
             base += c.len();
