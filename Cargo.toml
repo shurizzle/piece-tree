@@ -1,0 +1,19 @@
+[workspace]
+resolver = "3"
+members = ["crates/piece-tree", "crates/pt-edit"]
+exclude = ["vendor/regex-cursor"]
+
+# regex-cursor 0.1.5 with a fix for literal prefilter searches restarting from
+# the wrong chunk; see vendor/regex-cursor/PATCHES.md.
+[patch.crates-io]
+regex-cursor = { path = "vendor/regex-cursor" }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+debug = "line-tables-only"
+
+[profile.bench]
+lto = "fat"
+codegen-units = 1
+debug = "line-tables-only"

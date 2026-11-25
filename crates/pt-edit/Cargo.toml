@@ -1,0 +1,14 @@
+[package]
+name = "pt-edit"
+version = "0.1.0"
+edition = "2024"
+description = "Minimal terminal editor built on piece-tree"
+license = "MIT"
+
+[dependencies]
+piece-tree = { path = "../piece-tree" }
+crossterm = "0.29"
+unicode-width = "0.2"
+memchr = "2.8"
+base64 = "0.22"
+terminal-colorsaurus = "1.0"

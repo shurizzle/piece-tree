@@ -1,0 +1,18 @@
+[package]
+name = "piece-tree"
+version = "0.1.0"
+edition = "2024"
+description = "Persistent piece tree text buffer (join-based AVL) with cached line breaks"
+license = "MIT"
+
+[dependencies]
+memchr = "2.8.3"
+regex-cursor = { version = "0.1.5", default-features = false, features = ["perf-inline"] }
+triomphe = "0.1.17"
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dev-dependencies]
+regex = "1.13.2"
