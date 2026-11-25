@@ -27,6 +27,8 @@
 | Vim subset only | No vim regex syntax (Rust `regex` only), `gv`, uppercase (file) marks, jump list, `-` small-delete register, block `O`, multi-cursor | Add on demand |
 | Tag objects scan the whole text (`shortcut:` in `editor/objects.rs`) | `it`/`at` slice and scan the text on every use | Scan outward from the cursor |
 | `"+`/`"*` paste the editor's own copy (`shortcut:` in `editor/registers.rs`) | OSC 52 is write-only in most terminals: text copied elsewhere cannot be pasted with `"+p` | Read the clipboard with an OSC 52 query (terminals without OSC 52 are unsupported) |
+| `:p` shows one line (`shortcut:` in `editor/ex.rs`) | `:p` and `:g/pat/` show only the last line printed (one message row) | A message pager |
+| Ex corner cases (`shortcut:` in `editor/ex.rs`, `editor.rs`) | Marks on lines moved by `:m` stay where the lines were; `:retab` always writes tabs plus spaces (no `expandtab`); the `c` flag of `:s` is refused under `:g`/`:normal`; `:r` copies the file into the text; `:retab` counts one column per char | Marks that follow lines; `expandtab` (M8); a confirm loop that waits; `Text::append_text`; display widths |
 | Macros apart from text registers | `"ap` does not paste macro `a`, `"ay` does not edit it | Store macros as register text |
 | Marks in removed text | A mark inside removed text moves to the removal's start, and undoing the removal does not bring it back inside (vim keeps the line) | Keep a line-relative position for marks in removed lines |
 | Block columns are chars (`Ctrl+V`) | Tabs and wide chars make the block ragged on screen; the cursor end follows Normal clamping on short lines | Screen-column (virtual) blocks |

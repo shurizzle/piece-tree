@@ -1,29 +1,11 @@
 //! `:[range]s/pat/rep/[flags]` parsing.
 
-/// Start of a line address.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum Base {
-    /// `.`
-    Current,
-    /// `$`
-    Last,
-    /// 1-based line number.
-    Line(usize),
-    /// `'x`
-    Mark(char),
-}
-
-/// A line address: a base plus a `+N`/`-N` offset.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) struct Addr {
-    pub base: Base,
-    pub offset: isize,
-}
+use super::ex::{LineRange, field, is_delim, keep_escape};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Sub {
     /// First and last line; `None` is the cursor line.
-    pub range: Option<(Addr, Addr)>,
+    pub range: Option<LineRange>,
     /// Empty: reuse the last search.
     pub pat: String,
     pub rep: String,
@@ -44,120 +26,30 @@ pub(super) struct Sub {
 impl Sub {
     /// `&` (cursor line) or `g&` (whole text): the last substitute again, `g&` keeping its flags.
     pub fn again(whole: bool) -> Sub {
-        let range = whole.then_some((Addr { base: Base::Line(1), offset: 0 }, Addr { base: Base::Last, offset: 0 }));
+        let range = whole.then(LineRange::whole);
         Sub { range, pat: String::new(), rep: String::new(), all: false, ignore_case: None, confirm: false, count: false, repeat: true, keep: whole }
     }
 }
 
-fn number(s: &mut &str) -> Option<usize> {
-    let end = s.find(|c: char| !c.is_ascii_digit()).unwrap_or(s.len());
-    let (digits, rest) = s.split_at(end);
-    *s = rest;
-    digits.parse().ok()
-}
-
-fn addr(s: &mut &str) -> Result<Option<Addr>, String> {
-    let base = if let Some(rest) = s.strip_prefix('.') {
-        *s = rest;
-        Some(Base::Current)
-    } else if let Some(rest) = s.strip_prefix('$') {
-        *s = rest;
-        Some(Base::Last)
-    } else if let Some(rest) = s.strip_prefix('\'') {
-        let mut it = rest.chars();
-        let m = it.next().ok_or("Invalid range")?;
-        *s = it.as_str();
-        Some(Base::Mark(m))
-    } else if s.starts_with(|c: char| c.is_ascii_digit()) {
-        Some(Base::Line(number(s).ok_or("Invalid range")?))
-    } else {
-        None
-    };
-    let mut offset = 0isize;
-    let mut any = false;
-    while let Some(sign) = s.chars().next().filter(|c| matches!(c, '+' | '-')) {
-        *s = &s[1..];
-        let n = number(s).unwrap_or(1).min(isize::MAX as usize) as isize;
-        offset = offset.saturating_add(if sign == '+' { n } else { -n });
-        any = true;
-    }
-    Ok(match base {
-        Some(base) => Some(Addr { base, offset }),
-        // `+2` alone counts from the cursor line.
-        None if any => Some(Addr { base: Base::Current, offset }),
-        None => None,
-    })
-}
-
-/// Text up to the next unescaped `d`; `\d` stands for `d`, `unescape` maps other `\x` pairs.
-/// Returns the text and whether the delimiter was found.
-fn field(s: &mut &str, d: char, unescape: impl Fn(char, &mut String)) -> (String, bool) {
-    let mut out = String::new();
-    let mut it = s.char_indices();
-    while let Some((i, c)) = it.next() {
-        if c == d {
-            *s = &s[i + c.len_utf8()..];
-            return (out, true);
+/// Parses `:s` and `:&` from a parsed command line; `None` for other commands (and `:s` with
+/// an invalid delimiter).
+pub(super) fn parse(range: Option<LineRange>, name: &str, arg: &str) -> Option<Result<Sub, String>> {
+    let (pat, rep, repeat, flags) = match name {
+        "&" => (String::new(), String::new(), true, arg),
+        "s" => {
+            let d = arg.chars().next().filter(|&d| is_delim(d))?;
+            let mut s = &arg[d.len_utf8()..];
+            let (pat, _) = field(&mut s, d, keep_escape);
+            let (rep, _) = field(&mut s, d, |c, out| match c {
+                'n' => out.push('\n'),
+                't' => out.push('\t'),
+                // `$` is the group syntax of the replacement, so a literal one is `$$`.
+                '$' => out.push_str("$$"),
+                c => out.push(c),
+            });
+            (pat, rep, false, s)
         }
-        if c == '\\' {
-            match it.next() {
-                Some((_, n)) if n == d => out.push(d),
-                Some((_, n)) => unescape(n, &mut out),
-                None => out.push('\\'),
-            }
-        } else {
-            out.push(c);
-        }
-    }
-    *s = "";
-    (out, false)
-}
-
-/// Parses a substitute command; `None` when `cmd` is not one (`:set`, `:3`, `:q`).
-pub(super) fn parse(cmd: &str) -> Option<Result<Sub, String>> {
-    let mut s = cmd.trim_start();
-    let range = if let Some(rest) = s.strip_prefix('%') {
-        s = rest;
-        Some((Addr { base: Base::Line(1), offset: 0 }, Addr { base: Base::Last, offset: 0 }))
-    } else {
-        match addr(&mut s) {
-            Err(e) => return Some(Err(e)),
-            Ok(None) => None,
-            Ok(Some(a)) => match s.strip_prefix(',') {
-                Some(rest) => {
-                    s = rest;
-                    match addr(&mut s) {
-                        Ok(Some(b)) => Some((a, b)),
-                        Ok(None) => return Some(Err("Invalid range".into())),
-                        Err(e) => return Some(Err(e)),
-                    }
-                }
-                None => Some((a, a)),
-            },
-        }
-    };
-    let (pat, rep, repeat, flags) = if let Some(rest) = s.strip_prefix('&') {
-        (String::new(), String::new(), true, rest)
-    } else {
-        let rest = s.strip_prefix('s')?;
-        let d = rest.chars().next()?;
-        if d.is_alphanumeric() || d.is_whitespace() || matches!(d, '\\' | '"' | '|') {
-            return None;
-        }
-        let mut s = &rest[d.len_utf8()..];
-        // Other escapes belong to the regex (`\d`, `\b`): keep them.
-        let (pat, _) = field(&mut s, d, |c, out| {
-            out.push('\\');
-            out.push(c);
-        });
-        let (rep, _) = field(&mut s, d, |c, out| match c {
-            'n' => out.push('\n'),
-            't' => out.push('\t'),
-            // `$` is the group syntax of the replacement, so a literal one is `$$`.
-            '$' => out.push_str("$$"),
-            c => out.push(c),
-        });
-        (pat, rep, false, s)
+        _ => return None,
     };
     let mut sub = Sub { range, pat, rep, all: false, ignore_case: None, confirm: false, count: false, repeat, keep: false };
     for (i, c) in flags.char_indices() {
@@ -178,14 +70,17 @@ pub(super) fn parse(cmd: &str) -> Option<Result<Sub, String>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{super::ex, *};
 
-    fn sub(range: Option<(Addr, Addr)>, pat: &str, rep: &str, all: bool, ignore_case: Option<bool>) -> Option<Result<Sub, String>> {
-        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false }))
+    fn parse(cmd: &str) -> Option<Result<Sub, String>> {
+        match ex::parse(cmd) {
+            Ok(c) => super::parse(c.range, c.name, c.arg),
+            Err(e) => Some(Err(e)),
+        }
     }
 
-    fn at(base: Base, offset: isize) -> Addr {
-        Addr { base, offset }
+    fn sub(range: Option<LineRange>, pat: &str, rep: &str, all: bool, ignore_case: Option<bool>) -> Option<Result<Sub, String>> {
+        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false }))
     }
 
     #[test]
@@ -202,6 +97,7 @@ mod tests {
         assert_eq!(parse(r"s/a\"), sub(None, r"a\", "", false, None));
         assert_eq!(parse("s//x/"), sub(None, "", "x", false, None));
         assert_eq!(parse("s/a/b/gx"), Some(Err("Trailing characters: x".into())));
+        assert_eq!(parse("%s/a/b/"), sub(Some(LineRange::whole()), "a", "b", false, None));
     }
 
     #[test]
@@ -213,21 +109,7 @@ mod tests {
         let r = parse("%&").unwrap().unwrap();
         assert!(r.repeat && !r.keep && r.range.is_some());
         assert_eq!(parse("&x"), Some(Err("Trailing characters: x".into())));
-    }
-
-    #[test]
-    fn ranges() {
-        let (one, last, cur) = (at(Base::Line(1), 0), at(Base::Last, 0), at(Base::Current, 0));
-        assert_eq!(parse("%s/a/b/"), sub(Some((one, last)), "a", "b", false, None));
-        assert_eq!(parse("3s/a/b/"), sub(Some((at(Base::Line(3), 0), at(Base::Line(3), 0))), "a", "b", false, None));
-        assert_eq!(parse(".,$s/a/b/"), sub(Some((cur, last)), "a", "b", false, None));
-        assert_eq!(parse("'<,'>s/a/b/"), sub(Some((at(Base::Mark('<'), 0), at(Base::Mark('>'), 0))), "a", "b", false, None));
-        assert_eq!(parse(".+1,$-2s/a/b/"), sub(Some((at(Base::Current, 1), at(Base::Last, -2))), "a", "b", false, None));
-        assert_eq!(parse("+,++s/a/b/"), sub(Some((at(Base::Current, 1), at(Base::Current, 2))), "a", "b", false, None));
-        assert_eq!(parse(" 2,3s/a/b/"), sub(Some((at(Base::Line(2), 0), at(Base::Line(3), 0))), "a", "b", false, None));
-        for bad in ["2,s/a/b/", "'", "99999999999999999999999s/a/b/", "1,'"] {
-            assert_eq!(parse(bad), Some(Err("Invalid range".into())), "{bad}");
-        }
+        assert_eq!(Sub::again(true).range, Some(LineRange::whole()));
     }
 
     #[test]

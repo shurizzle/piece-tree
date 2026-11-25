@@ -1396,7 +1396,8 @@ fn substitute_cursor_messages_and_undo() {
     assert_eq!(run(s, ":%s/(/z/\n").msg.split(':').next(), Some("Invalid pattern"));
     assert_eq!(run(s, ":s//z/\n").msg, "No previous regular expression");
     assert_eq!(run(s, ":9s/a/z/\n").msg, "Invalid range");
-    assert_eq!(run(s, ":0s/a/z/\n").msg, "Invalid range");
+    // Line 0 counts as line 1 (vim).
+    assert_eq!(text(&run(s, ":0s/a/z/\n")), text(&run(s, ":1s/a/z/\n")));
     assert_eq!(run(s, ":'qs/a/z/\n").msg, "Mark not set");
     assert_eq!(run(s, ":s/a/z/q\n").msg, "Trailing characters: q");
     // `.` does not repeat it: it repeats the `x` before.
@@ -1721,4 +1722,199 @@ fn first_non_blank_reads_past_long_indents() {
     assert_eq!(e.first_non_blank(0), 501);
     assert_eq!((e.first_non_blank(1), e.first_non_blank(2), e.first_non_blank(3), e.first_non_blank(4)), (2, 501, 0, 0));
     assert_eq!(pos(&run(&format!("{indent}x"), "$0^")), (0, 501));
+}
+
+#[test]
+fn ex_addresses() {
+    let s = "a\nb\nc\nd\ne";
+    assert_eq!(text(&run(s, ":2,3d\n")), "a\nd\ne");
+    assert_eq!(text(&run(s, ":2;+1d\n")), "a\nd\ne");
+    assert_eq!(text(&run(s, ":2,+1d\n")), "a\nc\nd\ne");
+    assert_eq!(text(&run(s, ":$d\n")), "a\nb\nc\nd");
+    assert_eq!(text(&run(s, ":/c/d\n")), "a\nb\nd\ne");
+    assert_eq!(text(&run(s, ":?d?d\n")), "a\nb\nc\ne");
+    assert_eq!(text(&run(s, ":/b/;/d/d\n")), "a\ne");
+    assert_eq!(text(&run(s, "/c\n:\\/d\n")), "a\nb\nd\ne");
+    assert_eq!(text(&run(s, ":s/d/x/\n:\\&d\n")), "a\nb\nc\ne");
+    assert_eq!(run(s, ":/zz/d\n").msg, "Pattern not found: zz");
+    assert_eq!(run(s, ":\\/d\n").msg, "No previous regular expression");
+    assert_eq!(run(s, ":9d\n").msg, "Invalid range");
+    // `/pat/` sets the last search; `^` matches at line starts.
+    let e = run("xa\na", ":/^a/\n");
+    assert_eq!((e.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
+    assert_eq!(pos(&run(s, ":'q\n")), (0, 0));
+    assert_eq!(run(s, ":'q\n").msg, "Mark not set");
+    assert_eq!(run(s, ":3|\n").msg, "Not an editor command: 3|");
+}
+
+#[test]
+fn ex_delete_yank_move_copy() {
+    let s = "a\nb\nc\nd\ne";
+    let e = run(s, ":2,3d\n");
+    assert_eq!((reg(&e), pos(&e)), (("b\nc\n".into(), true), (1, 0)));
+    let e = run(s, ":2d x 2\n");
+    assert_eq!((text(&e).as_str(), e.regs.get('x').map(|r| r.text.as_str())), ("a\nd\ne", Some("b\nc\n")));
+    assert_eq!(run(s, ":d %\n").msg, "Invalid register: %");
+    let e = run(s, "j:3,4y\n");
+    assert_eq!((text(&e).as_str(), reg(&e), pos(&e)), (s, ("c\nd\n".into(), true), (1, 0)));
+    let e = run(s, ":2,3m0\n");
+    assert_eq!((text(&e).as_str(), e.line), ("b\nc\na\nd\ne", 1));
+    let e = run(s, ":1m$\n");
+    assert_eq!((text(&e).as_str(), e.line), ("b\nc\nd\ne\na", 4));
+    let e = run(s, ":1m2\n");
+    assert_eq!((text(&e).as_str(), e.line), ("b\na\nc\nd\ne", 1));
+    assert_eq!(text(&run(s, ":2,3m1\n")), s);
+    assert_eq!(run(s, ":1,2m1\n").msg, "Cannot move a range of lines into itself");
+    assert_eq!(run(s, ":m\n").msg, "Invalid address");
+    let e = run(s, ":1t.\n");
+    assert_eq!((text(&e).as_str(), e.line), ("a\na\nb\nc\nd\ne", 1));
+    let e = run(s, ":1,2t$\n");
+    assert_eq!((text(&e).as_str(), e.line), ("a\nb\nc\nd\ne\na\nb", 6));
+    let e = run(s, ":3co0\n");
+    assert_eq!((text(&e).as_str(), e.line), ("c\na\nb\nc\nd\ne", 0));
+    // One undo step each; `.` does not repeat them.
+    assert_eq!(text(&run(s, ":2,3m0\nu")), s);
+    assert_eq!(text(&run("ab\nc\nd", "x:3d\n.")), "b\n");
+}
+
+#[test]
+fn ex_shift_join_print() {
+    let e = run("a\nb\nc", ":>> 2\n");
+    assert_eq!((text(&e).as_str(), e.line), ("        a\n        b\nc", 1));
+    assert_eq!(text(&run("        a", ":<\n")), "    a");
+    assert_eq!(run("a", ":> 0\n").msg, "Positive count required");
+    let s = "a\n  b\nc";
+    assert_eq!(text(&run(s, ":j\n")), "a b\nc");
+    assert_eq!(text(&run(s, ":1,3j\n")), "a b c");
+    assert_eq!(text(&run(s, ":j!\n")), "a  b\nc");
+    assert_eq!(text(&run(s, ":j 3\n")), "a b c");
+    assert_eq!(text(&run(s, ":3j\n")), s);
+    let e = run("a\nb\nc", ":2p\n");
+    assert_eq!((e.msg.as_str(), e.line), ("b", 1));
+    assert_eq!(run("a\nb\nc", ":=\n").msg, "3");
+    assert_eq!(run("a\nb\nc", "j:.=\n").msg, "2");
+}
+
+#[test]
+fn ex_normal() {
+    let e = run("a\nb", ":%norm Ax\n");
+    assert_eq!(text(&e), "ax\nbx");
+    assert_eq!(text(&run("a\nb", ":%norm Ax\nu")), "a\nb");
+    assert_eq!(text(&run("abc", ":norm 2x\n")), "c");
+    // An unfinished insert ends as with Esc, still one undo step.
+    let e = run("abc", ":norm ix\n");
+    assert_eq!((text(&e).as_str(), &e.mode), ("xabc", &Mode::Normal));
+    assert_eq!(text(&run("abc", ":norm ix\nu")), "abc");
+    // Lines follow the edits: deleted ones are skipped.
+    assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm dd\n")), "a\nd");
+    assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm jdd\n")), "a\nb\nd");
+    assert_eq!(run("a", ":norm\n").msg, "Argument required");
+    // Not recorded by `q`.
+    let e = run("a\nb", "qq:norm Ax\nq");
+    assert_eq!(e.macros.get(&'q').map(Vec::len), Some(":norm Ax\n".len()));
+}
+
+#[test]
+fn ex_global() {
+    let s = "a\nb\nab\nc";
+    assert_eq!(text(&run(s, ":g/b/d\n")), "a\nc");
+    assert_eq!(text(&run(s, ":v/b/d\n")), "b\nab");
+    assert_eq!(text(&run(s, ":g!/b/d\n")), "b\nab");
+    assert_eq!(text(&run(s, ":2,3g/a/d\n")), "a\nb\nc");
+    assert_eq!(text(&run("a\nb\nc", ":g/^/m0\n")), "c\nb\na");
+    assert_eq!(text(&run("a\nb\nc\nd", ":g/./j\n")), "a b\nc d");
+    assert_eq!(text(&run("a\nb\na", ":g/a/s/a/x/\n")), "x\nb\nx");
+    assert_eq!(text(&run("a\nb\na", ":g/a/s/a/x/\nu")), "a\nb\na");
+    assert_eq!(text(&run("a\nb\na", ":g/a/norm Ax\n")), "ax\nb\nax");
+    assert_eq!(text(&run("a\nb\na", ":g/a/t.\n")), "a\na\nb\na\na");
+    let e = run(s, ":g/b\n");
+    assert_eq!((e.msg.as_str(), e.line), ("ab", 2));
+    assert_eq!(run(s, ":g/zz/d\n").msg, "Pattern not found: zz");
+    assert_eq!(run(s, ":v/./d\n").msg, "Pattern found in every line: .");
+    assert_eq!(run(s, ":g\n").msg, "Regular expression missing from :global");
+    assert_eq!(run(s, ":g/a/g/b/d\n").msg, "Cannot do :global recursive");
+    assert_eq!(run(s, ":g/a/s/a/x/c\n").msg, "The c flag cannot be used here");
+    assert!(!feed(&mut ed(s), ":g/a/q!\n"));
+}
+
+#[test]
+fn ex_sort() {
+    let s = "c\na\nB\nb";
+    assert_eq!(text(&run(s, ":sort\n")), "B\na\nb\nc");
+    assert_eq!(text(&run(s, ":sort i\n")), "a\nB\nb\nc");
+    assert_eq!(text(&run(s, ":sort!\n")), "c\nb\na\nB");
+    assert_eq!(text(&run(s, ":2,3sort\n")), "c\nB\na\nb");
+    assert_eq!(text(&run("b\na\nb\nA", ":sort u\n")), "A\na\nb");
+    assert_eq!(text(&run("b\na\nB\nA", ":sort ui\n")), "a\nb");
+    assert_eq!(text(&run("x10\nx9\ny\n-3", ":sort n\n")), "y\n-3\nx9\nx10");
+    let s = "x,b\ny,a\nz";
+    assert_eq!(text(&run(s, ":sort /,/\n")), "z\ny,a\nx,b");
+    assert_eq!(text(&run(s, ":sort /\\w,/ r\n")), "z\nx,b\ny,a");
+    assert_eq!(text(&run(s, ":sort! /,/\n")), "x,b\ny,a\nz");
+    assert_eq!(run(s, ":sort x\n").msg, "Invalid argument: x");
+    assert_eq!(text(&run(s, ":sort\nu")), s);
+}
+
+#[test]
+fn ex_read_write_saveas() {
+    let dir = temp_dir("ex-files");
+    let (input, out, own) = (dir.join("in"), dir.join("out"), dir.join("own"));
+    fs::write(&input, "1\r\n2\r\n").unwrap();
+    let _ = fs::remove_file(&out);
+    let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
+    feed(&mut e, &format!(":r {}\n", input.display()));
+    assert_eq!((text(&e).as_str(), pos(&e)), ("a\n1\n2\nb\nc", (1, 0)));
+    feed(&mut e, &format!(":0r {}\n", input.display()));
+    assert_eq!(text(&e), "1\n2\na\n1\n2\nb\nc");
+    feed(&mut e, "u");
+    assert_eq!(text(&e), "a\n1\n2\nb\nc");
+    feed(&mut e, ":r /nonexistent/pt-edit\n");
+    assert!(e.msg.starts_with("Can't open file /nonexistent/pt-edit"), "{}", e.msg);
+    let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
+    feed(&mut e, &format!(":2,3w {}\n", out.display()));
+    assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc");
+    feed(&mut e, &format!(":1w {}\n", out.display()));
+    assert_eq!(e.msg, "File exists (add ! to override)");
+    feed(&mut e, &format!(":1w! {}\n", out.display()));
+    assert_eq!(fs::read_to_string(&out).unwrap(), "a\n");
+    feed(&mut e, &format!(":w >> {}\n", out.display()));
+    assert_eq!(fs::read_to_string(&out).unwrap(), "a\na\nb\nc");
+    feed(&mut e, ":2w\n");
+    assert_eq!(e.msg, "Use ! to write partial buffer");
+    feed(&mut e, ":2w!\n");
+    assert_eq!(fs::read_to_string(&own).unwrap(), "b\n");
+    // Line endings follow the document's.
+    let mut e = Editor::new(Document::new("a\r\nb"), own.clone());
+    feed(&mut e, &format!(":w! {}\n", out.display()));
+    assert_eq!(fs::read_to_string(&out).unwrap(), "a\r\nb");
+    // `:sav` edits the new file from now on.
+    let new = dir.join("new");
+    let _ = fs::remove_file(&new);
+    let mut e = Editor::new(Document::new("x"), own.clone());
+    feed(&mut e, "ay\x1b");
+    feed(&mut e, &format!(":sav {}\n", out.display()));
+    assert_eq!(e.msg, "File exists (add ! to override)");
+    feed(&mut e, &format!(":sav {}\n", new.display()));
+    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.path.as_path(), e.is_dirty()), ("xy", new.as_path(), false));
+    feed(&mut e, ":sav\n");
+    assert_eq!(e.msg, "Argument required");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn ex_retab_and_fileformat() {
+    let e = run("\tx", ":retab 8\n");
+    assert_eq!((text(&e).as_str(), e.opts.tabstop), ("    x", 8));
+    assert_eq!(text(&run("        x", ":ret!\n")), "\t\tx");
+    assert_eq!(run("x", ":retab 0\n").msg, "Invalid argument: 0");
+    let mut e = ed("a\nb");
+    feed(&mut e, ":set ff=dos\n");
+    assert_eq!((e.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
+    feed(&mut e, ":set ff?\n");
+    assert_eq!(e.msg, "fileformat=dos");
+    feed(&mut e, ":set ff=mac nu\n");
+    assert_eq!((e.doc.eol(), e.opts.number), (LineEnding::Cr, true));
+    feed(&mut e, ":set ff=unix fileformat\n");
+    assert_eq!((e.msg.as_str(), e.is_dirty()), ("fileformat=unix", false));
+    assert_eq!(run("a", ":set ff=xx\n").msg, "Invalid argument: ff=xx");
 }

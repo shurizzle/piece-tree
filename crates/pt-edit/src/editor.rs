@@ -3,6 +3,7 @@
 //! Key handling never touches the terminal, and rendering builds a `Frame`
 //! before drawing it, so both are tested without a terminal.
 
+mod ex;
 mod layout;
 mod motion;
 mod objects;
@@ -16,7 +17,7 @@ mod substitute;
 use std::{
     collections::HashMap,
     fs,
-    io::{self, BufWriter},
+    io,
     mem,
     ops::Range,
     path::{Path, PathBuf},
@@ -173,8 +174,9 @@ pub struct Editor {
     doc: Document,
     path: PathBuf,
     eol_override: Option<LineEnding>,
-    /// Version last written to disk; dirty is a pointer comparison.
+    /// Version and line ending last written to disk; dirty is a pointer comparison.
     saved: Text,
+    saved_eol: LineEnding,
     /// Cursor line and column, in chars.
     line: usize,
     col: usize,
@@ -250,12 +252,15 @@ pub struct Editor {
     /// undo step; `changed` says it edited the text.
     grouping: bool,
     changed: bool,
+    /// Lines `:g` and `:normal` have still to visit, one entry per nested command.
+    line_marks: Vec<ex::LineMarks>,
 }
 
 impl Editor {
     pub fn new(doc: Document, path: PathBuf) -> Self {
         Self {
             saved: doc.text().clone(),
+            saved_eol: doc.eol(),
             doc,
             path,
             eol_override: None,
@@ -305,6 +310,7 @@ impl Editor {
             quit: false,
             grouping: false,
             changed: false,
+            line_marks: Vec::new(),
         }
     }
 
@@ -319,7 +325,7 @@ impl Editor {
     }
 
     fn is_dirty(&self) -> bool {
-        !self.doc.text().ptr_eq(&self.saved)
+        !self.doc.text().ptr_eq(&self.saved) || self.doc.eol() != self.saved_eol
     }
 
     fn line_count(&self) -> usize {
@@ -431,6 +437,9 @@ impl Editor {
         let edits = self.doc.last_edits();
         for m in self.marks.values_mut() {
             *m = piece_tree::map_offset(edits, *m);
+        }
+        for m in &mut self.line_marks {
+            m.map(edits);
         }
     }
 
@@ -570,7 +579,7 @@ impl Editor {
             'D' => self.normal(Cmd { op: Some('d'), key: '$', arg: None, ..cmd }),
             'C' => self.normal(Cmd { op: Some('c'), key: '$', arg: None, ..cmd }),
             'S' => self.normal(Cmd { op: Some('c'), key: 'c', arg: None, ..cmd }),
-            'J' => self.join(n.max(2) - 1),
+            'J' => self.join(n.max(2) - 1, true),
             'p' => self.paste(true, n),
             'P' => self.paste(false, n),
             'u' => self.undo(n),
@@ -807,16 +816,18 @@ impl Editor {
         self.set_col(self.first_non_blank(first));
     }
 
-    fn join(&mut self, times: usize) {
+    /// Joins `times` lines below the cursor line to it; `spaces`: drop their leading blanks and
+    /// put one space between (`J`), else just remove the line breaks (`:j!`).
+    fn join(&mut self, times: usize, spaces: bool) {
         for _ in 0..times {
             if self.line + 1 >= self.line_count() {
                 break;
             }
             let off = self.line_end_offset(self.line);
             let next = self.doc.text().line(self.line + 1);
-            let trimmed = next.trim_start();
+            let trimmed = if spaces { next.trim_start() } else { &next };
             let blanks = next.len() - trimmed.len();
-            let space = !trimmed.is_empty() && off > self.doc.text().line_to_offset(self.line);
+            let space = spaces && !trimmed.is_empty() && off > self.doc.text().line_to_offset(self.line);
             let col = self.line_chars(self.line);
             self.edit_delete(off..off + 1 + blanks);
             if space {
@@ -1040,7 +1051,7 @@ impl Editor {
             }
             'J' => {
                 self.line = a.0;
-                self.join((b.0 - a.0).max(1));
+                self.join((b.0 - a.0).max(1), true);
             }
             // `visual_key` has set marks `<` and `>` for the range.
             ':' => self.mode = Mode::Command("'<,'>".into()),
@@ -1278,6 +1289,11 @@ impl Editor {
                     if !self.command(&cmd) {
                         self.quit = true;
                     }
+                    // `.` does not repeat `:` commands (vim); a confirm session ends the group itself.
+                    if self.mode != Mode::Confirm {
+                        self.rec_cmd = None;
+                        self.end_command();
+                    }
                 }
                 Mode::Search(typed) => {
                     (self.line, self.col) = self.search_origin;
@@ -1334,65 +1350,10 @@ impl Editor {
         }
     }
 
-    /// Returns false to quit.
-    fn command(&mut self, cmd: &str) -> bool {
-        const DIRTY: &str = "No write since last change (add ! to override)";
-        let cmd = cmd.trim();
-        match cmd {
-            "" => {}
-            "w" => {
-                self.save();
-            }
-            "q" | "e" if self.is_dirty() => self.msg = DIRTY.into(),
-            "q" | "q!" => return false,
-            "e" | "e!" => self.reload(),
-            "wq" => return !self.save(),
-            "x" => return self.is_dirty() && !self.save(),
-            "noh" | "nohlsearch" => self.hl = false,
-            "undol" | "undolist" => self.msg = self.undolist(),
-            _ if let Some(n) = cmd.strip_prefix("go").map(|a| a.trim_start_matches("to").trim()) => match n.parse::<usize>() {
-                Ok(n) => {
-                    self.set_jump();
-                    (self.line, self.col) = self.pos_of(self.byte_pos(n.saturating_sub(1)));
-                    self.want_col = self.col;
-                    self.clamp_normal();
-                }
-                Err(_) if n.is_empty() => {
-                    self.set_jump();
-                    (self.line, self.col) = (0, 0);
-                }
-                Err(_) => self.msg = format!("Invalid argument: {n}"),
-            },
-            _ if let Some((name, arg)) = cmd.split_once(' ').or(Some((cmd, ""))).filter(|(n, _)| {
-                matches!(*n, "earlier" | "ea" | "later" | "lat" | "undo" | "u" | "redo" | "red")
-            }) =>
-            {
-                self.time_travel(name, arg.trim());
-            }
-            _ if let Some(s) = substitute::parse(cmd) => match s {
-                Ok(s) => self.substitute(s),
-                Err(e) => self.msg = e,
-            },
-            _ if cmd == "set" || cmd.starts_with("set ") => {
-                self.msg = self.opts.set(&cmd[3..]).unwrap_or_else(|e| e);
-            }
-            c => match c.parse::<usize>() {
-                Ok(n) => {
-                    self.set_jump();
-                    self.line = n.saturating_sub(1).min(self.line_count() - 1);
-                    self.set_col(self.first_non_blank(self.line));
-                    self.clamp_normal();
-                }
-                Err(_) => self.msg = format!("Not an editor command: {c}"),
-            },
-        }
-        true
-    }
-
     /// `:earlier`/`:later` with a count or a duration (`10s`, `5m`, `1h`, `2d`), `:undo N`
     /// (go to version N), `:undo`/`:redo` alone.
     fn time_travel(&mut self, name: &str, arg: &str) {
-        let back = matches!(name, "earlier" | "ea" | "undo" | "u");
+        let back = matches!(name, "earlier" | "undo");
         let (num, unit) = arg.split_at(arg.find(|c: char| !c.is_ascii_digit()).unwrap_or(arg.len()));
         let n: Option<usize> = if num.is_empty() { Some(1) } else { num.parse().ok() };
         let secs = match unit {
@@ -1406,10 +1367,10 @@ impl Editor {
         let Some(n) = n else { return self.msg = format!("Invalid argument: {arg}") };
         let end = if back { "Already at oldest change" } else { "Already at newest change" };
         match (name, secs) {
-            ("undo" | "u", None) if arg.is_empty() => self.undo(1),
-            ("undo" | "u", None) => self.history(1, |d| d.goto(n), "Already at that change"),
-            ("redo" | "red", None) if arg.is_empty() => self.redo(1),
-            ("undo" | "u" | "redo" | "red", _) => self.msg = format!("Invalid argument: {arg}"),
+            ("undo", None) if arg.is_empty() => self.undo(1),
+            ("undo", None) => self.history(1, |d| d.goto(n), "Already at that change"),
+            ("redo", None) if arg.is_empty() => self.redo(1),
+            ("undo" | "redo", _) => self.msg = format!("Invalid argument: {arg}"),
             (_, Some(s)) => {
                 let d = std::time::Duration::from_secs((n as u64).saturating_mul(s));
                 self.history(1, |doc| if back { doc.earlier_time(d) } else { doc.later_time(d) }, end);
@@ -1471,27 +1432,16 @@ impl Editor {
         out
     }
 
-    /// 1-based address → 0-based line.
-    fn resolve(&self, a: substitute::Addr) -> Result<usize, String> {
-        use substitute::Base;
-        let base = match a.base {
-            Base::Current => self.line,
-            Base::Last => self.line_count() - 1,
-            Base::Line(n) => n.wrapping_sub(1),
-            Base::Mark(m) => self.pos_of(self.mark(m).ok_or("Mark not set")?).0,
-        };
-        base.checked_add_signed(a.offset).filter(|&l| l < self.line_count()).ok_or_else(|| "Invalid range".into())
-    }
-
     /// `:[range]s/pat/rep/[flags]`: one undo step through `Document::replace_matching`.
     fn substitute(&mut self, mut s: substitute::Sub) {
-        let (first, last) = match s.range {
-            None => (self.line, self.line),
-            Some((a, b)) => match (self.resolve(a), self.resolve(b)) {
-                (Ok(a), Ok(b)) => (a.min(b), a.max(b)),
-                (Err(e), _) | (_, Err(e)) => return self.msg = e,
-            },
+        let (first, last) = match self.range0(s.range.take().as_ref(), false) {
+            Ok(r) => r,
+            Err(e) => return self.msg = e,
         };
+        if s.confirm && !s.count && !self.line_marks.is_empty() {
+            // shortcut: no `c` flag under `:g`/`:normal` (the prompt would need the loop to wait), when someone needs it
+            return self.msg = "The c flag cannot be used here".into();
+        }
         if s.repeat || s.keep {
             let Some(last) = &self.last_sub else { return self.msg = "No previous substitute".into() };
             if s.repeat {
@@ -1696,7 +1646,7 @@ impl Editor {
     fn reload(&mut self) {
         match read_doc(&self.path, self.eol_override) {
             Ok(doc) => {
-                self.saved = doc.text().clone();
+                (self.saved, self.saved_eol) = (doc.text().clone(), doc.eol());
                 self.doc = doc;
                 (self.grouping, self.changed) = (false, false);
                 self.clamp();
@@ -1762,9 +1712,9 @@ impl Editor {
 
     /// Returns true on success.
     fn save(&mut self) -> bool {
-        match self.write_file() {
+        match ex::write_atomic(&self.path, &self.doc) {
             Ok(()) => {
-                self.saved = self.doc.text().clone();
+                (self.saved, self.saved_eol) = (self.doc.text().clone(), self.doc.eol());
                 self.msg = format!("Saved ({})", self.doc.eol());
                 true
             }
@@ -1773,29 +1723,6 @@ impl Editor {
                 false
             }
         }
-    }
-
-    /// Writes to a temp file then renames it, so a failed write never truncates the original.
-    fn write_file(&self) -> io::Result<()> {
-        // Follow symlinks so the link survives and the temp file sits on the target's filesystem.
-        let target = fs::canonicalize(&self.path).unwrap_or_else(|_| self.path.clone());
-        let mut tmp = target.clone().into_os_string();
-        tmp.push(".pt-edit.tmp");
-        let tmp = PathBuf::from(tmp);
-        let file = fs::File::create(&tmp)?;
-        if let Ok(meta) = fs::metadata(&target) {
-            file.set_permissions(meta.permissions())?;
-            #[cfg(unix)]
-            {
-                use std::os::unix::fs::{MetadataExt, fchown};
-                // Best effort: only root can give a file away; group members can keep the group.
-                let _ = fchown(&file, Some(meta.uid()), Some(meta.gid()));
-            }
-        }
-        let mut w = BufWriter::new(file);
-        self.doc.write_to(&mut w)?;
-        w.into_inner().map_err(io::IntoInnerError::into_error)?.sync_all()?;
-        fs::rename(&tmp, &target)
     }
 }
 

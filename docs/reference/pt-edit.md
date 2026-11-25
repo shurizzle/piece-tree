@@ -5,12 +5,13 @@ Minimal vim-like terminal editor in `crates/pt-edit/`. Purpose: exercise the lib
 | File | Holds |
 |---|---|
 | `src/main.rs` | CLI, theme detection, `TerminalGuard`, event loop |
-| `src/editor.rs` | `Editor` state, mode handlers, edits and undo groups, operators, paste, Visual and block ops, `:` commands, save/reload |
+| `src/editor.rs` | `Editor` state, mode handlers, edits and undo groups, operators, paste, Visual and block ops, `:s`, save/reload |
+| `src/editor/ex.rs` | command lines: range parser (shared by every `:` command), name and argument, dispatcher, line commands (`:d :y :m :t :> :< :j :p := :normal :g :v :sort :r :w :sav :retab`, `:set ff`), `LineMarks`, atomic write |
 | `src/editor/parse.rs` | Normal-mode grammar (`parse`, `Cmd`), key sets, `strip_counts`, key ↔ char mapping |
 | `src/editor/motion.rs` | char iterators, motions, finds, `%`, screen lines, marks, search over the text |
 | `src/editor/objects.rs` | text objects |
 | `src/editor/search.rs` | `Search` (pattern + compiled `piece_tree::Regex`), forward/backward wrap, matches inside a line |
-| `src/editor/substitute.rs` | `:s` command parser (ranges, delimiters, escapes, flags) |
+| `src/editor/substitute.rs` | `:s`/`:&` arguments (delimiters, escapes, flags) |
 | `src/editor/registers.rs` | registers, OSC 52 |
 | `src/editor/options.rs` | `:set` options, palette |
 | `src/editor/render.rs` | `Frame` layout, `draw`, cell widths |
@@ -156,14 +157,14 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 
 | Command | Action |
 |---|---|
-| `:w` | save |
+| `:w` `:w!` | save |
 | `:q` | quit; refuses with unsaved changes (`No write since last change (add ! to override)`) |
 | `:q!` | quit, discarding changes |
 | `:wq` | save and quit (stays open if the save fails) |
 | `:x` | save if dirty, then quit |
 | `:e` | reload the file from disk; refuses with unsaved changes |
 | `:e!` | reload, discarding changes; undo history starts over, `--eol` still applies |
-| `:<n>` | go to line `n` |
+| `:<n>` `:/pat/` `:'m` … | go to the line of the (last) address; past the end: the last line |
 | `:noh[lsearch]` | hide search highlights until the next search, `n` or `N` |
 | `:u[ndo]` / `:red[o]` | undo / redo one step |
 | `:undo N` | go to version N (0 is the loaded text), on any branch |
@@ -171,6 +172,7 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 | `:earlier Ns` (`m`, `h`, `d`) / `:later Ns` | to the version from that long before/after the current one |
 | `:undol[ist]` | `at <current> of <newest> \| seq:changes:age` for each branch tip |
 | `:[range]s/pat/rep/[flags]` | substitute, below |
+| `:[range]d …` `:m` `:t` `:g` `:sort` `:r` `:w file` … | line commands, below |
 | `:set …` | options, below |
 | `/pat[/off]` `?pat[?off]` | search forward/backward from the cursor, wrapping; empty `pat` reuses the last one; `off` below |
 | `:s…` `:&` `:&&` | substitute / repeat the last one (`:&&` keeps its flags) |
@@ -181,6 +183,34 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 
 Unknown commands report `Not an editor command: <cmd>`.
 
+### Ex ranges and line commands
+
+Every `:` command line is `[range] name[!] [arg]` (`ex::parse`); names take vim's abbreviations (`:d[elete]`, `:norm[al]`, `:sor[t]`).
+
+- **Addresses**: `N` (0 is "before the first line": `:0r`, `:m0`; elsewhere it counts as 1), `.`, `$`, `'m` (marks, `'<`/`'>`), `/pat/` (next line with a match after the cursor line, wrapping), `?pat?` (previous), `\/` `\?` (next/previous with the last search), `\&` (next with the last substitute pattern), each with `+N`/`-N` (`+` alone is `.+1`). `%` is `1,$`. `a,b` counts both from the cursor line, `a;b` the second from the first (`:/x/;/y/d`); backwards ranges are swapped. A line past the end is `Invalid range` (except for `:N` alone, which goes to the last line), an unset mark `Mark not set`, a failed search `Pattern not found: pat`. Address patterns, `:g` and `:sort` patterns match `^`/`$` at line breaks (`(?m)`), an empty one is the last search, and they become the last search.
+- **Default range**: the cursor line, except `:w`, `:g`/`:v`, `:sort`, `:retab` (whole text) and `:=` (last line).
+
+| Command | Action |
+|---|---|
+| `:[range]d [x] [count]` | delete lines (linewise register; `count` lines from the range's last line) |
+| `:[range]y [x] [count]` | yank lines; the cursor stays |
+| `:[range]m {addr}` | move the lines below `addr` (`0`: on top); into itself → `Cannot move a range of lines into itself` |
+| `:[range]t {addr}` `:co` | copy the lines below `addr` |
+| `:[range]> [count]` `:<` | shift by `tabstop`; each extra `>`/`<` once more (`:>>>`) |
+| `:[range]j[!] [count]` | join (one address: with the next line); `!` keeps blanks and adds no space |
+| `:[range]p` | show the last line of the range and go there |
+| `:[range]=` | line number of the last address (default: line count) |
+| `:[range]norm[al] {keys}` | run `keys` in Normal mode at the cursor, or at column 0 of each line of the range; an unfinished command or insert ends as with Esc; not recorded by `q` |
+| `:[range]g/pat/[cmd]` `:g!` `:v` | mark the lines with a match starting on them (without, for `:g!`/`:v`), then run `cmd` (default `:p`) on each one still there; `Pattern not found: pat` / `Pattern found in every line: pat`; not nestable (`Cannot do :global recursive`) |
+| `:[range]sor[t][!] [i] [n] [u] [r] [/pat/]` | stable sort (`!` reversed, `i` ignore case, `n` by the first decimal number with its `-`, lines without one first, `u` drop equal lines); with `/pat/` by what follows the first match (`r`: by the match), lines without a match first in their order |
+| `:[range]r [file]` | the file's lines below the last address (`:0r` on top), line endings converted like on load; the current file without a name |
+| `:[range]w[!] file` `:w >> file` | write (or append) the lines to another file, in the buffer's line ending; an existing file needs `!`; `:[range]w!` without a name writes the lines to the buffer's file (`Use ! to write partial buffer` without `!`) |
+| `:sav[eas][!] file` | write the buffer to `file` and edit it from now on |
+| `:[range]ret[ab][!] [N]` | redo each run of blanks holding a tab for tab stop N, then set `tabstop=N`; `!` also turns runs of spaces into tabs |
+| `:set ff=unix\|dos\|mac` `:set ff?` | the buffer's line ending (written on the next save; the buffer becomes modified) |
+
+Each command line is one undo step (`:g` and `:normal` included) and `.` does not repeat it.
+
 **Search**: patterns are Rust `regex` syntax (piece-tree's `Regex`): `\d+`, `(?i)foo`, `^`/`$` per line, `\b`. While typing (incsearch) the cursor previews the first match from where `/` started and the typed pattern is highlighted; a pattern that does not compile yet (`(`) previews nothing; Esc goes back. **Search offset** after the closing delimiter: `/pat/e` cursor on the last char of the match, `e+1`/`e-1` chars from there, `s+N`/`b+N` from the start, `+N`/`-N` linewise N lines down/up. `//e` reuses the last pattern with a new offset; `n` reapplies the offset. `\/` in the pattern is a literal delimiter. Matches can span lines and are highlighted across them. On Enter an invalid pattern shows `Invalid pattern: <cause>` and keeps the last search. After Enter every non-empty match on screen is highlighted (hlsearch, yellow) until `:noh`.
 
 ### Substitute (`:s`)
@@ -190,7 +220,7 @@ Unknown commands report `Not an editor command: <cmd>`.
 - **Delimiter** `<d>`: any char but alphanumerics, blanks, `\`, `"` and `|` (`:s#a/b#c#`). `\<d>` is a literal delimiter in either field.
 - **Pattern**: Rust regex; other `\` escapes go to the regex. Empty: the last search. Flags `i`/`I` prefix `(?i)`/`(?-i)`.
 - **Replacement**: `$1`, `${name}`, `$0` as `regex`; `\n` line break, `\t` tab, `\\` backslash, `\$` literal `$`, other `\x` is `x`.
-- **Range**: none = cursor line; `%`; `N`, `.`, `$`, `'m` (marks, `'<`/`'>` from Visual), each with `+N`/`-N` (`+` alone is `.+1`); `a,b`, swapped if backwards. Out of the text → `Invalid range`; an unset mark → `Mark not set`.
+- **Range**: none = cursor line; any range of the ex commands (above).
 - **Flags**: `g` every match on a line (default: the first on each line); `i`, `I`; `n` only count (`N matches on M lines`, no change); `c` confirm each one (below); `&` (first) keep the flags of the last substitute; anything else → `Trailing characters: <rest>`.
 - **Confirm** (`c`): the cursor goes to each match and the status asks `replace with X (y/n/a/q/l)?`: `y` replace, `n` skip, `a` replace this and all the rest, `l` replace this and stop, `q`/Esc stop; other keys are ignored. The whole session is one undo step. The match being asked about is drawn reversed, like a selection (`Confirm::cur`, `selection` in `render.rs`); the other matches keep the search highlight.
 - **Repeat**: `:&` is the last pattern and replacement with the flags reset, `:&&` (or the `&` flag) keeps them; `&` = `:&` on the line, `g&` = whole text keeping flags. Without a previous substitute: `No previous substitute`.
@@ -222,7 +252,9 @@ Palettes (`Palette::new`): dark — cursor line 236, numbers 243, cursor line nu
 - **Motions** return a target `(line, col)` and a kind (exclusive, inclusive, linewise); operators turn it into a byte range. Word, bracket and sentence scans walk char iterators over lines (`fwd`/`bwd`) that yield `\n` at line ends.
 - **Text objects**: `text_object` returns an `Obj`, a byte range or a line range; operators apply it as an exclusive or linewise motion, Visual mode turns it into anchor and cursor (`select_object`, `visual_object` for growth). Sentences are split per paragraph (`sentences`); tags are paired by one scan with a stack (`tag_pairs`, `shortcut:` it reads the whole text).
 - **Search**: a `Search` keeps the pattern and its compiled `piece_tree::Regex` (`Rc`, compiled once). Forward: `Text::find_from` just past the char under the cursor, else from 0 (wrapped). Backward: `Text::rfind_before` (windowed, see [search.md](search.md)). Highlights: `Text::find_iter_in` over the visible lines, split per line (`search::visible_matches`), so multi-line matches are highlighted. `/` and `?` offsets live in `search::Offset`; `n`/`N`/`*`/`#` go through `search_motion`. `:s///c` keeps a `Confirm` session (`Mode::Confirm`) stepping with `Text::replacement_at` + `Document::splice` in one group; `gn` is `Editor::select_match`.
-- **Substitute**: `substitute::parse` returns `None` for other commands, so `:set`, `:3`, `:q` are untouched. `Editor::substitute` resolves the range to a byte span and calls `Document::replace_matching` with a filter: match start inside the span and, without `g`, the first match per start line (`Text::offset_to_line`). The editor counts it as one tracked edit, so it is one undo group. Marks are not moved, only clamped (`shortcut:`).
+- **Ex commands**: `ex::parse` splits the range, the name (a run of letters, or one of `& < > =`) and the rest; `substitute::parse` takes `:s`/`:&` (it returns `None` for other names, so the dispatcher in `Editor::command` goes on). `Editor::lines` resolves a range to 1-based lines (`resolve`: `/pat/` via `search::find_forward`/`find_backward` from the line after/before), `range0` to 0-based ones. Line commands use `insert_lines` (below a line, `\n` before the block or after it on top) and `delete_lines` (with the line break after, or before on the last line), so the last line needs no special case. After every command line, `line_key` closes the undo group and clears `rec_cmd` (no `.`), unless a confirm session goes on.
+- **`:g` and `:normal` lines**: `for_lines` opens one `Document` group around the loop and pushes a `LineMarks` (one per nesting level, mapped in `map_marks` with the other marks): each line is `(start, end, alive)`; an edit that removes a whole line kills it, a line joined into the one above no longer starts a line and is skipped (vim: `:g/./j` joins pairs). Edits ending before the next line to visit only add to a pending shift, so `:g/^/d`, `:g/^/m0`, `:g/./j` and `:%norm Ax` stay linear (200 000 lines, release: 0.15 s, 0.4 s, 0.43 s, 0.49 s). `:normal` runs keys through `key` with `macro_depth` raised (not recorded by `q`) and ends with Esc if not back in Normal.
+- **Substitute**: `Editor::substitute` resolves the range to a byte span and calls `Document::replace_matching` with a filter: match start inside the span and, without `g`, the first match per start line (`Text::offset_to_line`). The editor counts it as one tracked edit, so it is one undo group. Marks are not moved, only clamped (`shortcut:`).
 - **Registers**: `Registers::store` writes the named target (or `0`/the `1`–`9` shift) and `"`; `cur_reg` holds the command's `"x` until the first store or paste.
 - **Marks**: byte offsets. After every `Document` call (edits, `:s`, undo, redo, time travel) they are mapped through `Document::last_edits` with `piece_tree::map_offset` (a mark inside a removed range moves to its start). `mark` still clamps to the text and a char boundary.
 - **Undo**: the library's undo tree. Every edit goes through `Editor::edit`, which opens a `Document` group on the command's first edit; `end_command` closes it at the end of each Normal command and on Esc from Insert, so a whole insert session (including the deletion of `c`, the newline of `o` and a block insert's copies) is one version and one `u`. `u`, `Ctrl+R`, `g-`, `g+` and the `:` history commands go through `Editor::history`, which maps marks and puts the cursor at the first edit of the move (on the next line when the restored text starts with a line break, so undoing `dd` on the last line lands on it).
@@ -232,15 +264,15 @@ Palettes (`Palette::new`): dark — cursor line 236, numbers 243, cursor line nu
 - **Line numbers**: `line_number(line, cursor, nu, rnu)`; a gutter of `digits(line_count) + 1` columns (`gutter_width`; distances never exceed `line_count`), right-aligned. Horizontal scrolling and the cursor column account for the gutter.
 - **Huge lines**: every per-line scan avoids work proportional to the line where it can. `fwd`/`bwd` (the char iterators under word motions, bracket matching and `%`) read a line in place and lazily (`FwdChars`, `BwdChars`), `f`/`t`/`F`/`T`, `%`, `*`, `Ctrl-A` and the quote objects search bytes (`memchr`) and count chars only up to the hit, `iw`/`aw` move from the cursor, `first_non_blank` reads growing windows, columns ↔ bytes use `str_indices` (`byte_of_col`, `Text::line_col_to_offset`, `Text::chars_in`), `line_chars` keeps its last answer per text version, `matches_in` keeps the highlight ranges (computed in one pass: each match's column is counted from the previous one) and `cell_width` skips the width table for ASCII and the common CJK ranges. The rows of the cursor line and of up to 3 other lines of at least `LONG_LINE` (8 KiB) bytes are kept in `Layouts` (`layout.rs`), keyed by the `Text` version. Still proportional to the line: a first jump deep into it (its prefix is laid out once), `gk`/`k` into a huge line above, a failed bracket or text-object search (scans to the text start), sentence objects (they build the paragraph), `yy`/`p` of the line (copy), and a text change on a visible huge line with `hlsearch` (the regex runs from the line start to keep vim's matches).
 - **Rendering**: `frame(w, h)` lays out a `Frame` (rows of styled spans, cursor cell and shape, cursor line row, palette, pending clipboard text) and scrolls; `draw` turns it into crossterm commands. Search highlights are computed per visible line range and kept while the text version, pattern and lines stay the same (`matches_in`); `line_chars` keeps its last answer per text version. Only visible rows are built, each via `Text::line`, styled per char (selection over search matches over plain). Cell widths come from `unicode-width` (`cell_width`): tabs `tabstop` cells, control chars 1 (drawn as `?`), wide chars 2, combining marks 0. With `wrap` (`layout.rs`: `Rows` finds row starts lazily, only as far as the screen, the cursor row or a height cap needs; `Layout` keeps the cursor line's rows between frames, and after an edit keeps the rows ending before the first changed byte and resumes from there; a frame with the same `Text` version reads nothing) each line takes one or more rows, a gutter-wide blank prefix on continuation rows, and vertical scroll keeps the whole cursor line on screen (`top` stays a line index); the cursor line background covers every row of the cursor line; a cursor line taller than the screen scrolls by rows inside itself (`top_sub`); a cursor past a full last row (Insert at end) stays on that row's last cell. `Ctrl-D`/`Ctrl-U` move half a screen of rows, and `H`/`M`/`L` use `bottom_line`; both read the width of the last frame (`text_w`). Without `wrap`, horizontal scroll is by screen columns and keeps the whole cursor char visible; a wide char cut by the left edge shows as spaces. The cursor line row is padded to the full width with spaces (erasing with a background color is not portable), and `draw` sets colors after each span's attribute, because `Attribute::Reset` clears them; a span's own background (matches) wins over the cursor line's. The status bar is reversed, replaced by the `:`/`/` input line in those modes; `fit` cuts or pads it to the width in cells.
-- **Dirty tracking**: `saved: Text` holds the version last written; dirty = `!doc.text().ptr_eq(&saved)`. Undoing back to the saved version makes the buffer clean again, with no diffing.
-- **Saving**: resolve symlinks (`canonicalize`), write to `<target>.pt-edit.tmp` via `BufWriter`, copy the target's permissions and (best effort, unix) owner and group, `sync_all`, then `rename` over the target, so a failed write never truncates the file and a symlink stays a symlink.
+- **Dirty tracking**: `saved: Text` and `saved_eol` hold the version and line ending last written; dirty = `!doc.text().ptr_eq(&saved)` or a different line ending (`:set ff`). Undoing back to the saved version makes the buffer clean again, with no diffing.
+- **Saving** (`ex::write_atomic`, also `:w file` and `:sav`; `:w >>` appends in place): resolve symlinks (`canonicalize`), write to `<target>.pt-edit.tmp` via `BufWriter`, copy the target's permissions and (best effort, unix) owner and group, `sync_all`, then `rename` over the target, so a failed write never truncates the file and a symlink stays a symlink.
 - **Terminal safety**: `TerminalGuard` enables raw mode and the alternate screen and restores both (and the default cursor shape) in `Drop`, including on panic.
 
 ## Tests
 
 `cargo test -p pt-edit`:
-- Unit tests in the submodules: parser (counts, registers, case operators, `strip_counts`, key round trip), regex search (wrap both ways, matches across pieces, invalid patterns), line matches, `:s` parser (ranges, delimiters, escapes, flags, non-commands), registers (shift, append, clipboard, OSC 52), options (`:set` grammar and errors), sentence splitting, escaped quotes, tag pairing.
-- `src/editor/tests.rs` feeds key sequences to `Editor` (no terminal) and checks text, cursor, mode, registers and messages for every command, motion, object, mode and `:` command above, including regex search and incsearch, `:s` (ranges, `g`, `i`, groups, `\n`, Visual `'<,'>`, messages, cursor, undo), undo grouping and the undo tree (`g-`, `g+`, `:earlier`/`:later` by count and time, `:undo N`, `:undolist`, redo after a branch switch), cursor after undo, `.` with counts, macros, marks following edits, undo, redo, time travel and `:s`, block inserts, reload, and save (permissions, symlinks).
+- Unit tests in the submodules: parser (counts, registers, case operators, `strip_counts`, key round trip), regex search (wrap both ways, matches across pieces, invalid patterns), line matches, ex parser (ranges, `/pat/` and `\/` addresses, `;`, names, registers and counts), `LineMarks` against the plain mapping, `retab_line`, `:s` parser (delimiters, escapes, flags, non-commands), registers (shift, append, clipboard, OSC 52), options (`:set` grammar and errors), sentence splitting, escaped quotes, tag pairing.
+- `src/editor/tests.rs` feeds key sequences to `Editor` (no terminal) and checks text, cursor, mode, registers and messages for every command, motion, object, mode and `:` command above, including regex search and incsearch, `:s` (ranges, `g`, `i`, groups, `\n`, Visual `'<,'>`, messages, cursor, undo), undo grouping and the undo tree (`g-`, `g+`, `:earlier`/`:later` by count and time, `:undo N`, `:undolist`, redo after a branch switch), cursor after undo, `.` with counts, macros, marks following edits, undo, redo, time travel and `:s`, block inserts, reload, save (permissions, symlinks), and the ex line commands (addresses, `:d :y :m :t :> :< :j :p :=`, `:normal`, `:g`/`:v` with deleted and joined lines, `:sort` flags and patterns, `:r`, `:w file`/`>>`/partial, `:sav`, `:retab`, `:set ff`).
 - Rendering is snapshot-tested on `Frame`s turned into text (`screen`: reversed spans in `[...]`, matches in `{...}`): gutter variants, scrolling (`zz`/`zt`/`zb`), status, selections (block too), search highlights, wide chars, tabs, command line. `draw` is checked for colors, cursor shape, palettes and OSC 52.
 - A manual pty smoke test covers the real terminal.
 

@@ -1,6 +1,6 @@
 # Handoff: pt-edit as the library's driver, round 5
 
-M1–M4 committed in `bc6a0d2` (the M4 gap fixes below are not). Delete this file when the work is done or committed.
+Delete this file when the work is done.
 
 The approved plan has the full milestone list (M1–M8, with rules and verification):
 `~/.claude/plans/divieto-assoluto-non-puoi-cheeky-kitten-of-0ce138e8-7589-4b04-99a8-ad5254676d90.md`
@@ -48,8 +48,15 @@ Goal: make the library complete by building editor features that need it. The us
 - Lib (`find_iter_in`, `rfind_before`, `replacement_at`) and editor (`?`, offsets, `:s` flags `c` `n` `&`, `&`, `:&`, `:&&`, `g&`, `gn`/`gN`) done, tested, documented. Coverage 100% (2-region residue), clippy clean, pty smoke test of `:s///c` passed.
 - Gaps closed: `gn`/`gN` in Visual extend the selection to the next match's end / previous match's start (a repeat moves on); the `:s///c` match being asked about is drawn reversed (`Confirm::cur`). Tests in `gn_selects_the_match`, `substitute_confirm_count_and_repeat`.
 
+### M5 — ex commands on ranges: DONE
+- `crates/pt-edit/src/editor/ex.rs`: shared range parser (`%`, `.`, `$`, `N`, `'m`, `/pat/`, `?pat?`, `\/`, `\?`, `\&`, `+N`, `,`/`;`), `[range] name[!] arg` split, the dispatcher `Editor::command` (moved from `editor.rs`, vim abbreviations via `abbr`), commands `:d :y :m :t/:co :> :< :j[!] :p := :normal :g :g! :v :sort[!] [i n u r /pat/] :r :w file :w! :w >> :[range]w! :sav :retab[!] :set ff`. `substitute.rs` keeps only the `:s`/`:&` arguments.
+- `:g`/`:normal` lines: `LineMarks` (dead when removed whole, skipped when joined; pending shift keeps it linear: 200k lines `:g/^/d` 0.15 s, `:%norm Ax` 0.49 s release). One undo group per command line; `line_key` now closes the group and clears `rec_cmd` after every command line.
+- Behavior changes: `:0s` counts as line 1 (vim), `:99` goes to the last line, `is_dirty` also compares the line ending (`saved_eol`), `join` takes `spaces` (for `:j!`).
+- No lib changes: `Text::slice_text`/`append_text` not needed (`:r`/`:t`/`:m` copy; `shortcut:` + `limitations.md`).
+- Tests: `ex.rs` unit tests (ranges, names, reg/count, `retab_line`, `LineMarks` vs plain mapping) and `ex_*` tests in `editor/tests.rs`. `cargo test -p pt-edit` and clippy clean. Not done: pty smoke test.
+- Docs: `pt-edit.md` (ex section, internals, tests), `limitations.md`, `ARCHITECTURE.md`, `AGENTS.md`.
+
 ## Not started
-- **M5:** shared ex range parser in `ex.rs`, with `/pat/` and `?pat?` addresses. Commands `:d :y :m :t/:co :> :< :j :p := :normal :sort :g :v :r :w file :w >> :sav :retab :set ff`. Lib `splice` exists already; possibly `Text::slice_text`/`append_text`.
 - **M6:** lib `piece_count`/`chunk_count`/`memory_bytes`, `Text::compact`, `Document::compact`/`drop_history_before`. Editor `:stats`, `:compact`, `compactat`.
 - **M7:** buffers and windows, background save from a `Text` snapshot.
 - **M8:** jump/change lists, `gv gi gJ gp ]p R`, insert-mode Ctrl keys, wrap/list/expandtab/sw/ignorecase/smartcase/scrolloff, graphemes, clipboard read via OSC 52 query only (no `arboard`, no fallback: a terminal without OSC 52 is unsupported), macros as registers, virtual-column blocks, cmdline history/completion, init file.
