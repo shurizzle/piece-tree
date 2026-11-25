@@ -116,8 +116,23 @@ impl Document {
     }
 
     pub fn insert(&mut self, off: usize, s: &str) {
+        let edit = Edit { start: off, old_len: 0, new_len: s.len() };
+        if self.depth > 0 && self.group == Some(self.cur) {
+            // The open group already owns this version (the history keeps only its first one), so
+            // typing can edit it in place; a clone held elsewhere just makes `insert_mut` copy.
+            let text = &mut self.states[self.cur].text;
+            let len = text.len();
+            text.insert_mut(off, s);
+            self.last.clear();
+            if text.len() != len {
+                self.last.push(edit);
+                self.log.push(edit);
+                self.states[self.cur].edits.end = self.log.len();
+            }
+            return;
+        }
         let next = self.text().insert(off, s);
-        self.apply(next, &[Edit { start: off, old_len: 0, new_len: s.len() }]);
+        self.apply(next, &[edit]);
     }
 
     pub fn delete(&mut self, range: Range<usize>) {

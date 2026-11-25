@@ -15,3 +15,4 @@ One topic per file. Fetch only what the task needs.
 | [reference/limitations.md](reference/limitations.md) | Known shortcuts, risks and the roadmap |
 | [guides/testing.md](guides/testing.md) | You add or change tests, check coverage, or run Miri |
 | [guides/benchmarks.md](guides/benchmarks.md) | You change performance-sensitive code or need the numbers |
+| [guides/comparison-tables.md](guides/comparison-tables.md) | You want the full cross-library tables (every row, four libraries, both allocators, three corpora) of the last run |

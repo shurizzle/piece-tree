@@ -362,6 +362,40 @@ Is the drift real? Two binaries built from different code differ 5-10% by placem
 
 The current code is within 1% of HEAD on every row on the minima (the medians of paste are 4% higher, 650 -> 674, with a spread between rounds of the same size), so no regression is established: a small real cost of 1-4% on paste cannot be excluded, the harness drift being mostly placement and load. **Rejected: `#[inline(never)]` on the scan.** It does not move the edit rows (paste and random edits within 2%, typing 57.6 against 60.8 is a single-binary placement effect that the medians do not confirm), and the paste rows with newlines are 1-6% slower (256 B - 64 KiB, 1.00-1.06x of the inlined version): the scan is cheap enough that the call costs more than the code growth. The same attribute fixed the batch code (round 5, above) because that code is large; this one is not.
 
+## Typing in place (`Text::insert_mut`, D19)
+
+The full tables of the last cross-library run (every row, four libraries, both allocators, three corpora) are in [comparison-tables.md](comparison-tables.md).
+
+Goal: bring typing (59 ns with the system allocator, 50 with mimalloc) to ropey 2 beta's 47 ns.
+
+**Profile first** (macOS `sample`, system allocator, a typing loop of the harness, 4303 samples): `_xzm_free_tc` 908, `_xzm_malloc_tc` 763, `malloc_zone_malloc` 473, `free` 260 and the two stubs 124: **59% allocator**. Then `tree::extend_at` 510 (12%), `tree::node` 472 (11%), the `Arc<Node>` drop 281 (6.5%), `Text::insert` 180 (4%, `normalize` and `count_lf` inlined), `Chunk::try_append` 172 (4%), `memmove` 53. So the two micro-optimizations of the plan (a scalar short-string path in `Text::insert`, a cheaper `try_append`) had at most ~8% to give, and were **not built**. The cost is the path copy: 2-3 nodes allocated and as many freed per key.
+
+**Estimate** (the W1 prototype, `piece-tree-bench/w1proto`, AVL copied from `tree.rs`): on the harness tree (3 pieces) the typing path copy is 21 ns and growing the piece in place when the path is unshared is 2 ns (3000 pieces: 250 -> 20 ns, 30000: 307 -> 27 ns; mimalloc 21 -> 2, 204 -> 20, 254 -> 27).
+
+**Implemented**: `Text::insert_mut` (in place when every node of the path has one owner, otherwise `insert`), `Document::insert` uses it inside an open group. Scratch program `examples/typing_mut.rs` of the harness (10k keys into a 1 MB text, `Text` value cloned from the loaded one, min of 80 reps, ns per key, 3 runs identical to 0.1-0.3):
+
+| | system | mimalloc |
+|---|---|---|
+| `Text::insert` (path copy) | 60.9-62.2 | 51.4-51.5 |
+| `Text::insert_mut` | 13.2 | 13.1 |
+| `Document::insert`, no group (a version per key; the 1 MB setup is inside the timing of both `Document` rows) | 105 | 96 |
+| `Document::insert`, in a group | 28 | 29 |
+
+Cross-library harness (3 runs per corpus and allocator, the typing row now uses `insert_mut` for piece-tree through `Buffer::type_key`; the "clone per key" row keeps `insert`), piece-tree before -> after against the best other library of the same run:
+
+| Corpus / allocator | typing before -> after | best other | lead after |
+|---|---|---|---|
+| synthetic / system | 62.2 -> 12.8 | ropey 2 beta 51.6 | 4.0x |
+| synthetic / mimalloc | 52.5 -> 12.6 | ropey 2 beta 47.1 | 3.7x |
+| Rust / system | 61.0 -> 12.8 | ropey 2 beta 58.5 | 4.6x |
+| Rust / mimalloc | 50.9 -> 13.0 | ropey 2 beta 52.4 | 4.0x |
+| CJK / system | 61.3 -> 13.1 | ropey 2 beta 51.7 | 3.9x |
+| CJK / mimalloc | 51.1 -> 13.0 | ropey 2 beta 45.5 | 3.5x |
+
+Before this change ropey 2 beta led typing by 1.18-1.37x with the system allocator (rerun above) and by 1.03-1.12x with mimalloc. The other rows did not move beyond the noise of two binaries (backspace 0.97-1.02x, paste 0.92-1.02x, random edits 0.95-1.02x, `line()` 0.93-0.98x, "clone per key" 0.96-1.12x: that row uses `insert`, whose code did not change, and its 3-run spread was 2-20% before). A/B against a standalone copy of HEAD, `edits` example, 15 alternating rounds, min / median: paste 599 / 647 -> 598 / 630, random edits 620 / 664 -> 618 / 642, typing through `insert` 60.4 / 60.5 -> 60.4 / 60.5, backspace 52.2 -> 51.5, `line()` 3.9 -> 3.9: no regression, `insert` is untouched.
+
+Not helped by design: a version per key. `Document` without a group, and the "clone per key" scenario, keep the old version alive, so the path is copied (the new code only adds a refused `Arc::get_mut` at the root, inside the noise).
+
 ## Estimate for wide leaves (W1, throwaway prototype)
 
 Question: how much would a B-tree-like tree (several pieces per node, `Arc` per node, path copying) gain over the binary AVL of `tree.rs`? Prototype outside the workspace (`piece-tree-bench/w1proto`, a standalone crate, not part of the library): the same 24-byte `Piece` with an `Arc<Chunk>`, the same `triomphe::Arc`, the AVL copied from `tree.rs` (`node`, `join`, `insert_at`, `extend_at`) against a persistent B-tree with up to `L` pieces per leaf and `F` children per inner node (insert and the typing extension only). Built the same way (fat LTO), system allocator and mimalloc, min of 3 runs of 40 rounds. "Insert" = `t = t.insert(random offset, piece)` dropping the previous version each step (the paste scenario); "typing" = growing one piece by one byte per key (`extend_at`, no structural change); "lookup" = `lf_before` at a random offset. The AVL of the prototype reproduces the library (3000 pieces: 511 ns against 660 ns of the real paste, the rest being the chunk append and the line-feed counts), which fixes the part that a tree change cannot touch at about 120 ns (system) and 80 ns (mimalloc) per paste.

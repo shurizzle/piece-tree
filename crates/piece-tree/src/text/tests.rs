@@ -723,6 +723,60 @@ fn char_to_offset_matches_the_model() {
 }
 
 #[test]
+fn insert_mut_matches_insert() {
+    let texts: Vec<String> = ["a", "é", "xyz\n", "\n", "🦀 crab", "a\r\nb\rc", "", "\r"].map(String::from).to_vec();
+    let big = "y".repeat(MAX_ADD_BYTES + 1);
+    for seed in 0..BATCH_SEEDS / 3 {
+        let mut rng = Rng(seed + 100);
+        let (mut t, mut m) = fragmented(&mut rng, [0, 3, 40][seed as usize % 3]);
+        let mut cursor = rng.boundary(&m);
+        // Versions kept alive: they share nodes with `t`, so some inserts must copy, and none may change.
+        let mut kept: Vec<(Text, String)> = Vec::new();
+        for step in 0..80 {
+            if step % 9 == 4 {
+                kept.push((t.clone(), m.clone()));
+            }
+            // Mostly typing at the cursor (extends the piece in place), sometimes elsewhere.
+            let off = if rng.below(4) == 0 { rng.boundary(&m) } else { cursor };
+            let s = if rng.below(160) == 0 { &big } else { &texts[rng.below(texts.len())] };
+            t.insert_mut(off, s);
+            let norm = s.replace("\r\n", "\n").replace('\r', "\n");
+            m.insert_str(off, &norm);
+            cursor = off + norm.len();
+            if step % 8 == 0 {
+                assert_same(&t, &m, &mut rng, m.len() < 512);
+            }
+        }
+        assert_same(&t, &m, &mut rng, false);
+        for (kt, km) in &kept {
+            assert_same(kt, km, &mut rng, false);
+        }
+    }
+}
+
+#[test]
+fn insert_mut_edge_cases() {
+    let mut t = Text::from("abc");
+    let before = t.clone();
+    t.insert_mut(1, "");
+    assert!(t.ptr_eq(&before), "nothing to insert: same version");
+    let mut empty = Text::new();
+    empty.insert_mut(0, "x");
+    empty.insert_mut(1, "y");
+    assert_eq!(empty.to_string(), "xy");
+    // The clone `before` keeps the old version while `t` grows.
+    t.insert_mut(3, "d");
+    t.insert_mut(4, "e");
+    assert_eq!((t.to_string().as_str(), before.to_string().as_str()), ("abcde", "abc"));
+}
+
+#[test]
+#[should_panic(expected = "out of bounds")]
+fn insert_mut_rejects_out_of_bounds() {
+    Text::from("ab").insert_mut(3, "x");
+}
+
+#[test]
 fn apply_edits_clustered_in_a_fragmented_text() {
     let mut rng = Rng(21);
     let (frag, fm) = fragmented(&mut rng, FRAG_STEPS);

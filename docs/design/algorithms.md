@@ -125,6 +125,10 @@ The `join`s on the way back rebalance, because a removed piece or an added half 
 
 Measured costs (benchmarks.md): a rebuild is ~30 ns per piece plus ~100 ns per edit, a path copy ~500 ns per edit on a fragmented tree, so they break even near one edit per 12 pieces; on a single piece the rebuild wins from 3-4 edits. A divide and conquer version (split around the middle edit, recurse, join) was built and rejected: it only won on a single piece and lost up to 2x on fragmented trees, where each edit pays two splits and two joins (D17).
 
+### In-place typing (`insert_mut`)
+
+`Text::insert_mut(&mut self, off, s)` runs the same normalization and newline count, then `tree::extend_in_place(&mut root, off, add, s, lf)`: it walks the path to the piece ending at `off` (the rule of `extend_at`) taking `Arc::get_mut` on every node. A node with another owner returns `InPlace::Shared` before anything changed; a missing or non-extendable piece, or a full chunk, returns `InPlace::Declined`; in both cases `insert_mut` is `*self = self.insert(off, s)`. When the whole path is unique the piece grows (`Piece::extend_in_place`, which appends to the chunk with the same `try_append(.., Some(end))` check) and the totals `len` and `lf` of each node on the path are fixed while the recursion returns, so there is no allocation, no free and no `Arc` traffic. `Document::insert` uses it while a group is open on the current version (the history keeps only the group's first version, so the rest is unshared); outside a group every key is a version of its own and the path is copied.
+
 ### Piece extension
 
 `try_extend` succeeds when the piece belongs to `add` **and** `add.try_append(s, lf, Some(piece.end))` succeeds. The second condition means that no one appended since the piece's text was written, and that `s` fits; it is checked atomically with the reservation. The extended piece keeps `start` and `nl_first`, and `len`/`lf` grow.

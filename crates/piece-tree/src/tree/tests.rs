@@ -175,6 +175,57 @@ fn try_extend_only_at_the_published_end() {
 }
 
 #[test]
+fn extend_in_place_outcomes() {
+    // Three pieces, the typed one (in the add chunk) first, in the middle and last: both subtrees
+    // of the root are walked. Pieces of other chunks never end where the add chunk does.
+    let (x, y) = (Piece::whole(Chunk::exact("xx")), Piece::whole(Chunk::exact("yy\n")));
+    for at in 0..3 {
+        let (typed, add) = store(None, "ab");
+        let add = add.unwrap();
+        let mut ps = vec![x.clone(), y.clone()];
+        ps.insert(at, typed.clone());
+        let before = text_of(&ps);
+        let off: usize = ps[..=at].iter().map(Piece::len).sum();
+        let (head, tail) = (text_of(&ps[..at]), text_of(&ps[at + 1..]));
+        let mut t = append_all(&ps);
+
+        // Another owner on the path: refused, nothing appended or changed.
+        let keep = t.clone();
+        assert_eq!(extend_in_place(&mut t, off, &add, "c\n", 1), InPlace::Shared);
+        assert_eq!((add.fill().len, content(&t), content(&keep)), (2, before.clone(), before.clone()));
+        drop(keep);
+
+        // No piece ends inside `ab`, and the piece of another chunk ends elsewhere.
+        assert_eq!(extend_in_place(&mut t, off - 1, &add, "c", 0), InPlace::Declined);
+        let other = if at == 0 { off + 2 } else { 2 };
+        assert_eq!(extend_in_place(&mut t, other, &add, "c", 0), InPlace::Declined, "another chunk");
+        assert_eq!(add.fill().len, 2);
+
+        // Unique path: grows in place, totals fixed, and again.
+        assert_eq!(extend_in_place(&mut t, off, &add, "c\n", 1), InPlace::Done);
+        assert_tree(&t, &format!("{head}abc\n{tail}"));
+        assert_eq!(extend_in_place(&mut t, off + 2, &add, "d", 0), InPlace::Done);
+        assert_tree(&t, &format!("{head}abc\nd{tail}"));
+    }
+    let (typed, add) = store(None, "ab");
+    let add = add.unwrap();
+    assert_eq!(extend_in_place(&mut None, 0, &add, "c", 0), InPlace::Declined, "empty tree");
+    let mut t = append_all(&[typed]);
+    assert_eq!(extend_in_place(&mut t, 0, &add, "c", 0), InPlace::Declined, "nothing ends at 0");
+}
+
+#[test]
+fn extend_in_place_declines_when_the_chunk_is_full() {
+    let (p, add) = store(None, &"x".repeat(MIN_ADD_BYTES - 1));
+    let add = add.unwrap();
+    let mut t = append_all(&[p]);
+    assert_eq!(extend_in_place(&mut t, MIN_ADD_BYTES - 1, &add, "yz", 0), InPlace::Declined);
+    assert_eq!((add.fill().len as usize, len(&t)), (MIN_ADD_BYTES - 1, MIN_ADD_BYTES - 1));
+    assert_eq!(extend_in_place(&mut t, MIN_ADD_BYTES - 1, &add, "y", 0), InPlace::Done);
+    assert_eq!(len(&t), MIN_ADD_BYTES);
+}
+
+#[test]
 fn empty_tree_aggregates() {
     assert_eq!((height(&None), len(&None), lf(&None)), (0, 0, 0));
     assert_tree(&join2(None, None), "");

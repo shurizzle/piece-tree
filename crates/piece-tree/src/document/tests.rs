@@ -364,6 +364,30 @@ fn groups_make_one_step() {
 }
 
 #[test]
+fn typing_in_a_group_edits_in_place() {
+    let mut doc = Document::new("ab");
+    let before = doc.text().clone();
+    doc.begin_group();
+    // The first key copies (the open version is shared with `before`), the rest are in place.
+    for (i, c) in "xyz".chars().enumerate() {
+        doc.insert(2 + i, &c.to_string());
+        assert_eq!(doc.last_edits(), [Edit { start: 2 + i, old_len: 0, new_len: 1 }]);
+    }
+    doc.insert(5, "");
+    assert!(doc.last_edits().is_empty(), "nothing inserted, nothing logged");
+    let held = doc.text().clone();
+    doc.insert(5, "!");
+    assert_eq!((doc.text().to_string().as_str(), held.to_string().as_str()), ("abxyz!", "abxyz"));
+    assert!(doc.end_group());
+    assert_eq!((doc.seq(), before.to_string().as_str()), (1, "ab"));
+    assert!(doc.undo());
+    assert_eq!(doc.text().to_string(), "ab");
+    assert_eq!(doc.last_edits().len(), 4, "the group's four edits, undone together");
+    assert!(doc.redo());
+    assert_eq!(doc.text().to_string(), "abxyz!");
+}
+
+#[test]
 fn branches_survive_and_redo_follows_the_last_visit() {
     let mut doc = Document::new("");
     doc.insert(0, "a"); // 1

@@ -51,11 +51,27 @@ impl Piece {
     /// This piece extended by `s` when it ends exactly at the published end of
     /// `add`: typing then grows one piece instead of creating one per keystroke.
     pub(crate) fn try_extend(&self, add: &Arc<Chunk>, s: &str, lf: usize) -> Option<Piece> {
+        self.append(add, s, lf)?;
+        Some(Piece { len: self.len + s.len() as u32, lf: self.lf + lf as u32, ..self.clone() })
+    }
+
+    /// [`Piece::try_extend`] on a piece nobody else holds: grows it in place (no `Arc` traffic).
+    /// `false`, with nothing appended, when it cannot be extended.
+    fn extend_in_place(&mut self, add: &Arc<Chunk>, s: &str, lf: usize) -> bool {
+        if self.append(add, s, lf).is_none() {
+            return false;
+        }
+        self.len += s.len() as u32;
+        self.lf += lf as u32;
+        true
+    }
+
+    /// Appends `s` to `add` when this piece ends at its published end (the chunk side of an extension).
+    fn append(&self, add: &Arc<Chunk>, s: &str, lf: usize) -> Option<Fill> {
         if !Arc::ptr_eq(&self.chunk, add) {
             return None;
         }
-        add.try_append(s, lf, Some(self.start + self.len))?;
-        Some(Piece { len: self.len + s.len() as u32, lf: self.lf + lf as u32, ..self.clone() })
+        add.try_append(s, lf, Some(self.start + self.len))
     }
 
     /// The piece's own entries of the chunk's newline cache.
@@ -377,6 +393,42 @@ pub(crate) fn extend_at(t: &Tree, off: usize, f: impl FnOnce(&Piece) -> Option<P
         let right = extend_at(&n.right, off - ll - pl, f)?;
         Some(node(n.left.clone(), n.piece.clone(), right))
     }
+}
+
+/// What [`extend_in_place`] did.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum InPlace {
+    /// The piece ending at `off` grew inside the existing nodes.
+    Done,
+    /// A node on the path has other owners (an older version): nothing changed, copy the path.
+    Shared,
+    /// No piece ends at `off`, or the chunk cannot take `s`: nothing changed.
+    Declined,
+}
+
+/// [`extend_at`] without the copy: grows the piece ending exactly at `off` with `s` (already in
+/// `add`'s terms, see [`Piece::try_extend`]) when every node on the path is uniquely owned, and
+/// fixes the totals on the way back. Persistence holds because a node with another owner is never
+/// touched (`Arc::get_mut` refuses it): the caller then takes the copying path. Nothing is appended
+/// to the chunk before the whole path is known to be unique.
+pub(crate) fn extend_in_place(t: &mut Tree, off: usize, add: &Arc<Chunk>, s: &str, lf: usize) -> InPlace {
+    let Some(arc) = t.as_mut() else { return InPlace::Declined };
+    let Some(n) = Arc::get_mut(arc) else { return InPlace::Shared };
+    let (ll, pl) = (len(&n.left), n.piece.len());
+    let done = if off <= ll {
+        extend_in_place(&mut n.left, off, add, s, lf)
+    } else if off < ll + pl {
+        InPlace::Declined
+    } else if off == ll + pl {
+        if n.piece.extend_in_place(add, s, lf) { InPlace::Done } else { InPlace::Declined }
+    } else {
+        extend_in_place(&mut n.right, off - ll - pl, add, s, lf)
+    };
+    if done == InPlace::Done {
+        n.len += s.len();
+        n.lf += lf;
+    }
+    done
 }
 
 /// Persistent AVL insert of `p` at byte `off`, splitting the piece there if

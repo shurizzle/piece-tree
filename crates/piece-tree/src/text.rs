@@ -124,6 +124,25 @@ impl Text {
         }
     }
 
+    /// [`Text::insert`] in place: `self` becomes the edited text. When `s` extends the piece
+    /// ending at `off` (typing) and no older version shares the nodes on its path (`Text::clone`
+    /// is O(1) and shares them), the nodes are updated without allocating or freeing; otherwise
+    /// it is `*self = self.insert(off, s)`. Versions cloned before the call are never affected.
+    pub fn insert_mut(&mut self, off: usize, s: &str) {
+        assert!(off <= self.len(), "offset {off} out of bounds");
+        let s = normalize(s);
+        if s.is_empty() {
+            return;
+        }
+        if s.len() <= MAX_ADD_BYTES
+            && let Some(add) = &self.add
+            && tree::extend_in_place(&mut self.root, off, add, &s, count_lf(&s)) == tree::InPlace::Done
+        {
+            return;
+        }
+        *self = self.insert(off, &s);
+    }
+
     pub fn delete(&self, range: Range<usize>) -> Text {
         assert!(range.start <= range.end, "invalid range {range:?}");
         assert!(

@@ -16,6 +16,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `line_count()` | `\n` count + 1 | — | empty text has 1 line |
 | `ptr_eq(&other)` | same version? | — | identity, not content equality |
 | `insert(off, &str)` | `Text` | `out of bounds`, `char boundary` | normalizes input; empty input → same version; extends the previous piece when typing contiguously; one path copy |
+| `insert_mut(&mut self, off, &str)` | `()` | same as `insert` | `insert` in place: when the text extends the piece ending at `off` (typing) and no other version shares the nodes on its path, they are updated without allocating (about 13 ns per key against 61 ns); otherwise exactly `*self = self.insert(off, s)`. Clones taken before the call are never affected ([decisions.md](../design/decisions.md) D19) |
 | `delete(Range)` | `Text` | `invalid range` (start > end), `out of bounds`, `char boundary` | empty range → same version; one path copy when the range is inside one piece |
 | `apply_edits(&[(Range, &str)])` | `Text` | `invalid range` (reversed, unsorted or overlapping ranges), `out of bounds`, `char boundary` | many edits in one pass; ranges are offsets of *this* text, sorted by start and not overlapping (an edit may start where the previous ends; inserts at one offset apply in order); no effective edit → same version ([algorithms.md](../design/algorithms.md)) |
 | `offset_to_line(off)` | 0-based line | `out of bounds` (off > len) | offset at a `\n` → line it ends |
@@ -41,7 +42,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `from_string(String)` | same, taking over the buffer of large files (no copy) |
 | `text() -> &Text` | current version |
 | `eol()` / `set_eol(LineEnding)` | output ending; changing it is not an undo step |
-| `insert(off, &str)` / `delete(Range)` | same panics as `Text`; an effective edit makes a new version (a child of the current one); no-ops do nothing |
+| `insert(off, &str)` / `delete(Range)` | same panics as `Text`; an effective edit makes a new version (a child of the current one); no-ops do nothing. Inside an open group `insert` edits the group's version in place (`Text::insert_mut`), about 3.7x cheaper per key than a version per key |
 | `splice(Range, &str)` | replace a range as one edit; same content is not a change |
 | `apply_edits(&[(Range, &str)])` | `Text::apply_edits` as one change: one version, one undo step; `last_edits` has one edit per effective edit (each start in the text left by the previous ones); nothing to change → no version |
 | `begin_group()` / `end_group() -> bool` / `group(f)` | edits in a group make one version; nestable (outermost counts); `end_group` says whether it made one; any history move closes open groups |
