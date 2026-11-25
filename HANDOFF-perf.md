@@ -36,7 +36,7 @@ Each item: what, why, how to measure, where to look. IDs are stable, refer to th
 
 ### W8. Small items (W8a and W8c are done, see Done)
 - **W8b (done as D19, see Done; the text below is the original assessment)** Typing 1.2-1.3x gap against ropey 2 beta: would need in-place mutation when the root is unshared (`Arc::get_mut` down the path). In an editor with undo the old versions stay alive so the copy is needed anyway. Low value, high risk: skip unless W1 and W7 are done.
-- **W8d** Housekeeping (not performance work): the harness repo is not committed and vendors Zed's GPL-3.0-or-later `rope`: never publish it as is. pt-edit with mimalloc was never benchmarked end to end (the gain is the library-level measurement).
+- **W8d** Housekeeping (not performance work): the harness repo ([`piece-tree-bench`](https://github.com/shurizzle/piece-tree-bench)) is published under **GPL-3.0-or-later** (it vendors Zed's GPL `rope`): `LICENSE`, `NOTICE.md`, `README.md`, SPDX headers, modification notices on the vendored files, `.gitignore`, `RUST_CORPUS_DIR`. Its `piece-tree` dependency is the GitHub repo (the revision pinned in its `Cargo.lock`); `PIECE_TREE_PATH` measures a local checkout. pt-edit with mimalloc was never benchmarked end to end (the gain is the library-level measurement).
 
 ## Done (details in `docs/`)
 
@@ -58,7 +58,7 @@ Each item: what, why, how to measure, where to look. IDs are stable, refer to th
 
 ## The comparison harness
 
-Separate repository `~/p/piece-tree-bench` (git-initialized, nothing committed): the four libraries in one binary, same profile (fat LTO, `codegen-units = 1`): `piece-tree` (path dependency on this working tree), `ropey` 1.6.1, `ropey` 2.0.0-beta.1, Zed's `Rope` on `sum_tree` (column "SumTree (Zed rope)").
+Separate repository [`piece-tree-bench`](https://github.com/shurizzle/piece-tree-bench) (checkout `~/p/piece-tree-bench`, published under GPL-3.0-or-later): the four libraries in one binary, same profile (fat LTO, `codegen-units = 1`): `piece-tree` (path dependency on this working tree), `ropey` 1.6.1, `ropey` 2.0.0-beta.1, Zed's `Rope` on `sum_tree` (column "SumTree (Zed rope)").
 
 - `vendor/` holds Zed's `sum_tree` and `rope` at commit `77228009dd267dcf8ab9a20eef5802b2a8ea4afa`, tests and tracing stripped (`vendor/PATCHES.md`). `rope` is GPL-3.0-or-later.
 - Run: `cargo run --release` (rebuilds against the current sources); `--features mimalloc` for mimalloc as global allocator of the whole binary. Output: a table (min and median ns/op per library, a "winner" column), then a cross-library sanity check (same text after every edit scenario).

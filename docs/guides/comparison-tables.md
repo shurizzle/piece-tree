@@ -1,6 +1,6 @@
 # Cross-library comparison tables
 
-**Regenerate with every performance-relevant change** (rule in AGENTS.md): in the harness repository `piece-tree-bench`, `tools/run.sh <dir>` with nothing else running (~25 minutes), then `python3 -I tools/tables.py <dir> <path of this file>`.
+**Regenerate with every performance-relevant change** (rule in AGENTS.md): in the harness repository [`piece-tree-bench`](https://github.com/shurizzle/piece-tree-bench), `PIECE_TREE_PATH=<checkout>/crates/piece-tree tools/run.sh <dir>` with nothing else running (~25 minutes), then `python3 -I tools/tables.py <dir> <path of this file>`.
 
 The full results of the last cross-library run, one section per corpus, for every library and both allocators. Nothing here is a claim by itself: the reading, the noise and the history are in [benchmarks.md](benchmarks.md).
 
