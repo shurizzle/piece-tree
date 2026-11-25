@@ -585,6 +585,37 @@ Over the non-load rows the mimalloc/glibc ratio of piece-tree is 0.82 / 0.95 / 1
 
 With the whole build on AVX2 the wider compare is worth nothing (the flatten step, not the mask, is the cost, as D16 expected); behind runtime dispatch it is up to 28% slower on dense text. Not established why (the mask is inlined; candidates: the `target_feature` function's different code for `flatten` and the `Vec` growth around non-AVX calls such as `reserve`, or AVX/SSE transitions). Pastes of 256 B-64 KiB (`examples/paste.rs`, 3 rounds, `positions_callback`) moved 0.77-1.19x in both builds with no consistent sign. Code removed; AVX-512BW not tried (no host with it).
 
+**SSE4.2 string compare (rejected)**: `mask64_sse42` with `_mm_cmpestrm` (explicit lengths: the implicit-length `pcmpistrm` stops at the first 0 byte, i.e. the zero-padded tail and NULs in the text), mode `_SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK`, needle `\n` of length 1, four 16-byte lanes read with `_mm_cvtsi128_si32`; whole scan under `#[target_feature(enable = "sse4.2")]` (mask inlined, 16 `pcmpestrm` in the binary, no call), dispatch once per scan. Lane and differential tests passed. A/B against the same HEAD copy, 5 alternating rounds (load) and 3 (paste), min, new / old:
+
+| corpus | portable (runtime dispatch) | `target-cpu=native` |
+|---|---|---|
+| Rust sources | 0.349 / 0.263 = 1.33x | 0.340 / 0.267 = 1.27x |
+| synthetic | 1.30x | 1.15x |
+| CJK | 1.27x | 1.28x |
+| exp avg 100 / 200 / 400 | 1.23x / 1.36x / 1.47x | 1.37x / 1.43x / 1.49x |
+| exp avg 1000 / 5000 | 1.35x / 1.25x | 1.47x / 1.51x |
+| one line | 1.29x | 1.37x |
+
+Pastes (`positions_callback`): 0.95-1.05x at 256 B, 1.06-1.79x from 1 KiB up. Slower everywhere, also on sparse text, as the instruction costs predict: `pcmpestrm` is 8 uops with a throughput of one per 4 cycles on Skylake-class cores, against 1 uop for `pcmpeqb` (two or three per cycle) plus 1 for `pmovmskb`; it only pays for needle sets of 2-16 bytes or substring compares. The `_SIDD_UNIT_MASK` + `pmovmskb` variant was not built (the plan was to try it only within 10% of SSE2). Code removed.
+
+## pt-edit end to end: mimalloc against glibc (W8d)
+
+Same Linux host as above. Two standalone copies of HEAD (`fdd7e9c`) built the same way (`cargo test --release -p pt-edit`, no `target-cpu=native`), one as committed (mimalloc global allocator), one with the `#[global_allocator]` lines removed; the same ignored test in both (not in the repo): a 10 MB text of source-like lines, the editor driven through `Editor::key` with a 100x50 `frame` after every key, cursor around line 50000; 5 alternating rounds, min of 5 repetitions per scenario, µs per key (median of the rounds in parentheses):
+
+| scenario | glibc | mimalloc | min ratio |
+|---|---:|---:|---:|
+| load 10 MB (`read_doc`, ns/B) | 0.6 (0.6) | 0.6 (0.6) | 1.01 |
+| typing 10k keys (insert mode) | 48.7 (53.3) | 40.9 (43.2) | 0.84 |
+| backspace 5k | 99.9 (104.0) | 85.7 (88.9) | 0.86 |
+| `x` 5k (one undo step each) | 93.8 (95.5) | 86.4 (90.4) | 0.92 |
+| `dd` 2k | 92.7 (99.0) | 86.2 (93.6) | 0.93 |
+| `100yy`, then 200x `50jp` | 95.6 (97.2) | 85.9 (89.3) | 0.90 |
+| 1k `x`, then 1k `u` + 1k Ctrl-R | 103.2 (108.3) | 92.4 (94.0) | 0.90 |
+| `j`/`k` scroll 10k | 104.9 (106.7) | 88.4 (93.2) | 0.84 |
+| `:%s/value/v/g` (one command, µs) | 3 085 (3 107) | 2 898 (3 013) | 0.94 |
+
+mimalloc is 6-16% faster on every key-driven row (min and median agree), load unchanged: pt-edit keeps it. The gain is the same with and without an edit (`j`/`k` scroll -16%), so it comes from the per-key work around the text: a key costs ~90-100 µs here, two to three orders of magnitude more than the library edit itself (13-500 ns, `comparison-tables-linux.md`), so the frame (layout and render of 100x50 cells, gutter, scrolling), not the piece tree, is what an editor user waits for. Not profiled further here.
+
 ## Editor frame with `wrap` (`pt-edit`, `render.rs`)
 
 Release build, 100×50 screen, one run of 200 (10 for the huge line) per cell, temporary ignored test (removed); per-iteration time of `frame` alone and of key + `frame`. Compared with `nowrap` on the same build; there is no copy of the previous version because `wrap` did not exist.

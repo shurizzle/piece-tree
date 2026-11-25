@@ -17,9 +17,8 @@ use crossterm::{
 use editor::{Background, Editor};
 use terminal_colorsaurus::{QueryOptions, ThemeMode};
 
-// Every edit copies a path of the persistent tree (~12 nodes allocated, as many freed with the
-// previous version): ~55% of an edit is malloc/free with the system allocator, and mimalloc made
-// paste, random edits, typing and backspace 20-29% faster on macOS (D18).
+// The editor allocates on every key (frame layout, and the tree path when a version is kept):
+// mimalloc makes each key 6-16% faster end to end on Linux/glibc (W8d) and edits 20-29% on macOS (D18).
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 

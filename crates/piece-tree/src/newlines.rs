@@ -28,7 +28,7 @@
 //! intrinsics), uses the portable SWAR mask, plain integer arithmetic.
 //!
 //! AVX2 was tried and rejected (no gain with `target-cpu=native`, up to 28% slower behind
-//! `is_x86_feature_detected!`, D16); AVX-512BW is untried (no host). Other architectures (wasm32, 32-bit x86,
+//! `is_x86_feature_detected!`, D16), and so was the SSE4.2 string compare (`pcmpestrm`: 15-51% slower); AVX-512BW is untried (no host). Other architectures (wasm32, 32-bit x86,
 //! loongarch64, s390x, riscv64, powerpc64, `std::simd`) use SWAR and are listed in D16 as to-try.
 
 use memchr::memchr_iter;
