@@ -1,5 +1,6 @@
 use super::*;
 use crate::chunk::{MIN_ADD_BYTES, count_lf};
+use crate::test_util::Rng;
 
 /// Cuts `text` (one exact chunk) into consecutive pieces of the given byte lengths.
 fn cut(text: &str, lens: impl IntoIterator<Item = usize>) -> Vec<Piece> {
@@ -223,6 +224,96 @@ fn extend_in_place_declines_when_the_chunk_is_full() {
     assert_eq!((add.fill().len as usize, len(&t)), (MIN_ADD_BYTES - 1, MIN_ADD_BYTES - 1));
     assert_eq!(extend_in_place(&mut t, MIN_ADD_BYTES - 1, &add, "y", 0), InPlace::Done);
     assert_eq!(len(&t), MIN_ADD_BYTES);
+}
+
+/// Steps of the in-place differential test; scaled down under Miri.
+#[cfg(not(miri))]
+const MUT_STEPS: usize = 600;
+#[cfg(miri)]
+const MUT_STEPS: usize = 60;
+
+/// `insert_mut` and `delete_mut` give the text the persistent `insert_at` / `delete_range` give, with
+/// valid balance and totals at every step, on trees of small and of big pieces; versions kept before
+/// the edits never change, and nodes that nobody else owns are the same allocation afterwards.
+#[test]
+fn in_place_edits_match_the_persistent_ones() {
+    let big = sample(if cfg!(miri) { 60 } else { 400 });
+    let starts: [(&str, Vec<Piece>); 3] = [
+        ("empty", Vec::new()),
+        ("small pieces", mixed_pieces(&sample(if cfg!(miri) { 20 } else { 60 }))),
+        ("big pieces", cut(&big, [big.len() / 3, big.len() / 3 + 1, big.len() - 2 * (big.len() / 3) - 1])),
+    ];
+    for (seed, (name, ps)) in starts.into_iter().enumerate() {
+        let mut rng = Rng(seed as u64 + 5);
+        let mut m = text_of(&ps);
+        let (mut a, mut b) = (append_all(&ps), append_all(&ps));
+        let mut kept: Vec<(Tree, String)> = Vec::new();
+        for step in 0..MUT_STEPS {
+            if step % 11 == 3 {
+                kept.push((a.clone(), m.clone()));
+            }
+            if rng.below(3) != 0 || m.len() < 4 {
+                let off = rng.boundary(&m);
+                let s = rng.text(4);
+                if s.is_empty() {
+                    continue;
+                }
+                let p = Piece::whole(Chunk::exact(&s));
+                insert_mut(&mut a, off, p.clone());
+                b = insert_at(&b, off, p);
+                m.insert_str(off, &s);
+            } else {
+                // Short ranges are mostly inside one piece; longer ones sometimes span several.
+                let x = rng.boundary(&m);
+                let y = m[x..].char_indices().map(|(i, _)| x + i).chain([m.len()]).nth(1 + rng.below(6)).unwrap_or(m.len());
+                if x == y {
+                    continue;
+                }
+                let before = content(&a);
+                if !delete_mut(&mut a, x, y) {
+                    assert_eq!(content(&a), before, "{name}: a refused delete changed the text");
+                    a = delete_range(&a, x, y);
+                }
+                b = delete_range(&b, x, y);
+                m.replace_range(x..y, "");
+            }
+            assert_tree(&a, &m);
+            assert_tree(&b, &m);
+        }
+        for (t, s) in &kept {
+            assert_tree(t, s);
+        }
+    }
+}
+
+/// Every outcome of `delete_mut` on one 16-byte piece placed first, in the middle and last of three:
+/// prefix, suffix and middle cuts succeed (the middle one adds a node), the whole piece and a range
+/// that spans pieces are refused with the text unchanged.
+#[test]
+fn delete_mut_cases() {
+    let s = "0123456789abcdef";
+    for at in 0..3 {
+        let mut ps = vec![Piece::whole(Chunk::exact("xx")), Piece::whole(Chunk::exact(s)), Piece::whole(Chunk::exact("yy"))];
+        ps.rotate_left(at);
+        let first: usize = ps.iter().take_while(|p| p.len() != s.len()).map(Piece::len).sum();
+        let spanning = if first > 0 { (first - 1, first + 2) } else { (first + 15, first + 17) };
+        let cases = [
+            (first, first + 3, true),
+            (first + 13, first + 16, true),
+            (first + 3, first + 5, true),
+            (first, first + 16, false),
+            (spanning.0, spanning.1, false),
+        ];
+        for (x, y, ok) in cases {
+            let mut t = append_all(&ps);
+            let mut m = text_of(&ps);
+            assert_eq!(delete_mut(&mut t, x, y), ok, "at {at}, {x}..{y}");
+            if ok {
+                m.replace_range(x..y, "");
+            }
+            assert_tree(&t, &m);
+        }
+    }
 }
 
 #[test]

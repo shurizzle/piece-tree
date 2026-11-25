@@ -69,7 +69,7 @@ pt-edit (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of 
 3. AVL balance: `|height(left) - height(right)| <= 1` at every node.
 4. Node `len` and `lf` are **totals of the whole subtree** (not left-only as in VS Code); pieces cache their own `lf`. Chars are not cached: char conversions scan (see D15).
 5. Public offsets are **bytes** and must be on UTF-8 char boundaries (asserted).
-6. **No version is ever observable as changed.** `Text::insert` and friends return a new `Text`. The one in-place path, `Text::insert_mut` (typing), only touches nodes that `Arc::get_mut` proves have a single owner, so a clone, an undo state or a snapshot keeps its content; a shared node sends it to the copying path (D19).
+6. **No version is ever observable as changed.** `Text::insert` and friends return a new `Text`. The in-place paths (`Text::insert_mut`, `Text::delete_mut`) only change a node that `Arc::get_mut` / `Arc::make_mut` shows has a single owner and clone a shared one before touching it, so a clone, an undo state or a snapshot keeps its content (D19, D20).
 7. **Soundness**: a piece only covers published chunk bytes and newline slots, and its ends are char boundaries. `Piece::text` relies on it (`from_utf8_unchecked`); `Piece::split` asserts it.
 
 `tree::check` (test only) verifies 2–4 on every tree a test produces. Miri checks 7 (see [docs/guides/testing.md](docs/guides/testing.md)).

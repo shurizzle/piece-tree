@@ -771,6 +771,73 @@ fn insert_mut_edge_cases() {
 }
 
 #[test]
+fn edits_in_place_match_the_model() {
+    let texts: Vec<String> = ["a", "é", "xyz\n", "\n", "🦀 crab", "a\r\nb\rc", "", "line one\nline two\n"].map(String::from).to_vec();
+    for seed in 0..BATCH_SEEDS / 3 {
+        let mut rng = Rng(seed + 300);
+        let (mut t, mut m) = fragmented(&mut rng, [0, 3, 40][seed as usize % 3]);
+        let mut kept: Vec<(Text, String)> = Vec::new();
+        for step in 0..80 {
+            if step % 7 == 2 {
+                kept.push((t.clone(), m.clone()));
+            }
+            if rng.below(3) == 0 && !m.is_empty() {
+                // A short range (inside one piece most of the time), a whole line or the empty one.
+                let a = rng.boundary(&m);
+                let n = [0, 1, 2, 5, 40][rng.below(5)];
+                let b = m[a..].char_indices().map(|(i, _)| a + i).chain([m.len()]).nth(n).unwrap_or(m.len());
+                t.delete_mut(a..b);
+                m.replace_range(a..b, "");
+            } else {
+                let off = rng.boundary(&m);
+                let s = &texts[rng.below(texts.len())];
+                t.insert_mut(off, s);
+                m.insert_str(off, &s.replace("\r\n", "\n").replace('\r', "\n"));
+            }
+            if step % 8 == 0 {
+                assert_same(&t, &m, &mut rng, m.len() < 512);
+            }
+        }
+        assert_same(&t, &m, &mut rng, false);
+        for (kt, km) in &kept {
+            assert_same(kt, km, &mut rng, false);
+        }
+    }
+}
+
+#[test]
+fn delete_mut_edge_cases() {
+    let mut t = Text::from("héllo wörld");
+    let before = t.clone();
+    t.delete_mut(3..3);
+    assert!(t.ptr_eq(&before), "empty range: same version");
+    t.delete_mut(0..1);
+    t.delete_mut(0..t.len());
+    assert_eq!((t.to_string().as_str(), before.to_string().as_str()), ("", "héllo wörld"));
+    t.delete_mut(0..0);
+    assert!(t.is_empty());
+}
+
+#[test]
+#[should_panic(expected = "out of bounds")]
+fn delete_mut_rejects_out_of_bounds() {
+    Text::from("ab").delete_mut(1..3);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+fn delete_mut_rejects_reversed_ranges() {
+    #[allow(clippy::reversed_empty_ranges)]
+    Text::from("abc").delete_mut(2..1);
+}
+
+#[test]
+#[should_panic(expected = "char boundary")]
+fn delete_mut_rejects_cutting_a_char() {
+    Text::from("aé").delete_mut(0..2);
+}
+
+#[test]
 #[should_panic(expected = "out of bounds")]
 fn insert_mut_rejects_out_of_bounds() {
     Text::from("ab").insert_mut(3, "x");

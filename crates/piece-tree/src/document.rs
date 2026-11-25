@@ -117,18 +117,11 @@ impl Document {
 
     pub fn insert(&mut self, off: usize, s: &str) {
         let edit = Edit { start: off, old_len: 0, new_len: s.len() };
-        if self.depth > 0 && self.group == Some(self.cur) {
-            // The open group already owns this version (the history keeps only its first one), so
-            // typing can edit it in place; a clone held elsewhere just makes `insert_mut` copy.
-            let text = &mut self.states[self.cur].text;
+        if let Some(text) = self.group_text() {
             let len = text.len();
             text.insert_mut(off, s);
-            self.last.clear();
-            if text.len() != len {
-                self.last.push(edit);
-                self.log.push(edit);
-                self.states[self.cur].edits.end = self.log.len();
-            }
+            let changed = text.len() != len;
+            self.record_in_group(edit, changed);
             return;
         }
         let next = self.text().insert(off, s);
@@ -136,8 +129,16 @@ impl Document {
     }
 
     pub fn delete(&mut self, range: Range<usize>) {
-        let next = self.text().delete(range.clone());
-        self.apply(next, &[Edit { start: range.start, old_len: range.len(), new_len: 0 }]);
+        let edit = Edit { start: range.start, old_len: range.len(), new_len: 0 };
+        if let Some(text) = self.group_text() {
+            let len = text.len();
+            text.delete_mut(range);
+            let changed = text.len() != len;
+            self.record_in_group(edit, changed);
+            return;
+        }
+        let next = self.text().delete(range);
+        self.apply(next, &[edit]);
     }
 
     /// Replaces `range` with `s` as one change (one version, one [`Edit`]).
@@ -147,8 +148,32 @@ impl Document {
             self.last.clear();
             return;
         }
+        let edit = Edit { start: range.start, old_len: range.len(), new_len: s.len() };
+        if let Some(text) = self.group_text() {
+            text.delete_mut(range.clone());
+            text.insert_mut(range.start, s);
+            self.record_in_group(edit, true);
+            return;
+        }
         let next = self.text().delete(range.clone()).insert(range.start, s);
-        self.apply(next, &[Edit { start: range.start, old_len: range.len(), new_len: s.len() }]);
+        self.apply(next, &[edit]);
+    }
+
+    /// The current version when an open group already owns it (the history keeps only the group's
+    /// first version), so an edit may change it in place; a clone held elsewhere just makes the
+    /// in-place calls copy the shared nodes.
+    fn group_text(&mut self) -> Option<&mut Text> {
+        (self.depth > 0 && self.group == Some(self.cur)).then(|| &mut self.states[self.cur].text)
+    }
+
+    /// [`Document::apply`] for an edit made in place on the group's version.
+    fn record_in_group(&mut self, edit: Edit, changed: bool) {
+        self.last.clear();
+        if changed {
+            self.last.push(edit);
+            self.log.push(edit);
+            self.states[self.cur].edits.end = self.log.len();
+        }
     }
 
     /// [`Text::apply_edits`] as one change (one version, one undo step). [`Document::last_edits`]

@@ -396,6 +396,57 @@ Before this change ropey 2 beta led typing by 1.18-1.37x with the system allocat
 
 Not helped by design: a version per key. `Document` without a group, and the "clone per key" scenario, keep the old version alive, so the path is copied (the new code only adds a refused `Arc::get_mut` at the root, inside the noise).
 
+## Insert and delete in place (D20)
+
+Implemented after the estimate below: `Text::insert_mut` for every insert, `Text::delete_mut`, `Document::insert` / `delete` / `splice` inside a group. A/B against a standalone copy of HEAD built the same way (HEAD = the typing change of D19), harness examples `edits` (persistent API, in both) and `edits_mut` (the in-place API, new code only; same scenarios), alternating runs, min / median in ns per operation:
+
+| Row | system: HEAD | system: persistent API now | system: in place | mimalloc: HEAD | mimalloc: in place |
+|---|---|---|---|---|---|
+| paste 1k on 10 MB | 610.7 / 653.4 | 621.4 / 640.0 | **330.0 / 347.4** (-46%) | 455.2 / 461.2 | **315.5 / 328.1** (-31%) |
+| random edits 1k+1k | 611.0 / 639.4 | 611.2 / 643.2 | **315.5 / 343.0** (-48%) | 436.4 / 440.5 | **304.2 / 314.4** (-30%) |
+| typing 10k | 60.4 / 60.5 | 60.5 / 61.4 | 13.4 / 13.8 | 49.5 / 49.5 | 13.4 / 13.8 |
+| backspace 10k | 51.6 / 52.3 | 52.2 / 52.4 | **19.5 / 20.1** (-62%) | 38.6 / 39.8 | **19.7 / 20.1** (-49%) |
+| `line()` | 3.9 / 4.0 | 3.9 / 3.9 | 3.8 / 3.8 | 3.9 / 3.9 | 3.8 / 3.8 |
+
+15 rounds with the system allocator, 12 with mimalloc. The persistent API (`insert`, `delete`) did not move: `Text::insert` and `delete` are untouched. Cross-library (`tools/run.sh`, 3 runs per corpus and allocator; the harness adapter now calls `insert_mut` / `delete_mut` for piece-tree, and `Text::insert` for the "clone per key" row, where every version is kept), piece-tree before -> after, and the lead over the best other library after (all in `comparison-tables.md`):
+
+| Row | synthetic sys | Rust sys | CJK sys | synthetic mimalloc | Rust mimalloc | CJK mimalloc |
+|---|---|---|---|---|---|---|
+| paste mid-piece 1k | 687 -> 341 (ropey 2 beta 678, 1.99x) | 634 -> 357 (667, 1.87x) | 659 -> 322 (659, 2.05x) | 449 -> 326 (597, 1.83x) | 467 -> 324 (561, 1.73x) | 454 -> 309 (567, 1.84x) |
+| random edits 1k+1k | 644 -> 329 (606, 1.84x) | 674 -> 323 (574, 1.78x) | 642 -> 308 (588, 1.91x) | 430 -> 304 (595, 1.96x) | 447 -> 301 (596, 1.98x) | 437 -> 294 (574, 1.95x) |
+| backspace 10k | 53.0 -> 19.9 (76, 3.83x) | 53.7 -> 20.3 (87, 4.29x) | 54.4 -> 19.9 (79, 3.95x) | 39.4 -> 20.1 (74, 3.68x) | 40.7 -> 19.9 (85, 4.28x) | 39.6 -> 19.9 (77, 3.87x) |
+| typing 10k (D19) | 12.8 -> 14.0 (48, 3.46x) | 12.8 -> 13.6 (52, 3.83x) | 13.1 -> 13.6 (45, 3.32x) | 12.6 -> 13.9 (48, 3.44x) | 13.0 -> 13.5 (51, 3.77x) | 13.0 -> 13.5 (45, 3.35x) |
+| typing, clone per key | 67.5 -> 68.1 | 66.4 -> 61.7 | 65.9 -> 64.3 | 50.9 -> 50.9 | 48.7 -> 49.0 | 57.6 -> 55.1 |
+
+Reads and the batch row did not move (`line()` 0.96-1.06x, batch 1k 0.98-1.03x). Typing is 4-10% slower in the harness than in the previous run (12.8 -> 14.0) while the isolated A/B above shows 13.4 for both versions: code placement of two different binaries.
+
+The estimate below projected paste ~385 / ~275 ns and random edits ~330 / ~275 ns (system / mimalloc), backspace -25%: the system allocator did better than projected (330 and 316), mimalloc about 13% worse (316 and 304), backspace much better (it never allocates: a suffix trim only shrinks a piece).
+
+## Estimate for in-place insert and delete (throwaway prototype)
+
+Question: D19 made typing 4x cheaper by editing the nodes of an unshared version in place. Does the same apply to the remaining edit rows (paste, random edits, backspace), where ropey 2 beta is still ahead with the system allocator (1.04x on paste, 1.10-1.18x on random edits)? Prototype in the same crate as the W1 estimate (`piece-tree-bench/w1proto`, `w1proto inplace`, outside the workspace): the AVL of `tree.rs` against the same AVL edited with `Arc::make_mut` along the path (a node with one owner is changed in place, a shared one is cloned, so a partly shared version needs no separate path), with rotations done in place and the cached `height`/`len`/`lf` fixed on the way back. Operations: insert of a piece in the middle of another (`insert_at` against `insert_mut`), delete of 40 bytes inside one piece (`delete_in` against `delete_mut`; deleting a whole piece or a range that spans pieces falls back to the persistent code), and deleting the last byte of a piece (backspace). The in-place trees were checked against the persistent ones for 4000 random inserts and deletes on trees of 0, 40 and 3000 pieces: same pieces in the same order, AVL balance and totals valid at every step, and versions kept before the edits unchanged. Same `Piece` and `Arc` as the library, min of 3 runs of 30 rounds of 512 ops, ns per op, persistent -> in place:
+
+| pieces | paste, system | paste, mimalloc | edits (insert + delete, average), system | edits, mimalloc | backspace, system | backspace, mimalloc |
+|---|---|---|---|---|---|---|
+| 1 | 355 -> 134 | 267 -> 122 | 382 -> 122 | 257 -> 115 | 21 -> 9 | 20 -> 10 |
+| 1000 | 468 -> 166 | 333 -> 158 | 461 -> 153 | 304 -> 147 | 214 -> 46 | 173 -> 45 |
+| 3000 | 508 -> 208 | 368 -> 191 | 499 -> 182 | 333 -> 175 | 253 -> 55 | 213 -> 55 |
+| 30000 | 618 -> 297 | 463 -> 281 | 576 -> 280 | 421 -> 255 | 328 -> 75 | 329 -> 71 |
+
+When every version is kept (a clone per operation, so every node on the path is shared) the new code is not slower: paste at 1 / 1000 / 3000 / 30000 pieces, persistent -> make_mut, system: 268 -> 245, 314 -> 294, 342 -> 324, 416 -> 405 (mimalloc 205 -> 202, 267 -> 242, 294 -> 264, 375 -> 337).
+
+**Projection to the library rows** (the fixed part of an operation that no tree change touches is taken as the real row minus the prototype's persistent time on a tree of the harness size, ~2000 pieces after 1000 pastes: ~200 ns with the system allocator and ~100 ns with mimalloc for paste, ~165 and ~110 ns for random edits; it is added to the in-place time at the same size):
+
+| Row | now (system / mimalloc) | projected | best other now | lead |
+|---|---|---|---|---|
+| paste mid-piece 1k | 687 / 449 | ~385 / ~275 (-44% / -39%) | ropey 2 beta 664 / 593 | ~1.7x / ~2.2x (from 0.97x / 1.3x) |
+| random edits 1k+1k | 644 / 430 | ~330 / ~275 (-49% / -36%) | ropey 2 beta 581 / 588 | ~1.8x / ~2.1x (from 0.90x / 1.4x) |
+| backspace | 53 / 39 | ~41 / ~29 (-23% / -26%) | ropey 2 beta 74 / 90 | 1.8x / 3.1x |
+
+Why it works: the path copy of ~12 nodes (an allocation and a free each, plus the `Arc` traffic of their children) becomes the two allocations of the new pieces (one for a delete); the walk, the rotations and the totals stay. It is allocator-independent, like D19: the gain is smaller with mimalloc only because the baseline is cheaper.
+
+What the prototype does not include: the real insert has the chunk side (`Piece::store`, `try_append`, the newline index) and the char-boundary asserts of `Piece::split`/`sub`, the whole-piece and cross-piece deletes (`delete_range`: `split` + `join2`) would still be persistent, and the same needs a `Text::delete_mut` and `Document` wiring inside groups. The gain only exists while the previous version is not kept (the harness pattern `t = t.insert(..)`, the editor inside a group); with kept versions the code is as fast as the persistent one (table above), not faster.
+
 ## Estimate for wide leaves (W1, throwaway prototype)
 
 Question: how much would a B-tree-like tree (several pieces per node, `Arc` per node, path copying) gain over the binary AVL of `tree.rs`? Prototype outside the workspace (`piece-tree-bench/w1proto`, a standalone crate, not part of the library): the same 24-byte `Piece` with an `Arc<Chunk>`, the same `triomphe::Arc`, the AVL copied from `tree.rs` (`node`, `join`, `insert_at`, `extend_at`) against a persistent B-tree with up to `L` pieces per leaf and `F` children per inner node (insert and the typing extension only). Built the same way (fat LTO), system allocator and mimalloc, min of 3 runs of 40 rounds. "Insert" = `t = t.insert(random offset, piece)` dropping the previous version each step (the paste scenario); "typing" = growing one piece by one byte per key (`extend_at`, no structural change); "lookup" = `lf_before` at a random offset. The AVL of the prototype reproduces the library (3000 pieces: 511 ns against 660 ns of the real paste, the rest being the chunk append and the line-feed counts), which fixes the part that a tree change cannot touch at about 120 ns (system) and 80 ns (mimalloc) per paste.

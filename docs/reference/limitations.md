@@ -4,7 +4,7 @@
 
 | Limit | Impact | Upgrade path |
 |---|---|---|
-| In-place typing needs an unshared version | `Text::insert_mut` and `Document::insert` inside a group update nodes in place (13 ns per key); when each key must stay a version (`Document` without a group, or a clone per key) the path is copied, 50-60 ns per key | Nothing to do: a kept version needs its own path |
+| In-place edits need an unshared version | `Text::insert_mut` / `delete_mut` and `Document` inside a group update nodes in place (typing 13 ns per key, paste 330 ns, backspace 20 ns); when each edit must stay a version (`Document` without a group, or a clone per edit) the path is copied: 50-60 ns per key, ~610 ns per paste | Nothing to do: a kept version needs its own path. Ranges that span pieces, and whole-piece deletes, are always persistent (`split` + `join2`) |
 | Pieces still multiply under scattered edits | Extension only helps contiguous typing; random edits still add pieces (~3000 after 2000 random edits) | Periodically rebuild into large chunks (VS Code's planned "normalization") when the piece count exceeds a threshold |
 | Chunks stay alive while referenced | A chunk whose text is mostly deleted is kept whole by the remaining pieces (and by undo history) | Compaction during rebuild; drop old undo entries |
 | Add chunk allocated in full | Up to 64 KiB bytes + 64 KiB newline slots reserved per add chunk (untouched pages are usually not committed by the OS) | Smaller maximum, or a separate growable newline area |

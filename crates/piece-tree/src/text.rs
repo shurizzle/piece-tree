@@ -124,23 +124,50 @@ impl Text {
         }
     }
 
-    /// [`Text::insert`] in place: `self` becomes the edited text. When `s` extends the piece
-    /// ending at `off` (typing) and no older version shares the nodes on its path (`Text::clone`
-    /// is O(1) and shares them), the nodes are updated without allocating or freeing; otherwise
-    /// it is `*self = self.insert(off, s)`. Versions cloned before the call are never affected.
+    /// [`Text::insert`] in place: `self` becomes the edited text. The nodes of the path that no
+    /// other version shares (`Text::clone` is O(1) and shares them all) are edited where they are,
+    /// so typing and repeated edits of a value nobody keeps allocate almost nothing; a shared node
+    /// is cloned alone, never changed. Versions cloned before the call keep their content.
     pub fn insert_mut(&mut self, off: usize, s: &str) {
         assert!(off <= self.len(), "offset {off} out of bounds");
         let s = normalize(s);
         if s.is_empty() {
             return;
         }
-        if s.len() <= MAX_ADD_BYTES
-            && let Some(add) = &self.add
-            && tree::extend_in_place(&mut self.root, off, add, &s, count_lf(&s)) == tree::InPlace::Done
-        {
+        if s.len() > MAX_ADD_BYTES {
+            // Too big to extend a piece or share a chunk: one exact chunk, one scan.
+            tree::insert_mut(&mut self.root, off, Piece::whole(Chunk::exact(&s)));
             return;
         }
-        *self = self.insert(off, &s);
+        let lf = count_lf(&s);
+        if let Some(add) = &self.add {
+            match tree::extend_in_place(&mut self.root, off, add, &s, lf) {
+                tree::InPlace::Done => return,
+                // Typing right after a version somebody keeps: the copying path extends the piece.
+                tree::InPlace::Shared => {
+                    *self = self.insert(off, &s);
+                    return;
+                }
+                tree::InPlace::Declined => {}
+            }
+        }
+        let (piece, add) = Piece::store(self.add.as_ref(), &s, lf);
+        tree::insert_mut(&mut self.root, off, piece);
+        self.add = add;
+    }
+
+    /// [`Text::delete`] in place, with the sharing rules of [`Text::insert_mut`]: a range inside one
+    /// piece edits the unshared nodes of its path; one that spans pieces or equals a whole piece
+    /// takes the persistent code.
+    pub fn delete_mut(&mut self, range: Range<usize>) {
+        assert!(range.start <= range.end, "invalid range {range:?}");
+        assert!(range.end <= self.len(), "offset {} out of bounds", range.end);
+        if range.is_empty() {
+            return;
+        }
+        if !tree::delete_mut(&mut self.root, range.start, range.end) {
+            *self = self.delete(range);
+        }
     }
 
     pub fn delete(&self, range: Range<usize>) -> Text {

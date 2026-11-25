@@ -388,6 +388,31 @@ fn typing_in_a_group_edits_in_place() {
 }
 
 #[test]
+fn deleting_and_replacing_in_a_group_edit_in_place() {
+    let mut doc = Document::new("one two three four");
+    let before = doc.text().clone();
+    doc.begin_group();
+    doc.delete(0..4);
+    assert_eq!(doc.last_edits(), [Edit { start: 0, old_len: 4, new_len: 0 }]);
+    doc.delete(3..3);
+    assert!(doc.last_edits().is_empty(), "an empty range is not an edit");
+    let held = doc.text().clone();
+    doc.splice(0..3, "2");
+    assert_eq!(doc.last_edits(), [Edit { start: 0, old_len: 3, new_len: 1 }]);
+    doc.splice(0..1, "2");
+    assert!(doc.last_edits().is_empty(), "same content: nothing to do");
+    doc.insert(1, "!");
+    doc.delete(doc.text().len() - 4..doc.text().len());
+    assert_eq!((doc.text().to_string().as_str(), held.to_string().as_str()), ("2! three ", "two three four"));
+    assert!(doc.end_group());
+    assert_eq!((doc.seq(), before.to_string().as_str()), (1, "one two three four"));
+    assert!(doc.undo());
+    assert_eq!(doc.text().to_string(), "one two three four");
+    assert!(doc.redo());
+    assert_eq!(doc.text().to_string(), "2! three ");
+}
+
+#[test]
 fn branches_survive_and_redo_follows_the_last_visit() {
     let mut doc = Document::new("");
     doc.insert(0, "a"); // 1

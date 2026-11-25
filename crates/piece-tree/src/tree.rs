@@ -141,6 +141,7 @@ impl Piece {
 
 pub(crate) type Tree = Option<Arc<Node>>;
 
+#[derive(Clone)]
 pub(crate) struct Node {
     pub(crate) left: Tree,
     pub(crate) right: Tree,
@@ -429,6 +430,130 @@ pub(crate) fn extend_in_place(t: &mut Tree, off: usize, add: &Arc<Chunk>, s: &st
         n.lf += lf;
     }
     done
+}
+
+/// Recomputes the cached height and totals of a node whose children or piece changed.
+fn update(n: &mut Node) {
+    n.height = 1 + height(&n.left).max(height(&n.right));
+    n.len = len(&n.left) + n.piece.len() + len(&n.right);
+    n.lf = lf(&n.left) + n.piece.lf() + lf(&n.right);
+}
+
+/// [`rotate_right`] on the node itself: nodes with one owner are rewired in place, shared ones are
+/// cloned first (`Arc::make_mut`), so no version that holds them can see the change.
+fn rotate_right_mut(t: &mut Tree) {
+    let mut x = t.take().expect("rotate_right_mut on empty tree");
+    let xn = Arc::make_mut(&mut x);
+    let mut y = xn.left.take().expect("rotate_right_mut without left child");
+    let yn = Arc::make_mut(&mut y);
+    xn.left = yn.right.take();
+    update(xn);
+    yn.right = Some(x);
+    update(yn);
+    *t = Some(y);
+}
+
+fn rotate_left_mut(t: &mut Tree) {
+    let mut x = t.take().expect("rotate_left_mut on empty tree");
+    let xn = Arc::make_mut(&mut x);
+    let mut y = xn.right.take().expect("rotate_left_mut without right child");
+    let yn = Arc::make_mut(&mut y);
+    xn.right = yn.left.take();
+    update(xn);
+    yn.left = Some(x);
+    update(yn);
+    *t = Some(y);
+}
+
+/// Restores the AVL balance of a node after one insertion below it (heights differ by at most 2).
+fn rebalance_mut(t: &mut Tree) {
+    let n = t.as_ref().expect("rebalance of an empty tree");
+    let (hl, hr) = (height(&n.left), height(&n.right));
+    if hl > hr + 1 {
+        let l = n.left.as_ref().expect("a taller side is not empty");
+        if height(&l.left) < height(&l.right) {
+            rotate_left_mut(&mut Arc::make_mut(t.as_mut().expect("checked above")).left);
+        }
+        rotate_right_mut(t);
+    } else if hr > hl + 1 {
+        let r = n.right.as_ref().expect("a taller side is not empty");
+        if height(&r.right) < height(&r.left) {
+            rotate_right_mut(&mut Arc::make_mut(t.as_mut().expect("checked above")).right);
+        }
+        rotate_left_mut(t);
+    }
+}
+
+/// [`insert_at`] in place: AVL insert of `p` at byte `off` into `t`. Every node on the path that
+/// has one owner is edited where it is and every shared one is cloned (only that node), so versions
+/// that share nodes with `t` are never changed and an unshared tree allocates only the new nodes.
+pub(crate) fn insert_mut(t: &mut Tree, off: usize, p: Piece) {
+    let Some(arc) = t else {
+        *t = node(None, p, None);
+        return;
+    };
+    let n = Arc::make_mut(arc);
+    let (ll, pl) = (len(&n.left), n.piece.len());
+    if off <= ll {
+        insert_mut(&mut n.left, off, p);
+    } else if off >= ll + pl {
+        insert_mut(&mut n.right, off - ll - pl, p);
+    } else {
+        // Inside a piece: shrink it to the left part, then insert the new piece and the right part
+        // right after it (two ordinary insertions, each followed by its own rebalancing).
+        let (p1, p2) = n.piece.split(off - ll);
+        let at = ll + p1.len();
+        n.piece = p1;
+        update(n);
+        insert_mut(t, at, p2);
+        insert_mut(t, at, p);
+        return;
+    }
+    update(n);
+    rebalance_mut(t);
+}
+
+/// [`delete_in`] in place: removes `[a, b)` (non-empty) when it lies inside one piece and is not
+/// all of it. `false`, with the text unchanged, for a range that spans pieces or equals one (the
+/// caller then uses the persistent code, which joins subtrees).
+pub(crate) fn delete_mut(t: &mut Tree, a: usize, b: usize) -> bool {
+    let arc = t.as_mut().expect("a non-empty range lies in a non-empty subtree");
+    let (ll, pl) = (len(&arc.left), arc.piece.len());
+    if b <= ll || a >= ll + pl {
+        let n = Arc::make_mut(arc);
+        let ok = if b <= ll {
+            delete_mut(&mut n.left, a, b)
+        } else {
+            delete_mut(&mut n.right, a - ll - pl, b - ll - pl)
+        };
+        if ok {
+            update(n);
+            // A middle cut below inserted a node: the heights may have changed.
+            rebalance_mut(t);
+        }
+        return ok;
+    }
+    if a < ll || b > ll + pl {
+        return false;
+    }
+    let (a, b) = (a - ll, b - ll);
+    if a == 0 && b == pl {
+        return false;
+    }
+    let n = Arc::make_mut(arc);
+    if a == 0 {
+        n.piece = n.piece.sub(b, pl);
+    } else if b == pl {
+        n.piece = n.piece.sub(0, a);
+    } else {
+        let p2 = n.piece.sub(b, pl);
+        n.piece = n.piece.sub(0, a);
+        update(n);
+        insert_mut(t, ll + a, p2);
+        return true;
+    }
+    update(n);
+    true
 }
 
 /// Persistent AVL insert of `p` at byte `off`, splitting the piece there if
