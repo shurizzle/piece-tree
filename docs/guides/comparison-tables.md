@@ -1,6 +1,6 @@
 # Cross-library comparison tables
 
-**Regenerate with every performance-relevant change** (rule in AGENTS.md): in the harness repository [`piece-tree-bench`](https://github.com/shurizzle/piece-tree-bench), `PIECE_TREE_PATH=<checkout>/crates/piece-tree tools/run.sh <dir>` with nothing else running (~25 minutes), then `python3 -I tools/tables.py <dir> <path of this file>`.
+**Regenerate with every performance-relevant change** (rule in AGENTS.md): in the harness repository `piece-tree-bench`, `PIECE_TREE_PATH=<checkout>/crates/piece-tree tools/run.sh <dir>` with nothing else running (~25 minutes), then `python3 -I tools/tables.py <dir> <path of this file>`.
 
 The full results of the last cross-library run, one section per corpus, for every library and both allocators. Nothing here is a claim by itself: the reading, the noise and the history are in [benchmarks.md](benchmarks.md).
 
@@ -15,36 +15,36 @@ Reading hints (from the noise section of benchmarks.md): reads and loads repeat 
 | scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | best | lead |
 |---|---:|---:|---:|---:|---|---:|
 | load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.3 (0.3) | piece-tree | 2.00x |
-| load 50MB from String (per byte) | **0.1 (0.1)** | 0.4 (0.4) | **0.1 (0.2)** | 0.3 (0.4) | piece-tree = ropey 2 beta | 1.00x |
-| line() random, loaded | **27.2 (29.1)** | 420 (474) | 691 (734) | 662 (675) | piece-tree | 15.46x |
-| typing 10k chars in 1MB | **14.0 (14.2)** | 134 (143) | 48.4 (49.1) | 11 615 (11 866) | piece-tree | 3.46x |
-| typing 10k, clone per key | **68.1 (79.9)** | 625 (637) | 477 (512) | 14 974 (16 357) | piece-tree | 7.01x |
-| line() all, after typing | **5.3 (5.4)** | 184 (192) | 227 (231) | 170 (173) | piece-tree | 32.17x |
-| line() 10x50 windows, typed | **5.6 (5.7)** | 192 (204) | 246 (251) | 190 (198) | piece-tree | 33.98x |
-| backspace 10k | **19.9 (20.7)** | 178 (184) | 76.2 (79.2) | 12 523 (12 870) | piece-tree | 3.83x |
-| offset_to_line random, typed | **12.3 (13.0)** | 113 (115) | 66.8 (68.4) | 42.7 (44.5) | piece-tree | 3.47x |
-| paste mid-piece 1k on 10MB | **341 (354)** | 929 (1 117) | 678 (688) | 17 807 (19 108) | piece-tree | 1.99x |
-| random edits 1k+1k on 10MB | **329 (339)** | 982 (1 132) | 606 (690) | 17 913 (18 647) | piece-tree | 1.84x |
-| line() all, after edits | **14.9 (15.3)** | 193 (197) | 251 (254) | 197 (199) | piece-tree | 12.97x |
-| batch 1k edits, one pass, 10MB | **90.1 (96.4)** | 672 (713) | 461 (519) | 5 758 (5 944) | piece-tree | 5.12x |
+| load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.3 (0.4) | piece-tree = ropey 2 beta | 1.00x |
+| line() random, loaded | **27.1 (28.4)** | 424 (427) | 675 (740) | 640 (664) | piece-tree | 15.65x |
+| typing 10k chars in 1MB | **12.3 (12.5)** | 134 (135) | 47.3 (48.5) | 11 352 (11 446) | piece-tree | 3.85x |
+| typing 10k, clone per key | **63.3 (76.5)** | 674 (705) | 501 (542) | 14 972 (15 898) | piece-tree | 7.92x |
+| line() all, after typing | **5.1 (5.1)** | 186 (188) | 220 (222) | 165 (166) | piece-tree | 32.37x |
+| line() 10x50 windows, typed | **5.5 (5.8)** | 194 (195) | 238 (249) | 190 (200) | piece-tree | 34.47x |
+| backspace 10k | **19.5 (21.3)** | 182 (186) | 74.1 (76.9) | 12 258 (12 487) | piece-tree | 3.80x |
+| offset_to_line random, typed | **12.3 (13.0)** | 113 (114) | 64.9 (65.2) | 41.5 (43.4) | piece-tree | 3.37x |
+| paste mid-piece 1k on 10MB | **331 (348)** | 1 049 (1 245) | 659 (667) | 17 864 (19 032) | piece-tree | 1.99x |
+| random edits 1k+1k on 10MB | **309 (372)** | 897 (1 048) | 574 (757) | 17 348 (17 864) | piece-tree | 1.86x |
+| line() all, after edits | **14.2 (14.3)** | 192 (192) | 244 (246) | 191 (192) | piece-tree | 13.46x |
+| batch 1k edits, one pass, 10MB | **87.5 (90.2)** | 659 (718) | 460 (492) | 5 533 (5 834) | piece-tree | 5.25x |
 
 ### Synthetic corpus, mimalloc as global allocator of the whole binary (3 runs)
 
 | scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | best | lead |
 |---|---:|---:|---:|---:|---|---:|
-| load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.4) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
-| load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
-| line() random, loaded | **26.0 (30.2)** | 450 (467) | 683 (706) | 612 (636) | piece-tree | 17.31x |
-| typing 10k chars in 1MB | **13.9 (14.0)** | 133 (138) | 47.8 (49.6) | 10 517 (10 816) | piece-tree | 3.44x |
-| typing 10k, clone per key | **50.9 (67.6)** | 448 (623) | 272 (465) | 13 026 (13 547) | piece-tree | 5.34x |
-| line() all, after typing | **5.3 (5.4)** | 189 (193) | 219 (223) | 169 (173) | piece-tree | 31.96x |
-| line() 10x50 windows, typed | **5.5 (5.7)** | 196 (201) | 240 (248) | 190 (201) | piece-tree | 34.56x |
-| backspace 10k | **20.1 (22.2)** | 184 (190) | 74.0 (78.2) | 11 541 (11 862) | piece-tree | 3.68x |
-| offset_to_line random, typed | **12.7 (12.9)** | 111 (115) | 66.3 (68.8) | 38.9 (39.7) | piece-tree | 3.06x |
-| paste mid-piece 1k on 10MB | **326 (331)** | 943 (1 011) | 597 (675) | 16 688 (17 790) | piece-tree | 1.83x |
-| random edits 1k+1k on 10MB | **304 (308)** | 892 (968) | 595 (680) | 16 832 (17 922) | piece-tree | 1.96x |
-| line() all, after edits | **15.7 (16.0)** | 194 (197) | 240 (243) | 195 (197) | piece-tree | 12.36x |
-| batch 1k edits, one pass, 10MB | **77.6 (81.2)** | 617 (648) | 475 (488) | 4 976 (5 627) | piece-tree | 6.13x |
+| load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
+| load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.2 (0.2) | piece-tree = ropey 2 beta | 1.00x |
+| line() random, loaded | **26.3 (29.6)** | 432 (435) | 663 (672) | 599 (641) | piece-tree | 16.44x |
+| typing 10k chars in 1MB | **12.8 (13.3)** | 133 (133) | 46.8 (49.9) | 10 225 (10 452) | piece-tree | 3.66x |
+| typing 10k, clone per key | **50.1 (67.0)** | 433 (587) | 291 (451) | 12 726 (13 564) | piece-tree | 5.81x |
+| line() all, after typing | **5.2 (5.4)** | 183 (186) | 213 (214) | 165 (167) | piece-tree | 31.73x |
+| line() 10x50 windows, typed | **5.5 (5.6)** | 192 (192) | 237 (238) | 190 (191) | piece-tree | 34.51x |
+| backspace 10k | **19.5 (20.0)** | 178 (180) | 74.3 (74.8) | 11 233 (11 577) | piece-tree | 3.81x |
+| offset_to_line random, typed | **12.3 (12.5)** | 110 (111) | 64.9 (65.1) | 37.7 (39.1) | piece-tree | 3.07x |
+| paste mid-piece 1k on 10MB | **324 (355)** | 940 (976) | 564 (646) | 16 326 (16 978) | piece-tree | 1.74x |
+| random edits 1k+1k on 10MB | **305 (318)** | 868 (958) | 575 (636) | 16 238 (17 226) | piece-tree | 1.88x |
+| line() all, after edits | **15.6 (15.7)** | 189 (190) | 235 (235) | 190 (191) | piece-tree | 12.12x |
+| batch 1k edits, one pass, 10MB | **74.7 (80.8)** | 606 (642) | 452 (501) | 4 882 (5 006) | piece-tree | 6.05x |
 
 ## Rust sources corpus
 
@@ -52,19 +52,19 @@ Reading hints (from the noise section of benchmarks.md): reads and loads repeat 
 
 | scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | best | lead |
 |---|---:|---:|---:|---:|---|---:|
-| load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.3 (0.4) | piece-tree | 2.00x |
+| load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.3 (0.3) | piece-tree | 2.00x |
 | load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.3 (0.4) | piece-tree = ropey 2 beta | 1.00x |
-| line() random, loaded | **29.3 (33.9)** | 436 (460) | 700 (746) | 638 (655) | piece-tree | 14.87x |
-| typing 10k chars in 1MB | **13.6 (14.0)** | 137 (139) | 52.1 (52.7) | 10 097 (10 432) | piece-tree | 3.83x |
-| typing 10k, clone per key | **61.7 (81.9)** | 616 (645) | 492 (507) | 13 458 (13 977) | piece-tree | 7.97x |
-| line() all, after typing | **5.2 (5.3)** | 175 (178) | 226 (231) | 169 (174) | piece-tree | 32.46x |
-| line() 10x50 windows, typed | **5.6 (5.7)** | 183 (188) | 246 (255) | 192 (198) | piece-tree | 32.64x |
-| backspace 10k | **20.3 (20.8)** | 186 (189) | 87.0 (89.1) | 11 092 (11 345) | piece-tree | 4.29x |
-| offset_to_line random, typed | **12.7 (13.2)** | 102 (105) | 64.6 (67.6) | 44.5 (45.9) | piece-tree | 3.50x |
-| paste mid-piece 1k on 10MB | **357 (366)** | 905 (1 045) | 667 (698) | 17 908 (19 273) | piece-tree | 1.87x |
-| random edits 1k+1k on 10MB | **323 (361)** | 852 (957) | 574 (673) | 17 496 (19 269) | piece-tree | 1.78x |
-| line() all, after edits | **13.8 (14.1)** | 180 (183) | 242 (247) | 171 (176) | piece-tree | 12.42x |
-| batch 1k edits, one pass, 10MB | **94.6 (96.3)** | 663 (693) | 493 (514) | 5 628 (5 960) | piece-tree | 5.21x |
+| line() random, loaded | **25.9 (26.8)** | 420 (428) | 664 (672) | 630 (647) | piece-tree | 16.22x |
+| typing 10k chars in 1MB | **12.3 (12.5)** | 127 (129) | 53.7 (55.4) | 10 404 (10 808) | piece-tree | 4.37x |
+| typing 10k, clone per key | **62.6 (76.5)** | 732 (768) | 470 (490) | 14 295 (16 458) | piece-tree | 7.50x |
+| line() all, after typing | **5.2 (5.2)** | 182 (184) | 221 (225) | 158 (160) | piece-tree | 30.46x |
+| line() 10x50 windows, typed | **5.5 (5.6)** | 188 (193) | 239 (251) | 182 (183) | piece-tree | 33.04x |
+| backspace 10k | **19.5 (19.5)** | 175 (177) | 84.2 (86.4) | 11 272 (11 695) | piece-tree | 4.32x |
+| offset_to_line random, typed | **12.3 (12.3)** | 95.6 (95.9) | 63.9 (64.1) | 43.3 (44.0) | piece-tree | 3.52x |
+| paste mid-piece 1k on 10MB | **340 (347)** | 910 (938) | 629 (646) | 17 745 (18 531) | piece-tree | 1.85x |
+| random edits 1k+1k on 10MB | **310 (315)** | 821 (929) | 565 (644) | 17 041 (18 185) | piece-tree | 1.82x |
+| line() all, after edits | **13.9 (14.0)** | 188 (189) | 242 (243) | 183 (184) | piece-tree | 13.14x |
+| batch 1k edits, one pass, 10MB | **87.2 (88.2)** | 648 (672) | 460 (526) | 5 731 (5 917) | piece-tree | 5.28x |
 
 ### Rust sources corpus, mimalloc as global allocator of the whole binary (3 runs)
 
@@ -72,17 +72,17 @@ Reading hints (from the noise section of benchmarks.md): reads and loads repeat 
 |---|---:|---:|---:|---:|---|---:|
 | load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
 | load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.2 (0.2) | piece-tree = ropey 2 beta | 1.00x |
-| line() random, loaded | **27.1 (28.5)** | 436 (482) | 664 (735) | 593 (598) | piece-tree | 16.10x |
-| typing 10k chars in 1MB | **13.5 (13.9)** | 133 (137) | 50.9 (52.7) | 9 016 (9 260) | piece-tree | 3.77x |
-| typing 10k, clone per key | **49.0 (67.9)** | 445 (557) | 252 (448) | 11 337 (12 491) | piece-tree | 5.15x |
-| line() all, after typing | **5.2 (5.3)** | 171 (177) | 213 (218) | 167 (171) | piece-tree | 32.15x |
-| line() 10x50 windows, typed | **5.5 (5.5)** | 178 (185) | 236 (245) | 193 (199) | piece-tree | 32.35x |
-| backspace 10k | **19.9 (20.9)** | 185 (190) | 85.1 (85.6) | 10 064 (10 264) | piece-tree | 4.28x |
-| offset_to_line random, typed | **12.5 (12.8)** | 101 (104) | 64.3 (66.8) | 40.7 (41.5) | piece-tree | 3.26x |
-| paste mid-piece 1k on 10MB | **324 (346)** | 851 (949) | 561 (767) | 16 814 (17 796) | piece-tree | 1.73x |
-| random edits 1k+1k on 10MB | **301 (309)** | 821 (927) | 596 (693) | 16 719 (18 076) | piece-tree | 1.98x |
-| line() all, after edits | **14.2 (14.7)** | 175 (181) | 228 (232) | 171 (173) | piece-tree | 12.01x |
-| batch 1k edits, one pass, 10MB | **83.5 (87.3)** | 600 (639) | 462 (490) | 5 063 (5 566) | piece-tree | 5.53x |
+| line() random, loaded | **26.0 (27.4)** | 427 (432) | 645 (667) | 590 (621) | piece-tree | 16.44x |
+| typing 10k chars in 1MB | **12.9 (13.4)** | 126 (127) | 55.0 (56.0) | 9 336 (9 646) | piece-tree | 4.26x |
+| typing 10k, clone per key | **47.3 (65.1)** | 422 (558) | 274 (456) | 11 740 (13 276) | piece-tree | 5.79x |
+| line() all, after typing | **5.2 (5.4)** | 183 (184) | 214 (216) | 158 (160) | piece-tree | 30.44x |
+| line() 10x50 windows, typed | **5.4 (5.6)** | 188 (190) | 237 (238) | 181 (192) | piece-tree | 33.48x |
+| backspace 10k | **19.9 (20.8)** | 176 (183) | 84.4 (84.9) | 10 314 (10 508) | piece-tree | 4.24x |
+| offset_to_line random, typed | **12.3 (12.9)** | 96.1 (99.6) | 63.9 (64.1) | 39.8 (40.0) | piece-tree | 3.24x |
+| paste mid-piece 1k on 10MB | **347 (367)** | 869 (915) | 588 (635) | 16 718 (17 132) | piece-tree | 1.70x |
+| random edits 1k+1k on 10MB | **304 (341)** | 817 (917) | 566 (629) | 16 427 (17 372) | piece-tree | 1.86x |
+| line() all, after edits | **15.2 (15.4)** | 189 (190) | 233 (234) | 181 (182) | piece-tree | 11.91x |
+| batch 1k edits, one pass, 10MB | **77.5 (87.9)** | 587 (604) | 471 (487) | 4 967 (5 654) | piece-tree | 6.07x |
 
 ## CJK corpus
 
@@ -91,18 +91,18 @@ Reading hints (from the noise section of benchmarks.md): reads and loads repeat 
 | scenario | piece-tree | ropey 1.x | ropey 2 beta | SumTree (Zed rope) | best | lead |
 |---|---:|---:|---:|---:|---|---:|
 | load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.3 (0.3) | piece-tree | 2.00x |
-| load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.3 (0.3) | piece-tree = ropey 2 beta | 1.00x |
-| line() random, loaded | **25.7 (26.0)** | 438 (448) | 673 (718) | 644 (655) | piece-tree | 17.02x |
-| typing 10k chars in 1MB | **13.6 (13.8)** | 131 (133) | 45.2 (46.8) | 10 306 (10 463) | piece-tree | 3.32x |
-| typing 10k, clone per key | **64.3 (79.8)** | 595 (655) | 462 (519) | 13 983 (14 640) | piece-tree | 7.19x |
-| line() all, after typing | **5.2 (5.4)** | 184 (187) | 224 (231) | 176 (182) | piece-tree | 33.85x |
-| line() 10x50 windows, typed | **5.6 (5.8)** | 190 (191) | 243 (251) | 199 (204) | piece-tree | 34.02x |
-| backspace 10k | **19.9 (20.3)** | 173 (178) | 78.7 (79.8) | 11 256 (11 422) | piece-tree | 3.95x |
-| offset_to_line random, typed | **11.6 (11.9)** | 101 (103) | 65.7 (66.6) | 42.2 (42.6) | piece-tree | 3.64x |
-| paste mid-piece 1k on 10MB | **322 (338)** | 868 (987) | 659 (681) | 17 829 (18 883) | piece-tree | 2.05x |
-| random edits 1k+1k on 10MB | **308 (324)** | 847 (946) | 588 (712) | 17 713 (18 903) | piece-tree | 1.91x |
-| line() all, after edits | **16.2 (16.6)** | 197 (201) | 236 (242) | 207 (211) | piece-tree | 12.18x |
-| batch 1k edits, one pass, 10MB | **83.6 (87.0)** | 670 (714) | 499 (527) | 5 767 (5 999) | piece-tree | 5.97x |
+| load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | **0.1 (0.2)** | 0.2 (0.3) | piece-tree = ropey 2 beta | 1.00x |
+| line() random, loaded | **27.1 (31.2)** | 434 (440) | 676 (690) | 645 (676) | piece-tree | 16.00x |
+| typing 10k chars in 1MB | **12.3 (12.5)** | 130 (130) | 45.2 (46.1) | 10 154 (10 256) | piece-tree | 3.67x |
+| typing 10k, clone per key | **65.8 (76.6)** | 621 (636) | 465 (502) | 13 915 (18 274) | piece-tree | 7.07x |
+| line() all, after typing | **5.3 (5.3)** | 185 (186) | 223 (224) | 175 (177) | piece-tree | 33.04x |
+| line() 10x50 windows, typed | **5.6 (5.7)** | 191 (191) | 242 (242) | 197 (199) | piece-tree | 34.07x |
+| backspace 10k | **19.5 (19.8)** | 173 (174) | 77.1 (79.7) | 11 023 (11 199) | piece-tree | 3.95x |
+| offset_to_line random, typed | **11.6 (11.6)** | 101 (102) | 64.9 (66.6) | 41.4 (41.9) | piece-tree | 3.57x |
+| paste mid-piece 1k on 10MB | **327 (341)** | 937 (988) | 668 (710) | 17 458 (18 238) | piece-tree | 2.05x |
+| random edits 1k+1k on 10MB | **301 (314)** | 828 (939) | 574 (692) | 17 228 (17 586) | piece-tree | 1.91x |
+| line() all, after edits | **15.7 (15.8)** | 196 (197) | 235 (237) | 205 (208) | piece-tree | 12.46x |
+| batch 1k edits, one pass, 10MB | **81.5 (84.2)** | 668 (685) | 430 (528) | 5 634 (5 918) | piece-tree | 5.28x |
 
 ### CJK corpus, mimalloc as global allocator of the whole binary (3 runs)
 
@@ -110,14 +110,14 @@ Reading hints (from the noise section of benchmarks.md): reads and loads repeat 
 |---|---:|---:|---:|---:|---|---:|
 | load 50MB from &str (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
 | load 50MB from String (per byte) | **0.1 (0.1)** | 0.3 (0.3) | 0.2 (0.2) | 0.2 (0.2) | piece-tree | 2.00x |
-| line() random, loaded | **25.4 (25.9)** | 442 (466) | 663 (694) | 604 (651) | piece-tree | 17.39x |
-| typing 10k chars in 1MB | **13.5 (14.0)** | 129 (134) | 45.2 (46.6) | 9 290 (9 452) | piece-tree | 3.35x |
-| typing 10k, clone per key | **55.1 (68.3)** | 408 (572) | 253 (442) | 11 666 (12 434) | piece-tree | 4.59x |
-| line() all, after typing | **5.3 (5.4)** | 186 (191) | 217 (224) | 176 (181) | piece-tree | 33.11x |
-| line() 10x50 windows, typed | **5.5 (5.6)** | 191 (202) | 240 (248) | 198 (206) | piece-tree | 34.67x |
-| backspace 10k | **19.9 (20.4)** | 173 (179) | 77.1 (81.8) | 10 191 (10 500) | piece-tree | 3.87x |
-| offset_to_line random, typed | **11.8 (12.0)** | 103 (107) | 65.2 (67.5) | 38.4 (39.6) | piece-tree | 3.25x |
-| paste mid-piece 1k on 10MB | **309 (318)** | 906 (978) | 567 (649) | 16 524 (18 109) | piece-tree | 1.84x |
-| random edits 1k+1k on 10MB | **294 (303)** | 821 (911) | 574 (648) | 16 861 (17 818) | piece-tree | 1.95x |
-| line() all, after edits | **17.1 (17.6)** | 196 (201) | 227 (232) | 207 (210) | piece-tree | 11.46x |
-| batch 1k edits, one pass, 10MB | **72.4 (77.7)** | 614 (663) | 493 (508) | 5 070 (5 271) | piece-tree | 6.81x |
+| line() random, loaded | **25.1 (26.1)** | 444 (484) | 665 (678) | 601 (608) | piece-tree | 17.69x |
+| typing 10k chars in 1MB | **12.8 (12.9)** | 129 (129) | 45.2 (47.9) | 9 129 (9 447) | piece-tree | 3.53x |
+| typing 10k, clone per key | **57.0 (64.9)** | 399 (550) | 255 (461) | 11 696 (12 744) | piece-tree | 4.48x |
+| line() all, after typing | **5.4 (5.4)** | 185 (186) | 218 (221) | 175 (175) | piece-tree | 32.33x |
+| line() 10x50 windows, typed | **5.6 (5.6)** | 191 (192) | 243 (243) | 198 (204) | piece-tree | 34.16x |
+| backspace 10k | **19.5 (19.5)** | 172 (174) | 77.3 (78.0) | 10 128 (10 397) | piece-tree | 3.96x |
+| offset_to_line random, typed | **11.5 (11.6)** | 102 (102) | 64.7 (67.8) | 37.1 (38.9) | piece-tree | 3.23x |
+| paste mid-piece 1k on 10MB | **319 (326)** | 862 (908) | 580 (677) | 16 503 (17 585) | piece-tree | 1.82x |
+| random edits 1k+1k on 10MB | **290 (294)** | 814 (896) | 562 (633) | 16 636 (18 420) | piece-tree | 1.94x |
+| line() all, after edits | **17.2 (17.3)** | 196 (197) | 226 (228) | 205 (206) | piece-tree | 11.38x |
+| batch 1k edits, one pass, 10MB | **69.8 (70.7)** | 606 (692) | 466 (496) | 5 010 (5 246) | piece-tree | 6.68x |
