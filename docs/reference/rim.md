@@ -300,6 +300,7 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 | `scrolloff` | `so` | 0 | lines kept above and below the cursor (at most half the screen) |
 | `compactat` | | 10000 | after 1 s without keys (`main`: `event::poll`, once per quiet period), `Editor::idle` runs `:compact` when the text has more pieces than this, in Normal mode between commands; 0 disables it |
 | `filetype` | `ft` | by name | kind of file, buffer-local; set when a buffer opens from its name (`editor/filetype.rs`: extension or names like `Makefile`; empty when unknown), `:set ft=name` overrides (any value) |
+| `syntaxcolors` | `sc` | empty | syntax colors by capture name, `name:color,…` (xterm 256 index, or `none`): `:set sc=keyword:176,comment:none`; a name covers the captures under it (`function` covers `function.method`), the last entry for a name wins; empty restores the table |
 | `background` | `bg` | detected | `dark` or `light` palette |
 | `cursorlinebg` | `clbg` | palette | cursor line background, xterm 256-color index |
 | `numberfg` | `nufg` | palette | line number color |

@@ -58,6 +58,9 @@ pub(super) struct Options {
     pub compactat: usize,
     /// Kind of file, detected from the name when the buffer opens; empty when unknown.
     pub filetype: String,
+    /// Syntax colors by capture name (`keyword`, `function.method`, …): an xterm 256-color index, `None` for no color.
+    /// A name covers the captures under it (`function` covers `function.method`); the last entry for a name wins.
+    pub syntaxcolors: Vec<(String, Option<u8>)>,
 }
 
 impl Default for Options {
@@ -82,8 +85,22 @@ impl Default for Options {
             cursornumberfg: None,
             compactat: 10_000,
             filetype: String::new(),
+            syntaxcolors: Vec::new(),
         }
     }
+}
+
+/// `name:color,…` of `syntaxcolors`: names of lowercase letters, digits, `.`, `_`; a color is 0–255 or `none`.
+fn parse_colors(value: &str) -> Option<Vec<(String, Option<u8>)>> {
+    value
+        .split(',')
+        .filter(|e| !e.is_empty())
+        .map(|e| {
+            let (name, color) = e.split_once(':')?;
+            let ok = !name.is_empty() && name.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, '.' | '_'));
+            ok.then_some((name.to_string(), if color == "none" { None } else { Some(color.parse().ok()?) }))
+        })
+        .collect()
 }
 
 /// Long name of an option given by its long or vim short name.
@@ -108,6 +125,7 @@ fn long(name: &str) -> Option<&'static str> {
         "cursornumberfg" | "cnufg" => "cursornumberfg",
         "compactat" => "compactat",
         "filetype" | "ft" => "filetype",
+        "syntaxcolors" | "sc" => "syntaxcolors",
         _ => return None,
     })
 }
@@ -180,6 +198,7 @@ impl Options {
             "numberfg" => format!("numberfg={}", p.number_fg),
             "compactat" => format!("compactat={}", self.compactat),
             "filetype" => format!("filetype={}", self.filetype),
+            "syntaxcolors" => format!("syntaxcolors={}", self.syntaxcolors.iter().map(|(n, c)| format!("{n}:{}", c.map_or("none".into(), |c| c.to_string()))).collect::<Vec<_>>().join(",")),
             _ => format!("cursornumberfg={}", p.current_number_fg),
         }
     }
@@ -190,7 +209,7 @@ impl Options {
         if args.trim().is_empty() {
             for n in [
                 "number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat",
-                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype",
+                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype", "syntaxcolors",
             ] {
                 shown.push(self.show(n));
             }
@@ -214,6 +233,7 @@ impl Options {
                     "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
                     "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
                     "filetype" => self.filetype = value.to_string(),
+                    "syntaxcolors" => self.syntaxcolors = parse_colors(value).ok_or_else(invalid)?,
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
@@ -273,6 +293,15 @@ mod tests {
         assert_eq!(o.set("ft? ft=rust ft?"), Ok("filetype=  filetype=rust".into()));
         assert_eq!(o.set("ft="), Ok(String::new()));
         assert!(o.filetype.is_empty());
+        assert_eq!(o.set("sc?"), Ok("syntaxcolors=".into()));
+        assert_eq!(o.set("sc=keyword:1,function.method:none,string:200"), Ok(String::new()));
+        assert_eq!(o.syntaxcolors, [("keyword".into(), Some(1)), ("function.method".into(), None), ("string".into(), Some(200))]);
+        assert_eq!(o.set("syntaxcolors?"), Ok("syntaxcolors=keyword:1,function.method:none,string:200".into()));
+        for bad in ["sc=keyword", "sc=keyword:256", "sc=:1", "sc=Key:1", "sc=a:x"] {
+            assert_eq!(o.set(bad), Err(format!("Invalid argument: {bad}")), "{bad}");
+        }
+        assert_eq!(o.set("sc="), Ok(String::new()));
+        assert!(o.syntaxcolors.is_empty());
         assert_eq!(o.set("sw=33"), Err("Invalid argument: sw=33".into()));
         assert_eq!(o.set("so=x"), Err("Invalid argument: so=x".into()));
     }

@@ -1,6 +1,8 @@
 (function_item body: (_) @function.inside) @function.around
 (closure_expression body: (_) @function.inside) @function.around
-(struct_item body: (_) @class.inside) @class.around
+; Only a struct can have no body (`struct X;`), and then no inside.
+(struct_item) @class.around
+(struct_item body: (_) @class.inside)
 (enum_item body: (_) @class.inside) @class.around
 (union_item body: (_) @class.inside) @class.around
 (trait_item body: (_) @class.inside) @class.around

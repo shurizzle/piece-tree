@@ -18,19 +18,41 @@ unicode-segmentation = "1.13.3"
 tree-sitter = "0.27"
 libloading = "0.9"
 tree-sitter-language = "0.1"
-tree-sitter-rust = "0.24"
-tree-sitter-python = "0.25"
-tree-sitter-javascript = "0.25"
-tree-sitter-typescript = "0.23"
-tree-sitter-c = "0.24"
-tree-sitter-cpp = "0.23"
-tree-sitter-md = "0.5"
-tree-sitter-toml-ng = "0.7"
-tree-sitter-json = "0.24"
-tree-sitter-bash = "0.25"
-tree-sitter-lua = "0.5"
-tree-sitter-html = "0.23"
-tree-sitter-css = "0.25"
+tree-sitter-rust = { version = "0.24", optional = true }
+tree-sitter-python = { version = "0.25", optional = true }
+tree-sitter-javascript = { version = "0.25", optional = true }
+tree-sitter-typescript = { version = "0.23", optional = true }
+tree-sitter-c = { version = "0.24", optional = true }
+tree-sitter-cpp = { version = "0.23", optional = true }
+tree-sitter-md = { version = "0.5", optional = true }
+tree-sitter-toml-ng = { version = "0.7", optional = true }
+tree-sitter-json = { version = "0.24", optional = true }
+tree-sitter-bash = { version = "0.25", optional = true }
+tree-sitter-lua = { version = "0.5", optional = true }
+tree-sitter-html = { version = "0.23", optional = true }
+tree-sitter-css = { version = "0.25", optional = true }
+
+[features]
+default = ["grammars"]
+# Grammars linked into the binary, the fallback when none is installed (see docs/reference/syntax.md).
+grammars = [
+    "lang-rust", "lang-python", "lang-javascript", "lang-typescript", "lang-tsx", "lang-c", "lang-cpp",
+    "lang-markdown", "lang-toml", "lang-html", "lang-css", "lang-json", "lang-bash", "lang-lua",
+]
+lang-rust = ["dep:tree-sitter-rust"]
+lang-python = ["dep:tree-sitter-python"]
+lang-javascript = ["dep:tree-sitter-javascript"]
+lang-typescript = ["dep:tree-sitter-typescript", "lang-javascript"]
+lang-tsx = ["lang-typescript"]
+lang-c = ["dep:tree-sitter-c"]
+lang-cpp = ["dep:tree-sitter-cpp", "lang-c"]
+lang-markdown = ["dep:tree-sitter-md"]
+lang-toml = ["dep:tree-sitter-toml-ng"]
+lang-html = ["dep:tree-sitter-html"]
+lang-css = ["dep:tree-sitter-css"]
+lang-json = ["dep:tree-sitter-json"]
+lang-bash = ["dep:tree-sitter-bash"]
+lang-lua = ["dep:tree-sitter-lua"]
 
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1", features = ["event"] }

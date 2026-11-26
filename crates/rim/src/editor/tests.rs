@@ -2517,6 +2517,11 @@ fn syntax_colors_text_and_objects() {
     assert_eq!(colored(&e.frame(30, 8))[0], "1 fn a() {");
     e.buf.opts.filetype = "rust".into();
     assert_eq!(colored(&e.frame(30, 8))[..2], ["1 <176:fn> <75:a>() {", "1     <209:1>"]);
+    // The user's colors win over the table, and clearing them brings it back.
+    feed(&mut e, ":set syntaxcolors=keyword:5,function:none\n");
+    assert_eq!(colored(&e.frame(30, 8))[0], "1 <5:fn> a() {");
+    feed(&mut e, ":set sc=\n");
+    assert_eq!(colored(&e.frame(30, 8))[0], "1 <176:fn> <75:a>() {");
     // Edits keep the colors right without a full reparse of the line.
     feed(&mut e, "ggA // c\x1b");
     assert_eq!(colored(&e.frame(30, 8))[0], "1 <176:fn> <75:a>() { <244:// c>");
