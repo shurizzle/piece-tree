@@ -2360,7 +2360,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":sav {}\n", out.display()));
     assert_eq!(e.msg(), "File exists (add ! to override)");
     feed(&mut e, &format!(":sav {}\n", new.display()));
-    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_path(), e.is_dirty()), ("xy", new.as_path(), false));
+    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_deref(), e.is_dirty()), ("xy", Some(new.as_path()), false));
     feed(&mut e, ":sav\n");
     assert_eq!(e.msg(), "Argument required");
     fs::remove_dir_all(&dir).unwrap();
@@ -2472,7 +2472,7 @@ fn buffers_switch_list_and_delete() {
     assert_eq!(e.buf.id, 1);
     for (cmd, msg) in [
         (":b 9", "Buffer 9 does not exist"),
-        (":b x", "Invalid buffer number: x"),
+        (":b zzz", "E94: No matching buffer for zzz"),
         (":bn x", "Invalid count: x"),
         (":bd x", "Invalid buffer number: x"),
         (":bd 9", "Buffer 9 does not exist"),
@@ -2487,8 +2487,9 @@ fn buffers_switch_list_and_delete() {
     assert!(feed(&mut e, ":qa\n"));
     feed(&mut e, ":b 2\n:bd!\n");
     assert_eq!((e.buf.id, e.buffers.len(), e.alt), (1, 0, None));
+    // The last buffer goes and an empty one without a file takes its place.
     feed(&mut e, ":bd\n");
-    assert_eq!(e.msg(), "Cannot delete the last buffer");
+    assert_eq!((e.buf.id, e.buf.path.is_none(), e.buffers.len(), text(&e).as_str()), (3, true, 0, ""));
     feed(&mut e, "\x1e");
     assert_eq!(e.msg(), "No alternate file");
     feed(&mut e, ":e /nonexistent/dir/x\n");
@@ -2496,8 +2497,8 @@ fn buffers_switch_list_and_delete() {
     feed(&mut e, ":e /\n");
     assert!(e.msg().starts_with("\"/\": "), "{}", e.msg());
     // `:bd` of another buffer moves the windows showing it.
-    feed(&mut e, ":sp\n:b 1\n:bd 3\n");
-    assert_eq!((e.buf.id, e.windows[0].buf), (1, 1));
+    feed(&mut e, ":e /nonexistent/dir/y\n:sp\n:b 3\n:bd 4\n");
+    assert_eq!((e.buf.id, e.windows[0].buf), (3, 3));
     assert!(!feed(&mut e, ":qa!\n"));
     fs::remove_dir_all(dir).unwrap();
 }
@@ -2506,6 +2507,7 @@ fn buffers_switch_list_and_delete() {
 #[test]
 fn windows_split_move_and_close() {
     let mut e = ed("one\ntwo\nthree");
+    e.buf.opts.winwidth = 1;
     feed(&mut e, "jj:sp\n");
     assert_eq!((e.window_ids(), pos(&e)), (vec![2, 1], (2, 0)));
     // An edit above it in one window moves the cursor of the other one.
@@ -2694,9 +2696,9 @@ fn syntax_off_reaches_every_window() {
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn highlight_command_reports_and_validates() {
-    assert_eq!(ex::complete("hig"), Some((0, vec!["highlight".into()])));
-    assert_eq!(ex::complete("hi"), Some((0, vec!["highlight".into()])));
     let mut e = ed("fn a() {}");
+    assert_eq!(e.candidates("hig").map(|c| (c.start, c.items)), Some((0, vec!["highlight".into()])));
+    assert_eq!(e.candidates("hi").map(|c| (c.start, c.items)), Some((0, vec!["highlight".into()])));
     e.buf.opts.filetype = "rust".into();
     feed(&mut e, ":hi @keywrod ctermfg=5\n");
     assert_eq!(e.msg(), "Unknown capture: @keywrod");
@@ -2888,4 +2890,1324 @@ fn poll_timeout_follows_the_message_deadline() {
     assert_eq!(e.poll_timeout(None), None);
     // A running save is polled instead of idling.
     assert!(!e.timed_out(true));
+}
+
+fn press(e: &mut Editor, code: KeyCode) {
+    e.key(code.into());
+}
+
+fn press_mod(e: &mut Editor, code: KeyCode, m: KeyModifiers) {
+    e.key(KeyEvent::new(code, m));
+}
+
+/// The command or search line and its cursor.
+fn line(e: &Editor) -> (String, usize) {
+    match &e.mode {
+        Mode::Command(s) | Mode::Search(s) => (s.clone(), e.line_pos),
+        m => panic!("not on the command line: {m:?}"),
+    }
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_cursor_keys() {
+    let mut e = ed("a");
+    feed(&mut e, ":abc def");
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    assert_eq!(line(&e), ("abc def".into(), 5));
+    feed(&mut e, "X");
+    assert_eq!(line(&e), ("abc dXef".into(), 6));
+    press(&mut e, KeyCode::Home);
+    feed(&mut e, "1");
+    press(&mut e, KeyCode::End);
+    feed(&mut e, "2");
+    assert_eq!(line(&e), ("1abc dXef2".into(), 10));
+    // Ctrl+B / Ctrl+E, and the arrows stop at the ends.
+    feed(&mut e, "\x02");
+    assert_eq!(line(&e).1, 0);
+    press(&mut e, KeyCode::Left);
+    assert_eq!(line(&e).1, 0);
+    feed(&mut e, "\x05");
+    press(&mut e, KeyCode::Right);
+    assert_eq!(line(&e).1, 10);
+    // Words: Ctrl/Shift+Left/Right jump over blank separated words.
+    press_mod(&mut e, KeyCode::Left, KeyModifiers::CONTROL);
+    assert_eq!(line(&e).1, 5);
+    press_mod(&mut e, KeyCode::Left, KeyModifiers::SHIFT);
+    assert_eq!(line(&e).1, 0);
+    press_mod(&mut e, KeyCode::Right, KeyModifiers::SHIFT);
+    assert_eq!(line(&e).1, 5);
+    press_mod(&mut e, KeyCode::Right, KeyModifiers::CONTROL);
+    assert_eq!(line(&e).1, 10);
+    // Grapheme clusters are one step.
+    let mut e = ed("a");
+    feed(&mut e, ":e\u{301}x");
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    assert_eq!(line(&e).1, 0);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_deleting_keys() {
+    let mut e = ed("a");
+    feed(&mut e, ":one two three");
+    for _ in 0..6 {
+        press(&mut e, KeyCode::Left);
+    }
+    // Backspace and Ctrl+H delete before the cursor, Delete at it.
+    press(&mut e, KeyCode::Backspace);
+    assert_eq!(line(&e), ("one tw three".into(), 6));
+    feed(&mut e, "\x08");
+    assert_eq!(line(&e), ("one t three".into(), 5));
+    press(&mut e, KeyCode::Delete);
+    assert_eq!(line(&e), ("one tthree".into(), 5));
+    // Ctrl+W: the word before the cursor; Ctrl+U: everything before it.
+    feed(&mut e, "\x17");
+    assert_eq!(line(&e), ("one three".into(), 4));
+    feed(&mut e, "\x15");
+    assert_eq!(line(&e), ("three".into(), 0));
+    // Backspace at the start does nothing; Delete at the end takes the last char.
+    press(&mut e, KeyCode::Backspace);
+    assert_eq!(line(&e), ("three".into(), 0));
+    press(&mut e, KeyCode::End);
+    press(&mut e, KeyCode::Delete);
+    assert_eq!(line(&e), ("thre".into(), 4));
+    // Empty line: Backspace, Ctrl+H and Delete leave; Ctrl+W and Ctrl+U do not.
+    feed(&mut e, "\x15\x17\x15");
+    assert_eq!(line(&e), (String::new(), 0));
+    press(&mut e, KeyCode::Delete);
+    assert_eq!(e.mode, Mode::Normal);
+    feed(&mut e, ":\x08");
+    assert_eq!(e.mode, Mode::Normal);
+    feed(&mut e, ":x\x03");
+    assert_eq!(e.mode, Mode::Normal);
+    feed(&mut e, ":h");
+    assert_eq!(line(&e), ("h".into(), 1), "a plain h is text");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_insert_overstrike_and_literal() {
+    let mut e = ed("a");
+    feed(&mut e, ":abcd");
+    press(&mut e, KeyCode::Home);
+    press(&mut e, KeyCode::Insert);
+    feed(&mut e, "XY");
+    assert_eq!(line(&e), ("XYcd".into(), 2));
+    press(&mut e, KeyCode::End);
+    feed(&mut e, "Z");
+    assert_eq!(line(&e), ("XYcdZ".into(), 5));
+    press(&mut e, KeyCode::Insert);
+    press(&mut e, KeyCode::Home);
+    feed(&mut e, "_");
+    assert_eq!(line(&e), ("_XYcdZ".into(), 1));
+    // Ctrl+V and Ctrl+Q: the next key as typed.
+    feed(&mut e, "\x16\x01\x11\x1b");
+    assert_eq!(line(&e).0, "_\x01\x1bXYcdZ");
+    feed(&mut e, "\x16\t\x16");
+    press(&mut e, KeyCode::Enter);
+    assert_eq!(line(&e).0, "_\x01\x1b\t\rXYcdZ");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_registers_and_text_under_cursor() {
+    let mut e = ed("foo-bar baz\nsecond");
+    feed(&mut e, "ywj:a\x12\"b");
+    assert_eq!(line(&e), ("afoob".into(), 5));
+    let mut e = ed("foo-bar baz\nsecond");
+    feed(&mut e, "w:x\x12\x17");
+    assert_eq!(line(&e), ("xbar".into(), 4), "Ctrl+R Ctrl+W: the word under the cursor");
+    press(&mut e, KeyCode::Home);
+    press(&mut e, KeyCode::Right);
+    feed(&mut e, "\x12\x01");
+    assert_eq!(line(&e), ("xfoo-barbar".into(), 8), "Ctrl+R Ctrl+A: the WORD");
+    feed(&mut e, "\x12\x0c");
+    assert_eq!(line(&e).0, "xfoo-barfoo-bar bazbar");
+    // Ctrl+R Ctrl+R and Ctrl+R Ctrl+O take a register like a plain Ctrl+R.
+    feed(&mut e, "\x15\x12\x12\"\x12\x0f0");
+    assert_eq!(line(&e).0, "bar");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_history_and_completion_at_the_cursor() {
+    let mut e = ed("a");
+    feed(&mut e, ":set nu\n:s/a/b/\n:set list\n:");
+    // Up and Down keep to the entries starting with the typed text; Shift+Up, PageUp and Ctrl+P do not.
+    feed(&mut e, "se");
+    press(&mut e, KeyCode::Up);
+    assert_eq!(line(&e), ("set list".into(), 8));
+    press(&mut e, KeyCode::Up);
+    assert_eq!(line(&e).0, "set nu");
+    press(&mut e, KeyCode::Down);
+    press(&mut e, KeyCode::Down);
+    assert_eq!(line(&e), ("se".into(), 2), "past the newest entry: what was typed");
+    press_mod(&mut e, KeyCode::Up, KeyModifiers::SHIFT);
+    assert_eq!(line(&e).0, "set list");
+    press(&mut e, KeyCode::PageUp);
+    assert_eq!(line(&e).0, "s/a/b/");
+    feed(&mut e, "\x10");
+    assert_eq!(line(&e).0, "set nu");
+    feed(&mut e, "\x0e");
+    assert_eq!(line(&e).0, "s/a/b/");
+    press(&mut e, KeyCode::PageDown);
+    press(&mut e, KeyCode::PageDown);
+    assert_eq!(line(&e).0, "se");
+    // Tab completes the word before the cursor and keeps what follows it; Ctrl+N and Ctrl+P cycle.
+    feed(&mut e, "\x15so :x");
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    assert_eq!(line(&e), ("so :x".into(), 0));
+    press(&mut e, KeyCode::Right);
+    press(&mut e, KeyCode::Right);
+    press(&mut e, KeyCode::Tab);
+    assert_eq!(line(&e), ("sort :x".into(), 4));
+    press(&mut e, KeyCode::Tab);
+    assert_eq!(line(&e).0, "sort :x", "a single candidate");
+    feed(&mut e, "\x15s");
+    press(&mut e, KeyCode::Tab);
+    let first = line(&e).0;
+    press(&mut e, KeyCode::Tab);
+    assert_ne!(line(&e).0, first);
+    feed(&mut e, "\x10");
+    assert_eq!(line(&e).0, first, "Ctrl+P goes back through the candidates");
+    feed(&mut e, "\x0e");
+    assert_ne!(line(&e).0, first);
+    press(&mut e, KeyCode::BackTab);
+    assert_eq!(line(&e).0, first);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn search_line_edits_at_the_cursor_with_incsearch() {
+    let mut e = ed("one\ntwo\nthree");
+    feed(&mut e, "/tx");
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Backspace);
+    feed(&mut e, "h");
+    assert_eq!(line(&e), ("hx".into(), 1));
+    press(&mut e, KeyCode::Delete);
+    assert_eq!((line(&e).0.as_str(), e.win.line), ("h", 2), "incsearch previews after each edit");
+    press(&mut e, KeyCode::Home);
+    feed(&mut e, "t");
+    press(&mut e, KeyCode::Enter);
+    assert_eq!((&e.mode, e.win.line), (&Mode::Normal, 2));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn frame_wraps_the_command_line_and_puts_the_cursor_on_it() {
+    // The cursor follows the line cursor.
+    let (rows, cursor, bar) = snapshot("a", ":abc", 20, 4);
+    assert_eq!((rows[3].as_str(), cursor, bar), (":abc", (4, 3), true));
+    let mut e = ed("a");
+    feed(&mut e, ":abcd");
+    press(&mut e, KeyCode::Left);
+    press(&mut e, KeyCode::Left);
+    let f = e.frame(20, 4);
+    assert_eq!((screen(&f)[3].as_str(), f.cursor), (":abcd", (3, 3)));
+    // A line wider than the screen takes the rows above the last one.
+    let mut e = ed("a\nb\nc");
+    feed(&mut e, ":0123456789abcdefghij");
+    let f = e.frame(10, 5);
+    assert_eq!(screen(&f)[2..], [":012345678", "9abcdefghi", "j"]);
+    assert_eq!(f.cursor, (1, 4));
+    // Exactly full row: the cursor starts the next one.
+    let mut e = ed("a");
+    feed(&mut e, ":012345678");
+    let f = e.frame(10, 4);
+    assert_eq!((screen(&f)[2..].to_vec(), f.cursor), (vec![":012345678".to_string(), String::new()], (0, 3)));
+    // And in the middle of the text.
+    for _ in 0..9 {
+        press(&mut e, KeyCode::Left);
+    }
+    assert_eq!(e.frame(10, 4).cursor, (1, 3), "the row of the line is back to one");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn buffers_without_a_file() {
+    let dir = std::env::temp_dir().join(format!("rim-noname-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let (a, b) = (dir.join("a.txt"), dir.join("b.rs"));
+    let mut e = Editor::with_path(Document::new(""), None);
+    assert_eq!((e.buf.name().as_str(), e.is_dirty()), ("[No Name]", false));
+    // Nothing to write to, and `:r`/`:e!` have no file either.
+    for cmd in [":w\n", ":r\n", ":wq\n"] {
+        feed(&mut e, cmd);
+        assert_eq!(e.msg(), "No file name", "{cmd:?}");
+    }
+    feed(&mut e, "ix\x1b:e!\n");
+    assert_eq!(e.msg(), "No file name");
+    assert!(e.is_dirty());
+    assert!(feed(&mut e, ":q\n"), "a modified buffer stays");
+    // `:w file` names the buffer and writes it, unless the file exists.
+    fs::write(&b, "old").unwrap();
+    feed(&mut e, &format!(":w {}\n", b.display()));
+    assert_eq!((e.msg(), e.buf.path.is_none()), ("File exists (add ! to override)", true));
+    feed(&mut e, &format!(":w {}\n", a.display()));
+    e.wait_saves();
+    assert_eq!((e.buf.path.as_deref(), fs::read_to_string(&a).unwrap().as_str(), e.is_dirty()), (Some(a.as_path()), "x", false));
+    // `:e file` from an empty unnamed buffer reuses it; from another one it adds a buffer.
+    let mut e = Editor::with_path(Document::new(""), None);
+    feed(&mut e, &format!(":e {}\n", b.display()));
+    assert_eq!((e.buf.id, e.buffers.len(), e.buf.opts.filetype.as_str(), text(&e).as_str()), (1, 0, "rust", "old"));
+    // `:enew` is another buffer without a file; `:ls` lists it.
+    feed(&mut e, ":enew\n");
+    assert_eq!((e.buf.id, e.buf.name().as_str(), text(&e).as_str()), (2, "[No Name]", ""));
+    feed(&mut e, ":ls\n");
+    assert_eq!(e.msg(), format!("  1 #  \"{}\" line 1\n  2 %a \"[No Name]\" line 1", b.display()));
+    // `:new` and `:vnew` split first.
+    feed(&mut e, ":new\n");
+    assert_eq!((e.window_ids().len(), e.buf.id), (2, 3));
+    feed(&mut e, ":vnew\n");
+    assert_eq!((e.window_ids().len(), e.buf.id), (3, 4));
+    // buftype=nofile: never modified, not written, `:q` does not ask.
+    let mut e = ed("a");
+    feed(&mut e, ":set bt=nofile\nix\x1b:w\n");
+    assert_eq!((e.is_dirty(), e.msg()), (false, "Cannot write, 'buftype' option is set"));
+    feed(&mut e, ":set bt?\n");
+    assert_eq!(e.msg(), "buftype=nofile");
+    feed(&mut e, ":set bt=foo\n");
+    assert_eq!(e.msg(), "Invalid argument: bt=foo");
+    assert!(!feed(&mut e, ":q\n"));
+    // The window status shows `[No Name]`.
+    let mut e = Editor::with_path(Document::new(""), None);
+    feed(&mut e, ":set ls=2\n");
+    assert!(screen(&e.frame(30, 4))[2].starts_with("[ [No Name]"));
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn start_with_no_file_or_stdin() {
+    let dir = std::env::temp_dir().join(format!("rim-start-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let f = dir.join("f.txt");
+    fs::write(&f, "file").unwrap();
+    let mut reads = 0;
+    let mut stdin = || {
+        reads += 1;
+        Ok(format!("in{reads}\n"))
+    };
+    let start = |args: Vec<PathBuf>, stdin: &mut dyn FnMut() -> io::Result<String>| {
+        let mut args = args.into_iter();
+        let mut e = Editor::start(&mut args, &mut || stdin())?;
+        e.open_rest(args, &mut || stdin())?;
+        io::Result::Ok(e)
+    };
+    // No argument: an empty buffer without a file.
+    let e = start(vec![], &mut stdin).unwrap();
+    assert_eq!((e.buf.name().as_str(), text(&e).as_str(), e.is_dirty()), ("[No Name]", "", false));
+    // `-`: the text of stdin, modified, without a file; `:w` has no name for it.
+    let mut e = start(vec!["-".into()], &mut stdin).unwrap();
+    assert_eq!((e.buf.name().as_str(), text(&e).as_str(), e.is_dirty()), ("[No Name]", "in1\n", true));
+    feed(&mut e, ":w\n");
+    assert_eq!(e.msg(), "No file name");
+    // Files and `-` in any order: the first is shown, the others are hidden buffers.
+    let e = start(vec![f.clone(), "-".into(), f.clone()], &mut stdin).unwrap();
+    assert_eq!((e.buf.id, text(&e).as_str(), e.buffers.len()), (1, "file", 1), "the same file twice is one buffer");
+    assert_eq!((e.buffers[0].name().as_str(), e.buffers[0].is_dirty(), e.buffers[0].doc.text().len()), ("[No Name]", true, 4));
+    // A missing file is the error of `open`, as before.
+    assert!(start(vec![dir.join("a").join("b")], &mut stdin).is_ok(), "a missing file is a new empty buffer");
+    let mut failing = || Err(io::Error::other("no stdin"));
+    assert!(start(vec!["-".into()], &mut failing).is_err());
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_window_opens_with_the_history_and_the_typed_line() {
+    let mut e = ed("a\nb");
+    feed(&mut e, ":set cwh=3\n:foo\n:set nu\n:ab\x06");
+    assert_eq!((&e.mode, e.cmdwin.is_some(), e.window_ids().len()), (&Mode::Normal, true, 2));
+    assert_eq!((text(&e).as_str(), e.win.line, e.buf.name().as_str(), e.buf.is_dirty()), ("set cwh=3\nfoo\nset nu\nab", 3, "[Command Line]", false));
+    // The window sits at the bottom, `cmdwinheight` rows and its status row.
+    let rows = screen(&e.frame(20, 10));
+    assert_eq!(rows[4], " /nonexistent/rim-te");
+    assert_eq!(rows[5..9], ["2 foo", "1 set nu", "4 ab", "[ [Command Line] | Ln]"].map(String::from));
+    assert_eq!(e.frame(20, 10).cursor, (3, 7));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_window_runs_the_edited_line_and_keeps_the_history() {
+    let mut e = ed("aaa");
+    feed(&mut e, ":s/a/b/\n:\x06");
+    assert_eq!((text(&e).as_str(), e.win.line), ("s/a/b/\n", 1));
+    // Enter in Normal mode runs the line under the cursor: here the history entry, with an edit.
+    feed(&mut e, "kAg\x1b\n");
+    assert_eq!((e.cmdwin.is_none(), e.buffers.len(), text(&e).as_str(), e.window_ids().len()), (true, 0, "bbb", 1));
+    assert_eq!(e.history[0], ["s/a/b/", "s/a/b/g"], "the edit did not change the entry");
+    // Insert mode too, on the typed line.
+    feed(&mut e, ":\x06iset nu\n");
+    assert_eq!((e.cmdwin.is_none(), e.mode == Mode::Normal, e.buf.opts.number), (true, true, true));
+    feed(&mut e, ":\x06iset nonu\n");
+    assert!(!e.buf.opts.number);
+    assert_eq!(e.history[0].last().map(String::as_str), Some("set nonu"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_window_leaves_with_ctrl_c_quit_and_ctrl_w_c() {
+    let mut e = ed("a");
+    feed(&mut e, ":abc\x06\x03");
+    assert_eq!((line(&e), e.cmdwin.is_none(), e.window_ids().len()), (("abc".into(), 3), true, 1));
+    feed(&mut e, "\x1b");
+    // Insert mode too, and the line edited in the window comes back.
+    feed(&mut e, ":ab\x06A!\x03");
+    assert_eq!(line(&e).0, "ab!");
+    feed(&mut e, "\x1b:x\x06:q\n");
+    assert_eq!((e.cmdwin.is_none(), e.buffers.len(), e.window_ids().len(), &e.mode), (true, 0, 1, &Mode::Normal));
+    feed(&mut e, ":x\x06\x17c");
+    assert_eq!((e.cmdwin.is_none(), e.buffers.len()), (true, 0));
+    feed(&mut e, ":x\x06:clo\n");
+    assert!(e.cmdwin.is_none());
+    // `:q` out of it quits as usual.
+    assert!(!feed(&mut e, ":q\n"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_window_refuses_what_leaves_it() {
+    let mut e = ed("a");
+    feed(&mut e, "q:");
+    assert!(e.cmdwin.is_some());
+    for keys in [":e x\n", ":enew\n", ":new\n", ":vnew\n", ":sp\n", ":vs\n", ":b 1\n", ":bn\n", ":bd\n", ":on\n", ":sav x\n", "\x1e", "\x17w", "\x17o", "\x17s", "q:", ":\x06"] {
+        feed(&mut e, keys);
+        assert_eq!((e.msg(), e.cmdwin.is_some(), e.window_ids().len()), (super::cmdwin::E11, true, 2), "{keys:?}");
+        e.msgs.clear();
+        feed(&mut e, "\x1b");
+        assert_eq!(e.mode, Mode::Normal);
+    }
+    // Other commands work on the history buffer, which never counts as modified.
+    feed(&mut e, "ifoo\x1b:s/foo/bar/\n");
+    assert_eq!((text(&e).as_str(), e.is_dirty()), ("bar", false));
+    feed(&mut e, ":w\n");
+    assert_eq!(e.msg(), "Cannot write, 'buftype' option is set");
+    feed(&mut e, ":ls\n");
+    assert_eq!(e.msg(), "  1    \"/nonexistent/rim-test\" line 1", "the window's own buffer is not listed");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn command_line_window_for_searches() {
+    let mut e = ed("one\ntwo\nthree\ntwo");
+    feed(&mut e, "/two\n/three\ngg");
+    feed(&mut e, "q/");
+    assert_eq!((text(&e).as_str(), e.win.line, e.cmdwin.as_ref().map(|c| c.kind)), ("two\nthree\n", 2, Some('/')));
+    // The line under the cursor is searched for from where the search started.
+    feed(&mut e, "k\n");
+    assert_eq!((e.cmdwin.is_none(), e.win.line, e.history[1].last().map(String::as_str)), (true, 2, Some("three")));
+    feed(&mut e, "gg?x\x06");
+    assert_eq!(e.cmdwin.as_ref().map(|c| c.kind), Some('?'));
+    assert_eq!((text(&e).as_str(), e.win.line), ("two\nthree\nx", 2));
+    feed(&mut e, "\x03");
+    assert_eq!((line(&e), e.search_back), (("x".into(), 1), true));
+    feed(&mut e, "\x1bG");
+    // `q?` searches backward.
+    feed(&mut e, "q?kk\n");
+    assert_eq!((e.win.line, e.msg()), (1, ""));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn windows_resize_with_keys_and_commands() {
+    let mut e = ed(&lines(30));
+    // The default `winwidth` of 20 would widen windows on a screen this narrow.
+    e.buf.opts.winwidth = 1;
+    let sizes = |e: &mut Editor, w: usize| {
+        e.frame(w, 21);
+        e.win_rects().iter().map(|(_, r)| (r.w, r.h)).collect::<Vec<_>>()
+    };
+    feed(&mut e, ":sp\n");
+    assert_eq!(sizes(&mut e, 30), [(30, 10), (30, 10)]);
+    feed(&mut e, "\x17+");
+    assert_eq!(sizes(&mut e, 30), [(30, 11), (30, 9)]);
+    feed(&mut e, "3\x17-");
+    assert_eq!(sizes(&mut e, 30), [(30, 8), (30, 12)]);
+    // A height leaves out the status row.
+    feed(&mut e, ":resize 5\n");
+    assert_eq!(sizes(&mut e, 30), [(30, 6), (30, 14)]);
+    feed(&mut e, ":res +2\n");
+    assert_eq!(sizes(&mut e, 30), [(30, 8), (30, 12)]);
+    feed(&mut e, ":res -1\n");
+    assert_eq!(sizes(&mut e, 30), [(30, 7), (30, 13)]);
+    feed(&mut e, "\x17_");
+    assert_eq!(sizes(&mut e, 30), [(30, 18), (30, 2)]);
+    feed(&mut e, "\x17=");
+    assert_eq!(sizes(&mut e, 30), [(30, 10), (30, 10)]);
+    feed(&mut e, "7\x17_");
+    assert_eq!(sizes(&mut e, 30), [(30, 8), (30, 12)]);
+    feed(&mut e, ":res x\n");
+    assert_eq!(e.msg(), "Invalid argument: x");
+    // A split or a close evens the sizes out again.
+    feed(&mut e, ":sp\n");
+    assert_eq!(sizes(&mut e, 30).iter().map(|s| s.1).collect::<Vec<_>>(), [6, 6, 8]);
+    feed(&mut e, "\x17c");
+    assert_eq!(sizes(&mut e, 30), [(30, 10), (30, 10)]);
+    // Widths: `:vsplit` in the top window, then `Ctrl+W >`, `<`, `|` and `:vertical resize`.
+    feed(&mut e, ":vs\n");
+    assert_eq!(sizes(&mut e, 31)[..2], [(15, 10), (15, 10)]);
+    feed(&mut e, "4\x17>");
+    assert_eq!(sizes(&mut e, 31)[..2], [(19, 10), (11, 10)]);
+    feed(&mut e, "2\x17<");
+    assert_eq!(sizes(&mut e, 31)[..2], [(17, 10), (13, 10)]);
+    feed(&mut e, ":vert res 6\n");
+    assert_eq!(sizes(&mut e, 31)[..2], [(6, 10), (24, 10)]);
+    feed(&mut e, "\x17|");
+    assert_eq!(sizes(&mut e, 31)[..2], [(29, 10), (1, 10)]);
+    feed(&mut e, ":vertical new\n");
+    assert_eq!(e.window_ids().len(), 4);
+    // A resize that cannot happen does nothing.
+    let mut one = ed("a");
+    feed(&mut one, "\x17+:res 3\n:vert res 3\n");
+    assert_eq!(sizes(&mut one, 30), [(30, 20)]);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn winfixheight_winfixwidth_and_cmdwinheight_resize_open_windows() {
+    let mut e = ed(&lines(30));
+    let heights = |e: &mut Editor| {
+        e.frame(30, 21);
+        e.win_rects().iter().map(|(_, r)| r.h).collect::<Vec<_>>()
+    };
+    feed(&mut e, ":sp\n:set wfh?\n");
+    assert_eq!(e.msg(), "nowinfixheight");
+    heights(&mut e);
+    feed(&mut e, ":set wfh\n:set winfixheight?\n");
+    assert_eq!(e.msg(), "winfixheight");
+    // The fixed window keeps its 10 rows when another one is split off.
+    feed(&mut e, ":sp\n");
+    assert_eq!(heights(&mut e), [5, 10, 5]);
+    feed(&mut e, "\x17j:set nowfh\n:set wfh?\n");
+    assert_eq!(e.msg(), "nowinfixheight");
+    feed(&mut e, ":set invwfh\n:set wfh!\n:set wfh?\n");
+    assert_eq!(e.msg(), "nowinfixheight");
+    heights(&mut e);
+    feed(&mut e, ":set wfw\n:set wfw?\n");
+    assert_eq!(e.msg(), "winfixwidth");
+    // `:set cwh=N` changes the height of an open command-line window.
+    let mut e = ed("a");
+    feed(&mut e, "q:");
+    heights(&mut e);
+    assert_eq!(e.win_rects().last().map(|(_, r)| r.h), Some(8));
+    feed(&mut e, ":set cwh=3\n");
+    heights(&mut e);
+    assert_eq!(e.win_rects().last().map(|(_, r)| r.h), Some(4));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn pager_shows_tall_messages_a_page_at_a_time() {
+    let mut e = ed("text");
+    let long = (1..=20).map(|i| format!("l{i}")).collect::<Vec<_>>().join("\n");
+    let page = |e: &mut Editor| {
+        let rows = screen(&e.frame(40, 8));
+        (rows[0].clone(), rows[6].clone(), rows[7].clone())
+    };
+    let more = "-- More --".to_string();
+    e.info(long.clone());
+    assert_eq!(page(&mut e), ("l1".into(), "l7".into(), more.clone()));
+    // Space, f, PageDown and Ctrl+F: a page on, up to the last one.
+    for (i, key) in [KeyCode::Char(' '), KeyCode::PageDown].into_iter().enumerate() {
+        press(&mut e, key);
+        assert_eq!(page(&mut e).0, ["l8", "l14"][i]);
+    }
+    assert_eq!(page(&mut e).2, "Press ENTER or type command to continue", "the last page asks for Enter");
+    // Back: b, PageUp, Ctrl+B a page, u and d half of it, k and j, Up and Down a line, g and G the ends.
+    press(&mut e, KeyCode::Char('b'));
+    assert_eq!(page(&mut e).0, "l7");
+    press(&mut e, KeyCode::PageUp);
+    assert_eq!(page(&mut e).0, "l1");
+    press(&mut e, KeyCode::Char('d'));
+    assert_eq!(page(&mut e).0, "l4");
+    press(&mut e, KeyCode::Char('u'));
+    assert_eq!(page(&mut e).0, "l1");
+    press(&mut e, KeyCode::Char('j'));
+    press(&mut e, KeyCode::Down);
+    press(&mut e, KeyCode::Enter);
+    assert_eq!(page(&mut e).0, "l4");
+    press(&mut e, KeyCode::Char('k'));
+    press(&mut e, KeyCode::Up);
+    assert_eq!(page(&mut e).0, "l2");
+    press(&mut e, KeyCode::Char('G'));
+    assert_eq!(page(&mut e).0, "l14");
+    press(&mut e, KeyCode::Char('g'));
+    assert_eq!(page(&mut e).0, "l1");
+    feed(&mut e, "\x06");
+    assert_eq!(page(&mut e).0, "l8");
+    feed(&mut e, "\x02");
+    assert_eq!(page(&mut e).0, "l1");
+    // Keys that do nothing before the end are ignored, and none of them reaches the editor.
+    feed(&mut e, "xyz");
+    assert_eq!((text(&e).as_str(), page(&mut e).0.as_str()), ("text", "l1"));
+    // q and Esc stop; so does Ctrl+C.
+    for stop in [KeyCode::Char('q'), KeyCode::Esc] {
+        press(&mut e, stop);
+        assert_eq!(e.msg(), "");
+        e.info(long.clone());
+        page(&mut e);
+    }
+    feed(&mut e, "\x03");
+    assert_eq!(e.msg(), "");
+    // `:` starts a command line at once; on the last page any other key dismisses and runs.
+    e.info(long.clone());
+    page(&mut e);
+    feed(&mut e, ":");
+    assert_eq!((e.msg(), &e.mode), ("", &Mode::Command(String::new())));
+    feed(&mut e, "\x1b");
+    e.info(long.clone());
+    page(&mut e);
+    press(&mut e, KeyCode::Char('G'));
+    page(&mut e);
+    feed(&mut e, "x");
+    assert_eq!((text(&e).as_str(), e.msg()), ("ext", ""));
+    // `nomore`: the last rows, no pager.
+    feed(&mut e, ":set nomore\n");
+    e.info(long.clone());
+    let rows = screen(&e.frame(40, 8));
+    assert_eq!((rows[0].as_str(), rows[6].as_str(), rows[7].as_str()), ("l14", "l20", "Press ENTER or type command to continue"));
+    feed(&mut e, "\n:set more?\n");
+    assert_eq!(e.msg(), "nomore");
+    // A message that fits is not paged.
+    e.info("a\nb");
+    let rows = screen(&e.frame(40, 8));
+    assert_eq!(rows[5..], ["a", "b", "Press ENTER or type command to continue"].map(String::from));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn ctrl_v_codes_and_ctrl_k_digraphs_in_insert_and_on_the_command_line() {
+    // Insert: decimal, hex, unicode and octal codes; the key that ends a code is typed as usual.
+    let mut e = ed("");
+    feed(&mut e, "i\x16065\x16x42\x16u20ac\x16U0001F600\x16o103\x16233");
+    assert_eq!(text(&e), "AB€😀Cé");
+    feed(&mut e, "\x1635z\x16xg\x16\x16");
+    assert_eq!(text(&e), "AB€😀Cé#zxg\u{16}");
+    // A code cut short by Enter or Esc still counts; Tab, Esc and Enter after Ctrl+V are literal.
+    let mut e = ed("");
+    feed(&mut e, "i\x1665\n\x16\t\x16\x1b");
+    assert_eq!(text(&e), "A\n\t\x1b");
+    // Digraphs: a pair, the pair reversed, a space and a character (high bit), an unknown pair.
+    let mut e = ed("");
+    feed(&mut e, "i\x0be:\x0b:e\x0bEu\x0b a\x0bZQ\x0b->");
+    assert_eq!(text(&e), "ëë€\u{e1}Q→");
+    // Esc cancels one, and the count of an insert repeats it.
+    feed(&mut e, "\x0b\x1bx\x1b");
+    assert_eq!(text(&e), "ëë€\u{e1}Q→x");
+    let mut e = ed("");
+    feed(&mut e, "3i\x0ba!\x1b");
+    assert_eq!(text(&e), "ààà");
+    // Replace mode types over.
+    let mut e = ed("abc");
+    feed(&mut e, "R\x0be:\x16x41\x1b");
+    assert_eq!(text(&e), "ëAc");
+    // The command line takes both, wherever the cursor is.
+    let mut e = ed("a");
+    feed(&mut e, ":x\x0be:\x16u20ac\x16065y");
+    assert_eq!(line(&e).0, "xë€Ay");
+    press(&mut e, KeyCode::Home);
+    feed(&mut e, "\x0bEu");
+    assert_eq!(line(&e), ("€xë€Ay".into(), 3));
+    feed(&mut e, "\x1b/\x0bo:\x16120");
+    assert_eq!(line(&e).0, "öx");
+    // A code that ends at a key handled by the line, here Enter, runs the line.
+    feed(&mut e, "\x15\x1665\n");
+    assert_eq!(e.mode, Mode::Normal);
+    // `:digraphs` defines and lists.
+    feed(&mut e, ":dig e: 120 ab 0x263a\n");
+    assert_eq!(e.msg(), "");
+    feed(&mut e, "i\x0be:\x0bab\x1b");
+    assert_eq!(text(&e), "x☺a");
+    feed(&mut e, ":dig\n");
+    assert!(e.msg().starts_with("ab ☺  9786") && e.msg().contains("e: x  120"), "user digraphs come first, the last one first");
+    assert!(e.msg().lines().count() > 200 && e.msg().contains("Eu €  8364"));
+    for (cmd, msg) in [(":dig abc 1\n", "E1214: Digraph must be just two characters: abc"), (":dig ab\n", "E104: Escape not allowed in digraph"), (":dig ab x\n", "E39: Number expected: x")] {
+        feed(&mut e, cmd);
+        assert_eq!(e.msg(), msg);
+    }
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn expressions_evaluate_like_vim() {
+    let mut e = ed("one\ntwo\nthree");
+    feed(&mut e, "\"ayyj$");
+    let mut ev = |src: &str| e.eval_text(src).unwrap_or_else(|m| format!("!{m}"));
+    let table: &[(&str, &str)] = &[
+        // Arithmetic, with vim's division by zero and truncation.
+        ("1+2*3", "7"), ("(1+2)*3", "9"), ("10/3", "3"), ("10%3", "1"), ("-7/2", "-3"), ("7/0", "9223372036854775807"), ("-7/0", "-9223372036854775807"),
+        ("0/0", "-9223372036854775808"), ("5%0", "0"), ("0x1f+0b11+010", "42"), ("1 - -2", "3"), ("+3", "3"),
+        // Floats.
+        ("1.5+1", "2.5"), ("10/4.0", "2.5"), ("1.0/3", "0.333333"), ("1/3.0*3", "1.0"), ("2.0*3", "6.0"), ("1.0e3", "1000.0"), ("1.5e10", "1.5e+10"), ("-2.5", "-2.5"), ("1.5%2", "!E804: Cannot use '%' with Float"),
+        // Strings and their numbers.
+        ("'a'.'b'", "ab"), ("'a' . 1", "a1"), ("'a'..'b'", "ab"), ("'it''s'", "it's"), ("\"a\\tb\"", "a\tb"), ("\"\\x41\\u20ac\\101\"", "A€A"), ("\"12abc\"+1", "13"),
+        ("'abc'+1", "1"), ("'0x1f'+0", "31"), ("'-5'+0", "-5"), ("'abc'[1]", "b"), ("'abcdef'[2:3]", "cd"), ("'abc'[1:]", "bc"), ("'abc'[:1]", "ab"), ("'abc'[9]", ""),
+        // Comparisons and logic.
+        ("1==1", "1"), ("'a'==#'A'", "0"), ("'a'==?'A'", "1"), ("'abc'=~'b'", "1"), ("'abc'!~'x'", "1"), ("'abc'=~#'B'", "0"), ("'abc'=~?'B'", "1"), ("2>1", "1"), ("'b'>'a'", "1"),
+        ("1<=1", "1"), ("1!=1", "0"), ("'10'<9", "0"), ("1.5>1", "1"), ("1&&0", "0"), ("0||2", "1"), ("!0", "1"), ("!5", "0"), ("-(3)", "-3"), ("1?'y':'n'", "y"),
+        ("0?1:2", "2"), ("0?1:0?2:3", "3"), ("v:true+v:false", "1"), ("[1]==[1]", "1"), ("[1]!=[2]", "1"),
+        // Lists.
+        ("[1,2,3]", "1\n2\n3"), ("[1,2]+[3]", "1\n2\n3"), ("[1,2,3][1]", "2"), ("[1,2,3][-1]", "3"), ("[1,2,3][1:]", "2\n3"), ("[1,2,3][:1]", "1\n2"), ("[1,2,3][2:1]", ""),
+        ("[1,2,3][5]", "!E684: List index out of range: 5"), ("[]", ""),
+        // Errors.
+        ("1+", "!E15: Invalid expression: \"1+\""), ("(1", "!E15: Invalid expression: \"(1\""), ("1 2", "!E15: Invalid expression: \"1 2\""), ("'abc", "!E15: Invalid expression: \"'abc\""),
+        ("@", "!E15: Invalid expression: \"@\""), ("foo(1)", "!E117: Unknown function: foo"), ("abs()", "!E119: Not enough arguments for function: abs"),
+        ("abs(1,2)", "!E118: Too many arguments for function: abs"), ("[1]+1", "!E745: Using a List as a Number"), ("'a'.[1]", "!E730: Using a List as a String"),
+        ("&nosuch", "!E113: Unknown option: nosuch"), ("[1]<2", "!E691: Can only compare List with List"), ("[1]<[2]", "!E692: Invalid operation for List"),
+        // Registers, options, the text.
+        ("@a", "one\n"), ("getreg('a')", "one\n"), ("&tabstop", "4"), ("&ts", "4"), ("&number", "1"), ("&ic", "0"), ("&background", "dark"), ("&filetype", ""), ("&expandtab+1", "2"),
+        ("line('.')", "2"), ("line('$')", "3"), ("col('.')", "3"), ("col('$')", "4"), ("getline(3)", "three"), ("getline('.')", "two"), ("getline('$')", "three"), ("getline(9)", ""),
+        // Numbers.
+        ("abs(-3)", "3"), ("abs(-2.5)", "2.5"), ("min([3,1,2])", "1"), ("max([3,1,2])", "3"), ("round(2.5)", "3.0"), ("floor(2.7)", "2.0"), ("ceil(2.1)", "3.0"), ("sqrt(16)", "4.0"),
+        ("pow(2,10)", "1024.0"), ("exp(0)", "1.0"), ("log10(1000)", "3.0"), ("float2nr(3.9)", "3"), ("str2nr('12')", "12"), ("str2nr('ff',16)", "255"), ("str2nr('0x1f',16)", "31"), ("str2nr('11',2)", "3"),
+        ("str2float('1.5abc')", "1.5"), ("string('a')", "'a'"), ("string([1,'a''b'])", "[1, 'a''b']"), ("string(1.5)", "1.5"), ("string(7)", "7"),
+        // Strings.
+        ("len('héllo')", "6"), ("strlen('héllo')", "6"), ("strchars('héllo')", "5"), ("strcharlen(\"e\\u0301x\")", "2"), ("len([1,2])", "2"), ("toupper('aé')", "AÉ"), ("tolower('AÉ')", "aé"),
+        ("repeat('ab',3)", "ababab"), ("repeat([1],2)", "1\n1"), ("join([1,2,3],'-')", "1-2-3"), ("join(['a','b'])", "a b"), ("split('a b  c')", "a\nb\nc"), ("split('a,b,,c',',')", "a\nb\nc"),
+        ("split('a,b,,c',',',1)", "a\nb\n\nc"), ("split('a1b22c','\\d+')", "a\nb\nc"), ("range(4)", "0\n1\n2\n3"), ("range(2,4)", "2\n3\n4"), ("range(0,10,5)", "0\n5\n10"), ("range(3,1,-1)", "3\n2\n1"),
+        ("range(1,2,0)", "!E726: Stride is zero"), ("reverse([1,2,3])", "3\n2\n1"), ("reverse('abc')", "cba"), ("sort(['b','a','c'])", "a\nb\nc"), ("sort([10,9,100])", "10\n100\n9"),
+        ("add([1],2)", "1\n2"), ("index([1,2,3],2)", "1"), ("index([1],5)", "-1"), ("get([1,2],1)", "2"), ("get([1,2],5,'x')", "x"), ("get([1,2],5)", "0"), ("empty('')", "1"), ("empty([1])", "0"),
+        ("empty(0)", "1"), ("strpart('abcdef',2,3)", "cde"), ("strpart('abc',1)", "bc"), ("stridx('hello','l')", "2"), ("stridx('hello','l',3)", "3"), ("strridx('hello','l')", "3"), ("stridx('a','z')", "-1"),
+        ("char2nr('A')", "65"), ("nr2char(8364)", "€"), ("escape('a.b','.')", "a\\.b"), ("tr('abc','ab','xy')", "xyc"), ("tr('a','ab','x')", "!E475: Invalid argument: tr()"),
+        ("matchstr('foo123bar','\\d+')", "123"), ("matchstr('foo','\\d+')", ""), ("substitute('foo bar','o','0','g')", "f00 bar"), ("substitute('foo bar','o','0','')", "f0o bar"),
+        ("substitute('a b','(\\w) (\\w)','$2 $1','')", "b a"), ("trim('  x  ')", "x"), ("trim('xxaxx','x')", "a"), ("copy([1])", "1"),
+        // printf.
+        ("printf('%d-%s',5,'a')", "5-a"), ("printf('%05d',42)", "00042"), ("printf('%-5d|',42)", "42   |"), ("printf('%5.2f',3.14159)", " 3.14"), ("printf('%x %X %o %b',255,255,8,5)", "ff FF 10 101"),
+        ("printf('%#x %#o %#b',255,8,5)", "0xff 010 0b101"), ("printf('%+d % d',5,5)", "+5  5"), ("printf('%c',65)", "A"), ("printf('%.3s',[1])", "[1]"), ("printf('%.3s','abcdef')", "abc"),
+        ("printf('%5s|%-5s|','a','b')", "    a|b    |"), ("printf('%e',1500.0)", "1.500000e+03"), ("printf('%E',0.00015)", "1.500000E-04"), ("printf('%g',0.0001)", "0.0001"), ("printf('%g',1.0e-5)", "1e-05"),
+        ("printf('%g',100000.0)", "100000"), ("printf('%g',1.0e6)", "1e+06"), ("printf('%%')", "%"), ("printf('%3d',-5)", " -5"), ("printf('%03d',-5)", "-05"), ("printf('%08.3f',3.14159)", "0003.142"),
+        ("printf('%.3d',5)", "005"), ("printf('%u',-1)", "18446744073709551615"), ("printf('%ld',5)", "5"), ("printf('%d')", "!E766: Insufficient arguments for printf()"),
+        ("printf('x',1)", "!E767: Too many arguments for printf()"), ("printf('%q',1)", "!E767: Invalid format specifier: %q"),
+    ];
+    for (src, want) in table {
+        assert_eq!(ev(src), *want, "{src}");
+    }
+    // `ignorecase` decides the plain string comparison, `#` and `?` do not care about it.
+    e.buf.opts.ignorecase = true;
+    assert_eq!((e.eval_text("'a'=='A'").unwrap(), e.eval_text("'a'==#'A'").unwrap(), e.eval_text("'abc'=~'B'").unwrap()), ("1".into(), "0".into(), "1".into()));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn expression_register_from_the_command_line_insert_mode_and_normal_mode() {
+    // Command line: the value goes at the cursor, and the cursor after it.
+    let mut e = ed("a");
+    feed(&mut e, ":xy");
+    press(&mut e, KeyCode::Left);
+    feed(&mut e, "\x12=6*7\n");
+    assert_eq!(line(&e), ("x42y".into(), 3));
+    // The search line too, and a list makes line breaks.
+    feed(&mut e, "\x1b/p\x12=[1,2]\n");
+    assert_eq!(line(&e), ("p1\r2".into(), 4));
+    feed(&mut e, "\x1b");
+    // Esc and an error give the line back unchanged; the error stays on the screen.
+    feed(&mut e, ":a\x12=1\x1b");
+    assert_eq!(line(&e), ("a".into(), 1));
+    feed(&mut e, "\x12=1+\n");
+    assert_eq!((line(&e), e.msg()), (("a".into(), 1), "E15: Invalid expression: \"1+\""));
+    feed(&mut e, "\x1b");
+    // Insert: typed at the cursor, a repeated insert types the value again.
+    let mut e = ed("");
+    feed(&mut e, "ia\x12=1+2\nb\x1b");
+    assert_eq!(text(&e), "a3b");
+    let mut e = ed("");
+    feed(&mut e, "3i\x12=7\n\x1b");
+    assert_eq!(text(&e), "777");
+    feed(&mut e, "ix\x12=[1,2]\n\x1b");
+    assert_eq!(text(&e), "77x1\n27");
+    let mut e = ed("");
+    feed(&mut e, "i\x12=1+\n");
+    assert_eq!((e.mode == Mode::Insert, e.msg(), text(&e).as_str()), (true, "E15: Invalid expression: \"1+\"", ""));
+    feed(&mut e, "\x12=1\x1bx\x1b");
+    assert_eq!(text(&e), "x");
+    // Normal: `"=` sets the register of the next command.
+    let mut e = ed("");
+    feed(&mut e, "\"=5*5\np");
+    assert_eq!(text(&e), "25");
+    feed(&mut e, "\"=@=.'!'\nP");
+    assert_eq!(text(&e), "225!5");
+    feed(&mut e, "\"=1+\n");
+    assert_eq!((e.msg(), e.pending.as_str()), ("E15: Invalid expression: \"1+\"", ""));
+    feed(&mut e, "\"=2\x1bx");
+    assert_eq!(text(&e), "2255", "Esc cancelled the register: `x` ran without it");
+    // The expressions have a history of their own (Up), apart from the command line's.
+    feed(&mut e, ":zzz\n:\x12=");
+    press(&mut e, KeyCode::Up);
+    assert!(matches!(&e.mode, Mode::Expr(s) if s == "1+"), "{:?}", e.mode);
+    feed(&mut e, "\x1b\x1b");
+    assert_eq!(e.mode, Mode::Normal);
+    // A frame shows the `=` prompt and the cursor in it.
+    feed(&mut e, "i\x12=12");
+    let f = e.frame(20, 5);
+    assert_eq!((screen(&f)[4].as_str(), f.cursor), ("=12", (3, 4)));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn completion_sources() {
+    let dir = std::env::temp_dir().join(format!("rim-wild-{}", std::process::id()));
+    fs::create_dir_all(dir.join("sub")).unwrap();
+    for f in ["ab.txt", "ac.rs", "AD.txt", ".hidden"] {
+        fs::write(dir.join(f), "").unwrap();
+    }
+    let d = dir.display();
+    let mut e = ed("a");
+    let cand = |e: &Editor, l: &str| e.candidates(l).map(|c| (c.start, c.items));
+    let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // Command names, and nothing where no command takes an argument.
+    assert_eq!(cand(&e, "sp"), Some((0, v(&["split"]))));
+    assert_eq!(cand(&e, "%so").map(|c| c.1), Some(v(&["sort"])));
+    assert_eq!(cand(&e, "b").map(|c| c.1.len()), Some(6));
+    assert!(cand(&e, "").is_none() && cand(&e, "normal x").is_none() && cand(&e, "s/a").is_some_and(|c| c.1.is_empty()));
+    // Files: sorted, directories end in `/`, hidden ones after a dot, `wildignore`, `wildignorecase`.
+    assert_eq!(cand(&e, &format!("e {d}/a")), Some((2, vec![format!("{d}/ab.txt"), format!("{d}/ac.rs")])));
+    assert_eq!(cand(&e, &format!("w! {d}/s")).map(|c| c.1), Some(vec![format!("{d}/sub/")]));
+    assert_eq!(cand(&e, &format!("e {d}/.")).map(|c| c.1), Some(vec![format!("{d}/.hidden")]));
+    assert_eq!(cand(&e, &format!("e {d}/")).map(|c| c.1.len()), Some(4));
+    feed(&mut e, ":set wig=*.txt\n");
+    assert_eq!(cand(&e, &format!("e {d}/a")).map(|c| c.1), Some(vec![format!("{d}/ac.rs")]));
+    feed(&mut e, ":set wig=\n:set wic\n");
+    assert_eq!(cand(&e, &format!("e {d}/a")).map(|c| c.1.len()), Some(3));
+    feed(&mut e, ":set nowic\n");
+    // `~` and `$VAR` in the directory are read, and kept in what is completed.
+    assert!(cand(&e, "e $HOME/").is_some_and(|c| !c.1.is_empty() && c.1.iter().all(|i| i.starts_with("$HOME/"))));
+    assert!(cand(&e, "e ~/").is_some_and(|c| !c.1.is_empty() && c.1.iter().all(|i| i.starts_with("~/"))));
+    // Options: names, `no` and `inv` forms, values, and the part after a comma.
+    assert_eq!(cand(&e, "set nu").map(|c| c.1), Some(v(&["number"])));
+    assert!(cand(&e, "set nonu").unwrap().1 == v(&["nonumber"]) && cand(&e, "set invw").unwrap().1.contains(&"invwrap".to_string()));
+    assert_eq!(cand(&e, "set bg="), Some((7, v(&["dark", "light"]))));
+    assert_eq!(cand(&e, "set wim=lo").map(|c| c.1), Some(v(&["longest", "longest:full"])));
+    assert_eq!(cand(&e, "set wim=full,l"), Some((13, v(&["longest", "list", "lastused", "list:full", "list:longest", "longest:full"]))));
+    assert_eq!(cand(&e, "set ft=rus").map(|c| c.1), Some(v(&["rust"])));
+    assert_eq!(cand(&e, "set winfixh").map(|c| c.1), Some(v(&["winfixheight"])));
+    assert!(cand(&e, "set zzz=").unwrap().1.is_empty());
+    // Highlight groups, their keys, colors and attributes.
+    assert_eq!(cand(&e, "hi Sear").map(|c| c.1), Some(v(&["Search"])));
+    assert_eq!(cand(&e, "hi cl").map(|c| c.1), Some(v(&["clear"])));
+    assert_eq!(cand(&e, "hi default li").map(|c| c.1), Some(v(&["link"])));
+    assert_eq!(cand(&e, "hi link Normal Sea").map(|c| c.1), Some(v(&["Search"])));
+    assert_eq!(cand(&e, "hi Search ct").map(|c| c.1), Some(v(&["ctermfg=", "ctermbg=", "cterm="])));
+    assert_eq!(cand(&e, "hi Search ctermfg=Dark").map(|c| (c.0, c.1.contains(&"darkblue".to_string()))), Some((18, true)));
+    assert_eq!(cand(&e, "hi Search gui=bold,un").map(|c| (c.0, c.1)), Some((19, v(&["underline", "undercurl"]))));
+    // Buffers by a part of their name, `:syntax`, `:messages`, `:vertical`.
+    feed(&mut e, &format!(":e {d}/ab.txt\n"));
+    assert_eq!(cand(&e, "b ab.t").map(|c| c.1), Some(vec![format!("{d}/ab.txt")]));
+    assert!(cand(&e, "bd rim-test").unwrap().1.len() == 1);
+    assert_eq!(cand(&e, "syntax o").map(|c| c.1), Some(v(&["on", "off"])));
+    assert_eq!(cand(&e, "messages c").map(|c| c.1), Some(v(&["clear"])));
+    assert_eq!(cand(&e, "vertical r").map(|c| c.1), Some(v(&["resize"])));
+    // Fuzzy matching, best first.
+    feed(&mut e, ":set wop=fuzzy\n");
+    assert_eq!(cand(&e, "sytx").map(|c| c.1.first().cloned()), Some(Some("syntax".into())));
+    assert_eq!(cand(&e, &format!("e {d}/at")).map(|c| c.1.contains(&format!("{d}/ab.txt"))), Some(true));
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn wildmode_full_menu_and_keys() {
+    let mut e = ed("a\nb");
+    let tab = |e: &mut Editor| press(e, KeyCode::Tab);
+    feed(&mut e, ":s");
+    tab(&mut e);
+    assert_eq!(line(&e), ("saveas".into(), 6));
+    let f = e.frame(40, 12);
+    // The popup above the command line, from the column of the word.
+    assert_eq!(screen(&f)[4..11], ["  saveas", "  set", "  sort", "  split", "  stats", "  substitute", "  syntax"].map(String::from));
+    assert_eq!((screen(&f)[11].as_str(), f.cursor), (":saveas", (7, 11)));
+    // More Tabs go on, after the last one the typed word, then the first again; Shift+Tab goes back.
+    for want in ["set", "sort", "split", "stats", "substitute", "syntax", "s", "saveas"] {
+        tab(&mut e);
+        assert_eq!(line(&e).0, want);
+    }
+    press(&mut e, KeyCode::BackTab);
+    assert_eq!(line(&e).0, "s");
+    press(&mut e, KeyCode::BackTab);
+    assert_eq!(line(&e).0, "syntax");
+    // `Ctrl+N`, `Ctrl+P`, Up and Down move through the candidates while the menu is up.
+    feed(&mut e, "\x0e");
+    assert_eq!(line(&e).0, "s");
+    feed(&mut e, "\x10");
+    assert_eq!(line(&e).0, "syntax");
+    press(&mut e, KeyCode::Up);
+    assert_eq!(line(&e).0, "substitute");
+    press(&mut e, KeyCode::Down);
+    assert_eq!(line(&e).0, "syntax");
+    // `Ctrl+E` gives the typed word back and ends the completion; `Ctrl+Y` keeps the candidate.
+    feed(&mut e, "\x05");
+    assert_eq!((line(&e), e.wild.is_none()), (("s".into(), 1), true));
+    tab(&mut e);
+    tab(&mut e);
+    feed(&mut e, "\x19");
+    assert_eq!((line(&e).0.as_str(), e.wild.is_none()), ("set", true));
+    // Any other key keeps it and goes on: typed after the word, or the key of a command.
+    feed(&mut e, "\x15s");
+    tab(&mut e);
+    feed(&mut e, "x");
+    assert_eq!(line(&e), ("saveasx".into(), 7));
+    // Enter runs what the line shows.
+    feed(&mut e, "\x15se");
+    tab(&mut e);
+    feed(&mut e, "\n");
+    assert_eq!(e.mode, Mode::Normal);
+    assert!(e.msg().contains("tabstop=4"), "{}", e.msg());
+    // A single match is the completion: no menu, and the next Tab starts again.
+    feed(&mut e, ":so");
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.is_none()), ("sort", true));
+    // The text after the cursor stays, and the word before it is the one completed.
+    feed(&mut e, "\x15s :x");
+    for _ in 0..3 {
+        press(&mut e, KeyCode::Left);
+    }
+    tab(&mut e);
+    assert_eq!(line(&e), ("saveas :x".into(), 6));
+    // Up and Down walk the history without a menu, and with `nowildmenu` too.
+    feed(&mut e, "\x1b:set nowmnu\n:s");
+    tab(&mut e);
+    assert!(e.wild.as_ref().is_some_and(|w| !w.menu));
+    feed(&mut e, "\x1b");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn wildmode_steps_lists_and_keys_of_the_command_line() {
+    let mut e = ed("a");
+    let tab = |e: &mut Editor| press(e, KeyCode::Tab);
+    // `longest,full`: the common start, then the candidates one by one.
+    feed(&mut e, ":set wim=longest,full\n:u");
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(false)));
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(true)));
+    tab(&mut e);
+    assert_eq!(line(&e).0, "undolist");
+    // `longest:full` starts the menu with the first press.
+    feed(&mut e, "\x1b:set wim=longest:full\n:u");
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(true)));
+    // `list`: the first press lists, the next complete.
+    feed(&mut e, "\x1b:set wim=list,full\n:s");
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("s", Some(true)));
+    let rows = screen(&e.frame(40, 8));
+    assert_eq!(rows[4..7], ["saveas      set         sort", "split       stats       substitute", "syntax"].map(String::from));
+    assert_eq!(rows[3], "");
+    tab(&mut e);
+    assert_eq!(line(&e).0, "saveas");
+    // `list:longest`.
+    feed(&mut e, "\x1b:set wim=list:longest\n:u");
+    tab(&mut e);
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("undo", Some(true)));
+    assert_eq!(screen(&e.frame(40, 8))[6], "undo      undolist");
+    // The empty entry only completes the first match.
+    feed(&mut e, "\x1b:set wim=\n:s");
+    tab(&mut e);
+    tab(&mut e);
+    assert_eq!(line(&e).0, "saveas");
+    // `Ctrl+D` lists, `Ctrl+A` inserts every match, `Ctrl+L` the longest start.
+    feed(&mut e, "\x15s\x04");
+    assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("s", Some(true)));
+    feed(&mut e, "\x15s\x01");
+    assert_eq!(line(&e).0, "saveas set sort split stats substitute syntax");
+    feed(&mut e, "\x15u\x0c");
+    assert_eq!(line(&e).0, "undo");
+    feed(&mut e, "\x15so\x0c");
+    assert_eq!(line(&e).0, "sort");
+    // Fuzzy.
+    feed(&mut e, "\x1b:set wim=full wop=fuzzy\n:sytx");
+    tab(&mut e);
+    assert_eq!(line(&e).0, "syntax");
+    // `wildoptions` without `pum`: one row above the command line.
+    feed(&mut e, "\x1b:set wop=\n:s");
+    tab(&mut e);
+    let rows = screen(&e.frame(60, 8));
+    let plain = |r: &str| r.replace(['[', ']'], "").trim_end().to_string();
+    assert_eq!(plain(&rows[6]), "  saveas  set  sort  split  stats  substitute  syntax");
+    tab(&mut e);
+    assert_eq!(line(&e).0, "set");
+    // Not enough room: scrolled to the selected one, with markers.
+    for _ in 0..4 {
+        tab(&mut e);
+    }
+    let rows = screen(&e.frame(24, 8));
+    assert_eq!(plain(&rows[6]), "< stats  substitute  >");
+    feed(&mut e, "\x1b");
+    // `wildchar`: another key completes and Tab types itself; `wildcharm` also in a macro.
+    feed(&mut e, ":set wc=<C-Z> wcm=<C-X>\n:s\t");
+    assert_eq!(line(&e).0, "s\t");
+    press(&mut e, KeyCode::Backspace);
+    feed(&mut e, "\x1a");
+    assert_eq!(line(&e).0, "saveas");
+    feed(&mut e, "\x15s\x18");
+    assert_eq!(line(&e).0, "saveas");
+    feed(&mut e, "\x1b");
+    e.regs.set_macro('b', ":s\x18".into());
+    feed(&mut e, "@b");
+    assert_eq!(line(&e).0, "saveas", "wildcharm completes in a macro");
+    feed(&mut e, "\x1b:set wc=<C-Z> wcm=\n");
+    e.regs.set_macro('c', ":s\x1a".into());
+    feed(&mut e, "@c");
+    assert_eq!(line(&e).0, "s", "wildchar does not in a macro");
+    feed(&mut e, "\x1b:set wc=bad\n");
+    assert_eq!(e.msg(), "Invalid argument: wc=bad");
+    feed(&mut e, ":set wim=a,b,c,d,e\n");
+    assert_eq!(e.msg(), "Invalid argument: wim=a,b,c,d,e");
+    feed(&mut e, ":set wop=popup\n");
+    assert_eq!(e.msg(), "Invalid argument: wop=popup");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn popup_menu_scrolls_clamps_and_keeps_a_width() {
+    let mut e = ed("a\nb");
+    let tab = |e: &mut Editor| press(e, KeyCode::Tab);
+    feed(&mut e, ":set ph=3 pw=12\n:s");
+    tab(&mut e);
+    let rows = screen(&e.frame(30, 10));
+    assert_eq!(rows[6..9], ["  saveas", "  set", "  sort"].map(String::from));
+    // The selection leaves the window: it scrolls, one row at a time.
+    for _ in 0..3 {
+        tab(&mut e);
+    }
+    assert_eq!(line(&e).0, "split");
+    let f = e.frame(30, 10);
+    assert_eq!(screen(&f)[6..9], ["  set", "  sort", "  split"].map(String::from));
+    // The scroll bar column has its thumb where the window is among the items: one of four rows down is still the first row of three.
+    let bar: Vec<Style> = f.rows[6..9].iter().map(|r| r.last().unwrap().style).collect();
+    assert_eq!(bar, [Style::PmenuThumb, Style::PmenuSbar, Style::PmenuSbar]);
+    // The width is at least `pumwidth` and a long item widens it; the selected row has its own style.
+    let row = &f.rows[8];
+    assert_eq!((row[1].style, row[1].text.chars().count()), (Style::PmenuSel, 12));
+    // A screen too narrow for it: the popup moves left to fit, and a tiny one shows what it can.
+    feed(&mut e, "\x1b:set ph=0\n:set\t");
+    feed(&mut e, "\x15s");
+    tab(&mut e);
+    let f = e.frame(10, 12);
+    assert!(f.rows.iter().all(|r| r.iter().map(|s| s.text.chars().count()).sum::<usize>() <= 10));
+    let f = e.frame(3, 3);
+    assert_eq!(f.rows.len(), 3);
+    // The popup draws over the text without breaking wide characters.
+    let mut e = ed("日本語日本語");
+    feed(&mut e, ":s");
+    tab(&mut e);
+    let f = e.frame(14, 6);
+    assert!(f.rows.iter().all(|r| r.iter().map(|s| unicode_width::UnicodeWidthStr::width(s.text.as_str())).sum::<usize>() <= 14));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn buffer_by_name() {
+    let dir = std::env::temp_dir().join(format!("rim-bname-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let (a, b) = (dir.join("alpha.txt"), dir.join("alps.txt"));
+    fs::write(&a, "a").unwrap();
+    fs::write(&b, "b").unwrap();
+    let mut e = Editor::open(a.clone()).unwrap();
+    e.open_more(b.clone()).unwrap();
+    feed(&mut e, ":b alps\n");
+    assert_eq!(e.buf.id, 2);
+    feed(&mut e, ":b alp\n");
+    assert_eq!(e.msg(), "E93: More than one match for alp");
+    feed(&mut e, ":b ALPHA\n");
+    assert_eq!(e.buf.id, 1);
+    feed(&mut e, &format!(":b {}\n", b.display()));
+    assert_eq!(e.buf.id, 2);
+    feed(&mut e, ":b nothing\n");
+    assert_eq!(e.msg(), "E94: No matching buffer for nothing");
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn equalalways_winheight_winwidth_and_the_least_sizes() {
+    let narrow = |e: &mut Editor| e.buf.opts.winwidth = 1;
+    let sizes = |e: &mut Editor, w: usize| {
+        e.frame(w, 21);
+        e.win_rects().iter().map(|(_, r)| (r.w, r.h)).collect::<Vec<_>>()
+    };
+    // `noequalalways`: a split takes half of the window it splits, the others keep their size.
+    let mut e = ed(&lines(30));
+    narrow(&mut e);
+    sizes(&mut e, 31);
+    feed(&mut e, ":set noea\n:sp\n");
+    assert_eq!(sizes(&mut e, 31), [(31, 10), (31, 10)]);
+    feed(&mut e, ":sp\n");
+    assert_eq!(sizes(&mut e, 31), [(31, 5), (31, 5), (31, 10)]);
+    // Closing gives the room to the next window, the previous one for the last.
+    feed(&mut e, "\x17c");
+    assert_eq!(sizes(&mut e, 31), [(31, 10), (31, 10)]);
+    feed(&mut e, "\x17j\x17c");
+    assert_eq!(sizes(&mut e, 31), [(31, 20)]);
+    feed(&mut e, ":vs\n");
+    assert_eq!(sizes(&mut e, 31), [(15, 20), (15, 20)]);
+    feed(&mut e, ":vs\n:set ea?\n");
+    assert_eq!(e.msg(), "noequalalways");
+    assert_eq!(sizes(&mut e, 31), [(7, 20), (7, 20), (15, 20)]);
+    feed(&mut e, "\x17c");
+    assert_eq!(sizes(&mut e, 31), [(15, 20), (15, 20)]);
+    feed(&mut e, ":set ea\n:vs\n");
+    assert_eq!(sizes(&mut e, 31).iter().map(|s| s.0).collect::<Vec<_>>(), [9, 9, 11]);
+    // `winheight` and `winwidth` grow the window that is entered when others can give.
+    let mut e = ed(&lines(30));
+    sizes(&mut e, 40);
+    feed(&mut e, ":set wh=12\n:sp\n:sp\n");
+    // The window a split enters gets its 12 rows and the status row; the others give.
+    assert_eq!(sizes(&mut e, 40), [(40, 13), (40, 2), (40, 5)]);
+    feed(&mut e, "\x17j");
+    assert_eq!(sizes(&mut e, 40)[1].1, 13, "12 rows and the status row");
+    feed(&mut e, "\x17j");
+    assert_eq!(sizes(&mut e, 40)[2].1, 13);
+    let mut e = ed(&lines(30));
+    sizes(&mut e, 60);
+    feed(&mut e, ":set wiw=40\n:vs\n");
+    assert_eq!(sizes(&mut e, 60)[..2], [(40, 20), (19, 20)], "the window the split enters gets 40 columns");
+    feed(&mut e, "\x17l");
+    assert_eq!(sizes(&mut e, 60)[..2], [(19, 20), (40, 20)]);
+    // `winminheight` and `winminwidth` are what the others keep when one is made as big as it can be.
+    let mut e = ed(&lines(30));
+    narrow(&mut e);
+    sizes(&mut e, 31);
+    feed(&mut e, ":set wmh=3\n:sp\n\x17_");
+    assert_eq!(sizes(&mut e, 31), [(31, 16), (31, 4)]);
+    feed(&mut e, ":set wmh=1 wmw=5\n:vs\n\x17|");
+    assert_eq!(sizes(&mut e, 31)[..2], [(25, 10), (5, 10)], "a split evens the heights out again");
+    feed(&mut e, ":set wh=0\n");
+    assert_eq!(e.msg(), "Invalid argument: wh=0");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn cedit_lastused_and_globs() {
+    // `cedit` is the key of the command-line window, and may be none.
+    let mut e = ed("a");
+    feed(&mut e, ":set cedit=<C-G>\n:x\x06");
+    assert!(e.cmdwin.is_none());
+    feed(&mut e, "\x07");
+    assert!(e.cmdwin.is_some());
+    feed(&mut e, "\x03\x1b:set cedit=\n:x\x07");
+    assert!(e.cmdwin.is_none());
+    feed(&mut e, "\x1b:set cedit=bad\n");
+    assert_eq!(e.msg(), "Invalid argument: cedit=bad");
+    feed(&mut e, ":set cedit?\n");
+    assert_eq!(e.msg(), "cedit=");
+    // `lastused`: the buffers most recently left first, the current one on top.
+    let dir = std::env::temp_dir().join(format!("rim-lastused-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let names = ["a.txt", "b.txt", "c.txt"].map(|n| dir.join(n));
+    for n in &names {
+        fs::write(n, "x").unwrap();
+    }
+    let mut e = Editor::open(names[0].clone()).unwrap();
+    e.open_more(names[1].clone()).unwrap();
+    e.open_more(names[2].clone()).unwrap();
+    feed(&mut e, ":b 2\n:b 3\n:b 2\n");
+    let order = |e: &Editor| e.candidates("b ").unwrap().items.iter().map(|n| n.rsplit('/').next().unwrap().to_string()).collect::<Vec<_>>();
+    assert_eq!(order(&e), ["a.txt", "b.txt", "c.txt"]);
+    feed(&mut e, ":set wim=lastused\n");
+    assert_eq!(order(&e), ["b.txt", "c.txt", "a.txt"]);
+    feed(&mut e, ":b 1\n");
+    assert_eq!(order(&e), ["a.txt", "b.txt", "c.txt"]);
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn mouse_clicks_drags_wheel_and_windows() {
+    use crossterm::event::{MouseButton as B, MouseEvent, MouseEventKind as K};
+    use std::time::{Duration, Instant};
+    let t0 = Instant::now();
+    let ev = |kind, x: u16, y: u16| MouseEvent { kind, column: x, row: y, modifiers: KeyModifiers::NONE };
+    let click = |e: &mut Editor, x, y, at: u64| {
+        e.mouse(ev(K::Down(B::Left), x, y), t0 + Duration::from_millis(at));
+        e.mouse(ev(K::Up(B::Left), x, y), t0 + Duration::from_millis(at));
+    };
+    let mut e = ed("hello world\nsecond line\nthird");
+    e.frame(30, 8);
+    // A click puts the cursor on the cell: past the gutter ("1 " is 2 cells wide here), past the end on the last char.
+    click(&mut e, 2 + 4, 1, 0);
+    assert_eq!(pos(&e), (1, 4));
+    click(&mut e, 29, 0, 1000);
+    assert_eq!(pos(&e), (0, 10));
+    // Double click: the word; triple: the line.
+    click(&mut e, 2 + 7, 0, 2000);
+    click(&mut e, 2 + 7, 0, 2100);
+    assert_eq!((&e.mode, e.anchor, pos(&e)), (&Mode::Visual(VKind::Char), (0, 6), (0, 10)));
+    e.mouse(ev(K::Down(B::Left), 9, 0), t0 + Duration::from_millis(2200));
+    assert_eq!((&e.mode, e.anchor.1, pos(&e).0), (&Mode::Visual(VKind::Line), 0, 0));
+    feed(&mut e, "\x1b");
+    // Drag: selects characters; a plain click leaves Visual again.
+    e.mouse(ev(K::Down(B::Left), 3, 0), t0 + Duration::from_millis(5000));
+    e.mouse(ev(K::Drag(B::Left), 8, 1), t0 + Duration::from_millis(5001));
+    e.mouse(ev(K::Up(B::Left), 8, 1), t0 + Duration::from_millis(5002));
+    assert_eq!((&e.mode, e.anchor, pos(&e)), (&Mode::Visual(VKind::Char), (0, 1), (1, 6)));
+    click(&mut e, 5, 2, 9000);
+    assert_eq!((&e.mode, pos(&e)), (&Mode::Normal, (2, 3)));
+    // Insert mode: the click may land past the line end; `mouse` off does nothing.
+    feed(&mut e, "i");
+    click(&mut e, 29, 0, 12000);
+    assert_eq!((&e.mode, pos(&e)), (&Mode::Insert, (0, 11)));
+    feed(&mut e, "\x1b:set mouse=\n");
+    click(&mut e, 4, 2, 15000);
+    assert_eq!(pos(&e).0, 0);
+    assert!(!e.mouse_enabled());
+    feed(&mut e, ":set mouse=a\n:set mouse?\n");
+    assert_eq!((e.msg(), e.mouse_enabled()), ("mouse=a", true));
+    feed(&mut e, ":set mouse=z\n");
+    assert_eq!(e.msg(), "Invalid argument: mouse=z");
+    // The wheel scrolls `mousescroll` lines, and the cursor stays on screen.
+    let mut e = ed(&lines(30));
+    e.frame(30, 8);
+    e.mouse(ev(K::ScrollDown, 5, 2), t0);
+    assert_eq!(e.win.top, 3);
+    e.mouse(ev(K::ScrollUp, 5, 2), t0);
+    assert_eq!(e.win.top, 0);
+    feed(&mut e, ":set mousescroll=ver:1\n");
+    e.mouse(ev(K::ScrollDown, 5, 2), t0);
+    assert_eq!(e.win.top, 1);
+    feed(&mut e, ":set mousescroll=bad\n");
+    assert_eq!(e.msg(), "Invalid argument: mousescroll=bad");
+    // Windows: a click in another window enters it; the wheel scrolls the one under it.
+    let mut e = ed(&lines(30));
+    feed(&mut e, ":vs\n");
+    e.frame(31, 8);
+    assert_eq!(e.window_ids().len(), 2);
+    let other = e.window_ids()[1];
+    click(&mut e, 20, 2, 0);
+    assert_eq!((e.win.id, pos(&e).0), (other, 2));
+    let first = e.window_ids()[0];
+    e.mouse(ev(K::ScrollDown, 3, 2), t0);
+    assert_eq!(e.with_window(first, |e| e.win.top), 3);
+    assert_eq!(e.win.top, 0);
+    // Dragging the bar between side by side windows, and a status row, resizes them.
+    feed(&mut e, ":set ls=2\n");
+    e.frame(31, 8);
+    e.mouse(ev(K::Down(B::Left), 15, 2), t0);
+    e.mouse(ev(K::Drag(B::Left), 10, 2), t0);
+    e.mouse(ev(K::Up(B::Left), 10, 2), t0);
+    assert!(e.frame(31, 8).cursor.0 > 10);
+    assert_eq!(e.win_rects().iter().map(|(_, r)| r.w).collect::<Vec<_>>(), [10, 20]);
+    feed(&mut e, ":sp\n");
+    e.frame(31, 8);
+    let top = e.win_rects()[1].1;
+    let status_row = (top.y + top.h - 1) as u16;
+    e.mouse(ev(K::Down(B::Left), 20, status_row), t0);
+    e.mouse(ev(K::Drag(B::Left), 20, status_row + 1), t0);
+    e.mouse(ev(K::Up(B::Left), 20, status_row + 1), t0);
+    e.frame(31, 8);
+    assert_eq!(e.win_rects()[1].1.h, top.h + 1);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn mouse_in_hit_enter_and_the_completion_menu() {
+    use crossterm::event::{MouseButton as B, MouseEvent, MouseEventKind as K};
+    use std::time::Instant;
+    let ev = |kind, x: u16, y: u16| MouseEvent { kind, column: x, row: y, modifiers: KeyModifiers::NONE };
+    let mut e = ed("a");
+    // A click answers the hit-enter prompt, when `mouse` has `r`.
+    e.info("one\ntwo");
+    e.frame(30, 8);
+    e.mouse(ev(K::Down(B::Left), 3, 3), Instant::now());
+    assert_eq!(e.msg(), "two\none".split('\n').rev().collect::<Vec<_>>().join("\n"), "not without `r`");
+    feed(&mut e, ":set mouse=nvir\n");
+    e.info("one\ntwo");
+    e.frame(30, 8);
+    e.mouse(ev(K::Down(B::Left), 3, 3), Instant::now());
+    assert_eq!(e.msg(), "");
+    // The command line: a click moves the cursor in it.
+    feed(&mut e, ":set mouse=a\n:abcdef");
+    e.frame(30, 8);
+    e.mouse(ev(K::Down(B::Left), 3, 7), Instant::now());
+    assert_eq!(line(&e), ("abcdef".into(), 2));
+    // The menu: a click on an item completes with it, the wheel moves the selection.
+    press(&mut e, KeyCode::End);
+    feed(&mut e, "\x15s");
+    press(&mut e, KeyCode::Tab);
+    let f = e.frame(30, 12);
+    let row = f.rows.iter().position(|r| r.iter().any(|s| s.text.contains("split"))).unwrap();
+    e.mouse(ev(K::ScrollDown, 4, row as u16), Instant::now());
+    assert_eq!(line(&e).0, "set");
+    e.mouse(ev(K::ScrollUp, 4, row as u16), Instant::now());
+    assert_eq!(line(&e).0, "saveas");
+    e.frame(30, 12);
+    e.mouse(ev(K::Down(B::Left), 4, row as u16), Instant::now());
+    assert_eq!((line(&e).0.as_str(), e.wild.is_none()), ("split", true));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn winheight_applies_to_every_way_of_entering_a_window() {
+    let heights = |e: &mut Editor| {
+        e.frame(40, 21);
+        e.win_rects().iter().map(|(_, r)| r.h).collect::<Vec<_>>()
+    };
+    let mut e = ed(&lines(30));
+    heights(&mut e);
+    feed(&mut e, ":sp\n:sp\n:set wh=12\n");
+    assert_eq!(heights(&mut e), [6, 6, 8]);
+    // `:q` leaves the window: the one entered gets its rows.
+    feed(&mut e, ":q\n");
+    assert!(heights(&mut e)[0] >= 13 || heights(&mut e).len() == 2);
+    let h = heights(&mut e);
+    assert_eq!(h.iter().sum::<usize>(), 20);
+    assert!(h[0] >= 13, "{h:?}");
+    // The command line window, left with Enter, too.
+    let mut e = ed(&lines(30));
+    heights(&mut e);
+    feed(&mut e, ":sp\n:set wh=12\n");
+    feed(&mut e, "q:\x1b");
+    feed(&mut e, ":q\n");
+    assert!(heights(&mut e)[0] >= 13);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn fuzzy_completion_orders_by_score_and_drags_clamp_at_the_minimum() {
+    use crossterm::event::{MouseButton as B, MouseEvent, MouseEventKind as K};
+    // The better match comes first: a start of word beats letters spread out.
+    let mut e = ed("a");
+    feed(&mut e, ":set wop=fuzzy\n");
+    let items = |e: &Editor, l: &str| e.candidates(l).map(|c| c.items).unwrap_or_default();
+    let got = items(&e, "undl");
+    assert_eq!(got.first().map(String::as_str), Some("undolist"), "{got:?}");
+    let got = items(&e, "set tw");
+    assert!(!got.is_empty() && got.iter().all(|o| o.chars().any(|c| c == 'w')), "{got:?}");
+    let got = items(&e, "set smc");
+    assert_eq!(got.first().map(String::as_str), Some("smartcase"), "{got:?}");
+    assert!(items(&e, "qqqq").is_empty());
+    // A drag of a status row to the far end or past the top stops at the least size.
+    let ev = |kind, x: u16, y: u16| MouseEvent { kind, column: x, row: y, modifiers: KeyModifiers::NONE };
+    let t = std::time::Instant::now();
+    let mut e = ed(&lines(30));
+    e.frame(31, 21);
+    feed(&mut e, ":set ls=2\n:sp\n");
+    e.frame(31, 21);
+    let first = e.win_rects()[0].1;
+    let status = (first.y + first.h - 1) as u16;
+    e.mouse(ev(K::Down(B::Left), 3, status), t);
+    e.mouse(ev(K::Drag(B::Left), 3, 200), t);
+    e.mouse(ev(K::Up(B::Left), 3, 200), t);
+    e.frame(31, 21);
+    let r = e.win_rects();
+    assert_eq!((r[0].1.h, r[1].1.h), (18, 2), "the other window keeps two rows");
+    e.mouse(ev(K::Down(B::Left), 3, 17), t);
+    e.mouse(ev(K::Drag(B::Left), 3, 0), t);
+    e.mouse(ev(K::Up(B::Left), 3, 0), t);
+    e.frame(31, 21);
+    assert_eq!(e.win_rects()[0].1.h, 2, "and so does the one dragged up");
+    // A drag that starts on a text cell and a click with nothing under it do not resize.
+    let before = e.win_rects();
+    e.mouse(ev(K::Drag(B::Left), 3, 10), t);
+    e.mouse(ev(K::Down(B::Left), 3, 60), t);
+    assert_eq!(e.win_rects(), before);
 }

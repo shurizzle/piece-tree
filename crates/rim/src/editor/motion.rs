@@ -181,7 +181,7 @@ impl Editor {
     }
 
     /// `*`/`#`: the word under the cursor (or the next one in the line) and its start column.
-    fn word_under_cursor(&self) -> Option<(String, usize)> {
+    pub(super) fn word_under_cursor(&self) -> Option<(String, usize)> {
         let line = self.buf.doc.text().line(self.win.line);
         let b = self.line_byte(self.win.line, self.win.col);
         let (skipped, _) = line[b..].char_indices().find(|&(_, c)| class(c) == 1)?;

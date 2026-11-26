@@ -5,13 +5,19 @@
 
 mod buffers;
 mod builtin;
+mod cmdline;
+mod cmdwin;
+mod digraphs;
+mod expr;
 mod ex;
 mod filetype;
 mod graphemes;
 mod highlight;
 mod layout;
+mod literal;
 mod messages;
 mod motion;
+mod mouse;
 mod objects;
 mod options;
 mod parse;
@@ -20,6 +26,7 @@ mod render;
 mod search;
 mod substitute;
 mod syntax;
+mod wild;
 mod windows;
 
 use std::{
@@ -91,6 +98,8 @@ pub enum Mode {
     Visual(VKind),
     Command(String),
     Search(String),
+    /// Typing an expression for the expression register (`Ctrl+R =`, `"=`).
+    Expr(String),
     /// Answering the prompt of `:s///c`.
     Confirm,
 }
@@ -273,14 +282,35 @@ pub struct Editor {
     insert_pending: Option<char>,
     /// `Ctrl+O` in Insert mode: one Normal command runs, then Insert resumes; the cursor before it.
     insert_one: Option<Pos>,
-    /// Command-line history of `:` (0) and `/`/`?` (1), oldest first; the entry being shown by
+    /// Command-line history of `:` (0), `/`/`?` (1) and `=` (2), oldest first; the entry being shown by
     /// Up/Down and the text typed before the first of them.
-    history: [Vec<String>; 2],
+    history: [Vec<String>; 3],
     hist_at: Option<(usize, String)>,
-    /// `Tab` completion: candidates, the one shown, and the line before the completed word.
-    completion: Option<(Vec<String>, usize, String)>,
-    /// The command line waits for the register of `Ctrl+R`.
-    line_reg: bool,
+    /// The completion going on on the command line.
+    wild: Option<wild::Wild>,
+    /// The command line waits for the register of `Ctrl+R` (`'r'`) or the key of `Ctrl+V` (`'v'`).
+    line_pending: Option<char>,
+    /// Cursor of the command line (byte offset in its text), and overstrike (`Insert`).
+    line_pos: usize,
+    line_over: bool,
+    /// The code after a `Ctrl+V`, and the first character of a `Ctrl+K` digraph, being typed.
+    lit: Option<literal::Lit>,
+    dig_first: Option<char>,
+    /// Digraphs defined by `:digraphs`.
+    user_digraphs: Vec<(char, char, char)>,
+    /// A frame has been laid out, so `screen` is the real one.
+    screen_drawn: bool,
+    /// What the pressed mouse button is doing, and the last click (when, where, how many in a row).
+    drag: Option<mouse::Drag>,
+    click: Option<(std::time::Instant, usize, usize, usize)>,
+    /// The cells of the completion menu on screen: row, first and last column, candidate.
+    menu_hit: Vec<(usize, usize, usize, usize)>,
+    /// Counts the times a buffer was left (`Buffer::used`).
+    clock: u64,
+    /// Where the expression being typed goes when it is done.
+    expr_from: Option<cmdline::ExprFrom>,
+    /// The command-line window, while it is open.
+    cmdwin: Option<cmdwin::CmdWin>,
     /// Reads the system clipboard (an OSC 52 query, set by `main`); none in tests and on
     /// terminals the editor does not query.
     clipboard_reader: Option<Box<dyn FnMut() -> Option<String>>>,
@@ -293,6 +323,11 @@ pub struct Editor {
 
 impl Editor {
     pub fn new(doc: Document, path: PathBuf) -> Self {
+        Self::with_path(doc, Some(path))
+    }
+
+    /// An editor on `doc`, without a file (`[No Name]`) when `path` is none.
+    pub fn with_path(doc: Document, path: Option<PathBuf>) -> Self {
         let mut e = Self {
             buf: Buffer::new(1, doc, path, Options::default()),
             win: Window::new(1, 1),
@@ -344,8 +379,20 @@ impl Editor {
             insert_one: None,
             history: Default::default(),
             hist_at: None,
-            completion: None,
-            line_reg: false,
+            wild: None,
+            line_pending: None,
+            line_pos: 0,
+            line_over: false,
+            lit: None,
+            dig_first: None,
+            user_digraphs: Vec::new(),
+            cmdwin: None,
+            expr_from: None,
+            clock: 0,
+            drag: None,
+            click: None,
+            menu_hit: Vec::new(),
+            screen_drawn: false,
             clipboard_reader: None,
             runtime: None,
             syntax_on: true,
@@ -357,6 +404,37 @@ impl Editor {
 
     pub fn open(path: PathBuf) -> io::Result<Self> {
         Ok(Self::new(read_doc(&path)?, path))
+    }
+
+    /// An editor on the first of the files of the command line, taken from `args`. No argument
+    /// gives an empty buffer without a file; `-` is the text `stdin` reads, in a buffer without a
+    /// file that counts as modified, like vim.
+    pub fn start(args: &mut impl Iterator<Item = PathBuf>, stdin: &mut impl FnMut() -> io::Result<String>) -> io::Result<Self> {
+        Ok(match args.next() {
+            None => Self::with_path(Document::new(""), None),
+            Some(p) if p.as_os_str() == "-" => Self::from_text(&stdin()?),
+            Some(p) => Self::open(p)?,
+        })
+    }
+
+    /// The other files of the command line, loaded as hidden buffers (after the init file, so they
+    /// copy its options).
+    pub fn open_rest(&mut self, args: impl Iterator<Item = PathBuf>, stdin: &mut impl FnMut() -> io::Result<String>) -> io::Result<()> {
+        for p in args {
+            if p.as_os_str() == "-" {
+                self.add_text(&stdin()?);
+            } else {
+                self.open_more(p)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// An editor on `text` without a file, modified.
+    pub fn from_text(text: &str) -> Self {
+        let mut e = Self::with_path(Document::from_string(text.to_string()), None);
+        e.buf.saved = Document::new("").text().clone();
+        e
     }
 
     /// How `"+`/`"*` are read: `read` asks the terminal for the clipboard.
@@ -826,17 +904,26 @@ impl Editor {
         }
         // Macros and `.` replay keys as typed, so they dismiss it too; `:g` and `:normal` have no screen.
         // A message taller than the screen row waits for a key (vim's hit-enter prompt); Enter, Space and Esc only dismiss it.
+        if self.line_marks.is_empty() && self.pager_key(key) {
+            return true;
+        }
         if self.msgs.hit_enter && self.line_marks.is_empty() {
             self.msgs.clear();
             if self.msgs.prompt && [KeyCode::Enter, KeyCode::Char(' '), KeyCode::Esc].iter().any(|&c| key == c.into()) {
                 return true;
             }
         }
+        let win_before = self.win.id;
         let before = mem::discriminant(&self.mode);
+        let was_expr = matches!(self.mode, Mode::Expr(_));
         let more = self.key_inner(key);
         // The message row now shows the mode or the command line.
-        if before != mem::discriminant(&self.mode) && matches!(self.mode, Mode::Insert | Mode::Visual(_) | Mode::Command(_) | Mode::Search(_)) {
+        if !was_expr && before != mem::discriminant(&self.mode) && matches!(self.mode, Mode::Insert | Mode::Visual(_) | Mode::Command(_) | Mode::Search(_) | Mode::Expr(_)) {
             self.msgs.clear();
+        }
+        // `winheight` and `winwidth`: whatever entered the window (`Ctrl+W`, `:b`, `:q`, a command line).
+        if self.win.id != win_before {
+            self.enforce_win_size();
         }
         more
     }
@@ -864,11 +951,14 @@ impl Editor {
                 self.rec.push(key);
             }
         }
+        if self.cmdwin_key(key) {
+            return !self.quit;
+        }
         match self.mode {
             Mode::Normal => self.normal_key(key),
             Mode::Insert => self.insert_key(key),
             Mode::Visual(kind) => self.visual_key(key, kind),
-            Mode::Command(_) | Mode::Search(_) => self.line_key(key),
+            Mode::Command(_) | Mode::Search(_) | Mode::Expr(_) => self.line_key(key),
             Mode::Confirm => self.confirm_key(key),
         }
         if one
@@ -910,6 +1000,10 @@ impl Editor {
             return;
         }
         let Some(c) = normal_char(key) else { return };
+        // `"=`: the expression is typed now, the command that uses its value follows.
+        if c == '=' && self.pending.ends_with('"') {
+            return self.start_expr(cmdline::ExprFrom::Normal);
+        }
         self.pending.push(c);
         let parsed = parse(&self.pending);
         if parsed == Parse::Incomplete {
@@ -1016,12 +1110,12 @@ impl Editor {
             }
             'u' => self.undo(n),
             '\x12' => self.redo(n),
-            ':' => self.mode = Mode::Command(String::new()),
+            ':' => self.enter_line(Mode::Command(String::new())),
             '/' | '?' => {
                 self.search_origin = (self.win.line, self.win.col);
                 self.search_back = key == '?';
                 self.inc_search = None;
-                self.mode = Mode::Search(String::new());
+                self.enter_line(Mode::Search(String::new()));
             }
             'v' | 'V' | '\x16' => {
                 self.anchor = (self.win.line, self.win.col);
@@ -1049,8 +1143,9 @@ impl Editor {
             '.' => self.repeat(count),
             G_EARLIER => self.history(1, |d| d.earlier(n), "Already at oldest change"),
             '\x07' => self.info(self.file_info()),
-            '\x17' => self.window_cmd(arg(), n),
-            '\x1e' => self.alternate_buffer(),
+            '\x17' => self.window_cmd(arg(), count),
+            '\x1e' if !self.cmdwin_refuses() => self.alternate_buffer(),
+            '\x1e' => {}
             // `&` is `:s`, `g&` is `:%s//~/&` (last substitute on the whole text, same flags).
             '&' => self.substitute(substitute::Sub::again(false)),
             G_SUBST => self.substitute(substitute::Sub::again(true)),
@@ -1073,6 +1168,7 @@ impl Editor {
                 _ => self.error("Invalid mark name"),
             },
             'q' => match arg() {
+                k @ (':' | '/' | '?') => self.open_cmdwin_from_normal(k),
                 r @ ('a'..='z' | 'A'..='Z') => {
                     self.recording = Some(r);
                     self.macro_keys.clear();
@@ -1529,7 +1625,7 @@ impl Editor {
                 self.join((b.0 - a.0).max(1), true);
             }
             // `visual_key` has set marks `<` and `>` for the range.
-            ':' => self.mode = Mode::Command("'<,'>".into()),
+            ':' => self.enter_line(Mode::Command("'<,'>".into())),
             '<' | '>' => self.shift(a.0, b.0, c == '>', n),
             _ if kind == VKind::Block => self.block_op(c),
             'I' => {
@@ -1671,21 +1767,28 @@ impl Editor {
     }
 
     fn insert_key(&mut self, key: KeyEvent) {
-        if key.code != KeyCode::Esc || self.insert_pending == Some('v') {
+        if key.code != KeyCode::Esc || self.insert_pending.is_some() {
             self.insert_keys.push(key);
         }
         if !matches!(key.code, KeyCode::Esc | KeyCode::Enter) {
             self.auto_indent = None;
         }
         if let Some(p) = self.insert_pending.take() {
-            return self.insert_pending_key(p, key);
+            if p == 'l' {
+                // The key that ends a code typed after `Ctrl+V` goes on as an ordinary key.
+                if self.insert_lit_key(key) {
+                    return;
+                }
+            } else {
+                return self.insert_pending_key(p, key);
+            }
         }
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         match key.code {
             KeyCode::Esc => self.leave_insert(),
             KeyCode::Char('w') if ctrl => self.delete_before(true),
             KeyCode::Char('u') if ctrl => self.delete_before(false),
-            KeyCode::Char(c @ ('r' | 'v')) if ctrl => self.insert_pending = Some(c),
+            KeyCode::Char(c @ ('r' | 'v' | 'k')) if ctrl => self.insert_pending = Some(c),
             KeyCode::Char('o') if ctrl => {
                 // One Normal command; a count no longer repeats the insert (vim).
                 self.insert_repeat = (1, false);
@@ -1747,18 +1850,62 @@ impl Editor {
     fn insert_pending_key(&mut self, p: char, key: KeyEvent) {
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         let s = match (p, key.code) {
+            ('r', KeyCode::Char('=')) if !ctrl => {
+                self.start_expr(cmdline::ExprFrom::Insert { keys: 0 });
+                return;
+            }
             ('r', KeyCode::Char(c)) if !ctrl => match self.reg(c) {
                 Some(r) => r.text,
                 None => return,
             },
             ('v', KeyCode::Char(c @ 'a'..='z')) if ctrl => char::from(c as u8 - b'a' + 1).to_string(),
+            ('v', KeyCode::Char(c)) if !ctrl && literal::Lit::begin(c).is_some() => {
+                (self.lit, self.insert_pending) = (literal::Lit::begin(c), Some('l'));
+                return;
+            }
             ('v', KeyCode::Char(c)) => c.to_string(),
+            ('k', KeyCode::Char(c)) if !ctrl => {
+                (self.dig_first, self.insert_pending) = (Some(c), Some('K'));
+                return;
+            }
+            ('K', KeyCode::Char(c)) if !ctrl => match self.dig_first.take() {
+                Some(a) => digraphs::typed(&self.user_digraphs, a, c).to_string(),
+                None => return,
+            },
             ('v', KeyCode::Tab) => "\t".into(),
             ('v', KeyCode::Esc) => "\x1b".into(),
             ('v', KeyCode::Enter) => "\n".into(),
             _ => return,
         };
-        self.insert(&s);
+        self.insert_typed(&s);
+    }
+
+    /// Types what `Ctrl+V` or `Ctrl+K` made: over the character under the cursor in Replace mode.
+    fn insert_typed(&mut self, s: &str) {
+        let mut chars = s.chars();
+        match (self.replacing.is_some(), chars.next(), chars.next()) {
+            (true, Some(c), None) => self.replace_char(c),
+            _ => self.insert(s),
+        }
+    }
+
+    /// A key while the digits of a `Ctrl+V` code are typed; false when it ends the code without
+    /// being a part of it (the caller handles it as an ordinary key).
+    fn insert_lit_key(&mut self, key: KeyEvent) -> bool {
+        let Some(mut lit) = self.lit.take() else { return false };
+        let plain = match key.code {
+            KeyCode::Char(c) if !key.modifiers.intersects(KeyModifiers::CONTROL | KeyModifiers::ALT) => Some(c),
+            _ => None,
+        };
+        let step = plain.map_or(literal::Push::End, |c| lit.push(c));
+        if step == literal::Push::More {
+            (self.lit, self.insert_pending) = (Some(lit), Some('l'));
+            return true;
+        }
+        if let Some(c) = lit.finish() {
+            self.insert_typed(c.encode_utf8(&mut [0; 4]));
+        }
+        step == literal::Push::Full
     }
 
     /// Insert `Ctrl+W` (`word`) and `Ctrl+U`: deletes the word before the cursor (blanks, then a
@@ -1849,183 +1996,6 @@ impl Editor {
         self.clamp_normal();
     }
 
-    /// The text of the command or search line being typed.
-    fn line_buf(&mut self) -> &mut String {
-        let (Mode::Command(buf) | Mode::Search(buf)) = &mut self.mode else {
-            unreachable!("line_buf outside command or search mode")
-        };
-        buf
-    }
-
-    /// Adds a command line or search to its history (no repeat of the last one).
-    fn push_history(&mut self, searching: bool, line: &str) {
-        let h = &mut self.history[usize::from(searching)];
-        if !line.is_empty() && h.last().is_none_or(|l| l != line) {
-            h.push(line.to_string());
-            if h.len() > LIST_MAX {
-                h.remove(0);
-            }
-        }
-    }
-
-    /// History (Up/Down: entries starting with what was typed), completion (Tab, Shift+Tab) and
-    /// `Ctrl+R x` on the command line; false for any other key.
-    fn line_edit(&mut self, key: KeyEvent, searching: bool) -> bool {
-        if !matches!(key.code, KeyCode::Up | KeyCode::Down) {
-            self.hist_at = None;
-        }
-        if !matches!(key.code, KeyCode::Tab | KeyCode::BackTab) {
-            self.completion = None;
-        }
-        if mem::take(&mut self.line_reg) {
-            if let KeyCode::Char(c) = key.code
-                && let Some(r) = self.reg(c)
-            {
-                let t = r.text.strip_suffix('\n').unwrap_or(&r.text).to_string();
-                self.line_buf().push_str(&t);
-            }
-            return true;
-        }
-        match key.code {
-            KeyCode::Char('r') if key.modifiers.contains(KeyModifiers::CONTROL) => self.line_reg = true,
-            KeyCode::Up | KeyCode::Down => {
-                let up = key.code == KeyCode::Up;
-                let typed = self.line_buf().clone();
-                let h = &self.history[usize::from(searching)];
-                let (at, prefix) = self.hist_at.take().unwrap_or((h.len(), typed));
-                let found = if up {
-                    h[..at].iter().rposition(|l| l.starts_with(&prefix))
-                } else {
-                    h.iter().skip(at + 1).position(|l| l.starts_with(&prefix)).map(|i| i + at + 1)
-                };
-                let (at, line) = match found {
-                    Some(i) => (i, h[i].clone()),
-                    // Past the newest entry: what was typed.
-                    None if !up => (h.len(), prefix.clone()),
-                    None => (at, if at < h.len() { h[at].clone() } else { prefix.clone() }),
-                };
-                *self.line_buf() = line;
-                self.hist_at = Some((at, prefix));
-            }
-            KeyCode::Tab | KeyCode::BackTab if !searching => {
-                let (list, i, base) = match self.completion.take() {
-                    Some((list, i, base)) => {
-                        let n = list.len();
-                        let i = if key.code == KeyCode::Tab { (i + 1) % n } else { (i + n - 1) % n };
-                        (list, i, base)
-                    }
-                    None => {
-                        let line = self.line_buf().clone();
-                        match ex::complete(&line) {
-                            Some((at, list)) if !list.is_empty() => {
-                                let i = if key.code == KeyCode::Tab { 0 } else { list.len() - 1 };
-                                (list, i, line[..at].to_string())
-                            }
-                            _ => return true,
-                        }
-                    }
-                };
-                *self.line_buf() = format!("{base}{}", list[i]);
-                self.completion = Some((list, i, base));
-            }
-            _ => return false,
-        }
-        true
-    }
-
-    /// Command line (`:`) and search (`/`) input.
-    fn line_key(&mut self, key: KeyEvent) {
-        let searching = matches!(self.mode, Mode::Search(_));
-        if self.line_edit(key, searching) {
-            return self.line_changed(searching);
-        }
-        let (Mode::Command(buf) | Mode::Search(buf)) = &mut self.mode else {
-            unreachable!("line_key outside command or search mode")
-        };
-        match key.code {
-            KeyCode::Char(c) => buf.push(c),
-            KeyCode::Backspace => {
-                if buf.pop().is_none() {
-                    self.mode = Mode::Normal;
-                }
-            }
-            KeyCode::Esc => self.mode = Mode::Normal,
-            KeyCode::Enter => match mem::replace(&mut self.mode, Mode::Normal) {
-                Mode::Command(cmd) => {
-                    self.push_history(false, &cmd);
-                    if !self.command(&cmd) {
-                        self.quit = true;
-                    }
-                    // `.` does not repeat `:` commands (vim); a confirm session ends the group itself.
-                    if self.mode != Mode::Confirm {
-                        self.rec_cmd = None;
-                        self.end_command();
-                    }
-                }
-                Mode::Search(typed) => {
-                    self.push_history(true, &typed);
-                    (self.win.line, self.win.col) = self.search_origin;
-                    self.inc_search = None;
-                    let (pat, off) = search::split_typed(&typed, if self.search_back { '?' } else { '/' });
-                    let offset = match search::Offset::parse(off) {
-                        Ok(o) => o,
-                        Err(e) => {
-                            self.error(e);
-                            return self.clamp_normal();
-                        }
-                    };
-                    if !pat.is_empty() {
-                        match self.new_search(pat) {
-                            Ok(s) => self.last_search = Some(s),
-                            Err(e) => {
-                                self.error(e);
-                                return self.clamp_normal();
-                            }
-                        }
-                    }
-                    // A new `/` or `?` sets the direction and offset of the last search, also
-                    // when it reuses the pattern (`//e`).
-                    if let Some(s) = &mut self.last_search {
-                        (s.back, s.offset) = (self.search_back, offset);
-                    }
-                    self.search_landing = None;
-                    if let Some((to, _)) = self.search_motion(!self.search_back, 1, None) {
-                        self.move_to('n', to);
-                    } else if self.last_search.is_none() {
-                        self.error("No previous search pattern");
-                    }
-                    return self.clamp_normal();
-                }
-                _ => unreachable!(),
-            },
-            _ => {}
-        }
-        self.line_changed(searching);
-    }
-
-    /// After a key on the search line: the incsearch preview, or the cursor back where `/` started
-    /// once the search was left with Esc.
-    fn line_changed(&mut self, searching: bool) {
-        if !searching {
-            return;
-        }
-        // incsearch: the cursor previews the first match from where `/` started; Esc goes back.
-        // A pattern that does not compile yet (`(`) shows nothing.
-        (self.win.line, self.win.col) = self.search_origin;
-        let delim = if self.search_back { '?' } else { '/' };
-        self.inc_search = match &self.mode {
-            Mode::Search(typed) if self.buf.opts.incsearch => {
-                Some(search::split_typed(typed, delim).0).filter(|p| !p.is_empty()).and_then(|p| self.new_search(p).ok())
-            }
-            _ => None,
-        };
-        if let Some(s) = self.inc_search.clone()
-            && let Some((m, _)) = self.find_match(&s.re, !self.search_back, self.offset())
-        {
-            (self.win.line, self.win.col) = self.pos_of(m.start);
-        }
-    }
-
     /// A search for typed `pat`, with `ignorecase`/`smartcase` applied (`pat` is kept as typed).
     fn new_search(&self, pat: &str) -> Result<Search, String> {
         let mut s = Search::new(&self.buf.opts.case_pattern(pat))?;
@@ -2067,7 +2037,7 @@ impl Editor {
         let lines = self.line_count();
         format!(
             "\"{}\"{} {lines} line{} --{}%--",
-            self.buf.path.display(),
+            self.buf.name(),
             if self.is_dirty() { " [Modified]" } else { "" },
             if lines == 1 { "" } else { "s" },
             (self.win.line + 1) * 100 / lines,
@@ -2329,7 +2299,8 @@ impl Editor {
 
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.
     fn reload(&mut self) {
-        match read_doc(&self.buf.path) {
+        let Some(path) = self.buf.path.clone() else { return self.error("No file name") };
+        match read_doc(&path) {
             Ok(doc) => {
                 (self.buf.saved, self.buf.saved_eol) = (doc.text().clone(), doc.eol());
                 self.buf.doc = doc;

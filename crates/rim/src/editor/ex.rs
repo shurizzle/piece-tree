@@ -11,7 +11,7 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use piece_tree::{Document, Edit, LineEnding, Text};
 
-use super::{Editor, Kind, Mode, graphemes, parse::{self, valid_reg}, search::{self, Search}, substitute};
+use super::{Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -186,50 +186,34 @@ pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
     name.len() >= short.len() && long.starts_with(name)
 }
 
+/// Commands that leave the command-line window (E11 there).
+const CMDWIN_REFUSES: &[(&str, &str)] = &[
+    ("e", "edit"),
+    ("ene", "enew"),
+    ("new", "new"),
+    ("vne", "vnew"),
+    ("sp", "split"),
+    ("vs", "vsplit"),
+    ("b", "buffer"),
+    ("bn", "bnext"),
+    ("bp", "bprevious"),
+    ("bN", "bNext"),
+    ("bd", "bdelete"),
+    ("on", "only"),
+    ("sav", "saveas"),
+];
+
 /// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
 pub(super) const NAMES: &[&str] = &[
     "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
-    "files", "global", "goto", "highlight", "join", "later", "ls", "messages", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
+    "digraphs", "enew", "files", "global", "goto", "highlight", "join", "later", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit",
     "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "syntax", "undo", "undolist",
-    "vglobal", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
+    "vglobal", "vnew", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
 
 /// Commands whose argument is a file name, as (shortest abbreviation, name).
-const FILE_COMMANDS: &[(&str, &str)] =
+pub(super) const FILE_COMMANDS: &[(&str, &str)] =
     &[("e", "edit"), ("sp", "split"), ("vs", "vsplit"), ("r", "read"), ("w", "write"), ("sav", "saveas"), ("wq", "wq"), ("x", "xit")];
-
-/// `Tab` on command line `line`: the byte where the completed word starts and the candidates, sorted
-/// (command names for the first word after the range, file names for the argument of a file
-/// command, directories ending in `/`). None when there is nothing to complete.
-pub(super) fn complete(line: &str) -> Option<(usize, Vec<String>)> {
-    let start = line.find(|c: char| c.is_ascii_alphabetic())?;
-    let rest = &line[start..];
-    let Some((name, _)) = rest.split_once(char::is_whitespace) else {
-        let mut names: Vec<String> = NAMES.iter().filter(|n| n.starts_with(rest)).map(|n| n.to_string()).collect();
-        names.sort();
-        return Some((start, names));
-    };
-    let name = name.trim_end_matches('!');
-    FILE_COMMANDS.iter().find(|(short, long)| abbr(name, short, long))?;
-    let word = line.rfind(char::is_whitespace).map_or(0, |i| i + 1);
-    let token = &line[word..];
-    let (dir, prefix) = match token.rfind('/') {
-        Some(i) => (&token[..=i], &token[i + 1..]),
-        None => ("", token),
-    };
-    let entries = fs::read_dir(if dir.is_empty() { "." } else { dir }).ok()?;
-    let mut files: Vec<String> = entries
-        .filter_map(Result::ok)
-        .filter_map(|e| {
-            let n = e.file_name().into_string().ok()?;
-            // Hidden files only when asked for.
-            (n.starts_with(prefix) && (prefix.starts_with('.') || !n.starts_with('.')))
-                .then(|| format!("{dir}{n}{}", if e.path().is_dir() { "/" } else { "" }))
-        })
-        .collect();
-    files.sort();
-    Some((word, files))
-}
 
 /// `[x] [count]` after `:d` and `:y`.
 fn reg_count(arg: &str) -> Result<(Option<char>, Option<usize>), String> {
@@ -421,6 +405,10 @@ impl Editor {
         // Most arguments ignore trailing blanks; `:normal` keeps them.
         let a = arg.trim_end();
         let (n, r) = (c.name, c.range.as_ref());
+        if self.cmdwin.is_some() && CMDWIN_REFUSES.iter().any(|(short, long)| abbr(n, short, long)) {
+            self.error(super::cmdwin::E11);
+            return true;
+        }
         let res = match n {
             "" if a.is_empty() && r.is_some() => self.goto_line(r),
             "" if a.is_empty() => Ok(()),
@@ -437,6 +425,18 @@ impl Editor {
             _ if abbr(n, "clo", "close") => self.close_window(),
             _ if abbr(n, "on", "only") => {
                 self.only_window();
+                Ok(())
+            }
+            _ if abbr(n, "dig", "digraphs") => self.digraphs_cmd(a),
+            _ if abbr(n, "res", "resize") => self.resize_cmd(false, a),
+            _ if abbr(n, "vert", "vertical") => self.vertical_cmd(a),
+            _ if abbr(n, "ene", "enew") => {
+                self.enew();
+                Ok(())
+            }
+            _ if abbr(n, "new", "new") || abbr(n, "vne", "vnew") => {
+                self.split_window(n.starts_with('v'));
+                self.enew();
                 Ok(())
             }
             _ if abbr(n, "sp", "split") || abbr(n, "vs", "vsplit") => {
@@ -626,6 +626,66 @@ impl Editor {
         Ok(())
     }
 
+    /// `:dig[raphs]` lists the digraphs, `:dig {a}{b} {code} ...` defines them (decimal or `0x` hex).
+    fn digraphs_cmd(&mut self, arg: &str) -> Result<(), String> {
+        if arg.is_empty() {
+            let all = super::digraphs::all(&self.user_digraphs);
+            // As many columns as the screen of the last frame holds.
+            let cols = (self.screen.w / 14).max(1);
+            let rows: Vec<String> = all.chunks(cols).map(|row| row.iter().map(|&(a, b, c)| format!("{:<14}", format!("{a}{b} {c}  {}", c as u32))).collect::<String>().trim_end().to_string()).collect();
+            self.info(rows.join("\n"));
+            return Ok(());
+        }
+        let mut words = arg.split_whitespace();
+        while let Some(pair) = words.next() {
+            let mut chars = pair.chars();
+            let (Some(a), Some(b), None) = (chars.next(), chars.next(), chars.next()) else {
+                return Err(format!("E1214: Digraph must be just two characters: {pair}"));
+            };
+            let code = words.next().ok_or("E104: Escape not allowed in digraph")?;
+            let n = match code.strip_prefix("0x") {
+                Some(hex) => u32::from_str_radix(hex, 16).ok(),
+                None => code.parse().ok(),
+            };
+            let c = n.and_then(char::from_u32).ok_or_else(|| format!("E39: Number expected: {code}"))?;
+            self.user_digraphs.retain(|&(x, y, _)| (x, y) != (a, b));
+            self.user_digraphs.push((a, b, c));
+        }
+        Ok(())
+    }
+
+    /// `:res[ize] [+-]N`: rows of the current window; none: as many as possible.
+    fn resize_cmd(&mut self, width: bool, arg: &str) -> Result<(), String> {
+        let num = |s: &str| s.trim().parse::<usize>().map_err(|_| format!("Invalid argument: {arg}"));
+        let how = match arg {
+            "" => Resize::Max,
+            _ if let Some(n) = arg.strip_prefix('+') => Resize::By(num(n)? as isize),
+            _ if let Some(n) = arg.strip_prefix('-') => Resize::By(-(num(n)? as isize)),
+            _ => Resize::To(num(arg)?),
+        };
+        self.resize_window(width, how);
+        Ok(())
+    }
+
+    /// `:vert[ical] {resize | split | new}`.
+    fn vertical_cmd(&mut self, arg: &str) -> Result<(), String> {
+        let (sub, rest) = arg.split_once(char::is_whitespace).map_or((arg, ""), |(s, r)| (s, r.trim()));
+        match sub {
+            _ if abbr(sub, "res", "resize") => self.resize_cmd(true, rest),
+            _ if self.cmdwin_refuses() => Ok(()),
+            _ if abbr(sub, "sp", "split") => {
+                self.split_window(true);
+                if rest.is_empty() { Ok(()) } else { self.edit_file(rest) }
+            }
+            _ if abbr(sub, "new", "new") => {
+                self.split_window(true);
+                self.enew();
+                Ok(())
+            }
+            _ => Err(format!("Not an editor command: vertical {arg}")),
+        }
+    }
+
     /// `:set`, with `ff`/`fileformat` (the document's line ending) handled here.
     fn set_cmd(&mut self, arg: &str) -> Result<(), String> {
         let (mut shown, mut rest) = (Vec::new(), Vec::new());
@@ -638,6 +698,7 @@ impl Editor {
                     _ => return Err(format!("Invalid argument: {tok}")),
                 }),
                 None if matches!(tok.trim_end_matches('?'), "ff" | "fileformat") => shown.push(format!("fileformat={}", ff_name(self.buf.doc.eol()))),
+                _ if let Some(s) = self.window_option(tok) => shown.push(s),
                 _ => rest.push(tok),
             }
         }
@@ -648,6 +709,7 @@ impl Editor {
                 self.buf.opts.copy_global(&mut b.opts);
             }
             shown.push(set?);
+            self.sync_cmdwin_height();
         }
         shown.retain(|s| !s.is_empty());
         self.info(shown.join("\n"));
@@ -934,7 +996,7 @@ impl Editor {
     /// a name. Line endings are converted like on load.
     // shortcut: the file is copied into the text (no structural sharing), when `Text::append_text` exists
     fn read(&mut self, r: Option<&LineRange>, file: &str) -> Result<(), String> {
-        let path = if file.is_empty() { self.buf.path.clone() } else { PathBuf::from(file) };
+        let path = if file.is_empty() { self.buf.path.clone().ok_or("No file name")? } else { PathBuf::from(file) };
         let (_, after) = self.lines(r, (self.win.line + 1, self.win.line + 1))?;
         let content = fs::read_to_string(&path).map_err(|e| format!("Can't open file {}: {e}", path.display()))?;
         let doc = Document::from_string(content);
@@ -955,6 +1017,11 @@ impl Editor {
     /// `:q` (`all`: `:qa`): closes the window, or quits on the last one (every one with `all`)
     /// unless a buffer is modified and not `bang`. Returns false to quit.
     fn quit(&mut self, bang: bool, all: bool) -> bool {
+        // In the command-line window `:q` only closes it.
+        if self.cmdwin.is_some() {
+            self.close_cmdwin();
+            return true;
+        }
         if !all && self.window_ids().len() > 1 {
             self.close_window().expect("more than one window");
             return true;
@@ -963,7 +1030,7 @@ impl Editor {
         self.wait_saves();
         match self.dirty_buffer().filter(|_| !bang) {
             Some(b) if b.id == self.buf.id => self.error(DIRTY),
-            Some(b) => self.error(format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.path.display())),
+            Some(b) => self.error(format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.name())),
             None => return false,
         }
         true
@@ -972,12 +1039,28 @@ impl Editor {
     /// `:w`, `:w!`, `:[range]w[!] file`, `:w >> file`. Writing to another file leaves the buffer's
     /// file and modified state alone; an existing other file needs `!`.
     fn write_cmd(&mut self, r: Option<&LineRange>, bang: bool, arg: &str) -> Result<(), String> {
+        if self.buf.opts.nofile && arg.trim().is_empty() {
+            return Err("Cannot write, 'buftype' option is set".into());
+        }
         let (append, file) = match arg.strip_prefix(">>") {
             Some(f) => (true, f.trim()),
             None => (false, arg),
         };
-        let path = if file.is_empty() { self.buf.path.clone() } else { PathBuf::from(file) };
-        let own = path == self.buf.path;
+        if file.is_empty() && self.buf.path.is_none() {
+            return Err("No file name".into());
+        }
+        let path = if file.is_empty() { self.buf.path.clone().expect("checked above") } else { PathBuf::from(file) };
+        // A buffer without a name takes the one it is written to, like vim.
+        if self.buf.path.is_none() && r.is_none() && !append {
+            if !bang && path.exists() {
+                return Err("File exists (add ! to override)".into());
+            }
+            self.buf.path = Some(path);
+            self.buf.opts.filetype = self.buf.path.as_deref().map_or("", super::filetype::detect).into();
+            self.save(false);
+            return Ok(());
+        }
+        let own = self.buf.path.as_ref() == Some(&path);
         if r.is_none() && own && !append {
             self.save(false);
             return Ok(());
@@ -1006,10 +1089,10 @@ impl Editor {
             return Err("Argument required".into());
         }
         let path = PathBuf::from(file);
-        if !bang && path != self.buf.path && path.exists() {
+        if !bang && self.buf.path.as_ref() != Some(&path) && path.exists() {
             return Err("File exists (add ! to override)".into());
         }
-        let old = mem::replace(&mut self.buf.path, path);
+        let old = self.buf.path.replace(path);
         if !self.save(true) {
             self.buf.path = old;
         }
@@ -1117,27 +1200,6 @@ mod tests {
         assert_eq!(retab_line("日\tx", 4, 4, false, true), "日  x");
         assert_eq!(retab_line("e\u{301}\tx", 4, 8, false, true), "e\u{301}   x");
         assert_eq!(retab_line("日本語  x", 4, 4, true, false), "日本語\tx");
-    }
-
-    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
-    #[test]
-    fn completion_of_names_and_files() {
-        assert_eq!(complete("sp"), Some((0, vec!["split".into()])));
-        assert_eq!(complete("%so").map(|c| c.1), Some(vec!["sort".into()]));
-        assert_eq!(complete("b").map(|c| c.1.len()), Some(6));
-        assert_eq!(complete(""), None);
-        assert_eq!(complete("set nu"), None);
-        let dir = std::env::temp_dir().join(format!("rim-complete-{}", std::process::id()));
-        fs::create_dir_all(dir.join("sub")).unwrap();
-        for f in ["ab.txt", "ac.txt", ".hidden"] {
-            fs::write(dir.join(f), "").unwrap();
-        }
-        let d = dir.display();
-        assert_eq!(complete(&format!("e {d}/a")), Some((2, vec![format!("{d}/ab.txt"), format!("{d}/ac.txt")])));
-        assert_eq!(complete(&format!("w! {d}/s")).map(|c| c.1), Some(vec![format!("{d}/sub/")]));
-        assert_eq!(complete(&format!("e {d}/.")).map(|c| c.1), Some(vec![format!("{d}/.hidden")]));
-        assert_eq!(complete(&format!("e {d}/")).map(|c| c.1.len()), Some(3));
-        fs::remove_dir_all(&dir).unwrap();
     }
 
     /// `LineMarks::map` against mapping every line through every edit.

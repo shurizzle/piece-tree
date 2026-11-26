@@ -35,6 +35,11 @@ fn key(name: char) -> char {
 }
 
 impl Registers {
+    /// The value of the last expression (register `=`), apart from the unnamed register.
+    pub fn set_expr(&mut self, text: String) {
+        self.map.insert('=', Reg { text, kind: RegKind::Char });
+    }
+
     pub fn get(&self, name: char) -> Option<&Reg> {
         self.map.get(&key(name))
     }

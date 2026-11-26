@@ -282,6 +282,11 @@ fn defaults(i: usize) -> HashMap<String, Group> {
     ui("WarningMsg", Some([203, 160][i]), None, Attrs::default());
     ui("ModeMsg", None, None, Attrs::BOLD);
     ui("MoreMsg", Some([114, 28][i]), None, Attrs::BOLD);
+    ui("Pmenu", Some([252, 0][i]), Some([238, 250][i]), Attrs::default());
+    ui("PmenuSel", Some(0), Some([117, 153][i]), Attrs::default());
+    ui("PmenuSbar", None, Some([240, 247][i]), Attrs::default());
+    ui("PmenuThumb", None, Some([250, 238][i]), Attrs::default());
+    ui("WildMenu", Some(16), Some([226, 221][i]), Attrs::default());
     m
 }
 
@@ -315,6 +320,24 @@ fn check_name(name: &str) -> Result<(), String> {
 }
 
 impl Highlights {
+    /// Every group name, built-in and user, sorted (for completion).
+    pub fn group_names(&self) -> Vec<String> {
+        let mut names: Vec<String> = self.defaults[0].keys().chain(self.user.keys()).cloned().collect();
+        names.sort();
+        names.dedup();
+        names
+    }
+
+    /// The color names `:highlight` takes.
+    pub fn color_names() -> impl Iterator<Item = &'static str> {
+        NAMES.iter().map(|n| n.0)
+    }
+
+    /// The `cterm`/`gui` attribute names.
+    pub fn attr_names() -> impl Iterator<Item = &'static str> {
+        ATTRS.iter().map(|a| a.0)
+    }
+
     pub fn generation(&self) -> u64 {
         self.generation
     }
@@ -432,6 +455,11 @@ pub struct Ui {
     pub warning_msg: Style,
     pub mode_msg: Style,
     pub more_msg: Style,
+    pub pmenu: Style,
+    pub pmenu_sel: Style,
+    pub pmenu_sbar: Style,
+    pub pmenu_thumb: Style,
+    pub wild_menu: Style,
 }
 
 impl Ui {
@@ -451,6 +479,11 @@ impl Ui {
             warning_msg: s("WarningMsg"),
             mode_msg: s("ModeMsg"),
             more_msg: s("MoreMsg"),
+            pmenu: s("Pmenu"),
+            pmenu_sel: s("PmenuSel"),
+            pmenu_sbar: s("PmenuSbar"),
+            pmenu_thumb: s("PmenuThumb"),
+            wild_menu: s("WildMenu"),
         }
     }
 }

@@ -48,6 +48,12 @@ pub enum Style {
     WarningMsg,
     ModeMsg,
     MoreMsg,
+    /// The completion menu: its items, the selected one, the scroll bar and its thumb (`Pmenu`, `PmenuSel`, `PmenuSbar`, `PmenuThumb`), and the one-row menu's selection (`WildMenu`).
+    Pmenu,
+    PmenuSel,
+    PmenuSbar,
+    PmenuThumb,
+    WildMenu,
 }
 
 #[derive(Debug)]
@@ -140,7 +146,7 @@ impl Editor {
 
     /// Runs `f` on line `n` and its rows. The rows of the cursor line and of huge lines are kept between
     /// calls, so only what an edit changed is laid out again; `f` must not ask for rows again.
-    fn with_rows<R>(&self, n: usize, f: impl FnOnce(&str, &mut Rows) -> R) -> R {
+    pub(super) fn with_rows<R>(&self, n: usize, f: impl FnOnce(&str, &mut Rows) -> R) -> R {
         let (w, ts) = (self.wrap_w(), self.buf.opts.tabstop);
         let text = self.buf.doc.text();
         if w != usize::MAX {
@@ -366,7 +372,7 @@ impl Editor {
     fn window_status(&self) -> String {
         format!(
             " {}{} | Ln {}, Col {} | {}",
-            self.buf.path.display(),
+            self.buf.name(),
             if self.is_dirty() { " [+]" } else { "" },
             self.win.line + 1,
             self.win.col + 1,
@@ -379,15 +385,12 @@ impl Editor {
         let w = w.max(1);
         let area = Rect { x: 0, y: 0, w, h: h.saturating_sub(1).max(1) };
         self.screen = area;
+        self.screen_drawn = true;
         let mut rects = Vec::new();
-        self.split.rects(area, &mut rects);
+        self.split.rects(area, &|id| self.fixed_size(id), self.win_mins(), &mut rects);
         let single = rects.len() == 1;
         // `laststatus`: a status row per window, never, only with several windows, or always.
-        let has_status = match self.buf.opts.laststatus {
-            0 => false,
-            1 => rects.len() > 1,
-            _ => true,
-        };
+        let has_status = self.has_status(rects.len());
         // Each screen row: segments by column, each exactly as wide as its window.
         let mut grid: Vec<Vec<(usize, Vec<Span>)>> = (0..area.h).map(|_| Vec::new()).collect();
         let mut put = |x: usize, y: usize, spans: Vec<Span>| {
@@ -438,41 +441,66 @@ impl Editor {
             })
             .collect();
         let input = match &self.mode {
-            Mode::Command(s) => Some(format!(":{s}")),
-            Mode::Search(s) => Some(format!("{}{s}", if self.search_back { '?' } else { '/' })),
+            Mode::Command(s) => Some((format!(":{s}"), 1 + self.line_pos)),
+            Mode::Search(s) => Some((format!("{}{s}", if self.search_back { '?' } else { '/' }), 1 + self.line_pos)),
+            Mode::Expr(s) => Some((format!("={s}"), 1 + self.line_pos)),
             _ => None,
         };
-        let (cmd_row, cursor, bar) = if let Some(input) = input {
-            let x = str_width(&input).min(w - 1);
-            (vec![Span { style: Style::Plain, text: fit(&input, w) }], (x, area.h), true)
+        let (cmd_rows, cursor, bar) = if let Some((input, upto)) = input {
+            // The line wraps onto the rows above the last one, which the windows give up.
+            let (row, x) = wrap_cursor(&input[..upto], w);
+            let mut lines = wrap(&input, w);
+            lines.resize(lines.len().max(row + 1), String::new());
+            let n = lines.len();
+            let cmd_rows: Vec<Vec<Span>> = lines.into_iter().map(|text| vec![Span { style: Style::Plain, text }]).collect();
+            (cmd_rows, (x, area.h + 1 - n + row), true)
         } else {
-            (self.message_row(w, has_status), cursor, self.mode == Mode::Insert)
+            (vec![self.message_row(w, has_status)], cursor, self.mode == Mode::Insert)
         };
-        rows.push(cmd_row);
+        rows.truncate(rows.len().saturating_sub(cmd_rows.len() - 1));
+        let cmd_start = rows.len();
+        rows.extend(cmd_rows);
+        for (y, x, spans) in self.wild_draw(w, cmd_start) {
+            overlay(&mut rows[y], x, spans);
+        }
         let (mut cursor, mut bar) = (cursor, bar);
         // A message of several rows (or one wider than the screen) covers the bottom of the screen
         // and waits for a key, like vim's hit-enter prompt.
         let lines = if self.msgs.text().is_empty() { Vec::new() } else { wrap(self.msgs.text(), w) };
-        if lines.len() > 1 && !self.msgs.hint && !matches!(self.mode, Mode::Command(_) | Mode::Search(_) | Mode::Confirm) {
+        if lines.len() > 1 && !self.msgs.hint && !matches!(self.mode, Mode::Command(_) | Mode::Search(_) | Mode::Expr(_) | Mode::Confirm) {
             (self.msgs.hit_enter, self.msgs.prompt) = (true, self.buf.opts.msg_hit_enter);
             let style = match self.msgs.level() {
                 Level::Info => Style::Plain,
                 Level::Warning => Style::WarningMsg,
                 Level::Error => Style::ErrorMsg,
             };
-            // shortcut: output taller than the screen shows its last rows, no paging; when someone needs `:more`
-            rows.pop();
-            let prompt = usize::from(self.msgs.prompt);
-            let keep = (rows.len() + 1 - prompt).min(lines.len());
-            rows.truncate((rows.len() + 1).saturating_sub(keep + prompt));
-            rows.extend(lines[lines.len() - keep..].iter().map(|l| vec![Span { style, text: l.clone() }]));
-            if !self.msgs.prompt {
-                let wait = self.buf.opts.msg_wait.unwrap_or(0);
-                self.msgs.deadline.get_or_insert_with(|| Instant::now() + Duration::from_millis(wait as u64));
-            } else {
-                let prompt = "Press ENTER or type command to continue";
+            let total = rows.len();
+            if self.buf.opts.more && lines.len() + 1 > total {
+                // Taller than the screen: a pager shows a page at a time (keys in `Editor::pager_key`).
+                let page = total - 1;
+                let top = self.msgs.pager.unwrap_or(0).min(lines.len() - page);
+                (self.msgs.pager, self.msgs.page, self.msgs.total, self.msgs.prompt) = (Some(top), page, lines.len(), true);
+                rows.clear();
+                rows.extend(lines[top..top + page].iter().map(|l| vec![Span { style, text: l.clone() }]));
+                let prompt = if top + page >= lines.len() { "Press ENTER or type command to continue" } else { "-- More --" };
                 rows.push(vec![Span { style: Style::MoreMsg, text: fit(prompt, w) }]);
                 (cursor, bar) = ((str_width(prompt).min(w - 1), rows.len() - 1), false);
+            } else {
+                self.msgs.pager = None;
+                // shortcut: with `nomore` output taller than the screen shows its last rows, when someone needs them cut differently
+                rows.pop();
+                let prompt = usize::from(self.msgs.prompt);
+                let keep = (rows.len() + 1 - prompt).min(lines.len());
+                rows.truncate((rows.len() + 1).saturating_sub(keep + prompt));
+                rows.extend(lines[lines.len() - keep..].iter().map(|l| vec![Span { style, text: l.clone() }]));
+                if !self.msgs.prompt {
+                    let wait = self.buf.opts.msg_wait.unwrap_or(0);
+                    self.msgs.deadline.get_or_insert_with(|| Instant::now() + Duration::from_millis(wait as u64));
+                } else {
+                    let prompt = "Press ENTER or type command to continue";
+                    rows.push(vec![Span { style: Style::MoreMsg, text: fit(prompt, w) }]);
+                    (cursor, bar) = ((str_width(prompt).min(w - 1), rows.len() - 1), false);
+                }
             }
         }
         Frame {
@@ -522,6 +550,90 @@ impl Editor {
             spans.push(Span { style, text: fit(&left, w) });
         }
         spans
+    }
+
+    /// The completion menu or the list of matches, as `(row, column, spans)` to lay over the rows
+    /// of the frame; `cmd_start` is the first row of the command line.
+    fn wild_draw(&mut self, w: usize, cmd_start: usize) -> Vec<(usize, usize, Vec<Span>)> {
+        let o = &self.buf.opts;
+        let (pum, pumheight, pumwidth) = (o.wildoptions.split(',').any(|x| x == "pum"), o.pumheight, o.pumwidth);
+        self.menu_hit.clear();
+        let Mode::Command(line) = &self.mode else { return Vec::new() };
+        let Some(wi) = self.wild.as_mut().filter(|wi| (wi.menu || wi.list) && cmd_start > 0) else { return Vec::new() };
+        let x_word = 1 + str_width(&line[..wi.start().min(line.len())]);
+        let pad = |s: &str, n: usize| {
+            let t = fit(s, n);
+            format!("{t}{}", " ".repeat(n.saturating_sub(str_width(&t))))
+        };
+        let n = wi.items.len();
+        if wi.list {
+            let rows = super::wild::list_rows(&wi.items, w, cmd_start);
+            let k = rows.len();
+            return rows.into_iter().enumerate().map(|(i, r)| (cmd_start - k + i, 0, vec![Span { style: Style::Plain, text: pad(&r, w) }])).collect();
+        }
+        if !pum {
+            // One row above the command line: the items side by side, the selected one marked.
+            let (y, room) = (cmd_start - 1, w.saturating_sub(4));
+            let width = |i: usize| str_width(&wi.items[i]) + 2;
+            if let Some(s) = wi.sel {
+                wi.top = wi.top.min(s);
+                while wi.top < s && (wi.top..=s).map(width).sum::<usize>() > room {
+                    wi.top += 1;
+                }
+            }
+            let mut hits = Vec::new();
+            let mut spans = vec![Span { style: Style::Status, text: if wi.top > 0 { "< ".into() } else { "  ".into() } }];
+            let (mut used, mut last) = (0, wi.top);
+            for i in wi.top..n {
+                if used + width(i) > room && i > wi.top {
+                    break;
+                }
+                let style = if wi.sel == Some(i) { Style::WildMenu } else { Style::Status };
+                let item = &wi.items[i];
+                let text = if str_width(item) > room { fit(item, room) } else { item.clone() };
+                let x0: usize = spans.iter().map(|s| str_width(&s.text)).sum();
+                hits.push((y, x0, x0 + str_width(&text), i));
+                spans.push(Span { style, text });
+                spans.push(Span { style: Style::Status, text: "  ".into() });
+                used += width(i);
+                last = i + 1;
+            }
+            let have: usize = spans.iter().map(|s| str_width(&s.text)).sum();
+            spans.push(Span { style: Style::Status, text: pad(if last < n { ">" } else { "" }, w.saturating_sub(have)) });
+            self.menu_hit = hits;
+            return vec![(y, 0, spans)];
+        }
+        // The popup: above the command line, from the column of the word, scrolled to the selection.
+        let h = n.min(if pumheight > 0 { pumheight } else { cmd_start }).min(cmd_start).max(1);
+        if let Some(s) = wi.sel {
+            if s < wi.top {
+                wi.top = s;
+            } else if s >= wi.top + h {
+                wi.top = s + 1 - h;
+            }
+        }
+        wi.top = wi.top.min(n - h);
+        let widest = wi.items.iter().map(|i| str_width(i)).max().unwrap_or(0);
+        let bar = n > h;
+        let body = (widest + 2).max(pumwidth).min(w.saturating_sub(usize::from(bar)).max(1));
+        let width = body + usize::from(bar);
+        let x = if x_word + width > w { w.saturating_sub(width) } else { x_word };
+        let thumb_len = (h * h / n).max(1);
+        let thumb = if n > h { wi.top * (h - thumb_len) / (n - h) } else { 0 };
+        let hits: Vec<_> = (0..h).map(|i| (cmd_start - h + i, x, x + body, wi.top + i)).collect();
+        self.menu_hit = hits;
+        (0..h)
+            .map(|i| {
+                let idx = wi.top + i;
+                let style = if wi.sel == Some(idx) { Style::PmenuSel } else { Style::Pmenu };
+                let mut spans = vec![Span { style, text: pad(&format!(" {} ", wi.items[idx]), body) }];
+                if bar {
+                    let on = (thumb..thumb + thumb_len).contains(&i);
+                    spans.push(Span { style: if on { Style::PmenuThumb } else { Style::PmenuSbar }, text: " ".into() });
+                }
+                (cmd_start - h + i, x, spans)
+            })
+            .collect()
     }
 
     pub fn render(&mut self, out: &mut impl Write) -> io::Result<()> {
@@ -577,6 +689,11 @@ pub(super) fn draw(f: &Frame, out: &mut impl Write) -> io::Result<()> {
                 Style::WarningMsg => ui.warning_msg,
                 Style::ModeMsg => ui.mode_msg,
                 Style::MoreMsg => ui.more_msg,
+                Style::Pmenu => ui.pmenu,
+                Style::PmenuSel => ui.pmenu_sel,
+                Style::PmenuSbar => ui.pmenu_sbar,
+                Style::PmenuThumb => ui.pmenu_thumb,
+                Style::WildMenu => ui.wild_menu,
             };
             // A span's own background (matches) wins over the cursor line's, which wins over `Normal`'s.
             let fg = st.fg.or(ui.normal.fg);
@@ -716,6 +833,38 @@ fn str_width(s: &str) -> usize {
     if s.is_ascii() { s.len() } else { graphemes::iter(s).map(|g| graphemes::width(g, 1)).sum() }
 }
 
+/// The spans of `row` between columns `from` and `to` (a wide cluster cut by an edge becomes spaces).
+fn take_cols(row: &[Span], from: usize, to: usize) -> Vec<Span> {
+    let (mut out, mut x) = (Vec::new(), 0);
+    for s in row {
+        let mut text = String::new();
+        for g in graphemes::iter(&s.text) {
+            let cw = graphemes::width(g, 1);
+            let (a, b) = (x.max(from), (x + cw).min(to));
+            if a < b {
+                if b - a == cw { text.push_str(g) } else { text.push_str(&" ".repeat(b - a)) }
+            }
+            x += cw;
+        }
+        if !text.is_empty() {
+            out.push(Span { style: s.style, text });
+        }
+    }
+    out
+}
+
+/// Puts `spans` over the cells of `row` from column `x`.
+fn overlay(row: &mut Vec<Span>, x: usize, spans: Vec<Span>) {
+    let w: usize = spans.iter().map(|s| str_width(&s.text)).sum();
+    let mut left = take_cols(row, 0, x);
+    let have: usize = left.iter().map(|s| str_width(&s.text)).sum();
+    if have < x {
+        left.push(Span { style: Style::Plain, text: " ".repeat(x - have) });
+    }
+    let right = take_cols(row, x + w, usize::MAX);
+    *row = left.into_iter().chain(spans).chain(right).collect();
+}
+
 /// `s` cut or padded to exactly `w` cells; control chars become `?`.
 pub(super) fn fit(s: &str, w: usize) -> String {
     let (mut out, mut x) = (String::new(), 0);
@@ -732,6 +881,19 @@ pub(super) fn fit(s: &str, w: usize) -> String {
     }
     out.extend(std::iter::repeat_n(' ', w - x));
     out
+}
+
+/// Row and column where the cursor lands after `s` laid out by `wrap` (past a full row it is at the start of the next).
+fn wrap_cursor(s: &str, w: usize) -> (usize, usize) {
+    let (mut row, mut x) = (0, 0);
+    for g in graphemes::iter(s) {
+        let cw = graphemes::width(g, 1);
+        if x + cw > w && x > 0 {
+            (row, x) = (row + 1, 0);
+        }
+        x += cw;
+    }
+    if x >= w { (row + 1, 0) } else { (row, x) }
 }
 
 /// `s` cut into rows of at most `w` columns: at every newline and when a row is full.

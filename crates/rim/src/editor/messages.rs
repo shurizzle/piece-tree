@@ -5,6 +5,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+
 use super::Editor;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -26,6 +28,10 @@ pub(super) struct Messages {
     pub hit_enter: bool,
     /// Enter, Space and Esc only dismiss it (`hit-enter` of `messagesopt`); otherwise any key also runs.
     pub prompt: bool,
+    /// The first line shown by the pager (`more`) while the message is taller than the screen, the lines of a page, and all of them.
+    pub pager: Option<usize>,
+    pub page: usize,
+    pub total: usize,
     /// Without `hit-enter`, when a message of several rows goes away by itself (`wait:N`).
     pub deadline: Option<Instant>,
 }
@@ -36,6 +42,7 @@ impl Messages {
         self.seq += 1;
         self.hint = false;
         self.deadline = None;
+        self.pager = None;
         self.hit_enter = text.contains('\n');
         if !text.is_empty() {
             self.history.push_back((level, text.clone()));
@@ -56,6 +63,7 @@ impl Messages {
         self.cur = None;
         self.hit_enter = false;
         self.deadline = None;
+        self.pager = None;
     }
 
     pub fn text(&self) -> &str {
@@ -127,6 +135,45 @@ impl Editor {
             self.msgs.clear();
         }
         over
+    }
+
+    /// A key while the pager shows a message: Space, `f`, PageDown, `Ctrl+F` a page on; `b`, PageUp,
+    /// `Ctrl+B` back; `d`/`u` half a page; `j`, Enter, Down and `k`, Up a line; `g`/`G` the ends; `q`,
+    /// Esc and `Ctrl+C` stop. On the last page the keys that would go on dismiss it like the hit-enter
+    /// prompt; before it other keys are ignored, except `:`. True when the key was used up.
+    pub(super) fn pager_key(&mut self, key: KeyEvent) -> bool {
+        let Some(top) = self.msgs.pager else { return false };
+        let (page, last) = (self.msgs.page, self.msgs.total.saturating_sub(self.msgs.page));
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        let at_end = top >= last;
+        let to = match (key.code, ctrl) {
+            (KeyCode::Char(' ' | 'f') | KeyCode::PageDown, false) | (KeyCode::Char('f'), true) if !at_end => Some((top + page).min(last)),
+            (KeyCode::Char('d'), _) if !at_end => Some((top + page / 2).min(last)),
+            (KeyCode::Char('j') | KeyCode::Enter | KeyCode::Down, false) if !at_end => Some(top + 1),
+            (KeyCode::Char('b'), _) | (KeyCode::PageUp, _) => Some(top.saturating_sub(page)),
+            (KeyCode::Char('u'), _) => Some(top.saturating_sub(page / 2)),
+            (KeyCode::Char('k') | KeyCode::Up, false) => Some(top.saturating_sub(1)),
+            (KeyCode::Char('g'), false) => Some(0),
+            (KeyCode::Char('G'), false) => Some(last),
+            _ => None,
+        };
+        if let Some(t) = to {
+            self.msgs.pager = Some(t);
+            return true;
+        }
+        let stop = matches!(key.code, KeyCode::Esc | KeyCode::Char('q')) && !ctrl || ctrl && key.code == KeyCode::Char('c');
+        if stop {
+            self.msgs.clear();
+            return true;
+        }
+        if at_end {
+            return false;
+        }
+        if key.code == KeyCode::Char(':') {
+            self.msgs.clear();
+            return false;
+        }
+        true
     }
 
     /// The current message, empty when there is none.

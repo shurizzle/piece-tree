@@ -20,7 +20,14 @@ pub(super) struct Buffer {
     /// Number shown by `:ls` and taken by `:b N`, never reused.
     pub id: usize,
     pub doc: Document,
-    pub path: PathBuf,
+    /// The file; none for a buffer made by `:enew` or started without one (`[No Name]`).
+    pub path: Option<PathBuf>,
+    /// When the buffer was last left, as a tick of `Editor::clock` (`wildmode=lastused`).
+    pub used: u64,
+    /// Name shown instead of `[No Name]` (the command-line window's buffer).
+    pub title: Option<&'static str>,
+    /// Shown by `:ls` and reached by `:bn`/`:bp`; the command-line window's buffer is not.
+    pub listed: bool,
     /// Version and line ending last written to disk; dirty is a pointer comparison.
     pub saved: Text,
     pub saved_eol: LineEnding,
@@ -43,14 +50,17 @@ pub(super) struct Buffer {
 }
 
 impl Buffer {
-    pub fn new(id: usize, doc: Document, path: PathBuf, mut opts: Options) -> Self {
-        opts.filetype = filetype::detect(&path).into();
+    pub fn new(id: usize, doc: Document, path: Option<PathBuf>, mut opts: Options) -> Self {
+        opts.filetype = path.as_deref().map_or("", filetype::detect).into();
         Self {
             id,
             saved: doc.text().clone(),
             saved_eol: doc.eol(),
             doc,
             path,
+            listed: true,
+            used: 0,
+            title: None,
             marks: HashMap::new(),
             cols: RefCell::default(),
             opts,
@@ -62,8 +72,14 @@ impl Buffer {
         }
     }
 
+    /// A `buftype=nofile` buffer is never modified.
     pub fn is_dirty(&self) -> bool {
-        !self.doc.text().ptr_eq(&self.saved) || self.doc.eol() != self.saved_eol
+        !self.opts.nofile && (!self.doc.text().ptr_eq(&self.saved) || self.doc.eol() != self.saved_eol)
+    }
+
+    /// The file name as shown to the user.
+    pub fn name(&self) -> String {
+        self.path.as_ref().map_or_else(|| self.title.unwrap_or("[No Name]").into(), |p| p.display().to_string())
     }
 }
 
@@ -96,10 +112,38 @@ impl Editor {
     }
 
     /// Every buffer, by id.
-    fn all_buffers(&self) -> Vec<&Buffer> {
+    pub(super) fn all_buffers(&self) -> Vec<&Buffer> {
         let mut all: Vec<_> = self.buffers.iter().chain([&self.buf]).collect();
         all.sort_by_key(|b| b.id);
         all
+    }
+
+    /// The buffers `:ls` and `:bn` go through (the current one always).
+    fn listed_buffers(&self) -> Vec<&Buffer> {
+        self.all_buffers().into_iter().filter(|b| b.listed || b.id == self.buf.id).collect()
+    }
+
+    /// A new empty buffer without a file, not shown yet; returns its id.
+    pub(super) fn new_scratch(&mut self) -> usize {
+        self.next_buf += 1;
+        let mut opts = self.buf.opts.clone();
+        opts.nofile = false;
+        self.buffers.push(Buffer::new(self.next_buf, Document::new(""), None, opts));
+        self.next_buf
+    }
+
+    /// Loads `text` into a new modified buffer without a file, not shown (`rim - -`).
+    pub fn add_text(&mut self, text: &str) {
+        let id = self.new_scratch();
+        let b = self.buffers.iter_mut().find(|b| b.id == id).expect("just added");
+        b.doc = Document::from_string(text.to_string());
+        b.saved = Document::new("").text().clone();
+    }
+
+    /// `:enew`: an empty buffer without a file in the current window.
+    pub(super) fn enew(&mut self) {
+        let id = self.new_scratch();
+        self.switch_buffer(id);
     }
 
     /// Shows buffer `id` in the current window, its cursor where it was left.
@@ -109,6 +153,8 @@ impl Editor {
         }
         let i = self.buffers.iter().position(|b| b.id == id).expect("switch to a known buffer");
         self.buf.last = self.offset();
+        self.clock += 1;
+        self.buf.used = self.clock;
         mem::swap(&mut self.buf, &mut self.buffers[i]);
         self.alt = Some(self.buffers[i].id);
         self.win.buf = id;
@@ -120,32 +166,39 @@ impl Editor {
     /// `:e file`: switches to the buffer of `file`, or loads it into a new one.
     pub(super) fn edit_file(&mut self, file: &str) -> Result<(), String> {
         let path = PathBuf::from(file);
-        if let Some(id) = self.all_buffers().iter().find(|b| same_file(&b.path, &path)).map(|b| b.id) {
+        if let Some(id) = self.all_buffers().iter().find(|b| b.path.as_deref().is_some_and(|p| same_file(p, &path))).map(|b| b.id) {
             self.switch_buffer(id);
             return Ok(());
         }
         let doc = read_doc(&path).map_err(|e| format!("\"{file}\": {e}"))?;
-        self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts.clone()));
-        self.switch_buffer(self.next_buf);
+        // The empty buffer of a start without a file is reused, like vim does.
+        if self.buf.path.is_none() && !self.buf.is_dirty() && self.buf.doc.text().is_empty() && self.buf.listed {
+            self.buf = Buffer::new(self.buf.id, doc, Some(path), self.buf.opts.clone());
+            self.win.reset_view();
+            (self.win.line, self.win.col) = (0, 0);
+        } else {
+            self.next_buf += 1;
+            self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.buf.opts.clone()));
+            self.switch_buffer(self.next_buf);
+        }
         self.info(self.file_info());
         Ok(())
     }
 
     /// Loads `path` into a new buffer without showing it (`rim a b`); a file already loaded is skipped.
     pub fn open_more(&mut self, path: PathBuf) -> io::Result<()> {
-        if self.all_buffers().iter().any(|b| same_file(&b.path, &path)) {
+        if self.all_buffers().iter().any(|b| b.path.as_deref().is_some_and(|p| same_file(p, &path))) {
             return Ok(());
         }
         let doc = read_doc(&path)?;
         self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts.clone()));
+        self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.buf.opts.clone()));
         Ok(())
     }
 
     /// `:bn` (`step` 1) and `:bp` (-1), `n` times, wrapping around.
     pub(super) fn cycle_buffer(&mut self, step: isize, n: usize) {
-        let ids: Vec<usize> = self.all_buffers().iter().map(|b| b.id).collect();
+        let ids: Vec<usize> = self.listed_buffers().iter().map(|b| b.id).collect();
         let at = ids.iter().position(|&id| id == self.buf.id).expect("the current buffer is listed") as isize;
         let k = ids.len() as isize;
         self.switch_buffer(ids[(at + step * (n % ids.len()) as isize).rem_euclid(k) as usize]);
@@ -153,7 +206,22 @@ impl Editor {
 
     /// `:b N`.
     pub(super) fn goto_buffer(&mut self, arg: &str) -> Result<(), String> {
-        let id = arg.parse().map_err(|_| format!("Invalid buffer number: {arg}"))?;
+        let id = match arg.parse() {
+            Ok(id) => id,
+            // A name: the buffer whose name is it, else the only one that holds it.
+            Err(_) => {
+                let low = arg.to_lowercase();
+                let mut hits: Vec<(usize, bool)> = self.all_buffers().iter().filter(|b| b.listed && b.name().to_lowercase().contains(&low)).map(|b| (b.id, b.name() == arg)).collect();
+                if let Some(exact) = hits.iter().find(|h| h.1) {
+                    hits = vec![*exact];
+                }
+                match hits.as_slice() {
+                    [(id, _)] => *id,
+                    [] => return Err(format!("E94: No matching buffer for {arg}")),
+                    _ => return Err(format!("E93: More than one match for {arg}")),
+                }
+            }
+        };
         if self.buffer(id).is_none() {
             return Err(format!("Buffer {id} does not exist"));
         }
@@ -172,7 +240,8 @@ impl Editor {
     /// `:ls`: `id`, `%a` (current) or `#` (alternate), name, `+` when modified, cursor line.
     pub(super) fn list_buffers(&self) -> String {
         self.all_buffers()
-            .iter()
+            .into_iter()
+            .filter(|b| b.listed)
             .map(|b| {
                 let flag = if b.id == self.buf.id {
                     "%a"
@@ -182,7 +251,7 @@ impl Editor {
                     "  "
                 };
                 let line = if b.id == self.buf.id { self.win.line } else { b.doc.text().offset_to_line(b.last.min(b.doc.text().len())) };
-                format!("{:>3} {flag} {}\"{}\" line {}", b.id, if b.is_dirty() { "+ " } else { "" }, b.path.display(), line + 1)
+                format!("{:>3} {flag} {}\"{}\" line {}", b.id, if b.is_dirty() { "+ " } else { "" }, b.name(), line + 1)
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -197,11 +266,11 @@ impl Editor {
         if !bang && b.is_dirty() {
             return Err(format!("No write since last change for buffer {id} (add ! to override)"));
         }
-        // shortcut: the last buffer cannot be deleted, when an unnamed empty buffer exists
+        // The last buffer goes and an empty one takes its place, like vim.
         if self.buffers.is_empty() {
-            return Err("Cannot delete the last buffer".into());
+            self.new_scratch();
         }
-        let ids: Vec<usize> = self.all_buffers().iter().map(|b| b.id).filter(|&b| b != id).collect();
+        let ids: Vec<usize> = self.listed_buffers().iter().map(|b| b.id).filter(|&b| b != id).collect();
         let other = self.alt.filter(|a| ids.contains(a)).unwrap_or(ids[0]);
         if self.buf.id == id {
             self.switch_buffer(other);
@@ -227,7 +296,15 @@ impl Editor {
     /// `wait`, also waits for it. Returns false when a write that was waited for failed.
     pub(super) fn save_buffer(&mut self, id: usize, wait: bool) -> bool {
         let b = self.buffer(id).expect("save a known buffer");
-        let (path, text, eol) = (b.path.clone(), b.doc.text().clone(), b.doc.eol());
+        if b.opts.nofile {
+            self.error("Cannot write, 'buftype' option is set");
+            return false;
+        }
+        let Some(path) = b.path.clone() else {
+            self.error("No file name");
+            return false;
+        };
+        let (text, eol) = (b.doc.text().clone(), b.doc.eol());
         let mut ok = self.wait_saves_where(|s| same_file(&s.path, &path));
         let handle = {
             let (path, text) = (path.clone(), text.clone());
@@ -269,7 +346,7 @@ impl Editor {
                     if self.msgs.seq == s.seq {
                         self.info(format!("\"{}\" written ({})", s.path.display(), s.eol));
                     }
-                    if let Some(b) = self.buffer_mut(s.buf).filter(|b| b.path == s.path) {
+                    if let Some(b) = self.buffer_mut(s.buf).filter(|b| b.path.as_ref() == Some(&s.path)) {
                         (b.saved, b.saved_eol) = (s.text, s.eol);
                     }
                 }

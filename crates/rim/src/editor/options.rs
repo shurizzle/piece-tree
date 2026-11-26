@@ -50,6 +50,37 @@ pub(super) struct Options {
     pub msg_hit_enter: bool,
     pub msg_wait: Option<usize>,
     pub msg_history: usize,
+    /// `buftype=nofile`: the buffer is never modified and cannot be written.
+    pub nofile: bool,
+    /// Output taller than the screen waits in a pager (`-- More --`) instead of showing its last rows.
+    pub more: bool,
+    /// Rows of the command-line window (`cmdwinheight`).
+    pub cmdwinheight: usize,
+    /// Command-line completion: show a menu, what each press of `wildchar` does, the menu style and
+    /// matching (`pum`, `fuzzy`), file names that never match, the key that completes.
+    pub wildmenu: bool,
+    pub wildmode: String,
+    pub wildoptions: String,
+    pub wildignore: String,
+    pub wildignorecase: bool,
+    pub wildchar: String,
+    pub wildcharm: String,
+    /// Rows of the popup menu at most (0: as many as fit) and its least width.
+    pub pumheight: usize,
+    pub pumwidth: usize,
+    /// Key on the command line that opens the command-line window (empty: none).
+    pub cedit: String,
+    /// Windows: every split or close evens the sizes out (`equalalways`); the least rows and columns
+    /// the current window gets (`winheight`, `winwidth`) and the other ones keep (`winminheight`, `winminwidth`).
+    /// Mouse: the modes it works in (`n`ormal, `v`isual, `i`nsert, `c`ommand line, hit-`r`eturn, `a`ll)
+    /// and the lines and columns the wheel scrolls (`ver:N,hor:N`).
+    pub mouse: String,
+    pub mousescroll: String,
+    pub equalalways: bool,
+    pub winheight: usize,
+    pub winminheight: usize,
+    pub winwidth: usize,
+    pub winminwidth: usize,
 }
 
 impl Default for Options {
@@ -78,36 +109,78 @@ impl Default for Options {
             msg_hit_enter: true,
             msg_wait: None,
             msg_history: 500,
+            nofile: false,
+            more: true,
+            cmdwinheight: 7,
+            wildmenu: true,
+            wildmode: "full".into(),
+            wildoptions: "pum,tagfile".into(),
+            wildignore: String::new(),
+            wildignorecase: false,
+            wildchar: "<Tab>".into(),
+            wildcharm: String::new(),
+            pumheight: 0,
+            pumwidth: 15,
+            cedit: "<C-F>".into(),
+            mouse: "nvi".into(),
+            mousescroll: "ver:3,hor:6".into(),
+            equalalways: true,
+            winheight: 1,
+            winminheight: 1,
+            winwidth: 20,
+            winminwidth: 1,
         }
     }
 }
 
+/// Every option: long name, short name, and whether it is a flag (`:set nox`, `:set invx`).
+pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
+    ("number", Some("nu"), true),
+    ("relativenumber", Some("rnu"), true),
+    ("cursorline", Some("cul"), true),
+    ("wrap", None, true),
+    ("tabstop", Some("ts"), false),
+    ("expandtab", Some("et"), true),
+    ("shiftwidth", Some("sw"), false),
+    ("list", None, true),
+    ("ignorecase", Some("ic"), true),
+    ("smartcase", Some("scs"), true),
+    ("hlsearch", Some("hls"), true),
+    ("incsearch", Some("is"), true),
+    ("scrolloff", Some("so"), false),
+    ("background", Some("bg"), false),
+    ("termguicolors", Some("tgc"), true),
+    ("compactat", None, false),
+    ("filetype", Some("ft"), false),
+    ("laststatus", Some("ls"), false),
+    ("showmode", Some("smd"), true),
+    ("showcmd", Some("sc"), true),
+    ("more", None, true),
+    ("buftype", Some("bt"), false),
+    ("cmdwinheight", Some("cwh"), false),
+    ("messagesopt", Some("mopt"), false),
+    ("wildmenu", Some("wmnu"), true),
+    ("wildmode", Some("wim"), false),
+    ("wildoptions", Some("wop"), false),
+    ("wildignore", Some("wig"), false),
+    ("wildignorecase", Some("wic"), true),
+    ("wildchar", Some("wc"), false),
+    ("wildcharm", Some("wcm"), false),
+    ("pumheight", Some("ph"), false),
+    ("pumwidth", Some("pw"), false),
+    ("cedit", None, false),
+    ("mouse", None, false),
+    ("mousescroll", None, false),
+    ("equalalways", Some("ea"), true),
+    ("winheight", Some("wh"), false),
+    ("winminheight", Some("wmh"), false),
+    ("winwidth", Some("wiw"), false),
+    ("winminwidth", Some("wmw"), false),
+];
+
 /// Long name of an option given by its long or vim short name.
 fn long(name: &str) -> Option<&'static str> {
-    Some(match name {
-        "number" | "nu" => "number",
-        "relativenumber" | "rnu" => "relativenumber",
-        "cursorline" | "cul" => "cursorline",
-        "wrap" => "wrap",
-        "tabstop" | "ts" => "tabstop",
-        "expandtab" | "et" => "expandtab",
-        "shiftwidth" | "sw" => "shiftwidth",
-        "list" => "list",
-        "ignorecase" | "ic" => "ignorecase",
-        "smartcase" | "scs" => "smartcase",
-        "hlsearch" | "hls" => "hlsearch",
-        "incsearch" | "is" => "incsearch",
-        "scrolloff" | "so" => "scrolloff",
-        "background" | "bg" => "background",
-        "termguicolors" | "tgc" => "termguicolors",
-        "compactat" => "compactat",
-        "filetype" | "ft" => "filetype",
-        "laststatus" | "ls" => "laststatus",
-        "showmode" | "smd" => "showmode",
-        "showcmd" | "sc" => "showcmd",
-        "messagesopt" | "mopt" => "messagesopt",
-        _ => return None,
-    })
+    NAMES.iter().find(|&&(l, s, _)| l == name || s == Some(name)).map(|n| n.0)
 }
 
 impl Options {
@@ -115,6 +188,25 @@ impl Options {
     pub fn copy_global(&self, to: &mut Options) {
         (to.laststatus, to.showmode, to.showcmd) = (self.laststatus, self.showmode, self.showcmd);
         (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
+        to.cmdwinheight = self.cmdwinheight;
+        to.more = self.more;
+        (to.wildmenu, to.wildmode, to.wildoptions) = (self.wildmenu, self.wildmode.clone(), self.wildoptions.clone());
+        (to.wildignore, to.wildignorecase) = (self.wildignore.clone(), self.wildignorecase);
+        (to.wildchar, to.wildcharm, to.pumheight, to.pumwidth) = (self.wildchar.clone(), self.wildcharm.clone(), self.pumheight, self.pumwidth);
+        to.cedit = self.cedit.clone();
+        (to.mouse, to.mousescroll) = (self.mouse.clone(), self.mousescroll.clone());
+        (to.equalalways, to.winheight, to.winminheight, to.winwidth, to.winminwidth) = (self.equalalways, self.winheight, self.winminheight, self.winwidth, self.winminwidth);
+    }
+
+    /// The value of option `name` (long or short name) for `&name` in an expression: a number
+    /// (flags as 0 or 1) or a string.
+    pub fn lookup(&self, name: &str) -> Option<super::expr::Value> {
+        use super::expr::Value;
+        let shown = self.show(long(name)?);
+        Some(match shown.split_once('=') {
+            Some((_, v)) => v.parse().map_or_else(|_| Value::Str(v.into()), Value::Int),
+            None => Value::Int(i64::from(!shown.starts_with("no"))),
+        })
     }
 
     /// Effective shift width (`shiftwidth`, or `tabstop` when 0).
@@ -176,6 +268,10 @@ impl Options {
             "termguicolors" => Some(&mut self.termguicolors),
             "showmode" => Some(&mut self.showmode),
             "showcmd" => Some(&mut self.showcmd),
+            "more" => Some(&mut self.more),
+            "wildmenu" => Some(&mut self.wildmenu),
+            "equalalways" => Some(&mut self.equalalways),
+            "wildignorecase" => Some(&mut self.wildignorecase),
             _ => None,
         }
     }
@@ -197,7 +293,27 @@ impl Options {
             "termguicolors" => on(self.termguicolors, name),
             "showmode" => on(self.showmode, name),
             "showcmd" => on(self.showcmd, name),
+            "more" => on(self.more, name),
+            "wildmenu" => on(self.wildmenu, name),
+            "equalalways" => on(self.equalalways, name),
+            "mouse" => format!("mouse={}", self.mouse),
+            "mousescroll" => format!("mousescroll={}", self.mousescroll),
+            "winheight" => format!("winheight={}", self.winheight),
+            "winminheight" => format!("winminheight={}", self.winminheight),
+            "winwidth" => format!("winwidth={}", self.winwidth),
+            "winminwidth" => format!("winminwidth={}", self.winminwidth),
+            "wildignorecase" => on(self.wildignorecase, name),
+            "wildmode" => format!("wildmode={}", self.wildmode),
+            "wildoptions" => format!("wildoptions={}", self.wildoptions),
+            "wildignore" => format!("wildignore={}", self.wildignore),
+            "wildchar" => format!("wildchar={}", self.wildchar),
+            "wildcharm" => format!("wildcharm={}", self.wildcharm),
+            "pumheight" => format!("pumheight={}", self.pumheight),
+            "pumwidth" => format!("pumwidth={}", self.pumwidth),
+            "cedit" => format!("cedit={}", self.cedit),
             "laststatus" => format!("laststatus={}", self.laststatus),
+            "cmdwinheight" => format!("cmdwinheight={}", self.cmdwinheight),
+            "buftype" => format!("buftype={}", if self.nofile { "nofile" } else { "" }),
             "messagesopt" => {
                 let mut v = Vec::new();
                 if self.msg_hit_enter {
@@ -224,7 +340,7 @@ impl Options {
             for n in [
                 "number", "relativenumber", "cursorline", "tabstop", "background", "termguicolors", "wrap", "compactat",
                 "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype",
-                "laststatus", "showmode", "showcmd", "messagesopt",
+                "laststatus", "showmode", "showcmd", "messagesopt", "buftype", "cmdwinheight", "more", "wildmenu", "wildmode", "wildoptions", "wildignore", "wildignorecase", "wildchar", "wildcharm", "pumheight", "pumwidth", "cedit", "mouse", "mousescroll", "equalalways", "winheight", "winminheight", "winwidth", "winminwidth",
             ] {
                 shown.push(self.show(n));
             }
@@ -248,6 +364,33 @@ impl Options {
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     "messagesopt" => self.set_messagesopt(value).ok_or_else(invalid)?,
+                    "wildmode" => self.wildmode = super::wild::valid_mode(value).then(|| value.to_string()).ok_or_else(invalid)?,
+                    "wildoptions" => self.wildoptions = super::wild::valid_options(value).then(|| value.to_string()).ok_or_else(invalid)?,
+                    "wildignore" => self.wildignore = value.to_string(),
+                    "wildchar" | "wildcharm" => {
+                        // The key syntax is checked here; `wildcharm` may also be empty.
+                        if !(value.is_empty() && name == "wildcharm") && super::wild::parse_key(value).is_none() {
+                            return Err(invalid());
+                        }
+                        if name == "wildchar" { self.wildchar = value.to_string() } else { self.wildcharm = value.to_string() }
+                    }
+                    "cedit" => self.cedit = (value.is_empty() || super::wild::parse_key(value).is_some()).then(|| value.to_string()).ok_or_else(invalid)?,
+                    "mouse" => self.mouse = value.chars().all(|c| "nvichar".contains(c)).then(|| value.to_string()).ok_or_else(invalid)?,
+                    "mousescroll" => self.mousescroll = super::mouse::parse_scroll(value).map(|_| value.to_string()).ok_or_else(invalid)?,
+                    "winheight" => self.winheight = value.parse().ok().filter(|n| *n >= 1).ok_or_else(invalid)?,
+                    "winwidth" => self.winwidth = value.parse().ok().filter(|n| *n >= 1).ok_or_else(invalid)?,
+                    "winminheight" => self.winminheight = value.parse().map_err(|_| invalid())?,
+                    "winminwidth" => self.winminwidth = value.parse().map_err(|_| invalid())?,
+                    "pumheight" => self.pumheight = value.parse().map_err(|_| invalid())?,
+                    "pumwidth" => self.pumwidth = value.parse().ok().filter(|n| *n >= 1).ok_or_else(invalid)?,
+                    "cmdwinheight" => self.cmdwinheight = value.parse().ok().filter(|n| (1..=1000).contains(n)).ok_or_else(invalid)?,
+                    "buftype" => {
+                        self.nofile = match value {
+                            "" => false,
+                            "nofile" => true,
+                            _ => return Err(invalid()),
+                        }
+                    }
                     "laststatus" => self.laststatus = value.parse().ok().filter(|n| *n <= 2).ok_or_else(invalid)?,
                     _ => return Err(invalid()),
                 }

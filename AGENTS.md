@@ -19,8 +19,10 @@ cargo +nightly-2026-11-20 miri test -p piece-tree --lib   # unsafe checks (~4 mi
 cargo +nightly-2026-11-20 miri test -p rim                # rim's unsafe: only the reader_* tests run (~15 s)
 cargo bench -p piece-tree                      # benchmarks, min of 7 runs
 cargo build --release -p piece-tree --example profile && samply record target/release/examples/profile typing   # profile
-cargo run -p rim -- <file>...
+cargo run -p rim -- [file | -]...
 cargo build --release -p rim --no-default-features --features lang-rust,lang-markdown   # only those built-in grammars (tests need the default features)
+python3 -I tools/pty_check.py target/debug/rim      # terminal side in a real pty: mouse reporting, clipboard read
+python3 -I tools/digraphs.py <neovim>/src/nvim/digraph.c > crates/rim/src/editor/digraphs/table.rs   # regenerate the digraph table
 tools/grammars.sh [dir] [lang...]            # build tree-sitter grammars + queries for rim (default ~/.config/rim)
 cargo test -p rim                          # editor tests (keys, frames, submodule units)
 ```
@@ -59,4 +61,4 @@ cargo test -p rim                          # editor tests (keys, frames, submodu
 | Undo/redo, writing | `crates/piece-tree/src/document.rs` |
 | Regex search/replace | `crates/piece-tree/src/search.rs` |
 | Benchmarks | `crates/piece-tree/benches/bench.rs` |
-| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (buffers and background save, windows and split layout, messages (kinds, history, hit-enter), grammar, grapheme columns and line indexes, motions, objects, search, ex ranges and line commands, `:s`, registers, options, highlight groups (`:highlight`), layout (wrap rows), render; CLI/terminal, init file and OSC 52 query in `main.rs`) |
+| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (buffers and background save, windows and split layout, messages (kinds, history, hit-enter), command line (cursor editing, history, completion), command-line window, mouse, expressions, digraphs, grammar, grapheme columns and line indexes, motions, objects, search, ex ranges and line commands, `:s`, registers, options, highlight groups (`:highlight`), layout (wrap rows), render; CLI/terminal, init file and OSC 52 query in `main.rs`) |

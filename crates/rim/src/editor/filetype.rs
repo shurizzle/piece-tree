@@ -2,6 +2,12 @@
 
 use std::path::Path;
 
+/// The filetypes `detect` gives (for completion).
+pub(super) const ALL: &[&str] = &[
+    "rust", "c", "cpp", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "go", "java", "ruby", "php", "lua", "sh", "zsh", "fish", "html", "css",
+    "scss", "json", "toml", "yaml", "xml", "markdown", "sql", "make", "dockerfile", "text",
+];
+
 /// Name of the tree-sitter grammar for filetype `ft` (empty: none); also the common names of fenced code blocks.
 pub(super) fn grammar(ft: &str) -> &str {
     match ft {
