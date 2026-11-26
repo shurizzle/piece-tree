@@ -145,7 +145,7 @@ impl Document {
 
     /// Replaces `range` with `s` as one change (one version, one [`Edit`]).
     pub fn splice(&mut self, range: Range<usize>, s: &str) {
-        if self.text().slice(range.clone()) == s {
+        if self.text().range_eq(range.clone(), s) {
             // Same content (e.g. replacing a word with itself): not a change.
             self.last.clear();
             return;
@@ -429,13 +429,7 @@ impl Document {
 /// The text with `\n` converted to the document's line ending, as `write_to` writes it.
 impl fmt::Display for Document {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let eol = self.eol.as_str();
-        self.text().chunks().try_for_each(|chunk| {
-            if self.eol == LineEnding::Lf {
-                return f.write_str(chunk);
-            }
-            chunk.split('\n').enumerate().try_for_each(|(i, part)| if i > 0 { f.write_str(eol) } else { Ok(()) }.and_then(|()| f.write_str(part)))
-        })
+        self.text().try_for_each_eol(self.eol, |s| f.write_str(s))
     }
 }
 

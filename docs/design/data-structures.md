@@ -20,8 +20,10 @@ struct Chunk {
 - Reads are `unsafe fn str(start, len)` and `unsafe fn newlines(first, count)`, lock-free, valid for ranges of completed appends only.
 - Storage and constructors:
   - `for_add(prev, len, lf)`: `Words` storage, one allocation (bytes, then newline slots). Capacity `max(len.next_power_of_two(), min(2 * prev.cap, 64 KiB))`, starting at `MIN_ADD_BYTES` = 256, with `max(cap / 4, lf)` newline slots.
-  - `from_string(s)`: `Owned` storage, sealed, taking over the `String`'s buffer (as `Vec<u8>`) and the collected newline `Vec<u32>`, with no copy. Pointers come from `Vec::as_mut_ptr` (full-capacity provenance). `Drop` rebuilds both `Vec`s.
-  - `exact(s: &str)` = `from_string(s.to_owned())`.
+  - `from_parts(s, newlines)` (`unsafe`: `newlines` must be exactly the `\n` offsets of `s`): `Owned` storage, sealed, taking over the `String`'s buffer (as `Vec<u8>`) and the newline `Vec<u32>`, with no copy. Pointers come from `Vec::as_mut_ptr` (full-capacity provenance). `Drop` rebuilds both `Vec`s.
+  - `from_string(s)` = `from_parts(s, positions(s))`.
+  - `exact(s: &str)`: `newlines::copy_positions` copies `s` and indexes its newlines in one pass (each 64-byte block is copied while its mask is computed), then `from_parts`.
+  - `concat(pieces, len)` (`Text::compact`): the pieces' texts back to back, newline offsets copied from the pieces' own caches shifted, no rescan.
 - `MAX_ADD_BYTES` = 64 KiB, the threshold above which an insert gets an exact chunk (1 KiB under Miri, to keep the tests fast).
 - `Send + Sync` by `unsafe impl` (safety argument in [decisions.md](decisions.md) D9).
 - Limits: `cap <= u32::MAX` (`assert_fits_u32`, panics `"buffer larger than 4 GiB"`); non-empty (panics `"empty chunk"`).
@@ -58,7 +60,7 @@ struct Node {
 ```
 
 - Accessors on `&Tree`: `height`, `len`, `lf` (0 for `None`).
-- Piece counts are not cached (an exact per-node count cost ~4% on paste, D17): `min_pieces`/`max_pieces` bound the count from the height in O(1) (Fibonacci minimum, full tree), and `has_at_most(t, limit)` walks the tree and stops once it exceeds `limit`.
+- Piece counts are not cached (an exact per-node count cost ~4% on paste, D17): `min_pieces`/`max_pieces` bound the count from the height in O(1) (Fibonacci minimum, full tree), and `has_at_most_in(t, 0, len, limit)` walks the tree and stops once it exceeds `limit`.
 - `Arc` is `triomphe::Arc` (no weak count) for nodes and chunks.
 - `node(l, piece, r)` builds a node computing the aggregates; it does **not** rebalance.
 - In-order traversal of pieces = document text.

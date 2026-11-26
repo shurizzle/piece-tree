@@ -464,6 +464,20 @@ fn large_insert_gets_its_own_chunk_and_keeps_the_add_chunk() {
 }
 
 #[test]
+fn large_insert_with_cr_takes_over_the_normalized_copy() {
+    let big = "line\r\n".repeat(MAX_ADD_BYTES / 5 + 1);
+    let want = format!("a{}b", "line\n".repeat(MAX_ADD_BYTES / 5 + 1));
+    let t = Text::from("ab").insert(1, &big);
+    let mut m = Text::from("ab");
+    m.insert_mut(1, &big);
+    for t in [t, m] {
+        assert_eq!(t.to_string(), want);
+        assert_eq!(t.line_count(), MAX_ADD_BYTES / 5 + 2);
+        tree::check(t.root());
+    }
+}
+
+#[test]
 fn delete_keeps_extending_the_typed_piece() {
     let t = Text::from("abc").delete(2..3).insert(2, "X");
     assert_eq!(t.chunks().collect::<Vec<_>>(), ["ab", "X"], "\"c\" was published after \"ab\"");
@@ -632,6 +646,7 @@ fn char_boundaries() {
     for off in 0..=m.len() + 2 {
         assert_eq!(t.is_char_boundary(off), m.is_char_boundary(off), "{off}");
         assert_eq!(t.floor_char_boundary(off), m.floor_char_boundary(off.min(m.len())), "{off}");
+        assert_eq!(t.ceil_char_boundary(off), m.ceil_char_boundary(off.min(m.len())), "{off}");
     }
     assert!(Text::new().is_char_boundary(0) && !Text::new().is_char_boundary(1));
 }
@@ -1008,11 +1023,12 @@ fn piece_count_bounds_hold_on_every_shape() {
         if step % 7 == 0 {
             let (n, h) = (t.chunks().count(), tree::height(t.root()));
             assert!(tree::min_pieces(t.root()) <= n && n <= tree::max_pieces(t.root()), "{n} pieces, height {h}");
-            assert!(tree::has_at_most(t.root(), n) && (n == 0 || !tree::has_at_most(t.root(), n - 1)));
+            let at_most = |k| tree::has_at_most_in(t.root(), 0, t.len(), k);
+            assert!(at_most(n) && (n == 0 || !at_most(n - 1)));
         }
     }
     assert_eq!((tree::min_pieces(&None), tree::max_pieces(&None)), (0, 0));
-    assert!(tree::has_at_most(&None, 0));
+    assert!(tree::has_at_most_in(&None, 0, 0, 0));
 }
 
 #[cfg(not(miri))]

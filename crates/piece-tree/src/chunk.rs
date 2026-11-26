@@ -16,6 +16,8 @@ use std::{
 use memchr::memchr_iter;
 use triomphe::Arc;
 
+use crate::tree::Piece;
+
 /// Largest add chunk. Bigger inserts get an exact chunk of their own.
 #[cfg(not(miri))]
 pub(crate) const MAX_ADD_BYTES: usize = 64 * 1024;
@@ -97,16 +99,46 @@ impl Chunk {
         }
     }
 
-    /// Sealed chunk holding exactly `s` (non-empty).
+    /// Sealed chunk holding exactly `s` (non-empty): the copy and the newline scan in one pass.
     pub(crate) fn exact(s: &str) -> Arc<Self> {
-        Self::from_string(s.to_owned())
+        assert_fits_u32(s.len());
+        let (bytes, newlines) = crate::newlines::copy_positions(s.as_bytes());
+        // SAFETY: `bytes` is a copy of `s`, so UTF-8; `newlines` are its `\n` offsets.
+        unsafe { Self::from_parts(String::from_utf8_unchecked(bytes), newlines) }
     }
 
     /// Sealed chunk taking over `s`'s buffer (non-empty): one SIMD newline scan, no copy.
     pub(crate) fn from_string(s: String) -> Arc<Self> {
         assert_fits_u32(s.len());
-        assert!(!s.is_empty(), "empty chunk");
         let newlines = crate::newlines::positions(s.as_bytes());
+        // SAFETY: `newlines` are the offsets of `s`'s `\n`, just scanned.
+        unsafe { Self::from_parts(s, newlines) }
+    }
+
+    /// Sealed chunk holding the texts of `pieces` (`len` bytes in all, non-empty) back to back. The
+    /// pieces already index their newlines, so they are copied shifted instead of rescanned.
+    pub(crate) fn concat(pieces: &[Piece], len: usize) -> Arc<Self> {
+        let mut s = String::with_capacity(len);
+        let mut newlines = Vec::with_capacity(pieces.iter().map(Piece::lf).sum());
+        for p in pieces {
+            let base = s.len() as u32;
+            newlines.extend(p.newline_offsets().map(|o| base + o));
+            s.push_str(p.text());
+        }
+        // SAFETY: a piece's newline offsets are those of its text (`Piece` invariant), shifted by
+        // where that text starts in `s`.
+        unsafe { Self::from_parts(s, newlines) }
+    }
+
+    /// Sealed chunk taking over `s`'s buffer and its newline offsets (no scan).
+    ///
+    /// # Safety
+    /// `newlines` must be exactly the offsets of the `\n` bytes of `s`, ascending: pieces read them
+    /// as line starts and slice `s` at them without checks.
+    pub(crate) unsafe fn from_parts(s: String, newlines: Vec<u32>) -> Arc<Self> {
+        assert_fits_u32(s.len());
+        assert!(!s.is_empty(), "empty chunk");
+        debug_assert!(newlines.iter().copied().eq(memchr_iter(b'\n', s.as_bytes()).map(|i| i as u32)));
         // `Vec::as_mut_ptr` keeps provenance over the whole allocation (capacity,
         // not just length), which `Drop` needs to free it.
         let (mut bytes, mut newlines) = (ManuallyDrop::new(s.into_bytes()), ManuallyDrop::new(newlines));

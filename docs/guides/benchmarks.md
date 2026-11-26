@@ -729,3 +729,40 @@ New scenario in `cargo bench -p piece-tree`, Linux x86_64 (load average ~4 durin
 | `find_iter` regex (per MB) | 1004 µs | 998 µs (same) |
 
 The cost is the copy of the merged runs: a run of one piece (longer than `max`, or alone between two such) stays shared, so compacting a text that is already compact is a walk and returns the same version. Reads gain from fewer descents and longer borrowed slices; the regex scan was already chunk-streaming and does not change. Not a hot-path change (no existing scenario's code moved; `Chunk::heap_bytes` and `Piece::chunk` are new accessors only), so the cross-library tables were not re-run.
+
+## Code cleanup: one-pass loads, SIMD line-ending detection, fewer temporaries
+
+Changes: `LineEnding::detect` on the `\n`/`\r` block masks (`newlines::eol_counts`) instead of `memchr2_iter` with per-hit work; `normalize` in one pass into one allocation, `normalize_owned` compacting in the `String`'s own buffer, `push_normalized` straight into the batch buffer; `Chunk::exact` copying and indexing in one pass (`copy_positions`), and a large insert taking over the copy `normalize` already made; `Text::compact` copying the pieces' newline offsets (`Chunk::concat`) instead of rescanning; `floor_char_boundary` and `rfind_before`'s next boundary in one descent; `Document::splice`'s no-op check compared in place (`range_eq`); capture groups appended without a `Cow`; char counts and `write_to`/`Display` walking with `collect` (no heap stack); `Text::slice` allocating once per multi-piece range; `tree::has_at_most` folded into `has_at_most_in`.
+
+A/B against a standalone copy of the previous working tree, both built as their own crates (fat LTO, `codegen-units = 1`), Linux x86_64 (i5-8365U, glibc, SSE2 build), alternating runs, load average 2-3 (a desktop session running), min over 4 rounds of min of 7. Load rows ns/B on 50 MB of Rust sources from the cargo registry (the CRLF rows: the same text with `\r\n`); the edit rows on that text cut to 10 MB with 3000 random inserts:
+
+| Row | before | after |
+|---|---:|---:|
+| `LineEnding::detect`, LF text | 0.415 | 0.141 (-66%) |
+| `LineEnding::detect`, CRLF text | 0.590 | 0.173 (-71%) |
+| `Text::from(&str)` | 0.725 | 0.606 (-16%) |
+| `Text::from(String)` | 0.304 | 0.315 (same code, noise) |
+| `Document::new`, LF | 1.131 | 0.764 (-32%) |
+| `Document::new`, CRLF | 3.282 | 1.275 (-61%) |
+| `Document::from_string`, CRLF | 2.824 | 1.119 (-60%) |
+| `compact(64 KiB)`, 3000 pieces (ns/B) | 0.407 | 0.229 (-44%) |
+| `Document::splice` no-op over 200 pieces (ns/B) | 0.108 | 0.060 (-44%) |
+| `rfind_before("fn ")`, random offsets (µs) | 4.02 | 2.85 (-29%) |
+| `floor_char_boundary`, random (ns) | 122.8 | 115.1 (-6%, noise) |
+| `char_count` (ns/B) | 0.102 | 0.089 (noise) |
+
+Hot paths (1 MB text, 10k keys; 1000 pastes of 1 KiB and a 1000-insert batch on 10 MB), min over 8 rounds of min of 15, ns per op:
+
+| Row | before | after |
+|---|---:|---:|
+| typing, `insert_mut` | 28.0 | 29.1 |
+| typing, `insert` (persistent) | 146.7 | 141.7 |
+| paste, `insert_mut` | 702.3 | 686.3 |
+| paste, `insert` | 1062.0 | 1056.6 |
+| `apply_edits`, 1000 inserts | 228.9 | 197.8 |
+
+Within the noise, after two fixes found by this A/B: (1) splitting `Text::insert` into `insert` + `insert_small` (so the `Shared` arm of `insert_mut` reuses the normalized text and its `lf`) made persistent typing ~15% slower until `insert_small` was `#[inline(always)]`, and the one-pass normalizer inlined into every insert until its `\r` branch moved to a `#[cold]` function; (2) `push_normalized` built a `memchr_iter` for every batch replacement (+7% on the batch) until it got a `memchr` fast path for text without `\r`.
+
+**Normalization on block masks (follow-up)**: `push_normalized` and `normalize_owned` still walked `memchr_iter(b'\r')` / a restarted `memchr`, with a short copy per line. Replaced by `newlines::normalize_append` / `normalize_in_place` (block masks, constant 64-byte stores). A/B against the `memchr_iter` build, same harness, load average ~1, min over 5 rounds, ns/B: `Document::new` CRLF 1.203 -> 0.974 (-19%), `Document::from_string` CRLF 1.012 -> 0.757 (-25%); LF loads and `detect` unchanged (0.56-0.60, 0.29-0.31, 0.15-0.17: noise). Overall against the code before this section: `Document::new` CRLF 3.28 -> 0.97 (-70%), `from_string` CRLF 2.82 -> 0.76 (-73%).
+
+Not taken: fusing `count_lf` with `try_append`'s scan for pastes up to 64 KiB (the count is needed before the atomic reservation; the text is in cache). Cross-library tables: not re-run with this change (the host was not idle); `comparison-tables-linux.md` and `comparison-tables.md` are from the previous runs.

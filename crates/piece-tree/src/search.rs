@@ -64,7 +64,9 @@ pub struct TextCursor<'a> {
 impl<'a> TextCursor<'a> {
     /// Cursor on the piece containing byte `off`; the last piece for `off == len`.
     fn at(text: &'a Text, off: usize) -> Self {
-        let mut c = TextCursor { path: Vec::new(), chunk: &[], offset: 0, len: text.len() };
+        // The path never holds more than one node per level.
+        let path = Vec::with_capacity(tree::height(text.root()).into());
+        let mut c = TextCursor { path, chunk: &[], offset: 0, len: text.len() };
         let (mut t, mut off) = (text.root(), off);
         while let Some(n) = t.as_deref() {
             c.path.push(n);
@@ -206,7 +208,7 @@ impl Text {
             let (mut best, mut p) = (None, lo);
             while let Some(m) = self.find_from(re, p).filter(|m| m.start < hi) {
                 // `m.start < hi <= len`, so a boundary follows it.
-                p = (m.start + 1..=self.len()).find(|&o| self.is_char_boundary(o)).expect("the end is a boundary");
+                p = self.ceil_char_boundary(m.start + 1);
                 best = Some(m);
             }
             if best.is_some() {
@@ -235,7 +237,7 @@ impl Text {
             rep,
             |i, dst| {
                 if let Some(span) = caps.get_group(i) {
-                    dst.push_str(&self.slice(span.range()));
+                    self.push_range(span.range(), dst);
                 }
             },
             |name| caps.pattern().and_then(|pid| caps.group_info().to_index(pid, name)),

@@ -3,6 +3,7 @@ use std::{
     collections::HashMap,
     fmt,
     io::{self, Write},
+    mem,
     ops::{ControlFlow, Range},
 };
 
@@ -11,7 +12,7 @@ use triomphe::Arc;
 use crate::chunk::{Chunk, MAX_ADD_BYTES, count_lf};
 use crate::document::Edit;
 use crate::LineEnding;
-use crate::eol::{normalize, normalize_owned};
+use crate::eol::{normalize, normalize_owned, push_normalized};
 use crate::tree::{self, Node, Piece, Tree};
 
 /// An effective edit of a batch: the replaced range of the old text, and the range of the stored
@@ -131,9 +132,8 @@ impl Text {
         let (mut out, mut run, mut run_len) = (Vec::new(), Vec::new(), 0);
         let flush = |out: &mut Vec<Piece>, run: &mut Vec<Piece>, len: usize| {
             if run.len() > 1 {
-                let mut s = String::with_capacity(len);
-                run.drain(..).for_each(|p| s.push_str(p.text()));
-                out.push(Piece::whole(Chunk::from_string(s)));
+                out.push(Piece::whole(Chunk::concat(run, len)));
+                run.clear();
             } else {
                 out.append(run);
             }
@@ -172,22 +172,27 @@ impl Text {
         }
         if s.len() > MAX_ADD_BYTES {
             // Too big to extend a piece or share a chunk: one exact chunk, one scan.
-            let piece = Piece::whole(Chunk::exact(&s));
             return Text {
-                root: tree::insert_at(&self.root, off, piece),
+                root: tree::insert_at(&self.root, off, Piece::whole(big_chunk(s))),
                 add: self.add.clone(),
             };
         }
         let lf = count_lf(&s);
+        self.insert_small(off, &s, lf)
+    }
+
+    /// [`Text::insert`] of normalized, non-empty `s` of at most `MAX_ADD_BYTES` with `lf` newlines.
+    #[inline(always)] // the typing path: it was one function before, keep it so
+    fn insert_small(&self, off: usize, s: &str, lf: usize) -> Text {
         if let Some(add) = &self.add
-            && let Some(root) = tree::extend_at(&self.root, off, |p| p.try_extend(add, &s, lf))
+            && let Some(root) = tree::extend_at(&self.root, off, |p| p.try_extend(add, s, lf))
         {
             return Text {
                 root,
                 add: self.add.clone(),
             };
         }
-        let (piece, add) = Piece::store(self.add.as_ref(), &s, lf);
+        let (piece, add) = Piece::store(self.add.as_ref(), s, lf);
         Text {
             root: tree::insert_at(&self.root, off, piece),
             add,
@@ -206,7 +211,7 @@ impl Text {
         }
         if s.len() > MAX_ADD_BYTES {
             // Too big to extend a piece or share a chunk: one exact chunk, one scan.
-            tree::insert_mut(&mut self.root, off, Piece::whole(Chunk::exact(&s)));
+            tree::insert_mut(&mut self.root, off, Piece::whole(big_chunk(s)));
             return;
         }
         let lf = count_lf(&s);
@@ -215,7 +220,7 @@ impl Text {
                 tree::InPlace::Done => return,
                 // Typing right after a version somebody keeps: the copying path extends the piece.
                 tree::InPlace::Shared => {
-                    *self = self.insert(off, &s);
+                    *self = self.insert_small(off, &s, lf);
                     return;
                 }
                 tree::InPlace::Declined => {}
@@ -288,12 +293,11 @@ impl Text {
         let mut out = String::new();
         let mut spans: Vec<Span> = Vec::new();
         for (r, s) in edits {
-            let s = normalize(s);
-            if r.is_empty() && s.is_empty() {
+            let start = out.len();
+            push_normalized(&mut out, s);
+            if r.is_empty() && out.len() == start {
                 continue;
             }
-            let start = out.len();
-            out.push_str(&s);
             spans.push((r.clone(), start..out.len()));
         }
         if spans.is_empty() {
@@ -340,7 +344,7 @@ impl Text {
         } else if budget < tree::min_pieces(&self.root) {
             false
         } else {
-            tree::has_at_most(&self.root, budget)
+            tree::has_at_most_in(&self.root, 0, self.len(), budget)
         }
     }
 
@@ -445,42 +449,42 @@ impl Text {
 
     /// Number of chars (Unicode scalar values). O(n): a pass over the pieces.
     pub fn char_count(&self) -> usize {
-        self.chunks().map(count_chars).sum()
+        self.chars_in(0..self.len())
     }
 
     /// Chars before byte `off` (a char boundary). O(`off`): a pass over the pieces.
     pub fn offset_to_char(&self, off: usize) -> usize {
         assert!(off <= self.len(), "offset {off} out of bounds");
         assert!(self.is_char_boundary(off), "offset not on a char boundary");
-        let mut left = off;
-        let mut chars = 0;
-        for c in self.chunks() {
-            if left < c.len() {
-                return chars + count_chars(&c[..left]);
-            }
-            chars += count_chars(c);
-            left -= c.len();
-        }
-        chars
+        self.chars_in(0..off)
     }
 
     /// Byte offset where char `ch` starts (`len()` for `ch == char_count()`). O(offset).
     pub fn char_to_offset(&self, ch: usize) -> usize {
-        let (mut left, mut base) = (ch, 0);
-        for c in self.chunks() {
-            // `to_byte_idx` gives `c.len()` when `left` is not a char of `c` (also for the char just
-            // past it): then the chunk is skipped by its char count. The target chunk is scanned
+        self.char_start_in(0..self.len(), ch).unwrap_or_else(|| panic!("char {ch} out of bounds"))
+    }
+
+    /// Byte offset where char `n` of `range` starts, `range.end` when `n` is its char count, `None`
+    /// past that. O(offset - range.start), no copy.
+    fn char_start_in(&self, range: Range<usize>, n: usize) -> Option<usize> {
+        let (mut left, mut base) = (n, range.start);
+        let found = collect(&self.root, range.start, range.end, &mut |part| {
+            // `to_byte_idx` gives `part.len()` when `left` is not a char of `part` (also for the char
+            // just past it): then the part is skipped by its char count. The target part is scanned
             // once; a block loop that counts and only then looks up the char is 2x faster on CJK
             // and on skipped pieces, and was rejected as not worth its constant (benchmarks.md).
-            let off = to_byte_idx(c, left);
-            if off < c.len() {
-                return base + off;
+            let i = to_byte_idx(part, left);
+            if i < part.len() {
+                return ControlFlow::Break(base + i);
             }
-            left -= count_chars(c);
-            base += c.len();
+            left -= count_chars(part);
+            base += part.len();
+            ControlFlow::Continue(())
+        });
+        match found {
+            ControlFlow::Break(off) => Some(off),
+            ControlFlow::Continue(()) => (left == 0).then_some(base),
         }
-        assert!(left == 0, "char {ch} out of bounds");
-        base
     }
 
     /// Whether byte `off` is a char boundary (false past the end).
@@ -488,6 +492,12 @@ impl Text {
         if off >= self.len() {
             return off == self.len();
         }
+        let (piece, at) = self.piece_at(off);
+        piece.text().is_char_boundary(at)
+    }
+
+    /// The piece holding byte `off < len` and the offset of `off` in it.
+    fn piece_at(&self, off: usize) -> (&Piece, usize) {
         let (mut t, mut off) = (&self.root, off);
         loop {
             let n = t.as_ref().expect("off < len is inside a piece");
@@ -495,7 +505,7 @@ impl Text {
             if off < ll {
                 t = &n.left;
             } else if off - ll < n.piece.len() {
-                return n.piece.text().is_char_boundary(off - ll);
+                return (&n.piece, off - ll);
             } else {
                 off -= ll + n.piece.len();
                 t = &n.right;
@@ -505,12 +515,22 @@ impl Text {
 
     /// The largest char boundary at or before `off`, clamped to the text length.
     pub fn floor_char_boundary(&self, off: usize) -> usize {
-        // A char is at most 4 bytes, and the text end is a boundary.
-        let off = off.min(self.len());
-        (off.saturating_sub(3)..=off)
-            .rev()
-            .find(|&o| self.is_char_boundary(o))
-            .expect("0 is a boundary")
+        if off >= self.len() {
+            return self.len();
+        }
+        // Piece starts are boundaries, so the answer lies in the piece holding `off`.
+        let (piece, at) = self.piece_at(off);
+        off - at + piece.text().floor_char_boundary(at)
+    }
+
+    /// The smallest char boundary at or after `off`, clamped to the text length.
+    pub(crate) fn ceil_char_boundary(&self, off: usize) -> usize {
+        if off >= self.len() {
+            return self.len();
+        }
+        // Piece ends are boundaries, so the answer lies in the piece holding `off`.
+        let (piece, at) = self.piece_at(off);
+        off - at + piece.text().ceil_char_boundary(at)
     }
 
     /// Byte offset where 0-based `line` ends (its `\n`, or the text end on the last line).
@@ -548,25 +568,7 @@ impl Text {
     /// O(line length), no copy.
     pub fn line_col_to_offset(&self, line: usize, col: usize) -> usize {
         let start = self.line_to_offset(line);
-        let (mut left, mut base) = (col, start);
-        let found = collect(&self.root, start, self.line_end(line), &mut |part| {
-            // `to_byte_idx` gives the length when `left` is not a char of `part` (also for the char just
-            // past it): then the part is skipped by its char count.
-            let i = to_byte_idx(part, left);
-            if i < part.len() {
-                return ControlFlow::Break(base + i);
-            }
-            left -= count_chars(part);
-            base += part.len();
-            ControlFlow::Continue(())
-        });
-        match found {
-            ControlFlow::Break(off) => off,
-            ControlFlow::Continue(()) => {
-                assert!(left == 0, "column {col} out of bounds");
-                base
-            }
-        }
+        self.char_start_in(start..self.line_end(line), col).unwrap_or_else(|| panic!("column {col} out of bounds"))
     }
 
     /// 0-based line and char column of byte `off` (a char boundary). O(line length), no copy.
@@ -651,18 +653,55 @@ impl Text {
         );
         let mut out = Cow::Borrowed("");
         _ = collect(&self.root, range.start, range.end, &mut |part| {
-            if out.is_empty() {
-                out = Cow::Borrowed(part);
-            } else {
-                out.to_mut().push_str(part);
-            }
+            // Parts are never empty, so `""` is only the start.
+            out = match mem::take(&mut out) {
+                Cow::Borrowed("") => Cow::Borrowed(part),
+                Cow::Borrowed(first) => {
+                    // The second part: allocate once for the whole range.
+                    let mut s = String::with_capacity(range.len());
+                    s.push_str(first);
+                    s.push_str(part);
+                    Cow::Owned(s)
+                }
+                Cow::Owned(mut s) => {
+                    s.push_str(part);
+                    Cow::Owned(s)
+                }
+            };
             ControlFlow::<()>::Continue(())
         });
         out
     }
 
+    /// Appends bytes `range` (valid, on char boundaries) to `out`, with no intermediate copy.
+    pub(crate) fn push_range(&self, range: Range<usize>, out: &mut String) {
+        _ = collect(&self.root, range.start, range.end, &mut |part| {
+            out.push_str(part);
+            ControlFlow::<()>::Continue(())
+        });
+    }
+
+    /// Whether bytes `range` hold exactly `s`, compared piece by piece without copying.
+    pub(crate) fn range_eq(&self, range: Range<usize>, s: &str) -> bool {
+        assert!(
+            range.start <= range.end && range.end <= self.len(),
+            "invalid range {range:?}"
+        );
+        if range.len() != s.len() {
+            return false;
+        }
+        let mut rest = s.as_bytes();
+        collect(&self.root, range.start, range.end, &mut |part| {
+            let (head, tail) = rest.split_at(part.len());
+            rest = tail;
+            if head == part.as_bytes() { ControlFlow::Continue(()) } else { ControlFlow::Break(()) }
+        })
+        .is_continue()
+    }
+
     pub fn chunks(&self) -> Chunks<'_> {
-        let mut c = Chunks { stack: Vec::new() };
+        // The stack never holds more than one node per level.
+        let mut c = Chunks { stack: Vec::with_capacity(tree::height(&self.root).into()) };
         c.push_left(&self.root);
         c
     }
@@ -670,20 +709,33 @@ impl Text {
     /// Writes the text with `\n` converted to `eol`. A clone is a snapshot, so this can run on
     /// another thread while the original keeps being edited.
     pub fn write_to(&self, mut w: impl Write, eol: LineEnding) -> io::Result<()> {
-        let sep = eol.as_str().as_bytes();
-        for chunk in self.chunks() {
-            if eol == LineEnding::Lf {
-                w.write_all(chunk.as_bytes())?;
-                continue;
+        self.try_for_each_eol(eol, |s| w.write_all(s.as_bytes()))
+    }
+
+    /// Calls `f` on the text in order, in parts, with every `\n` given as `eol`; stops at the first
+    /// error. Walks the pieces in place, no heap stack.
+    pub(crate) fn try_for_each_eol<E>(&self, eol: LineEnding, mut f: impl FnMut(&str) -> Result<(), E>) -> Result<(), E> {
+        let sep = eol.as_str();
+        let flow = collect(&self.root, 0, self.len(), &mut |chunk| {
+            let done = if eol == LineEnding::Lf {
+                f(chunk)
+            } else {
+                chunk.split('\n').enumerate().try_for_each(|(i, part)| {
+                    if i > 0 {
+                        f(sep)?;
+                    }
+                    f(part)
+                })
+            };
+            match done {
+                Ok(()) => ControlFlow::Continue(()),
+                Err(e) => ControlFlow::Break(e),
             }
-            for (i, part) in chunk.split('\n').enumerate() {
-                if i > 0 {
-                    w.write_all(sep)?;
-                }
-                w.write_all(part.as_bytes())?;
-            }
+        });
+        match flow {
+            ControlFlow::Continue(()) => Ok(()),
+            ControlFlow::Break(e) => Err(e),
         }
-        Ok(())
     }
 }
 
@@ -709,7 +761,16 @@ impl From<String> for Text {
 
 impl fmt::Display for Text {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.chunks().try_for_each(|c| f.write_str(c))
+        self.try_for_each_eol(LineEnding::Lf, |c| f.write_str(c))
+    }
+}
+
+/// Exact chunk for a large normalized text: an already owned one (normalization allocated) is taken
+/// over and scanned, a borrowed one copied and scanned in the same pass.
+fn big_chunk(s: Cow<'_, str>) -> Arc<Chunk> {
+    match s {
+        Cow::Owned(s) => Chunk::from_string(s),
+        Cow::Borrowed(s) => Chunk::exact(s),
     }
 }
 

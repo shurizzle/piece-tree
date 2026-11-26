@@ -20,19 +20,9 @@ impl LineEnding {
 
     /// Most frequent line ending in `s`; `Lf` on ties or when there is none.
     pub fn detect(s: &str) -> Self {
-        let (mut lf, mut cr, mut crlf) = (0usize, 0usize, 0usize);
-        let b = s.as_bytes();
-        for i in memchr::memchr2_iter(b'\r', b'\n', b) {
-            if b[i] == b'\r' {
-                cr += 1;
-            } else if i > 0 && b[i - 1] == b'\r' {
-                // The `\r` just counted as lone was the first half of a CRLF.
-                cr -= 1;
-                crlf += 1;
-            } else {
-                lf += 1;
-            }
-        }
+        // One SIMD pass; a `\r\n` is neither a lone `\n` nor a lone `\r`.
+        let (lf, cr, crlf) = crate::newlines::eol_counts(s.as_bytes());
+        let (lf, cr) = (lf - crlf, cr - crlf);
         if crlf > lf && crlf >= cr {
             Self::CrLf
         } else if cr > lf {
@@ -67,18 +57,47 @@ impl FromStr for LineEnding {
     }
 }
 
-/// [`normalize`] for owned input: returns `s` itself when it has no `\r`.
+/// [`normalize`] for owned input, in `s`'s own buffer: the result is never longer (`\r\n` shrinks,
+/// `\r` keeps its size), so it is compacted in place with no allocation. `s` itself when it has
+/// no `\r`.
 pub(crate) fn normalize_owned(s: String) -> String {
-    if memchr::memchr(b'\r', s.as_bytes()).is_some() { normalize(&s).into_owned() } else { s }
+    let Some(first) = memchr::memchr(b'\r', s.as_bytes()) else { return s };
+    let mut b = s.into_bytes();
+    crate::newlines::normalize_in_place(&mut b, first);
+    // SAFETY: `b` was a `String`; only ASCII bytes were rewritten or removed, and the kept runs
+    // between them are whole, so it is still UTF-8.
+    unsafe { String::from_utf8_unchecked(b) }
 }
 
-/// Converts `\r\n` and lone `\r` to `\n`.
+/// Converts `\r\n` and lone `\r` to `\n`: borrowed when there is no `\r`, else one pass into one
+/// allocation.
 pub(crate) fn normalize(s: &str) -> Cow<'_, str> {
-    if memchr::memchr(b'\r', s.as_bytes()).is_some() {
-        Cow::Owned(s.replace("\r\n", "\n").replace('\r', "\n"))
-    } else {
-        Cow::Borrowed(s)
+    if memchr::memchr(b'\r', s.as_bytes()).is_none() {
+        return Cow::Borrowed(s);
     }
+    Cow::Owned(normalized(s))
+}
+
+/// The `\r` case of [`normalize`], kept out of line: every insert inlines the check, few take it.
+#[cold]
+#[inline(never)]
+fn normalized(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    push_normalized(&mut out, s);
+    out
+}
+
+/// Appends `s` to `out` with `\r\n` and lone `\r` converted to `\n`, in one pass.
+pub(crate) fn push_normalized(out: &mut String, s: &str) {
+    let Some(first) = memchr::memchr(b'\r', s.as_bytes()) else {
+        // The common case (many short batch replacements): a plain copy.
+        out.push_str(s);
+        return;
+    };
+    out.push_str(&s[..first]);
+    // SAFETY: what is appended is `s[first..]` with ASCII bytes rewritten or removed, still UTF-8
+    // (`first` is a `\r`, so a char boundary).
+    crate::newlines::normalize_append(unsafe { out.as_mut_vec() }, &s.as_bytes()[first..]);
 }
 
 #[cfg(test)]
@@ -154,6 +173,22 @@ mod tests {
         assert_eq!(normalize("\r\r\n\n\r"), "\n\n\n\n");
         assert_eq!(normalize("\r"), "\n");
         assert_eq!(normalize("é\r\n🦀"), "é\n🦀");
+    }
+
+    /// The one-pass and in-place normalizers against the two `replace` calls they replaced.
+    #[test]
+    fn normalize_matches_replace() {
+        const ATOMS: [&str; 7] = ["a", "\r", "\n", "\r\n", "é", "🦀", "\r\r"];
+        let mut rng = crate::test_util::Rng(7);
+        for _ in 0..2000 {
+            let s: String = (0..rng.below(12)).map(|_| ATOMS[rng.below(ATOMS.len())]).collect();
+            let want = s.replace("\r\n", "\n").replace('\r', "\n");
+            assert_eq!(normalize(&s), want, "{s:?}");
+            assert_eq!(normalize_owned(s.clone()), want, "{s:?}");
+            let mut out = String::from("x");
+            push_normalized(&mut out, &s);
+            assert_eq!(out, format!("x{want}"), "{s:?}");
+        }
     }
 
     #[test]

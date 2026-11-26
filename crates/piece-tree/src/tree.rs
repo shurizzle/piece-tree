@@ -80,6 +80,11 @@ impl Piece {
         unsafe { self.chunk.newlines(self.nl_first, self.lf) }
     }
 
+    /// Offsets in the piece of its `\n` bytes, ascending.
+    pub(crate) fn newline_offsets(&self) -> impl Iterator<Item = u32> + '_ {
+        self.newlines().iter().map(|&p| p - self.start)
+    }
+
     pub(crate) fn chunk(&self) -> &Arc<Chunk> {
         &self.chunk
     }
@@ -173,23 +178,6 @@ pub(crate) fn min_pieces(t: &Tree) -> usize {
 /// Most pieces a tree of `t`'s height can have (a full tree), in O(1).
 pub(crate) fn max_pieces(t: &Tree) -> usize {
     (1usize << height(t)) - 1
-}
-
-/// Whether `t` has at most `limit` pieces, by a walk that stops as soon as the count exceeds it:
-/// O(min(pieces, limit)). Not cached per node, which cost ~4% on paste (benchmarks.md).
-pub(crate) fn has_at_most(t: &Tree, limit: usize) -> bool {
-    let (mut n, mut stack) = (0, vec![t]);
-    while let Some(t) = stack.pop() {
-        if let Some(node) = t {
-            n += 1;
-            if n > limit {
-                return false;
-            }
-            stack.push(&node.left);
-            stack.push(&node.right);
-        }
-    }
-    true
 }
 
 pub(crate) fn len(t: &Tree) -> usize {
@@ -326,7 +314,8 @@ pub(crate) fn split(t: Tree, off: usize) -> (Tree, Tree) {
 }
 
 /// Whether at most `limit` pieces overlap bytes `[s, e)` of `t`, by a walk that stops as soon as
-/// the count exceeds it and clones nothing: O(min(pieces in range, limit)).
+/// the count exceeds it and clones nothing: O(min(pieces in range, limit)). Over the whole text it
+/// bounds the piece count; caching the count per node instead cost ~4% on paste (benchmarks.md).
 pub(crate) fn has_at_most_in(t: &Tree, s: usize, e: usize, limit: usize) -> bool {
     fn walk(t: &Tree, s: usize, e: usize, n: &mut usize, limit: usize) -> bool {
         let Some(node) = t else { return true };

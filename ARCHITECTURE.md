@@ -77,7 +77,7 @@ rim (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of Text
 ## Edit flow
 
 `Text::insert(off, s)`: assert `off <= len`, normalize `s`, then:
-- `s` > 64 KiB: one exact chunk, inserted with `insert_at`;
+- `s` > 64 KiB: one exact chunk (copied and newline-indexed in one pass, or the normalized copy taken over), inserted with `insert_at`;
 - else, if the piece ending at `off` ends at the reserved end of the add chunk: append there and **extend that piece** (`extend_at`, one path copy, no rebalancing);
 - else append to the add chunk (or a new, larger one) and insert a new piece (`insert_at`, persistent AVL insert).
 
