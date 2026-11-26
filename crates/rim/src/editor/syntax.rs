@@ -372,13 +372,13 @@ impl Editor {
             let mut loaded = None;
             match self.runtime.as_deref().map(|dir| Lang::load(dir, name)) {
                 Some(Ok(l)) => loaded = l,
-                Some(Err(e)) => self.msg = e,
+                Some(Err(e)) => self.error(e),
                 None => {}
             }
             if loaded.is_none() {
                 match builtin::lang(name) {
                     Some(Ok(l)) => loaded = Some(l),
-                    Some(Err(e)) => self.msg = e,
+                    Some(Err(e)) => self.error(e),
                     None => {}
                 }
             }
@@ -412,7 +412,7 @@ impl Editor {
     pub(super) fn highlight_cmd(&mut self, args: &str) -> Result<(), String> {
         let shown = self.hl_groups.command(args, self.buf.opts.env().light)?;
         if !shown.is_empty() {
-            self.msg = shown;
+            self.info(shown);
         }
         Ok(())
     }
@@ -420,7 +420,7 @@ impl Editor {
     /// `:syntax [on|off]`: switches syntax highlighting and the `f`/`c`/`a` objects, or says which it is.
     pub(super) fn syntax_cmd(&mut self, arg: &str) -> Result<(), String> {
         match arg.trim() {
-            "" => self.msg = format!("syntax {}", if self.syntax_on { "on" } else { "off" }),
+            "" => self.info(format!("syntax {}", if self.syntax_on { "on" } else { "off" })),
             "on" => self.syntax_on = true,
             "off" => {
                 // The trees of buffers not shown go too, not when they are next shown.

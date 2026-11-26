@@ -10,6 +10,7 @@ mod filetype;
 mod graphemes;
 mod highlight;
 mod layout;
+mod messages;
 mod motion;
 mod objects;
 mod options;
@@ -209,7 +210,7 @@ pub struct Editor {
     /// Window area and cursor cell of the last frame, for `Ctrl+W hjkl`.
     screen: windows::Rect,
     cursor_cell: (usize, usize),
-    msg: String,
+    msgs: messages::Messages,
     mode: Mode,
     /// Visual-mode selection end opposite the cursor.
     anchor: Pos,
@@ -292,7 +293,7 @@ pub struct Editor {
 
 impl Editor {
     pub fn new(doc: Document, path: PathBuf) -> Self {
-        Self {
+        let mut e = Self {
             buf: Buffer::new(1, doc, path, Options::default()),
             win: Window::new(1, 1),
             buffers: Vec::new(),
@@ -304,7 +305,7 @@ impl Editor {
             saves: Vec::new(),
             screen: windows::Rect { x: 0, y: 0, w: 1, h: 1 },
             cursor_cell: (0, 0),
-            msg: "i insert | Esc normal | :w save | :q quit".into(),
+            msgs: messages::Messages::default(),
             mode: Mode::Normal,
             anchor: (0, 0),
             pending: String::new(),
@@ -349,7 +350,9 @@ impl Editor {
             runtime: None,
             syntax_on: true,
             langs: HashMap::new(),
-        }
+        };
+        e.msgs.show_hint("i insert | Esc normal | :w save | :q quit");
+        e
     }
 
     pub fn open(path: PathBuf) -> io::Result<Self> {
@@ -373,7 +376,7 @@ impl Editor {
                 Some(Reg { text, kind })
             }
             None => {
-                self.msg = "Clipboard read failed: the terminal did not answer OSC 52".into();
+                self.error("Clipboard read failed: the terminal did not answer OSC 52");
                 None
             }
         }
@@ -385,7 +388,7 @@ impl Editor {
         let text = match fs::read_to_string(path) {
             Ok(t) => t,
             Err(e) if e.kind() == io::ErrorKind::NotFound => return,
-            Err(e) => return self.msg = format!("{}: {e}", path.display()),
+            Err(e) => return self.error(format!("{}: {e}", path.display())),
         };
         let mut errors = Vec::new();
         for (i, line) in text.lines().enumerate() {
@@ -406,7 +409,7 @@ impl Editor {
             }
         }
         if !errors.is_empty() {
-            self.msg = format!("{}: {}", path.display(), errors.join("; "));
+            self.error(format!("{}: {}", path.display(), errors.join("; ")));
         }
     }
 
@@ -744,11 +747,11 @@ impl Editor {
     fn change_list(&mut self, back: bool, n: usize) {
         let (len, idx) = (self.buf.changes.len(), self.buf.change_idx);
         if len == 0 {
-            return self.msg = "Change list is empty".into();
+            return self.error("Change list is empty");
         }
         let to = if back { idx.checked_sub(n) } else { Some(idx + n).filter(|&i| i < len) };
         let Some(to) = to else {
-            return self.msg = if back { "At start of change list" } else { "At end of change list" }.into();
+            return self.error(if back { "At start of change list" } else { "At end of change list" });
         };
         self.buf.change_idx = to;
         let off = self.buf.doc.text().floor_char_boundary(self.buf.changes[to]);
@@ -818,7 +821,27 @@ impl Editor {
 
     /// Returns false to quit.
     pub fn key(&mut self, key: KeyEvent) -> bool {
-        self.msg.clear();
+        if self.msgs.hint {
+            self.msgs.clear();
+        }
+        // Macros and `.` replay keys as typed, so they dismiss it too; `:g` and `:normal` have no screen.
+        // A message taller than the screen row waits for a key (vim's hit-enter prompt); Enter, Space and Esc only dismiss it.
+        if self.msgs.hit_enter && self.line_marks.is_empty() {
+            self.msgs.clear();
+            if self.msgs.prompt && [KeyCode::Enter, KeyCode::Char(' '), KeyCode::Esc].iter().any(|&c| key == c.into()) {
+                return true;
+            }
+        }
+        let before = mem::discriminant(&self.mode);
+        let more = self.key_inner(key);
+        // The message row now shows the mode or the command line.
+        if before != mem::discriminant(&self.mode) && matches!(self.mode, Mode::Insert | Mode::Visual(_) | Mode::Command(_) | Mode::Search(_)) {
+            self.msgs.clear();
+        }
+        more
+    }
+
+    fn key_inner(&mut self, key: KeyEvent) -> bool {
         // A `Ctrl+O` command in progress (not the `Ctrl+O` key itself).
         let one = self.insert_one.is_some();
         if let Some(r) = self.recording
@@ -982,7 +1005,7 @@ impl Editor {
                     self.win.want_col = self.win.col;
                     self.mode = Mode::Visual(kind);
                 }
-                None => self.msg = "No previous Visual selection".into(),
+                None => self.error("No previous Visual selection"),
             },
             G_INSERT => {
                 // At the mark `^`, where Insert mode was last left.
@@ -1025,20 +1048,20 @@ impl Editor {
             }
             '.' => self.repeat(count),
             G_EARLIER => self.history(1, |d| d.earlier(n), "Already at oldest change"),
-            '\x07' => self.msg = self.file_info(),
+            '\x07' => self.info(self.file_info()),
             '\x17' => self.window_cmd(arg(), n),
             '\x1e' => self.alternate_buffer(),
             // `&` is `:s`, `g&` is `:%s//~/&` (last substitute on the whole text, same flags).
             '&' => self.substitute(substitute::Sub::again(false)),
             G_SUBST => self.substitute(substitute::Sub::again(true)),
-            G_COUNTS => self.msg = self.counts(),
+            G_COUNTS => self.info(self.counts()),
             G_ASCII | G_UTF8 => {
                 let c = self.char_at((self.win.line, self.win.col));
-                self.msg = match (key, c) {
+                self.info(match (key, c) {
                     (_, '\n') => "NUL".into(),
                     (G_ASCII, c) => format!("<{c}> {0}, Hex {0:04x}, Oct {0:o}", c as u32),
                     (_, c) => c.encode_utf8(&mut [0; 4]).bytes().map(|b| format!("{b:02x}")).collect::<Vec<_>>().join(" "),
-                };
+                });
             }
             G_LATER => self.history(1, |d| d.later(n), "Already at newest change"),
             '\x01' => self.add_number(n as i64),
@@ -1047,19 +1070,19 @@ impl Editor {
                 m @ 'a'..='z' => {
                     self.buf.marks.insert(m, self.offset());
                 }
-                _ => self.msg = "Invalid mark name".into(),
+                _ => self.error("Invalid mark name"),
             },
             'q' => match arg() {
                 r @ ('a'..='z' | 'A'..='Z') => {
                     self.recording = Some(r);
                     self.macro_keys.clear();
                 }
-                _ => self.msg = "Invalid register name".into(),
+                _ => self.error("Invalid register name"),
             },
             '@' => match arg() {
                 '@' => match self.last_macro {
                     Some(r) => self.play_macro(r, n),
-                    None => self.msg = "No previously used register".into(),
+                    None => self.error("No previously used register"),
                 },
                 r => self.play_macro(r, n),
             },
@@ -1094,9 +1117,10 @@ impl Editor {
     }
 
     fn play_macro(&mut self, r: char, n: usize) {
+        let seq = self.msgs.seq;
         let Some(keys) = self.reg(r).map(|reg| parse::text_keys(&reg.text)) else {
-            if self.msg.is_empty() {
-                self.msg = format!("Register {r} is empty");
+            if self.msgs.seq == seq {
+                self.error(format!("Register {r} is empty"));
             }
             return;
         };
@@ -1115,7 +1139,7 @@ impl Editor {
         }
         self.macro_depth -= 1;
         if self.macro_depth == 0 && mem::take(&mut self.macro_abort) {
-            self.msg = "Macro recursion too deep".into();
+            self.error("Macro recursion too deep");
         }
     }
 
@@ -1241,9 +1265,10 @@ impl Editor {
     /// The register of the command (`"` by default) for a paste; reports an empty one.
     fn paste_source(&mut self) -> Option<Reg> {
         let name = self.cur_reg.take().unwrap_or('"');
+        let seq = self.msgs.seq;
         let reg = self.reg(name);
-        if reg.is_none() && self.msg.is_empty() {
-            self.msg = format!("Nothing in register {name}");
+        if reg.is_none() && self.msgs.seq == seq {
+            self.error(format!("Nothing in register {name}"));
         }
         reg
     }
@@ -1352,7 +1377,7 @@ impl Editor {
         for _ in 0..n {
             let before = self.buf.doc.text().clone();
             if !step(&mut self.buf.doc) {
-                self.msg = at_end.into();
+                self.info(at_end);
                 break;
             }
             self.map_marks(&before);
@@ -1387,7 +1412,7 @@ impl Editor {
         let s = &line[start..end];
         let col = graphemes::col_of(&line, start);
         let Some(v) = s.parse::<i64>().ok().and_then(|v| v.checked_add(delta)) else {
-            self.msg = "Number out of range".into();
+            self.error("Number out of range");
             return;
         };
         let v = v.to_string();
@@ -1945,7 +1970,7 @@ impl Editor {
                     let offset = match search::Offset::parse(off) {
                         Ok(o) => o,
                         Err(e) => {
-                            self.msg = e;
+                            self.error(e);
                             return self.clamp_normal();
                         }
                     };
@@ -1953,7 +1978,7 @@ impl Editor {
                         match self.new_search(pat) {
                             Ok(s) => self.last_search = Some(s),
                             Err(e) => {
-                                self.msg = e;
+                                self.error(e);
                                 return self.clamp_normal();
                             }
                         }
@@ -1967,7 +1992,7 @@ impl Editor {
                     if let Some((to, _)) = self.search_motion(!self.search_back, 1, None) {
                         self.move_to('n', to);
                     } else if self.last_search.is_none() {
-                        self.msg = "No previous search pattern".into();
+                        self.error("No previous search pattern");
                     }
                     return self.clamp_normal();
                 }
@@ -2020,15 +2045,15 @@ impl Editor {
             "m" => Some(60),
             "h" => Some(3600),
             "d" => Some(86400),
-            _ => return self.msg = format!("Invalid argument: {arg}"),
+            _ => return self.error(format!("Invalid argument: {arg}")),
         };
-        let Some(n) = n else { return self.msg = format!("Invalid argument: {arg}") };
+        let Some(n) = n else { return self.error(format!("Invalid argument: {arg}")) };
         let end = if back { "Already at oldest change" } else { "Already at newest change" };
         match (name, secs) {
             ("undo", None) if arg.is_empty() => self.undo(1),
             ("undo", None) => self.history(1, |d| d.goto(n), "Already at that change"),
             ("redo", None) if arg.is_empty() => self.redo(1),
-            ("undo" | "redo", _) => self.msg = format!("Invalid argument: {arg}"),
+            ("undo" | "redo", _) => self.error(format!("Invalid argument: {arg}")),
             (_, Some(s)) => {
                 let d = std::time::Duration::from_secs((n as u64).saturating_mul(s));
                 self.history(1, |doc| if back { doc.earlier_time(d) } else { doc.later_time(d) }, end);
@@ -2094,14 +2119,14 @@ impl Editor {
     fn substitute(&mut self, mut s: substitute::Sub) {
         let (first, last) = match self.range0(s.range.take().as_ref(), false) {
             Ok(r) => r,
-            Err(e) => return self.msg = e,
+            Err(e) => return self.error(e),
         };
         if s.confirm && !s.count && !self.line_marks.is_empty() {
             // shortcut: no `c` flag under `:g`/`:normal` (the prompt would need the loop to wait), when someone needs it
-            return self.msg = "The c flag cannot be used here".into();
+            return self.error("The c flag cannot be used here");
         }
         if s.repeat || s.keep {
-            let Some(last) = &self.last_sub else { return self.msg = "No previous substitute".into() };
+            let Some(last) = &self.last_sub else { return self.error("No previous substitute") };
             if s.repeat {
                 (s.pat, s.rep) = (last.pat.clone(), last.rep.clone());
             }
@@ -2113,7 +2138,7 @@ impl Editor {
         let pat = if s.pat.is_empty() {
             match &self.last_search {
                 Some(l) => l.pat.clone(),
-                None => return self.msg = "No previous regular expression".into(),
+                None => return self.error("No previous regular expression"),
             }
         } else {
             s.pat
@@ -2126,7 +2151,7 @@ impl Editor {
         };
         let search = match Search::new(&pattern) {
             Ok(r) => r,
-            Err(e) => return self.msg = e,
+            Err(e) => return self.error(e),
         };
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
@@ -2137,7 +2162,7 @@ impl Editor {
             self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None, cur: 0..0 });
             self.mode = Mode::Confirm;
             if !self.confirm_prompt() {
-                self.msg = format!("Pattern not found: {pat}");
+                self.error(format!("Pattern not found: {pat}"));
             }
             return;
         }
@@ -2160,17 +2185,18 @@ impl Editor {
             let n = text.find_iter_in(&search.re, start..end).filter(|m| pick(m.clone())).count();
             self.last_search = Some(search);
             self.hl = true;
-            return self.msg = if n == 0 {
-                format!("Pattern not found: {pat}")
+            if n == 0 {
+                self.error(format!("Pattern not found: {pat}"));
             } else {
-                format!("{n} match{} on {} line{}", if n == 1 { "" } else { "es" }, lines.len(), plural(lines.len()))
-            };
+                self.info(                format!("{n} match{} on {} line{}", if n == 1 { "" } else { "es" }, lines.len(), plural(lines.len())));
+            }
+            return;
         }
         let n = self.edit(|d| d.replace_matching(&search.re, &s.rep, pick));
         self.last_search = Some(search);
         self.hl = true;
         if n == 0 {
-            return self.msg = format!("Pattern not found: {pat}");
+            return self.error(format!("Pattern not found: {pat}"));
         }
         // The line where the last replacement ends (the edits are in order, each in the text
         // left by the previous ones, so the last one is already in final coordinates).
@@ -2180,7 +2206,7 @@ impl Editor {
         self.win.line = l;
         self.set_col(self.first_non_blank(l));
         self.clamp_normal();
-        self.msg = format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len()));
+        self.info(format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len())));
         // `.` does not repeat `:` commands (vim), so this undo group is not the last change.
         self.rec_cmd = None;
         self.end_command();
@@ -2189,7 +2215,7 @@ impl Editor {
     /// `gn`/`gN`: the match under the cursor, else the next/previous one, as an operator target
     /// or a Visual selection.
     fn select_match(&mut self, op: Option<char>, forward: bool) {
-        let Some(s) = self.last_search.clone() else { return self.msg = "No previous search pattern".into() };
+        let Some(s) = self.last_search.clone() else { return self.error("No previous search pattern") };
         self.hl = true;
         let text = self.buf.doc.text().clone();
         let cur = self.offset();
@@ -2200,7 +2226,7 @@ impl Editor {
             !w && m.end > cur && !(visual && if forward { m.end <= after } else { m.start >= cur })
         });
         let found = here.or_else(|| if forward { search::find_forward(&text, &s.re, cur, after) } else { search::find_backward(&text, &s.re, cur) });
-        let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.msg = format!("Pattern not found: {}", s.pat) };
+        let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.error(format!("Pattern not found: {}", s.pat)) };
         let (a, b) = (self.pos_of(m.start), self.pos_of(m.end));
         match op {
             Some(op) => self.operate(op, a, b, Kind::Exclusive),
@@ -2224,8 +2250,9 @@ impl Editor {
         let Some((m, _)) = c.find(self.buf.doc.text()) else { return false };
         let (l, col) = self.pos_of(m.start);
         let Some(c) = &mut self.confirm else { return false };
-        self.msg = format!("replace with {} (y/n/a/q/l)?", c.rep);
+        let ask = format!("replace with {} (y/n/a/q/l)?", c.rep);
         c.cur = m;
+        self.info(ask);
         (self.win.line, self.win.col) = (l, col);
         self.win.want_col = col;
         true
@@ -2242,7 +2269,7 @@ impl Editor {
         }
         self.clamp_normal();
         let plural = |k: usize| if k == 1 { "" } else { "s" };
-        self.msg = format!("{} substitution{} on {} line{}", c.n, plural(c.n), c.lines, plural(c.lines));
+        self.info(format!("{} substitution{} on {} line{}", c.n, plural(c.n), c.lines, plural(c.lines)));
         self.rec_cmd = None;
     }
 
@@ -2308,9 +2335,9 @@ impl Editor {
                 self.buf.doc = doc;
                 (self.grouping, self.changed) = (false, false);
                 self.clamp();
-                self.msg = format!("Reloaded ({})", self.buf.doc.eol());
+                self.info(format!("Reloaded ({})", self.buf.doc.eol()));
             }
-            Err(e) => self.msg = format!("Reload failed: {e}"),
+            Err(e) => self.error(format!("Reload failed: {e}")),
         }
     }
 

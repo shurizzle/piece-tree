@@ -72,13 +72,17 @@ fn run() -> io::Result<()> {
     loop {
         editor.render(&mut out)?;
         let saving = editor.saving();
-        if (saving || !idle) && !event::poll(if saving { SAVE_POLL } else { IDLE })? {
-            if saving {
-                editor.poll_saves();
-            } else {
-                editor.idle();
-                idle = true;
-            }
+        let base = if saving {
+            Some(SAVE_POLL)
+        } else if !idle {
+            Some(IDLE)
+        } else {
+            None
+        };
+        if let Some(t) = editor.poll_timeout(base)
+            && !event::poll(t)?
+        {
+            idle |= editor.timed_out(saving);
             continue;
         }
         idle = false;

@@ -2,8 +2,10 @@
 
 use std::{
     io::{self, Write},
+    mem,
     ops::Range,
     rc::Rc,
+    time::{Duration, Instant},
 };
 
 use crossterm::{
@@ -18,6 +20,7 @@ use super::{
     Editor, Mode, VKind, graphemes,
     highlight::{self as hl, Attrs},
     layout::{LONG_LINE, Rows},
+    messages::Level,
     registers::osc52,
     search, sorted,
     windows::Rect,
@@ -40,6 +43,11 @@ pub enum Style {
     Status,
     StatusNc,
     Split,
+    /// Message row: errors (`ErrorMsg`), warnings (`WarningMsg`), the mode (`ModeMsg`) and the hit-enter prompt (`MoreMsg`).
+    ErrorMsg,
+    WarningMsg,
+    ModeMsg,
+    MoreMsg,
 }
 
 #[derive(Debug)]
@@ -374,6 +382,12 @@ impl Editor {
         let mut rects = Vec::new();
         self.split.rects(area, &mut rects);
         let single = rects.len() == 1;
+        // `laststatus`: a status row per window, never, only with several windows, or always.
+        let has_status = match self.buf.opts.laststatus {
+            0 => false,
+            1 => rects.len() > 1,
+            _ => true,
+        };
         // Each screen row: segments by column, each exactly as wide as its window.
         let mut grid: Vec<Vec<(usize, Vec<Span>)>> = (0..area.h).map(|_| Vec::new()).collect();
         let mut put = |x: usize, y: usize, spans: Vec<Span>| {
@@ -383,7 +397,7 @@ impl Editor {
         };
         let (mut cursor, mut cursor_rows, mut cursor_cols) = ((0, 0), 0..0, 0..w);
         for (id, r) in rects {
-            let text_h = if single { r.h } else { r.h.saturating_sub(1).max(1) };
+            let text_h = if has_status { r.h.saturating_sub(1).max(1) } else { r.h };
             let active = id == self.win.id;
             let (pane, status) = if active {
                 (self.window_rows(r.w, text_h, true), self.window_status())
@@ -405,7 +419,7 @@ impl Editor {
                 }
                 put(r.x, r.y + i, spans);
             }
-            if !single {
+            if has_status {
                 let style = if active { Style::Status } else { Style::StatusNc };
                 put(r.x, r.y + text_h, vec![Span { style, text: fit(&status, r.w) }]);
             }
@@ -428,34 +442,39 @@ impl Editor {
             Mode::Search(s) => Some(format!("{}{s}", if self.search_back { '?' } else { '/' })),
             _ => None,
         };
-        let (status, cursor, bar) = if let Some(input) = input {
+        let (cmd_row, cursor, bar) = if let Some(input) = input {
             let x = str_width(&input).min(w - 1);
-            (Span { style: Style::Plain, text: fit(&input, w) }, (x, area.h), true)
+            (vec![Span { style: Style::Plain, text: fit(&input, w) }], (x, area.h), true)
         } else {
-            let mode = match self.mode {
-                Mode::Insert if self.replacing.is_some() => "REPLACE",
-                Mode::Insert => "INSERT",
-                Mode::Visual(VKind::Char) => "VISUAL",
-                Mode::Visual(VKind::Line) => "V-LINE",
-                Mode::Visual(VKind::Block) => "V-BLOCK",
-                _ => "NORMAL",
-            };
-            let pending = format!("{} {}{}", self.pending, self.recording.map_or_else(String::new, |r| format!("recording @{r} ")), self.msg);
-            let status = if single {
-                format!(
-                    " {mode} | {}{} | Ln {}, Col {} | {} | {pending}",
-                    self.buf.path.display(),
-                    if self.is_dirty() { " [+]" } else { "" },
-                    self.win.line + 1,
-                    self.win.col + 1,
-                    self.buf.doc.eol(),
-                )
-            } else {
-                format!(" {mode} | {pending}")
-            };
-            (Span { style: Style::Status, text: fit(&status, w) }, cursor, self.mode == Mode::Insert)
+            (self.message_row(w, has_status), cursor, self.mode == Mode::Insert)
         };
-        rows.push(vec![status]);
+        rows.push(cmd_row);
+        let (mut cursor, mut bar) = (cursor, bar);
+        // A message of several rows (or one wider than the screen) covers the bottom of the screen
+        // and waits for a key, like vim's hit-enter prompt.
+        let lines = if self.msgs.text().is_empty() { Vec::new() } else { wrap(self.msgs.text(), w) };
+        if lines.len() > 1 && !self.msgs.hint && !matches!(self.mode, Mode::Command(_) | Mode::Search(_) | Mode::Confirm) {
+            (self.msgs.hit_enter, self.msgs.prompt) = (true, self.buf.opts.msg_hit_enter);
+            let style = match self.msgs.level() {
+                Level::Info => Style::Plain,
+                Level::Warning => Style::WarningMsg,
+                Level::Error => Style::ErrorMsg,
+            };
+            // shortcut: output taller than the screen shows its last rows, no paging; when someone needs `:more`
+            rows.pop();
+            let prompt = usize::from(self.msgs.prompt);
+            let keep = (rows.len() + 1 - prompt).min(lines.len());
+            rows.truncate((rows.len() + 1).saturating_sub(keep + prompt));
+            rows.extend(lines[lines.len() - keep..].iter().map(|l| vec![Span { style, text: l.clone() }]));
+            if !self.msgs.prompt {
+                let wait = self.buf.opts.msg_wait.unwrap_or(0);
+                self.msgs.deadline.get_or_insert_with(|| Instant::now() + Duration::from_millis(wait as u64));
+            } else {
+                let prompt = "Press ENTER or type command to continue";
+                rows.push(vec![Span { style: Style::MoreMsg, text: fit(prompt, w) }]);
+                (cursor, bar) = ((str_width(prompt).min(w - 1), rows.len() - 1), false);
+            }
+        }
         Frame {
             rows,
             cursor,
@@ -465,6 +484,44 @@ impl Editor {
             ui: hl::Ui::new(&self.hl_groups, self.buf.opts.env()),
             clipboard: self.regs.clipboard.take(),
         }
+    }
+
+    /// The message row when no command line is being typed: the message, or the mode and the
+    /// recording register, with the pending keys and the cursor position on the right.
+    fn message_row(&self, w: usize, has_status: bool) -> Vec<Span> {
+        let o = &self.buf.opts;
+        let (style, left) = if self.msgs.text().is_empty() {
+            let mode = match self.mode {
+                Mode::Insert if self.replacing.is_some() => "-- REPLACE --",
+                Mode::Insert => "-- INSERT --",
+                Mode::Visual(VKind::Char) => "-- VISUAL --",
+                Mode::Visual(VKind::Line) => "-- VISUAL LINE --",
+                Mode::Visual(VKind::Block) => "-- VISUAL BLOCK --",
+                _ => "",
+            };
+            let rec = self.recording.map_or_else(String::new, |r| format!("recording @{r}"));
+            (Style::ModeMsg, if o.showmode { format!("{mode}{rec}") } else { String::new() })
+        } else {
+            let style = match self.msgs.level() {
+                Level::Info => Style::Plain,
+                Level::Warning => Style::WarningMsg,
+                Level::Error => Style::ErrorMsg,
+            };
+            (style, self.msgs.text().to_string())
+        };
+        let ruler = if has_status { String::new() } else { format!("Ln {}, Col {}", self.win.line + 1, self.win.col + 1) };
+        let keys = if o.showcmd { self.pending.as_str() } else { "" };
+        let right = if ruler.is_empty() && keys.is_empty() { String::new() } else { format!("{keys:<10} {ruler}") };
+        let (lw, rw) = (str_width(&left), str_width(&right));
+        let mut spans = Vec::new();
+        if lw + 1 + rw <= w && rw > 0 {
+            spans.push(Span { style, text: left });
+            spans.push(Span { style: Style::Plain, text: " ".repeat(w - lw - rw) });
+            spans.push(Span { style: Style::Plain, text: right });
+        } else {
+            spans.push(Span { style, text: fit(&left, w) });
+        }
+        spans
     }
 
     pub fn render(&mut self, out: &mut impl Write) -> io::Result<()> {
@@ -516,6 +573,10 @@ pub(super) fn draw(f: &Frame, out: &mut impl Write) -> io::Result<()> {
                 Style::Status => ui.status,
                 Style::StatusNc => ui.status_nc,
                 Style::Split => ui.split,
+                Style::ErrorMsg => ui.error_msg,
+                Style::WarningMsg => ui.warning_msg,
+                Style::ModeMsg => ui.mode_msg,
+                Style::MoreMsg => ui.more_msg,
             };
             // A span's own background (matches) wins over the cursor line's, which wins over `Normal`'s.
             let fg = st.fg.or(ui.normal.fg);
@@ -670,5 +731,27 @@ pub(super) fn fit(s: &str, w: usize) -> String {
         }
     }
     out.extend(std::iter::repeat_n(' ', w - x));
+    out
+}
+
+/// `s` cut into rows of at most `w` columns: at every newline and when a row is full.
+fn wrap(s: &str, w: usize) -> Vec<String> {
+    let mut out = Vec::new();
+    for line in s.split('\n') {
+        let (mut row, mut x) = (String::new(), 0);
+        for g in graphemes::iter(line) {
+            let cw = graphemes::width(g, 1);
+            if x + cw > w && !row.is_empty() {
+                out.push(mem::take(&mut row));
+                x = 0;
+            }
+            x += cw;
+            match g.chars().next() {
+                Some(c) if c.is_control() => row.push('?'),
+                _ => row.push_str(g),
+            }
+        }
+        out.push(row);
+    }
     out
 }

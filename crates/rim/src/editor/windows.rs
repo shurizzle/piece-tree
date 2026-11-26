@@ -287,7 +287,7 @@ impl Editor {
             _ => Ok(()),
         };
         if let Err(e) = res {
-            self.msg = e;
+            self.error(e);
         }
     }
 }

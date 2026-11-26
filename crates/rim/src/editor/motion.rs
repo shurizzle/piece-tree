@@ -310,7 +310,7 @@ impl Editor {
             }
             '*' | '#' => {
                 let Some((word, start)) = self.word_under_cursor() else {
-                    self.msg = "No identifier under cursor".into();
+                    self.error("No identifier under cursor");
                     return None;
                 };
                 let mut s = search::Search::word(&word, self.buf.opts.ignorecase);
@@ -346,7 +346,7 @@ impl Editor {
                     m => m,
                 };
                 let Some(off) = self.mark(m) else {
-                    self.msg = "Mark not set".into();
+                    self.error("Mark not set");
                     return None;
                 };
                 let p = self.pos_of(off);
@@ -393,7 +393,7 @@ impl Editor {
     /// default), wrapping, with the search offset applied. Sets the wrap or not-found message.
     pub(super) fn search_motion(&mut self, forward: bool, n: usize, from: Option<usize>) -> Option<(Pos, Kind)> {
         let Some(s) = self.last_search.clone() else {
-            self.msg = "No previous search pattern".into();
+            self.error("No previous search pattern");
             return None;
         };
         self.hl = true;
@@ -406,11 +406,11 @@ impl Editor {
         let mut found = None;
         for _ in 0..n {
             let Some((m, wrapped)) = self.find_match(&s.re, forward, cur) else {
-                self.msg = format!("Pattern not found: {}", s.pat);
+                self.error(format!("Pattern not found: {}", s.pat));
                 return None;
             };
             if wrapped {
-                self.msg = if forward { "search hit BOTTOM, continuing at TOP" } else { "search hit TOP, continuing at BOTTOM" }.into();
+                self.warn(if forward { "search hit BOTTOM, continuing at TOP" } else { "search hit TOP, continuing at BOTTOM" });
             }
             cur = m.start;
             found = Some(m);

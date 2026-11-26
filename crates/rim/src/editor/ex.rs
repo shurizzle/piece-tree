@@ -189,7 +189,7 @@ pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
 /// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
 pub(super) const NAMES: &[&str] = &[
     "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
-    "files", "global", "goto", "highlight", "join", "later", "ls", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
+    "files", "global", "goto", "highlight", "join", "later", "ls", "messages", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
     "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "syntax", "undo", "undolist",
     "vglobal", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
@@ -403,14 +403,14 @@ impl Editor {
         let c = match parse(line) {
             Ok(c) => c,
             Err(e) => {
-                self.msg = e;
+                self.error(e);
                 return true;
             }
         };
         if let Some(s) = substitute::parse(c.range.clone(), c.name, c.arg) {
             match s {
                 Ok(s) => self.substitute(s),
-                Err(e) => self.msg = e,
+                Err(e) => self.error(e),
             }
             return true;
         }
@@ -451,7 +451,7 @@ impl Editor {
             _ if abbr(n, "b", "buffer") && a.is_empty() => Ok(()),
             _ if abbr(n, "b", "buffer") => self.goto_buffer(a),
             _ if abbr(n, "ls", "ls") || abbr(n, "buffers", "buffers") || abbr(n, "files", "files") => {
-                self.msg = self.list_buffers();
+                self.info(self.list_buffers());
                 Ok(())
             }
             _ if abbr(n, "bd", "bdelete") => self.delete_buffer(bang, a),
@@ -470,8 +470,9 @@ impl Editor {
                 self.hl = false;
                 Ok(())
             }
+            _ if abbr(n, "mes", "messages") => self.messages_cmd(a),
             _ if abbr(n, "undol", "undolist") => {
-                self.msg = self.undolist();
+                self.info(self.undolist());
                 Ok(())
             }
             "go" | "got" | "goto" => self.goto_byte(a),
@@ -488,7 +489,7 @@ impl Editor {
             ">" | "<" => self.shift_cmd(r, n == ">", a),
             _ if abbr(n, "j", "join") => self.join_cmd(r, bang, a),
             _ if abbr(n, "p", "print") => self.print(r),
-            "=" => self.lines(r, (self.line_count(), self.line_count())).map(|(_, b)| self.msg = b.to_string()),
+            "=" => self.lines(r, (self.line_count(), self.line_count())).map(|(_, b)| self.info(b.to_string())),
             _ if abbr(n, "norm", "normal") => self.normal_cmd(r, arg),
             _ if abbr(n, "sor", "sort") => self.sort(r, bang, a),
             _ if abbr(n, "g", "global") => self.global(r, bang, a),
@@ -497,18 +498,18 @@ impl Editor {
             _ if abbr(n, "sav", "saveas") => self.save_as(bang, a),
             _ if abbr(n, "ret", "retab") => self.retab(r, bang, a),
             "stats" => {
-                self.msg = self.stats();
+                self.info(self.stats());
                 Ok(())
             }
             "compact" => {
                 let (before, after) = self.compact();
-                self.msg = format!("{before} pieces -> {after}");
+                self.info(format!("{before} pieces -> {after}"));
                 Ok(())
             }
             _ => Err(format!("Not an editor command: {}", line.trim())),
         };
         if let Err(e) = res {
-            self.msg = e;
+            self.error(e);
         }
         !self.quit
     }
@@ -641,10 +642,15 @@ impl Editor {
             }
         }
         if !rest.is_empty() || arg.is_empty() {
-            shown.push(self.buf.opts.set(&rest.join(" "))?);
+            let set = self.buf.opts.set(&rest.join(" "));
+            // Screen options hold for every buffer, not only the one shown.
+            for b in &mut self.buffers {
+                self.buf.opts.copy_global(&mut b.opts);
+            }
+            shown.push(set?);
         }
         shown.retain(|s| !s.is_empty());
-        self.msg = shown.join("  ");
+        self.info(shown.join("\n"));
         Ok(())
     }
 
@@ -765,7 +771,7 @@ impl Editor {
     fn print(&mut self, r: Option<&LineRange>) -> Result<(), String> {
         let (_, b) = self.range0(r, false)?;
         self.first_line(b);
-        self.msg = self.buf.doc.text().line(b).into_owned();
+        self.info(self.buf.doc.text().line(b).into_owned());
         Ok(())
     }
 
@@ -942,7 +948,7 @@ impl Editor {
         }
         self.insert_lines(after, &s);
         self.first_line(after);
-        self.msg = format!("\"{}\" {}L, {}B", path.display(), s.split('\n').count(), t.len());
+        self.info(format!("\"{}\" {}L, {}B", path.display(), s.split('\n').count(), t.len()));
         Ok(())
     }
 
@@ -956,8 +962,8 @@ impl Editor {
         // A `:w` still running makes its buffer clean when it ends.
         self.wait_saves();
         match self.dirty_buffer().filter(|_| !bang) {
-            Some(b) if b.id == self.buf.id => self.msg = DIRTY.into(),
-            Some(b) => self.msg = format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.path.display()),
+            Some(b) if b.id == self.buf.id => self.error(DIRTY),
+            Some(b) => self.error(format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.path.display())),
             None => return false,
         }
         true
@@ -990,7 +996,7 @@ impl Editor {
         let eol = self.buf.doc.eol();
         let res = if append { append_to(&path, &part, eol) } else { write_atomic(&path, &part, eol) };
         res.map_err(|e| format!("Save failed: {e}"))?;
-        self.msg = format!("\"{}\" {}L written", path.display(), b - a + 1);
+        self.info(format!("\"{}\" {}L written", path.display(), b - a + 1));
         Ok(())
     }
 

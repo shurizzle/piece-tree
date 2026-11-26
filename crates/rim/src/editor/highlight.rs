@@ -278,6 +278,10 @@ fn defaults(i: usize) -> HashMap<String, Group> {
     ui("StatusLine", None, None, Attrs::REVERSE);
     ui("StatusLineNC", Some([243, 244][i]), None, Attrs::default());
     ui("VertSplit", Some([243, 244][i]), None, Attrs::default());
+    ui("ErrorMsg", Some(15), Some(1), Attrs::default());
+    ui("WarningMsg", Some([203, 160][i]), None, Attrs::default());
+    ui("ModeMsg", None, None, Attrs::BOLD);
+    ui("MoreMsg", Some([114, 28][i]), None, Attrs::BOLD);
     m
 }
 
@@ -361,10 +365,10 @@ impl Highlights {
         };
         match words.as_slice() {
             [] => {
-                // The status line holds one row: the built-in groups (~60) are asked for by name.
+                // The built-in groups (~60) are asked for by name.
                 let mut names: Vec<&String> = self.user.keys().collect();
                 names.sort();
-                Ok(if names.is_empty() { "No user highlight groups".into() } else { names.into_iter().map(|n| show(self, n)).collect::<Vec<_>>().join("  ") })
+                Ok(if names.is_empty() { "No user highlight groups".into() } else { names.into_iter().map(|n| show(self, n)).collect::<Vec<_>>().join("\n") })
             }
             ["clear"] => {
                 self.user.clear();
@@ -424,6 +428,10 @@ pub struct Ui {
     pub status: Style,
     pub status_nc: Style,
     pub split: Style,
+    pub error_msg: Style,
+    pub warning_msg: Style,
+    pub mode_msg: Style,
+    pub more_msg: Style,
 }
 
 impl Ui {
@@ -439,6 +447,10 @@ impl Ui {
             status: s("StatusLine"),
             status_nc: s("StatusLineNC"),
             split: s("VertSplit"),
+            error_msg: s("ErrorMsg"),
+            warning_msg: s("WarningMsg"),
+            mode_msg: s("ModeMsg"),
+            more_msg: s("MoreMsg"),
         }
     }
 }
@@ -581,7 +593,7 @@ mod tests {
         cmd(&mut h, "Zed ctermfg=1").unwrap();
         assert_eq!(cmd(&mut Highlights::default(), ""), Ok("No user highlight groups".into()));
         cmd(&mut h, "Abc cterm=bold").unwrap();
-        assert_eq!(cmd(&mut h, ""), Ok("Abc cterm=bold  Zed ctermfg=1".into()));
+        assert_eq!(cmd(&mut h, ""), Ok("Abc cterm=bold\nZed ctermfg=1".into()));
         assert_eq!(cmd(&mut h, "LineNr"), Ok("LineNr ctermfg=243 cterm=NONE".into()));
         assert_eq!(h.command("Search", true), Ok("Search ctermfg=16 ctermbg=228 cterm=NONE".into()));
     }

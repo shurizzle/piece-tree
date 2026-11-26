@@ -74,6 +74,8 @@ pub(super) struct Saving {
     text: Text,
     eol: LineEnding,
     handle: JoinHandle<io::Result<()>>,
+    /// `Messages::seq` after the "writing" message: the write reports itself only if nothing else was shown since.
+    seq: u64,
 }
 
 fn writing_msg(path: &Path) -> String {
@@ -126,7 +128,7 @@ impl Editor {
         self.next_buf += 1;
         self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts.clone()));
         self.switch_buffer(self.next_buf);
-        self.msg = self.file_info();
+        self.info(self.file_info());
         Ok(())
     }
 
@@ -163,7 +165,7 @@ impl Editor {
     pub(super) fn alternate_buffer(&mut self) {
         match self.alt.filter(|&id| self.buffer(id).is_some()) {
             Some(id) => self.switch_buffer(id),
-            None => self.msg = "No alternate file".into(),
+            None => self.error("No alternate file"),
         }
     }
 
@@ -183,7 +185,7 @@ impl Editor {
                 format!("{:>3} {flag} {}\"{}\" line {}", b.id, if b.is_dirty() { "+ " } else { "" }, b.path.display(), line + 1)
             })
             .collect::<Vec<_>>()
-            .join(" | ")
+            .join("\n")
     }
 
     /// `:bd[!] [N]`: windows showing the buffer move to the alternate (or next) one.
@@ -231,8 +233,9 @@ impl Editor {
             let (path, text) = (path.clone(), text.clone());
             thread::spawn(move || ex::write_atomic(&path, &text, eol))
         };
-        self.msg = writing_msg(&path);
-        self.saves.push(Saving { buf: id, path, text, eol, handle });
+        self.info(writing_msg(&path));
+        let seq = self.msgs.seq;
+        self.saves.push(Saving { buf: id, path, text, eol, handle, seq });
         if wait {
             ok &= self.wait_saves_where(|s| s.buf == id);
         }
@@ -263,15 +266,15 @@ impl Editor {
             match s.handle.join().expect("the save thread does not panic") {
                 Ok(()) => {
                     // Success does not cover what a later command reported; a failure does.
-                    if self.msg.is_empty() || self.msg == writing_msg(&s.path) {
-                        self.msg = format!("\"{}\" written ({})", s.path.display(), s.eol);
+                    if self.msgs.seq == s.seq {
+                        self.info(format!("\"{}\" written ({})", s.path.display(), s.eol));
                     }
                     if let Some(b) = self.buffer_mut(s.buf).filter(|b| b.path == s.path) {
                         (b.saved, b.saved_eol) = (s.text, s.eol);
                     }
                 }
                 Err(e) => {
-                    self.msg = format!("Save failed: {e}");
+                    self.error(format!("Save failed: {e}"));
                     ok = false;
                 }
             }

@@ -220,9 +220,9 @@ fn undo_groups_whole_commands_and_insert_sessions() {
     feed(&mut e, "2u");
     assert_eq!(text(&e), "bc");
     feed(&mut e, "5u");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("abc", "Already at oldest change"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("abc", "Already at oldest change"));
     feed(&mut e, "9\x12");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("", "Already at newest change"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("", "Already at newest change"));
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -254,11 +254,11 @@ fn quit_commands() {
     let mut e = ed("a");
     assert!(!feed(&mut e, ":x\n"));
     let mut e = run("a", "x:q\n");
-    assert_eq!(e.msg, "No write since last change (add ! to override)");
+    assert_eq!(e.msg(), "No write since last change (add ! to override)");
     assert!(!feed(&mut e, ":q!\n"));
     // The save target does not exist: write-and-quit stays open.
     let mut e = run("a", "x:wq\n");
-    assert!(e.msg.starts_with("Save failed"));
+    assert!(e.msg().starts_with("Save failed"));
     assert!(feed(&mut e, ":x\n:w\n"));
 }
 
@@ -290,7 +290,7 @@ fn command_line_editing_and_goto() {
     let e = run("a\nb\nc", ":3\n");
     assert_eq!((pos(&e), &e.mode), ((2, 0), &Mode::Normal));
     assert_eq!(run("a\nb\nc", ":99\n").win.line, 2);
-    assert_eq!(run("a", ":foo\n").msg, "Not an editor command: foo");
+    assert_eq!(run("a", ":foo\n").msg(), "Not an editor command: foo");
     assert_eq!(run("a\nb", ":x\x7f2\n").win.line, 1);
     assert_eq!(run("a", ":\x7f").mode, Mode::Normal);
     assert_eq!(run("a", ":q\x1b").mode, Mode::Normal);
@@ -306,15 +306,15 @@ fn search_wraps_and_repeats() {
     feed(&mut e, "n");
     assert_eq!(pos(&e), (2, 0));
     feed(&mut e, "n");
-    assert_eq!((pos(&e), e.msg.as_str()), ((0, 0), "search hit BOTTOM, continuing at TOP"));
+    assert_eq!((pos(&e), e.msg()), ((0, 0), "search hit BOTTOM, continuing at TOP"));
     feed(&mut e, "N");
-    assert_eq!((pos(&e), e.msg.as_str()), ((2, 0), "search hit TOP, continuing at BOTTOM"));
+    assert_eq!((pos(&e), e.msg()), ((2, 0), "search hit TOP, continuing at BOTTOM"));
     // Empty pattern reuses the last one.
     feed(&mut e, "gg/\n");
     assert_eq!(pos(&e), (1, 4));
     assert_eq!(text(&run(s, "/bar\nggdn")), "bar foo\nfoo");
-    assert_eq!(run(s, "/zzz\n").msg, "Pattern not found: zzz");
-    assert_eq!(run(s, "n").msg, "No previous search pattern");
+    assert_eq!(run(s, "/zzz\n").msg(), "Pattern not found: zzz");
+    assert_eq!(run(s, "n").msg(), "No previous search pattern");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -475,12 +475,12 @@ fn reload_from_disk() {
     fs::write(&path, "one\r\ntwo").unwrap();
     let mut e = Editor::open(path.clone()).unwrap();
     feed(&mut e, "jdd:e\n");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("one", "No write since last change (add ! to override)"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("one", "No write since last change (add ! to override)"));
     feed(&mut e, ":e!\n");
-    assert_eq!((text(&e).as_str(), e.is_dirty(), e.msg.as_str()), ("one\ntwo", false, "Reloaded (CRLF)"));
+    assert_eq!((text(&e).as_str(), e.is_dirty(), e.msg()), ("one\ntwo", false, "Reloaded (CRLF)"));
     assert_eq!(pos(&e), (0, 0));
     feed(&mut e, "u");
-    assert_eq!(e.msg, "Already at oldest change");
+    assert_eq!(e.msg(), "Already at oldest change");
     fs::write(&path, "x").unwrap();
     feed(&mut e, ":e\n");
     assert_eq!(text(&e), "x");
@@ -490,7 +490,7 @@ fn reload_from_disk() {
     let mut e = Editor::open(dir.join("missing-dir/f")).unwrap();
     fs::create_dir_all(dir.join("missing-dir/f")).unwrap();
     feed(&mut e, ":e!\n");
-    assert!(e.msg.starts_with("Reload failed"), "{}", e.msg);
+    assert!(e.msg().starts_with("Reload failed"), "{}", e.msg());
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -508,7 +508,7 @@ fn save_keeps_permissions_and_symlinks() {
     let mut e = Editor::open(link.clone()).unwrap();
     feed(&mut e, "rb:w\n");
     assert!(e.wait_saves());
-    assert_eq!(e.msg, format!("\"{}\" written (LF)", link.display()));
+    assert_eq!(e.msg(), format!("\"{}\" written (LF)", link.display()));
     assert!(fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
     assert_eq!(fs::read_to_string(&path).unwrap(), "b");
     assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o640);
@@ -544,12 +544,16 @@ fn snapshot(s: &str, keys: &str, w: usize, h: usize) -> (Vec<String>, (usize, us
 fn frame_shows_relative_numbers_status_and_cursor() {
     let (rows, cursor, bar) = snapshot("a\nbc\nd", "jl", 58, 5);
     assert_eq!(rows[..4], ["1 a", "2 bc", "1 d", ""]);
-    assert_eq!(rows[4], "[ NORMAL | /nonexistent/rim-test | Ln 2, Col 2 | LF |      ]");
+    assert_eq!(rows[4], format!("{:>58}", "Ln 2, Col 2"));
     assert_eq!((cursor, bar), ((3, 1), false));
     let (rows, _, bar) = snapshot("a", "ix", 30, 2);
-    assert_eq!((rows[1].as_str(), bar), ("[ INSERT | /nonexistent/rim-tes]", true));
-    assert!(snapshot("a", "V", 12, 2).0[1].starts_with("[ V-LINE"));
-    assert!(snapshot("a", "2d", 80, 2).0[1].contains("| LF | 2d "));
+    assert_eq!((rows[1].as_str(), bar), ("-- INSERT --", true));
+    // `laststatus=2`: the status row of the window carries the file and the position, the ruler leaves the message row.
+    let (rows, _, _) = snapshot("a\nbc\nd", "jl:set ls=2\n", 58, 5);
+    assert_eq!(rows[3], "[ /nonexistent/rim-test | Ln 2, Col 2 | LF                 ]");
+    assert_eq!(rows[4], "");
+    assert!(snapshot("a", "V", 20, 2).0[1].starts_with("-- VISUAL LINE --"));
+    assert!(snapshot("a", "2d", 80, 2).0[1].contains("2d "));
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -706,12 +710,12 @@ fn jump_and_change_lists() {
     feed(&mut e, "g;");
     assert_eq!(e.win.line, 0);
     feed(&mut e, "g;");
-    assert_eq!((e.win.line, e.msg.as_str()), (0, "At start of change list"));
+    assert_eq!((e.win.line, e.msg()), (0, "At start of change list"));
     feed(&mut e, "g,");
     assert_eq!(e.win.line, 2);
     feed(&mut e, "g,");
-    assert_eq!(e.msg, "At end of change list");
-    assert_eq!(run("a", "g;").msg, "Change list is empty");
+    assert_eq!(e.msg(), "At end of change list");
+    assert_eq!(run("a", "g;").msg(), "Change list is empty");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -721,7 +725,7 @@ fn gv_gi_gj_gp_and_bracket_p() {
     let e = run("abc def", "lvl\x1b$0iXY\x1bgv");
     assert_eq!((e.mode == Mode::Visual(VKind::Char), e.anchor, pos(&e)), (true, (0, 3), (0, 4)));
     assert_eq!(run("ab\ncd", "Vj\x1bgggvd").buf.doc.text().len(), 0);
-    assert_eq!(run("a", "gv").msg, "No previous Visual selection");
+    assert_eq!(run("a", "gv").msg(), "No previous Visual selection");
     // gi: Insert where it was last left.
     assert_eq!(text(&run("abc", "Ax\x1b0giy\x1b")), "abcxy");
     // gJ: join without touching blanks.
@@ -848,7 +852,7 @@ fn command_line_history_completion_and_registers() {
     e.key(KeyCode::BackTab.into());
     assert_eq!(line(&e), "undo");
     feed(&mut e, "\n");
-    assert_eq!(e.msg, "Already at oldest change");
+    assert_eq!(e.msg(), "Already at oldest change");
     // File names after `:e`.
     let dir = std::env::temp_dir().join(format!("rim-cmdline-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
@@ -874,7 +878,7 @@ fn init_file_sets_options() {
     let path = dir.join("init");
     let mut e = ed("a");
     e.load_init(&path);
-    assert_eq!((e.msg.as_str(), e.buf.opts.tabstop), ("i insert | Esc normal | :w save | :q quit", 4));
+    assert_eq!((e.msg(), e.buf.opts.tabstop), ("i insert | Esc normal | :w save | :q quit", 4));
     fs::write(&path, "\" comment\n\nset noet sw=2\n:se ts=8\n  set list\n").unwrap();
     e.load_init(&path);
     let o = &e.buf.opts;
@@ -885,12 +889,12 @@ fn init_file_sets_options() {
     fs::write(&path, "syn on\nsyntax maybe\nmap x y").unwrap();
     e.load_init(&path);
     assert!(e.syntax_on);
-    assert!(e.msg.ends_with("line 2: Invalid argument: maybe; line 3: only :set, :syntax and :highlight are allowed"), "{}", e.msg);
+    assert!(e.msg().ends_with("line 2: Invalid argument: maybe; line 3: only :set, :syntax and :highlight are allowed"), "{}", e.msg());
     // Errors name their lines; the other lines still apply.
     fs::write(&path, "set nu\nmap x y\nset foo\nset rnu!").unwrap();
     let mut e = ed("a");
     e.load_init(&path);
-    assert_eq!(e.msg, format!("{}: line 2: only :set, :syntax and :highlight are allowed; line 3: Unknown option: foo", path.display()));
+    assert_eq!(e.msg(), format!("{}: line 2: only :set, :syntax and :highlight are allowed; line 3: Unknown option: foo", path.display()));
     assert!(!e.buf.opts.relativenumber);
     // A buffer opened later copies the options.
     let other = dir.join("b.txt");
@@ -1171,15 +1175,15 @@ fn star_and_hash_search_whole_words() {
     feed(&mut e, "*");
     assert_eq!(pos(&e), (1, 0));
     feed(&mut e, "*");
-    assert_eq!((pos(&e), e.msg.as_str()), ((0, 0), "search hit BOTTOM, continuing at TOP"));
+    assert_eq!((pos(&e), e.msg()), ((0, 0), "search hit BOTTOM, continuing at TOP"));
     feed(&mut e, "#");
-    assert_eq!((pos(&e), e.msg.as_str()), ((1, 0), "search hit TOP, continuing at BOTTOM"));
+    assert_eq!((pos(&e), e.msg()), ((1, 0), "search hit TOP, continuing at BOTTOM"));
     feed(&mut e, "n"); // follows the last direction (backward)
     assert_eq!(pos(&e), (0, 9));
     assert_eq!(pos(&run(s, "ll2*")), (1, 0));
     // From blanks: the next word in the line.
     assert_eq!(pos(&run("  foo x foo", "*")), (0, 8));
-    assert_eq!(run("  ..", "*").msg, "No identifier under cursor");
+    assert_eq!(run("  ..", "*").msg(), "No identifier under cursor");
     assert_eq!(text(&run("a b a", "d*")), "a");
 }
 
@@ -1238,7 +1242,7 @@ fn backward_search_and_offsets() {
     assert_eq!(pos(&e), (1, 3));
     // Wrapping backward.
     let e = run(s, "?cd\n");
-    assert_eq!((pos(&e), e.msg.as_str()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
+    assert_eq!((pos(&e), e.msg()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
     // Offsets: end, start, lines; `//` reuses the pattern with a new offset.
     assert_eq!(pos(&run(s, "/cd/e\n")), (0, 4));
     assert_eq!(pos(&run(s, "/cd/s+1\n")), (0, 4));
@@ -1250,7 +1254,7 @@ fn backward_search_and_offsets() {
     // `n` reapplies the offset.
     feed(&mut e, "n");
     assert_eq!(pos(&e), (0, 4));
-    assert_eq!(run(s, "/cd/x\n").msg, "Invalid search offset: x");
+    assert_eq!(run(s, "/cd/x\n").msg(), "Invalid search offset: x");
     // An escaped delimiter belongs to the pattern.
     assert_eq!(pos(&run("a/b\nc", "/a\\/b\n")), (0, 0));
     assert_eq!(pos(&run("a/b\nc/b", "j/\\/b\n")), (1, 1));
@@ -1269,23 +1273,23 @@ fn substitute_confirm_count_and_repeat() {
     let s = "aa aa\nb\naa";
     // Count only.
     let e = run(s, ":%s/a/x/gn\n");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), (s, "6 matches on 2 lines"));
-    assert_eq!(run(s, ":s/q/x/n\n").msg, "Pattern not found: q");
+    assert_eq!((text(&e).as_str(), e.msg()), (s, "6 matches on 2 lines"));
+    assert_eq!(run(s, ":s/q/x/n\n").msg(), "Pattern not found: q");
     // Confirm: y n a q l, one undo step, per-line without `g`.
     let mut e = run(s, ":%s/a/x/c\n");
-    assert_eq!((pos(&e), e.msg.as_str()), ((0, 0), "replace with x (y/n/a/q/l)?"));
+    assert_eq!((pos(&e), e.msg()), ((0, 0), "replace with x (y/n/a/q/l)?"));
     feed(&mut e, "y");
     assert_eq!(pos(&e), (2, 0));
     feed(&mut e, "n");
     assert_eq!((text(&e).as_str(), &e.mode), ("xa aa\nb\naa", &Mode::Normal));
-    assert_eq!(e.msg, "1 substitution on 1 line");
+    assert_eq!(e.msg(), "1 substitution on 1 line");
     feed(&mut e, "u");
     assert_eq!(text(&e), s);
     let mut e = run(s, ":%s/a/x/gc\nyn");
     feed(&mut e, "z"); // other keys are ignored
     assert_eq!(e.mode, Mode::Confirm);
     feed(&mut e, "a");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("xa xx\nb\nxx", "5 substitutions on 2 lines"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("xa xx\nb\nxx", "5 substitutions on 2 lines"));
     feed(&mut e, "u");
     assert_eq!(text(&e), s);
     assert_eq!(text(&run(s, ":%s/a/x/gc\nl")), "xa aa\nb\naa");
@@ -1296,12 +1300,12 @@ fn substitute_confirm_count_and_repeat() {
     assert_eq!(screen(&e.frame(20, 3))[..2], ["1 a[b] a{b}", "1 {cd}"]);
     feed(&mut e, "y");
     assert_eq!(screen(&e.frame(20, 3))[..2], ["1 aX a[b ]", "1 [cd]"]);
-    assert_eq!(run(s, ":s/q/x/c\n").msg, "Pattern not found: q");
+    assert_eq!(run(s, ":s/q/x/c\n").msg(), "Pattern not found: q");
     // Empty matches advance; replacements that grow the text keep the range.
     assert_eq!(text(&run("ab", ":s/x*/-/gc\nyyy")), "-a-b-");
     assert_eq!(text(&run("ab\ncd", ":1,1s/b/XYZ/gc\ny")), "aXYZ\ncd");
     // `&`, `:&`, `:&&`, `g&`.
-    assert_eq!(run(s, "&").msg, "No previous substitute");
+    assert_eq!(run(s, "&").msg(), "No previous substitute");
     let mut e = run(s, ":s/a/x/g\n");
     assert_eq!(text(&e), "xx xx\nb\naa");
     feed(&mut e, "G&");
@@ -1318,7 +1322,7 @@ fn substitute_confirm_count_and_repeat() {
 #[test]
 fn gn_selects_the_match() {
     let s = "foo bar foo bar foo";
-    assert_eq!(run(s, "gn").msg, "No previous search pattern");
+    assert_eq!(run(s, "gn").msg(), "No previous search pattern");
     assert_eq!(text(&run(s, "/foo\ngg0dgn")), " bar foo bar foo");
     // On the match, it is that match; `gN` goes backward.
     assert_eq!(text(&run(s, "/foo\ngg0wwdgn")), "foo bar  bar foo");
@@ -1328,7 +1332,7 @@ fn gn_selects_the_match() {
     assert_eq!(text(&run(s, "/foo\nggcgnX\x1b..")), "X bar X bar X");
     assert_eq!(pos(&run(s, "/bar\ngg0gn")), (0, 6));
     assert_eq!(run(s, "/bar\ngg0gn").mode, Mode::Visual(VKind::Char));
-    assert_eq!(run(s, "/zzz\ngn").msg, "Pattern not found: zzz");
+    assert_eq!(run(s, "/zzz\ngn").msg(), "Pattern not found: zzz");
     // In Visual, `gn` extends to the next match's end, `gN` to the previous match's start.
     let e = run(s, "/bar\ngg0vgnd");
     assert_eq!((text(&e).as_str(), &e.mode), (" foo bar foo", &Mode::Normal));
@@ -1394,8 +1398,8 @@ fn marks() {
     assert_eq!(pos(&run(s, "G''''")), (2, 0));
     assert_eq!(pos(&run(s, "/h\n``")), (0, 0));
     assert_eq!(pos(&run(s, ":3\n''")), (0, 0));
-    assert_eq!(run(s, "'z").msg, "Mark not set");
-    assert_eq!(run(s, "m1").msg, "Invalid mark name");
+    assert_eq!(run(s, "'z").msg(), "Mark not set");
+    assert_eq!(run(s, "m1").msg(), "Invalid mark name");
     // Undo and redo move marks back with the text.
     assert_eq!(pos(&run("日本\nx", "jmaggddu`a")), (1, 0));
     assert_eq!(pos(&run("日本\nx", "jmaggddu\x12`a")), (0, 0));
@@ -1448,7 +1452,7 @@ fn increment_and_decrement() {
     assert_eq!(text(&run("abc", "\x01")), "abc");
     assert_eq!(text(&run("1 x", "ll\x01")), "1 x");
     let e = run("9223372036854775807", "\x01");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("9223372036854775807", "Number out of range"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("9223372036854775807", "Number out of range"));
     assert_eq!(text(&run("1", "\x01u")), "1");
     assert_eq!(text(&run("1", "\x01.")), "3");
 }
@@ -1495,7 +1499,7 @@ fn named_numbered_and_clipboard_registers() {
     assert_eq!(text(&run("ab", "\"bx\"bp")), "ba");
     assert_eq!(text(&run("ab", "\"bxp")), "ba");
     assert_eq!(text(&run("ab", "vl\"ay$\"aP")), "aabb");
-    assert_eq!(run("a", "\"zp").msg, "Nothing in register z");
+    assert_eq!(run("a", "\"zp").msg(), "Nothing in register z");
     // An invalid register cancels the prefix; the next key runs alone.
     assert_eq!(text(&run("ab", "\"!x")), "b");
     assert_eq!(text(&run("ab", "v\"!x")), "b");
@@ -1509,7 +1513,7 @@ fn named_numbered_and_clipboard_registers() {
     assert_eq!(e.frame(20, 2).clipboard, None);
     // Reading asks the terminal; without an answer nothing is pasted (no copy of the editor's own).
     feed(&mut e, "\"*p");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("abc", "Clipboard read failed: the terminal did not answer OSC 52"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("abc", "Clipboard read failed: the terminal did not answer OSC 52"));
     e.set_clipboard_reader(|| Some("x\ny".into()));
     feed(&mut e, "\"+p");
     assert_eq!(text(&e), "ax\nybc");
@@ -1536,11 +1540,11 @@ fn macros() {
     // Command line and search keys are recorded too.
     assert_eq!(text(&run("x\ny\nx", "qa/x\nrzq@a")), "z\ny\nz");
     // A macro calling itself stops at the depth limit.
-    assert_eq!(run("a", "qa@aq@a").msg, "Macro recursion too deep");
-    assert_eq!(run("a", "qaix\x1b@aq@a").msg, "Macro recursion too deep");
-    assert_eq!(run("a", "q1").msg, "Invalid register name");
-    assert_eq!(run("a", "@z").msg, "Register z is empty");
-    assert_eq!(run("a", "@@").msg, "No previously used register");
+    assert_eq!(run("a", "qa@aq@a").msg(), "Macro recursion too deep");
+    assert_eq!(run("a", "qaix\x1b@aq@a").msg(), "Macro recursion too deep");
+    assert_eq!(run("a", "q1").msg(), "Invalid register name");
+    assert_eq!(run("a", "@z").msg(), "Register z is empty");
+    assert_eq!(run("a", "@@").msg(), "No previously used register");
     // A quit inside a macro quits (recorded while dirty, so it was refused then).
     let mut e = ed("a");
     assert!(feed(&mut e, "xqa:q\nqu"));
@@ -1624,7 +1628,7 @@ fn visual_block_other_operators_and_render() {
     let mut e = run("abc\ndef", "l\x16jl");
     let rows = screen(&e.frame(20, 3));
     assert_eq!(rows[..2], ["1 a[bc]", "2 d[ef]"]);
-    assert!(rows[2].starts_with("[ V-BLOCK"));
+    assert!(rows[2].starts_with("-- VISUAL BLOCK --"));
     assert_eq!(run("a", "\x16v").mode, Mode::Visual(VKind::Char));
     assert_eq!(run("a", "v\x16").mode, Mode::Visual(VKind::Block));
     assert_eq!(run("a", "\x16\x16").mode, Mode::Normal);
@@ -1659,10 +1663,10 @@ fn set_options() {
     feed(&mut e, ":set nocul\n");
     assert_eq!(e.frame(20, 3).cursor_line, None);
     feed(&mut e, ":set ts?\n");
-    assert_eq!(e.msg, "tabstop=4");
+    assert_eq!(e.msg(), "tabstop=4");
     feed(&mut e, ":set foo\n");
-    assert_eq!(e.msg, "Unknown option: foo");
-    assert!(run("a", ":set\n").msg.starts_with("number  relativenumber  cursorline  tabstop=4"));
+    assert_eq!(e.msg(), "Unknown option: foo");
+    assert!(run("a", ":set\n").msg().starts_with("number  relativenumber  cursorline  tabstop=4"));
     // tabstop: display, Tab key and shifts.
     let mut e = run("\tx", ":set ts=2\n");
     assert_eq!(screen(&e.frame(20, 2))[0], "1   x");
@@ -1762,9 +1766,9 @@ fn regex_search() {
     feed(&mut e, "n");
     assert_eq!(pos(&e), (0, 5));
     feed(&mut e, "ggN");
-    assert_eq!((pos(&e), e.msg.as_str()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
+    assert_eq!((pos(&e), e.msg()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
     feed(&mut e, "G$n");
-    assert_eq!((pos(&e), e.msg.as_str()), ((0, 1), "search hit BOTTOM, continuing at TOP"));
+    assert_eq!((pos(&e), e.msg()), ((0, 1), "search hit BOTTOM, continuing at TOP"));
     assert_eq!(pos(&run(s, "/(?i)C\n")), (1, 0));
     assert_eq!(pos(&run(s, "/^a\n")), (0, 0));
     assert_eq!(pos(&run(s, "w/^a\n")), (0, 0));
@@ -1773,7 +1777,7 @@ fn regex_search() {
     assert_eq!(pos(&run("x\n\ny", "j/y\n")), (2, 0));
     // An invalid pattern keeps the last search.
     let mut e = run(s, "/b\n/(\n");
-    assert!(e.msg.starts_with("Invalid pattern: "), "{}", e.msg);
+    assert!(e.msg().starts_with("Invalid pattern: "), "{}", e.msg());
     feed(&mut e, "gg");
     feed(&mut e, "n");
     assert_eq!(pos(&e), (0, 3));
@@ -1823,24 +1827,24 @@ fn substitute_lines_and_flags() {
 fn substitute_cursor_messages_and_undo() {
     let s = "x\n  a\na\nb";
     let mut e = run(s, ":%s/a/z/g\n");
-    assert_eq!((text(&e).as_str(), pos(&e), e.msg.as_str()), ("x\n  z\nz\nb", (2, 0), "2 substitutions on 2 lines"));
+    assert_eq!((text(&e).as_str(), pos(&e), e.msg()), ("x\n  z\nz\nb", (2, 0), "2 substitutions on 2 lines"));
     feed(&mut e, "u");
     assert_eq!(text(&e), s);
     feed(&mut e, "\x12");
     assert_eq!(text(&e), "x\n  z\nz\nb");
-    assert_eq!(run("aa", ":s/a/b/g\n").msg, "2 substitutions on 1 line");
-    assert_eq!(run("a", ":s/a/b/\n").msg, "1 substitution on 1 line");
+    assert_eq!(run("aa", ":s/a/b/g\n").msg(), "2 substitutions on 1 line");
+    assert_eq!(run("a", ":s/a/b/\n").msg(), "1 substitution on 1 line");
     // The cursor goes where the last substitution ends, past the line breaks it added.
     assert_eq!(pos(&run("a,b\nc,d", concat!(r":%s/,/\n/", "\n"))), (3, 0));
     let e = run(s, ":%s/q/z/\n");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), (s, "Pattern not found: q"));
-    assert_eq!(run(s, ":%s/(/z/\n").msg.split(':').next(), Some("Invalid pattern"));
-    assert_eq!(run(s, ":s//z/\n").msg, "No previous regular expression");
-    assert_eq!(run(s, ":9s/a/z/\n").msg, "Invalid range");
+    assert_eq!((text(&e).as_str(), e.msg()), (s, "Pattern not found: q"));
+    assert_eq!(run(s, ":%s/(/z/\n").msg().split(':').next(), Some("Invalid pattern"));
+    assert_eq!(run(s, ":s//z/\n").msg(), "No previous regular expression");
+    assert_eq!(run(s, ":9s/a/z/\n").msg(), "Invalid range");
     // Line 0 counts as line 1 (vim).
     assert_eq!(text(&run(s, ":0s/a/z/\n")), text(&run(s, ":1s/a/z/\n")));
-    assert_eq!(run(s, ":'qs/a/z/\n").msg, "Mark not set");
-    assert_eq!(run(s, ":s/a/z/q\n").msg, "Trailing characters: q");
+    assert_eq!(run(s, ":'qs/a/z/\n").msg(), "Mark not set");
+    assert_eq!(run(s, ":s/a/z/q\n").msg(), "Trailing characters: q");
     // `.` does not repeat it: it repeats the `x` before.
     assert_eq!(text(&run("a a a", "x:s/a/z/\nw.")), " z ");
     // Undo after a substitute and a normal edit: separate steps.
@@ -1871,11 +1875,11 @@ fn undo_tree_commands() {
     feed(&mut e, "g-");
     assert_eq!(text(&e), "a");
     feed(&mut e, "g-");
-    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("a", "Already at oldest change"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("a", "Already at oldest change"));
     feed(&mut e, "2g+");
     assert_eq!(text(&e), "ac");
     feed(&mut e, "g+");
-    assert_eq!(e.msg, "Already at newest change");
+    assert_eq!(e.msg(), "Already at newest change");
     feed(&mut e, ":earlier 2\n");
     assert_eq!(text(&e), "a");
     feed(&mut e, ":later\n");
@@ -1885,7 +1889,7 @@ fn undo_tree_commands() {
     feed(&mut e, ":undo 0\n");
     assert_eq!(text(&e), "a");
     feed(&mut e, ":u\n");
-    assert_eq!(e.msg, "Already at oldest change");
+    assert_eq!(e.msg(), "Already at oldest change");
     feed(&mut e, ":red\n");
     assert_eq!(text(&e), "ac", "redo follows the last branch visited");
     feed(&mut e, ":undo\n");
@@ -1896,10 +1900,10 @@ fn undo_tree_commands() {
     assert_eq!(text(&e), "ac", "nothing that late: the newest version");
     for bad in [":earlier 3x\n", ":later 99999999999999999999999\n", ":redo 2\n", ":undo 1s\n"] {
         feed(&mut e, bad);
-        assert!(e.msg.starts_with("Invalid argument: "), "{bad:?}: {}", e.msg);
+        assert!(e.msg().starts_with("Invalid argument: "), "{bad:?}: {}", e.msg());
     }
     feed(&mut e, ":undolist\n");
-    assert!(e.msg.starts_with("at 2 of 2 | 1:1:") && e.msg.contains(" 2:1:"), "{}", e.msg);
+    assert!(e.msg().starts_with("at 2 of 2 | 1:1:") && e.msg().contains(" 2:1:"), "{}", e.msg());
     // Marks follow time travel too.
     let e = run("x\ny", "jmaggOz\x1bg-g+`a");
     assert_eq!(pos(&e), (2, 0));
@@ -1910,14 +1914,14 @@ fn undo_tree_commands() {
 fn char_info_and_byte_motions() {
     let s = "ab é\nfoo bar\n";
     let e = run(s, "j\x07");
-    assert_eq!(e.msg, "\"/nonexistent/rim-test\" 3 lines --66%--");
-    assert_eq!(run(s, "x\x07").msg, "\"/nonexistent/rim-test\" [Modified] 3 lines --33%--");
+    assert_eq!(e.msg(), "\"/nonexistent/rim-test\" 3 lines --66%--");
+    assert_eq!(run(s, "x\x07").msg(), "\"/nonexistent/rim-test\" [Modified] 3 lines --33%--");
     let e = run(s, "jw\x07".replace('\x07', "g\x07").as_str());
-    assert_eq!(e.msg, "Col 5 of 7; Line 2 of 3; Word 4 of 4; Char 10 of 13; Byte 11 of 14");
-    assert_eq!(run(s, "g\x07").msg, "Col 1 of 4; Line 1 of 3; Word 1 of 4; Char 1 of 13; Byte 1 of 14");
-    assert_eq!(run(s, "$ga").msg, "<é> 233, Hex 00e9, Oct 351");
-    assert_eq!(run(s, "$g8").msg, "c3 a9");
-    assert_eq!(run(s, "Gga").msg, "NUL");
+    assert_eq!(e.msg(), "Col 5 of 7; Line 2 of 3; Word 4 of 4; Char 10 of 13; Byte 11 of 14");
+    assert_eq!(run(s, "g\x07").msg(), "Col 1 of 4; Line 1 of 3; Word 1 of 4; Char 1 of 13; Byte 1 of 14");
+    assert_eq!(run(s, "$ga").msg(), "<é> 233, Hex 00e9, Oct 351");
+    assert_eq!(run(s, "$g8").msg(), "c3 a9");
+    assert_eq!(run(s, "Gga").msg(), "NUL");
     // Byte motions land on the char containing the byte.
     assert_eq!(pos(&run(s, "5go")), (0, 3));
     assert_eq!(pos(&run(s, "6go")), (0, 3));
@@ -1928,7 +1932,7 @@ fn char_info_and_byte_motions() {
     assert_eq!(text(&run(s, "d4go")), "é\nfoo bar\n");
     assert_eq!(pos(&run(s, ":goto 9\n")), (1, 2));
     assert_eq!(pos(&run(s, "j$:go\n")), (0, 0));
-    assert_eq!(run(s, ":goto x\n").msg, "Invalid argument: x");
+    assert_eq!(run(s, ":goto x\n").msg(), "Invalid argument: x");
     // Column motion.
     assert_eq!(pos(&run(s, "j4|")), (1, 3));
     assert_eq!(pos(&run(s, "j99|")), (1, 6));
@@ -2044,7 +2048,8 @@ fn typing_in_a_wrapped_line_updates_the_screen() {
     feed(&mut e, "0");
     let kept = screen(&e.frame(10, 5));
     let fresh = screen(&ed(&text(&e)).frame(10, 5));
-    assert_eq!(kept, fresh);
+    // The fresh editor still shows the startup hint on the message row.
+    assert_eq!(kept[..4], fresh[..4]);
     assert_eq!(kept[0], "1 y日abcde");
 }
 
@@ -2190,15 +2195,15 @@ fn ex_addresses() {
     assert_eq!(text(&run(s, ":/b/;/d/d\n")), "a\ne");
     assert_eq!(text(&run(s, "/c\n:\\/d\n")), "a\nb\nd\ne");
     assert_eq!(text(&run(s, ":s/d/x/\n:\\&d\n")), "a\nb\nc\ne");
-    assert_eq!(run(s, ":/zz/d\n").msg, "Pattern not found: zz");
-    assert_eq!(run(s, ":\\/d\n").msg, "No previous regular expression");
-    assert_eq!(run(s, ":9d\n").msg, "Invalid range");
+    assert_eq!(run(s, ":/zz/d\n").msg(), "Pattern not found: zz");
+    assert_eq!(run(s, ":\\/d\n").msg(), "No previous regular expression");
+    assert_eq!(run(s, ":9d\n").msg(), "Invalid range");
     // `/pat/` sets the last search; `^` matches at line starts.
     let e = run("xa\na", ":/^a/\n");
     assert_eq!((e.win.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
     assert_eq!(pos(&run(s, ":'q\n")), (0, 0));
-    assert_eq!(run(s, ":'q\n").msg, "Mark not set");
-    assert_eq!(run(s, ":3|\n").msg, "Not an editor command: 3|");
+    assert_eq!(run(s, ":'q\n").msg(), "Mark not set");
+    assert_eq!(run(s, ":3|\n").msg(), "Not an editor command: 3|");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2209,7 +2214,7 @@ fn ex_delete_yank_move_copy() {
     assert_eq!((reg(&e), pos(&e)), (("b\nc\n".into(), true), (1, 0)));
     let e = run(s, ":2d x 2\n");
     assert_eq!((text(&e).as_str(), e.regs.get('x').map(|r| r.text.as_str())), ("a\nd\ne", Some("b\nc\n")));
-    assert_eq!(run(s, ":d %\n").msg, "Invalid register: %");
+    assert_eq!(run(s, ":d %\n").msg(), "Invalid register: %");
     let e = run(s, "j:3,4y\n");
     assert_eq!((text(&e).as_str(), reg(&e), pos(&e)), (s, ("c\nd\n".into(), true), (1, 0)));
     let e = run(s, ":2,3m0\n");
@@ -2219,8 +2224,8 @@ fn ex_delete_yank_move_copy() {
     let e = run(s, ":1m2\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("b\na\nc\nd\ne", 1));
     assert_eq!(text(&run(s, ":2,3m1\n")), s);
-    assert_eq!(run(s, ":1,2m1\n").msg, "Cannot move a range of lines into itself");
-    assert_eq!(run(s, ":m\n").msg, "Invalid address");
+    assert_eq!(run(s, ":1,2m1\n").msg(), "Cannot move a range of lines into itself");
+    assert_eq!(run(s, ":m\n").msg(), "Invalid address");
     let e = run(s, ":1t.\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("a\na\nb\nc\nd\ne", 1));
     let e = run(s, ":1,2t$\n");
@@ -2238,7 +2243,7 @@ fn ex_shift_join_print() {
     let e = run("a\nb\nc", ":>> 2\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("        a\n        b\nc", 1));
     assert_eq!(text(&run("        a", ":<\n")), "    a");
-    assert_eq!(run("a", ":> 0\n").msg, "Positive count required");
+    assert_eq!(run("a", ":> 0\n").msg(), "Positive count required");
     let s = "a\n  b\nc";
     assert_eq!(text(&run(s, ":j\n")), "a b\nc");
     assert_eq!(text(&run(s, ":1,3j\n")), "a b c");
@@ -2246,9 +2251,9 @@ fn ex_shift_join_print() {
     assert_eq!(text(&run(s, ":j 3\n")), "a b c");
     assert_eq!(text(&run(s, ":3j\n")), s);
     let e = run("a\nb\nc", ":2p\n");
-    assert_eq!((e.msg.as_str(), e.win.line), ("b", 1));
-    assert_eq!(run("a\nb\nc", ":=\n").msg, "3");
-    assert_eq!(run("a\nb\nc", "j:.=\n").msg, "2");
+    assert_eq!((e.msg(), e.win.line), ("b", 1));
+    assert_eq!(run("a\nb\nc", ":=\n").msg(), "3");
+    assert_eq!(run("a\nb\nc", "j:.=\n").msg(), "2");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2265,7 +2270,7 @@ fn ex_normal() {
     // Lines follow the edits: deleted ones are skipped.
     assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm dd\n")), "a\nd");
     assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm jdd\n")), "a\nb\nd");
-    assert_eq!(run("a", ":norm\n").msg, "Argument required");
+    assert_eq!(run("a", ":norm\n").msg(), "Argument required");
     // Not recorded by `q`.
     let e = run("a\nb", "qq:norm Ax\nq");
     assert_eq!(e.regs.get('q').map(|r| r.text.as_str()), Some(":norm Ax\r"));
@@ -2286,12 +2291,12 @@ fn ex_global() {
     assert_eq!(text(&run("a\nb\na", ":g/a/norm Ax\n")), "ax\nb\nax");
     assert_eq!(text(&run("a\nb\na", ":g/a/t.\n")), "a\na\nb\na\na");
     let e = run(s, ":g/b\n");
-    assert_eq!((e.msg.as_str(), e.win.line), ("ab", 2));
-    assert_eq!(run(s, ":g/zz/d\n").msg, "Pattern not found: zz");
-    assert_eq!(run(s, ":v/./d\n").msg, "Pattern found in every line: .");
-    assert_eq!(run(s, ":g\n").msg, "Regular expression missing from :global");
-    assert_eq!(run(s, ":g/a/g/b/d\n").msg, "Cannot do :global recursive");
-    assert_eq!(run(s, ":g/a/s/a/x/c\n").msg, "The c flag cannot be used here");
+    assert_eq!((e.msg(), e.win.line), ("ab", 2));
+    assert_eq!(run(s, ":g/zz/d\n").msg(), "Pattern not found: zz");
+    assert_eq!(run(s, ":v/./d\n").msg(), "Pattern found in every line: .");
+    assert_eq!(run(s, ":g\n").msg(), "Regular expression missing from :global");
+    assert_eq!(run(s, ":g/a/g/b/d\n").msg(), "Cannot do :global recursive");
+    assert_eq!(run(s, ":g/a/s/a/x/c\n").msg(), "The c flag cannot be used here");
     assert!(!feed(&mut ed(s), ":g/a/q!\n"));
 }
 
@@ -2310,7 +2315,7 @@ fn ex_sort() {
     assert_eq!(text(&run(s, ":sort /,/\n")), "z\ny,a\nx,b");
     assert_eq!(text(&run(s, ":sort /\\w,/ r\n")), "z\nx,b\ny,a");
     assert_eq!(text(&run(s, ":sort! /,/\n")), "x,b\ny,a\nz");
-    assert_eq!(run(s, ":sort x\n").msg, "Invalid argument: x");
+    assert_eq!(run(s, ":sort x\n").msg(), "Invalid argument: x");
     assert_eq!(text(&run(s, ":sort\nu")), s);
 }
 
@@ -2329,18 +2334,18 @@ fn ex_read_write_saveas() {
     feed(&mut e, "u");
     assert_eq!(text(&e), "a\n1\n2\nb\nc");
     feed(&mut e, ":r /nonexistent/rim\n");
-    assert!(e.msg.starts_with("Can't open file /nonexistent/rim"), "{}", e.msg);
+    assert!(e.msg().starts_with("Can't open file /nonexistent/rim"), "{}", e.msg());
     let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
     feed(&mut e, &format!(":2,3w {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc");
     feed(&mut e, &format!(":1w {}\n", out.display()));
-    assert_eq!(e.msg, "File exists (add ! to override)");
+    assert_eq!(e.msg(), "File exists (add ! to override)");
     feed(&mut e, &format!(":1w! {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "a\n");
     feed(&mut e, &format!(":w >> {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "a\na\nb\nc");
     feed(&mut e, ":2w\n");
-    assert_eq!(e.msg, "Use ! to write partial buffer");
+    assert_eq!(e.msg(), "Use ! to write partial buffer");
     feed(&mut e, ":2w!\n");
     assert_eq!(fs::read_to_string(&own).unwrap(), "b\n");
     // Line endings follow the document's.
@@ -2353,11 +2358,11 @@ fn ex_read_write_saveas() {
     let mut e = Editor::new(Document::new("x"), own.clone());
     feed(&mut e, "ay\x1b");
     feed(&mut e, &format!(":sav {}\n", out.display()));
-    assert_eq!(e.msg, "File exists (add ! to override)");
+    assert_eq!(e.msg(), "File exists (add ! to override)");
     feed(&mut e, &format!(":sav {}\n", new.display()));
     assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_path(), e.is_dirty()), ("xy", new.as_path(), false));
     feed(&mut e, ":sav\n");
-    assert_eq!(e.msg, "Argument required");
+    assert_eq!(e.msg(), "Argument required");
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -2369,17 +2374,17 @@ fn ex_retab_and_fileformat() {
     assert_eq!(text(&run("        x", ":set noet\n:ret!\n")), "\t\tx");
     // expandtab: tabs become spaces, `!` changes nothing more.
     assert_eq!(text(&run("\tx  \ty", ":ret!\n")), "    x   y");
-    assert_eq!(run("x", ":retab 0\n").msg, "Invalid argument: 0");
+    assert_eq!(run("x", ":retab 0\n").msg(), "Invalid argument: 0");
     let mut e = ed("a\nb");
     feed(&mut e, ":set ff=dos\n");
     assert_eq!((e.buf.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
     feed(&mut e, ":set ff?\n");
-    assert_eq!(e.msg, "fileformat=dos");
+    assert_eq!(e.msg(), "fileformat=dos");
     feed(&mut e, ":set ff=mac nu\n");
     assert_eq!((e.buf.doc.eol(), e.buf.opts.number), (LineEnding::Cr, true));
     feed(&mut e, ":set ff=unix fileformat\n");
-    assert_eq!((e.msg.as_str(), e.is_dirty()), ("fileformat=unix", false));
-    assert_eq!(run("a", ":set ff=xx\n").msg, "Invalid argument: ff=xx");
+    assert_eq!((e.msg(), e.is_dirty()), ("fileformat=unix", false));
+    assert_eq!(run("a", ":set ff=xx\n").msg(), "Invalid argument: ff=xx");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2391,10 +2396,10 @@ fn stats_compact_and_idle() {
     feed(&mut e, ":stats\n");
     let pieces = e.buf.doc.text().piece_count();
     assert!(pieces > 1);
-    assert!(e.msg.starts_with(&format!("{pieces} pieces, ")), "{}", e.msg);
-    assert!(e.msg.ends_with("4 bytes, 4 chars, 1 lines, 5 versions"), "{}", e.msg);
+    assert!(e.msg().starts_with(&format!("{pieces} pieces, ")), "{}", e.msg());
+    assert!(e.msg().ends_with("4 bytes, 4 chars, 1 lines, 5 versions"), "{}", e.msg());
     feed(&mut e, ":compact\n");
-    assert_eq!((e.msg.clone(), text(&e)), (format!("{pieces} pieces -> 1"), "bdfh".into()));
+    assert_eq!((e.msg().to_string(), text(&e)), (format!("{pieces} pieces -> 1"), "bdfh".into()));
     // History is kept.
     feed(&mut e, "u");
     assert_eq!(text(&e), "bdfgh");
@@ -2414,8 +2419,8 @@ fn stats_compact_and_idle() {
     e.idle();
     assert_eq!(e.buf.doc.text().piece_count(), 1);
     feed(&mut e, ":set compactat=0\n:set compactat?\n");
-    assert_eq!(e.msg, "compactat=0");
-    assert_eq!(run("a", ":set compactat=x\n").msg, "Invalid argument: compactat=x");
+    assert_eq!(e.msg(), "compactat=0");
+    assert_eq!(run("a", ":set compactat=x\n").msg(), "Invalid argument: compactat=x");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2429,12 +2434,12 @@ fn filetype_detected_and_set() {
     let mut e = Editor::open(a).unwrap();
     assert_eq!(e.buf.opts.filetype, "rust");
     feed(&mut e, &format!(":e {}\n:set ft?\n", b.display()));
-    assert_eq!(e.msg, "filetype=python");
+    assert_eq!(e.msg(), "filetype=python");
     feed(&mut e, ":set ft=foo\n:set ft?\n");
-    assert_eq!(e.msg, "filetype=foo");
+    assert_eq!(e.msg(), "filetype=foo");
     // A new buffer detects its own type instead of inheriting the current one.
     feed(&mut e, &format!(":e {}\n:set ft?\n", c.display()));
-    assert_eq!(e.msg, "filetype=");
+    assert_eq!(e.msg(), "filetype=");
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -2452,7 +2457,7 @@ fn buffers_switch_list_and_delete() {
     feed(&mut e, "Gdd\x1e");
     assert_eq!((text(&e).as_str(), pos(&e), e.buf.marks.get(&'x')), ("a1\na2", (1, 0), Some(&3)));
     feed(&mut e, ":ls\n");
-    assert_eq!(e.msg, format!("  1 %a \"{}\" line 2 |   2 #  + \"{}\" line 2", a.display(), b.display()));
+    assert_eq!(e.msg(), format!("  1 %a \"{}\" line 2\n  2 #  + \"{}\" line 2", a.display(), b.display()));
     feed(&mut e, &format!(":e {}\n", a.display()));
     assert_eq!((e.buf.id, e.buffers.len()), (1, 1), "the same file is not loaded twice");
     feed(&mut e, ":bn\n");
@@ -2474,22 +2479,22 @@ fn buffers_switch_list_and_delete() {
         (":bd 2", "No write since last change for buffer 2 (add ! to override)"),
     ] {
         feed(&mut e, &format!("{cmd}\n"));
-        assert_eq!(e.msg, msg, "{cmd}");
+        assert_eq!(e.msg(), msg, "{cmd}");
     }
     // The last window refuses to quit while a hidden buffer is modified.
     feed(&mut e, ":q\n");
-    assert_eq!(e.msg, format!("No write since last change for buffer 2 \"{}\" (add ! to override)", b.display()));
+    assert_eq!(e.msg(), format!("No write since last change for buffer 2 \"{}\" (add ! to override)", b.display()));
     assert!(feed(&mut e, ":qa\n"));
     feed(&mut e, ":b 2\n:bd!\n");
     assert_eq!((e.buf.id, e.buffers.len(), e.alt), (1, 0, None));
     feed(&mut e, ":bd\n");
-    assert_eq!(e.msg, "Cannot delete the last buffer");
+    assert_eq!(e.msg(), "Cannot delete the last buffer");
     feed(&mut e, "\x1e");
-    assert_eq!(e.msg, "No alternate file");
+    assert_eq!(e.msg(), "No alternate file");
     feed(&mut e, ":e /nonexistent/dir/x\n");
     assert_eq!(e.buf.id, 3, "a missing file is a new empty buffer");
     feed(&mut e, ":e /\n");
-    assert!(e.msg.starts_with("\"/\": "), "{}", e.msg);
+    assert!(e.msg().starts_with("\"/\": "), "{}", e.msg());
     // `:bd` of another buffer moves the windows showing it.
     feed(&mut e, ":sp\n:b 1\n:bd 3\n");
     assert_eq!((e.buf.id, e.windows[0].buf), (1, 1));
@@ -2517,7 +2522,7 @@ fn windows_split_move_and_close() {
             "1 two",
             "4 three",
             " /nonexistent/rim-te",
-            "[ NORMAL |           ]",
+            "",
         ]
     );
     assert_eq!(f.cursor, (5, 0));
@@ -2543,7 +2548,7 @@ fn windows_split_move_and_close() {
     feed(&mut e, "\x17o");
     assert_eq!(e.window_ids(), [e.win.id]);
     feed(&mut e, ":clo\n");
-    assert_eq!(e.msg, "Cannot close last window");
+    assert_eq!(e.msg(), "Cannot close last window");
     feed(&mut e, ":sp\n:on\n");
     assert_eq!(e.window_ids().len(), 1);
     // `:q` closes a window, the last one quits.
@@ -2608,16 +2613,16 @@ fn saves_waited_for_and_their_messages() {
     assert_eq!(e.buffers.len(), 1, "a file already loaded is skipped");
     // `:bd` and `:e` right after `:w` wait for it instead of refusing a modified buffer.
     feed(&mut e, ":b 2\nix\x1b:w\n:bd\n");
-    assert_eq!((e.buf.id, e.buffers.len()), (1, 0), "{}", e.msg);
+    assert_eq!((e.buf.id, e.buffers.len()), (1, 0), "{}", e.msg());
     feed(&mut e, "x:w\n:e\n");
-    assert_eq!(e.msg, "Reloaded (LF)");
+    assert_eq!(e.msg(), "Reloaded (LF)");
     // A write ending later does not cover the message of a later command, but replaces its own.
     feed(&mut e, "ix\x1b:w\n:ls\n");
     assert!(e.wait_saves());
-    assert!(e.msg.starts_with("  1 %a"), "{}", e.msg);
+    assert!(e.msg().starts_with("  1 %a"), "{}", e.msg());
     feed(&mut e, ":w\n");
     assert!(e.wait_saves());
-    assert_eq!(e.msg, format!("\"{}\" written (LF)", a.display()));
+    assert_eq!(e.msg(), format!("\"{}\" written (LF)", a.display()));
     assert!(e.open_more(dir.join("no/such/dir")).is_ok(), "a missing file is an empty buffer");
     assert!(e.open_more(dir.clone()).is_err());
     fs::remove_dir_all(dir).unwrap();
@@ -2641,9 +2646,9 @@ fn syntax_off_and_on() {
     let plain = |e: &mut Editor| colored(&e.frame(30, 8)).iter().all(|r| !r.contains('<'));
     assert!(!plain(&mut e) && e.buf.syntax.is_some());
     feed(&mut e, ":syntax\n");
-    assert_eq!(e.msg, "syntax on");
+    assert_eq!(e.msg(), "syntax on");
     feed(&mut e, ":syntax off\n:syn\n");
-    assert_eq!(e.msg, "syntax off");
+    assert_eq!(e.msg(), "syntax off");
     // Nothing is colored or kept, and the objects do nothing.
     assert!(plain(&mut e) && e.buf.syntax.is_none());
     // Also in a buffer that is not shown.
@@ -2665,7 +2670,7 @@ fn syntax_off_and_on() {
     feed(&mut e, "dif");
     assert_eq!(text(&e), "fn a() \nfn b() {}\n");
     feed(&mut e, ":syntax maybe\n");
-    assert_eq!(e.msg, "Invalid argument: maybe");
+    assert_eq!(e.msg(), "Invalid argument: maybe");
     assert!(e.syntax_on);
 }
 
@@ -2694,15 +2699,15 @@ fn highlight_command_reports_and_validates() {
     let mut e = ed("fn a() {}");
     e.buf.opts.filetype = "rust".into();
     feed(&mut e, ":hi @keywrod ctermfg=5\n");
-    assert_eq!(e.msg, "Unknown capture: @keywrod");
+    assert_eq!(e.msg(), "Unknown capture: @keywrod");
     feed(&mut e, ":hi @keyword ctermfg=5\n:hi @keyword\n");
-    assert_eq!(e.msg, "@keyword ctermfg=5 cterm=NONE");
+    assert_eq!(e.msg(), "@keyword ctermfg=5 cterm=NONE");
     feed(&mut e, ":highlight Foo ctermfg=x\n");
-    assert_eq!(e.msg, "Invalid argument: ctermfg=x");
+    assert_eq!(e.msg(), "Invalid argument: ctermfg=x");
     feed(&mut e, ":hi link Foo @keyword\n:hi Foo\n");
-    assert_eq!(e.msg, "Foo links to @keyword");
+    assert_eq!(e.msg(), "Foo links to @keyword");
     feed(&mut e, ":hi clear\n:hi @keyword\n");
-    assert_eq!(e.msg, "@keyword ctermfg=176 cterm=NONE");
+    assert_eq!(e.msg(), "@keyword ctermfg=176 cterm=NONE");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2735,4 +2740,152 @@ fn syntax_colors_text_and_objects() {
     feed(&mut e, ":set ft=foo\n");
     assert_eq!(colored(&e.frame(30, 4))[0], "1 fn a()");
     assert!(e.buf.syntax.is_none());
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn messages_have_a_kind_and_survive_motions() {
+    use super::messages::Level;
+    let mut e = run("a\nb", ":foo\n");
+    assert_eq!((e.msg(), e.msgs.level()), ("Not an editor command: foo", Level::Error));
+    feed(&mut e, "j");
+    assert_eq!(e.msg(), "Not an editor command: foo");
+    feed(&mut e, "i");
+    assert_eq!(e.msg(), "");
+    feed(&mut e, "\x1b/zzz\n");
+    assert_eq!(e.msg(), "Pattern not found: zzz");
+    feed(&mut e, ":");
+    assert_eq!(e.msg(), "");
+    let e = run("a\nb", "G/a\n");
+    assert_eq!(e.msgs.level(), Level::Warning);
+    assert_eq!(run("a", ":=\n").msgs.level(), Level::Info);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn multi_row_messages_wait_for_a_key() {
+    let mut e = run("a\nb", ":foo\n:bar\n:messages\n");
+    assert_eq!(e.msg(), "Not an editor command: foo\nNot an editor command: bar");
+    let f = e.frame(40, 6);
+    assert_eq!(screen(&f)[3..], ["Not an editor command: foo", "Not an editor command: bar", "Press ENTER or type command to continue"]);
+    assert_eq!(f.cursor.1, 5);
+    // Enter only dismisses; the message was not added to the history again.
+    feed(&mut e, "\n");
+    assert_eq!((e.msg(), e.win.line), ("", 0));
+    // Any other key dismisses and runs.
+    feed(&mut e, ":messages\nj");
+    assert_eq!((e.msg(), e.win.line), ("", 1));
+    feed(&mut e, ":messages\n:");
+    assert_eq!((e.msg(), &e.mode), ("", &Mode::Command(String::new())));
+    feed(&mut e, "\x1b:messages clear\n:messages\n");
+    assert_eq!(e.msg(), "No messages");
+    assert!(e.command("messages x") && e.msg() == "Invalid argument: x");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn messagesopt_sets_history_and_prompt() {
+    let mut e = run("a", ":set mopt?\n");
+    assert_eq!(e.msg(), "messagesopt=hit-enter,history:500");
+    feed(&mut e, ":set mopt=hit-enter,wait:50,history:2\n:set mopt?\n");
+    assert_eq!(e.msg(), "messagesopt=hit-enter,wait:50,history:2");
+    for bad in ["history:3", "wait:x", "hit-enter,history:10001", "foo"] {
+        feed(&mut e, &format!(":set mopt={bad}\n"));
+        assert_eq!(e.msg(), format!("Invalid argument: mopt={bad}"));
+    }
+    feed(&mut e, ":foo1\n:foo2\n:foo3\n");
+    assert_eq!(e.msgs.list().lines().count(), 2);
+    // Without `hit-enter` the rows show without a prompt and any key runs.
+    feed(&mut e, ":set mopt=wait:0\n:messages\n");
+    let f = e.frame(40, 6);
+    assert_eq!(screen(&f)[4..], ["Not an editor command: foo2", "Not an editor command: foo3"]);
+    feed(&mut e, "\n");
+    assert_eq!(e.msg(), "");
+    // `wait:N`: the message goes away by itself once N ms passed (`main` polls for `message_wait`).
+    feed(&mut e, ":set mopt=wait:9000\n:messages\n");
+    e.frame(40, 6);
+    assert!(e.message_wait().is_some_and(|d| d > std::time::Duration::from_secs(5)) && !e.expire_message());
+    feed(&mut e, ":set mopt=wait:0\n:messages\n");
+    assert_eq!(e.message_wait(), None);
+    e.frame(40, 6);
+    assert!(e.expire_message() && e.msg().is_empty() && e.message_wait().is_none() && !e.expire_message());
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn laststatus_showmode_and_showcmd() {
+    let mut e = run("a\nb\nc", ":sp\n");
+    let rows = screen(&e.frame(30, 8));
+    assert!(rows[2].starts_with("[ /nonexistent") && rows[7].is_empty(), "{rows:?}");
+    feed(&mut e, ":set ls=0\n");
+    assert_eq!(screen(&e.frame(30, 8))[..7].iter().filter(|r| r.contains("nonexistent")).count(), 0);
+    feed(&mut e, "2d");
+    let last = screen(&e.frame(40, 4)).pop().unwrap();
+    assert!(last.contains("2d") && last.ends_with("Ln 1, Col 1"), "{last}");
+    feed(&mut e, "\x1bvj");
+    assert!(screen(&e.frame(40, 4))[3].starts_with("-- VISUAL --"));
+    feed(&mut e, "\x1b:set nosmd nosc\nqa");
+    let last = screen(&e.frame(40, 4)).pop().unwrap();
+    assert_eq!(last.trim_start(), "Ln 2, Col 1");
+    feed(&mut e, ":set smd\n");
+    assert_eq!(screen(&e.frame(40, 4))[3].find("recording @a"), Some(0));
+    feed(&mut e, ":set ls=3\n");
+    assert_eq!(e.msg(), "Invalid argument: ls=3");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn macros_and_ex_normal_treat_hit_enter_like_typing() {
+    // The Enter after `:messages` only dismisses while recording, so it does while replaying.
+    let mut e = run("a\nb\nc", ":foo\n:bar\nqa:messages\n\nq");
+    assert_eq!(e.win.line, 0);
+    feed(&mut e, "@a");
+    assert_eq!((e.win.line, e.msg()), (0, ""));
+    // `:normal` has no screen: its keys are never eaten.
+    let e = run("a\nb\nc", ":foo\n:bar\n:messages\n\n:normal j\n");
+    assert_eq!(e.win.line, 1);
+    let e = run("a\nb\nc", ":foo\n:bar\n:messages\n:g/b/normal x\n");
+    assert_eq!(text(&e), "a\n\nc");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn screen_options_hold_for_every_buffer() {
+    let dir = std::env::temp_dir().join(format!("rim-global-opts-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let b = dir.join("b.txt");
+    fs::write(&b, "b").unwrap();
+    let mut e = ed("a");
+    feed(&mut e, &format!(":set ls=2\n:e {}\n:set ls=0 nosmd mopt=wait:7,history:9\n:b1\n", b.display()));
+    let o = &e.buf.opts;
+    assert_eq!((e.buf.id, o.laststatus, o.showmode, o.msg_wait, o.msg_history), (1, 0, false, Some(7), 9));
+    // A buffer's own options stay its own.
+    feed(&mut e, ":set nonu\n:b2\n");
+    assert!(e.buf.opts.number);
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn poll_timeout_follows_the_message_deadline() {
+    use std::time::Duration;
+    let s = Duration::from_secs;
+    let mut e = run("a", ":foo\n:bar\n");
+    // No expiring message: the base period, or none at all.
+    assert_eq!((e.poll_timeout(None), e.poll_timeout(Some(s(1)))), (None, Some(s(1))));
+    feed(&mut e, ":set mopt=wait:5000\n:messages\n");
+    e.frame(40, 6);
+    let t = e.poll_timeout(None).unwrap();
+    assert!(t > s(4) && t <= s(5));
+    // The shorter of the two wins.
+    assert_eq!(e.poll_timeout(Some(Duration::from_millis(50))), Some(Duration::from_millis(50)));
+    assert!(e.poll_timeout(Some(s(60))).unwrap() <= s(5));
+    // Not over yet: the idle work runs, the message stays.
+    assert!(e.timed_out(false) && !e.msg().is_empty());
+    // Over: the message goes, nothing else runs, and there is nothing left to wait for.
+    e.msgs.deadline = Some(std::time::Instant::now());
+    assert!(!e.timed_out(false) && e.msg().is_empty());
+    assert_eq!(e.poll_timeout(None), None);
+    // A running save is polled instead of idling.
+    assert!(!e.timed_out(true));
 }

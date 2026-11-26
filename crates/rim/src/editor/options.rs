@@ -38,7 +38,18 @@ pub(super) struct Options {
     /// Pieces above which the idle compaction runs (`Editor::idle`); 0 disables it.
     pub compactat: usize,
     /// Kind of file, detected from the name when the buffer opens; empty when unknown.
+    /// Kind of file, detected from the name when the buffer opens; empty when unknown.
     pub filetype: String,
+    /// Windows get a status row: never (0), only with several windows (1), always (2).
+    pub laststatus: usize,
+    /// The message row shows the mode (`-- INSERT --`) and the pending keys.
+    pub showmode: bool,
+    pub showcmd: bool,
+    /// `messagesopt`: a message of several rows waits for a key (`hit-enter`) or is dropped at the
+    /// next one (`wait:N`, whose delay is not honored); lines of `:messages` history kept.
+    pub msg_hit_enter: bool,
+    pub msg_wait: Option<usize>,
+    pub msg_history: usize,
 }
 
 impl Default for Options {
@@ -61,6 +72,12 @@ impl Default for Options {
             termguicolors: false,
             compactat: 10_000,
             filetype: String::new(),
+            laststatus: 1,
+            showmode: true,
+            showcmd: true,
+            msg_hit_enter: true,
+            msg_wait: None,
+            msg_history: 500,
         }
     }
 }
@@ -85,11 +102,21 @@ fn long(name: &str) -> Option<&'static str> {
         "termguicolors" | "tgc" => "termguicolors",
         "compactat" => "compactat",
         "filetype" | "ft" => "filetype",
+        "laststatus" | "ls" => "laststatus",
+        "showmode" | "smd" => "showmode",
+        "showcmd" | "sc" => "showcmd",
+        "messagesopt" | "mopt" => "messagesopt",
         _ => return None,
     })
 }
 
 impl Options {
+    /// Copies the options that are global in vim (the screen's, not a buffer's) to `to`.
+    pub fn copy_global(&self, to: &mut Options) {
+        (to.laststatus, to.showmode, to.showcmd) = (self.laststatus, self.showmode, self.showcmd);
+        (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
+    }
+
     /// Effective shift width (`shiftwidth`, or `tabstop` when 0).
     pub fn sw(&self) -> usize {
         if self.shiftwidth == 0 { self.tabstop } else { self.shiftwidth }
@@ -115,6 +142,25 @@ impl Options {
         Env { light: self.background == Background::Light, gui: self.termguicolors }
     }
 
+    /// `hit-enter`, `wait:N` and `history:N` (N up to 10000), comma separated; one of the first two is required.
+    fn set_messagesopt(&mut self, value: &str) -> Option<()> {
+        let (mut hit, mut wait, mut history) = (false, None, 500);
+        for item in value.split(',') {
+            let num = |v: &str| v.parse::<usize>().ok().filter(|n| *n <= 10_000);
+            match item.split_once(':') {
+                None if item == "hit-enter" => hit = true,
+                Some(("wait", n)) => wait = Some(num(n)?),
+                Some(("history", n)) => history = num(n)?,
+                _ => return None,
+            }
+        }
+        if !hit && wait.is_none() {
+            return None;
+        }
+        (self.msg_hit_enter, self.msg_wait, self.msg_history) = (hit, wait, history);
+        Some(())
+    }
+
     fn flag(&mut self, name: &str) -> Option<&mut bool> {
         match name {
             "number" => Some(&mut self.number),
@@ -128,6 +174,8 @@ impl Options {
             "hlsearch" => Some(&mut self.hlsearch),
             "incsearch" => Some(&mut self.incsearch),
             "termguicolors" => Some(&mut self.termguicolors),
+            "showmode" => Some(&mut self.showmode),
+            "showcmd" => Some(&mut self.showcmd),
             _ => None,
         }
     }
@@ -147,6 +195,18 @@ impl Options {
             "hlsearch" => on(self.hlsearch, name),
             "incsearch" => on(self.incsearch, name),
             "termguicolors" => on(self.termguicolors, name),
+            "showmode" => on(self.showmode, name),
+            "showcmd" => on(self.showcmd, name),
+            "laststatus" => format!("laststatus={}", self.laststatus),
+            "messagesopt" => {
+                let mut v = Vec::new();
+                if self.msg_hit_enter {
+                    v.push("hit-enter".to_string());
+                }
+                v.extend(self.msg_wait.map(|n| format!("wait:{n}")));
+                v.push(format!("history:{}", self.msg_history));
+                format!("messagesopt={}", v.join(","))
+            }
             "tabstop" => format!("tabstop={}", self.tabstop),
             "shiftwidth" => format!("shiftwidth={}", self.shiftwidth),
             "scrolloff" => format!("scrolloff={}", self.scrolloff),
@@ -164,6 +224,7 @@ impl Options {
             for n in [
                 "number", "relativenumber", "cursorline", "tabstop", "background", "termguicolors", "wrap", "compactat",
                 "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype",
+                "laststatus", "showmode", "showcmd", "messagesopt",
             ] {
                 shown.push(self.show(n));
             }
@@ -186,6 +247,8 @@ impl Options {
                     "filetype" => self.filetype = value.to_string(),
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
+                    "messagesopt" => self.set_messagesopt(value).ok_or_else(invalid)?,
+                    "laststatus" => self.laststatus = value.parse().ok().filter(|n| *n <= 2).ok_or_else(invalid)?,
                     _ => return Err(invalid()),
                 }
             } else if let Some(name) = arg.strip_suffix('?') {
