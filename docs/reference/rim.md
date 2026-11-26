@@ -18,6 +18,9 @@ Minimal vim-like terminal editor in `crates/rim/`. Purpose: exercise the library
 | `src/editor/substitute.rs` | `:s`/`:&` arguments (delimiters, escapes, flags) |
 | `src/editor/registers.rs` | registers, OSC 52 escape and reply parser |
 | `src/editor/options.rs` | `:set` options, palette |
+| `src/editor/filetype.rs` | filetype detection from file name, filetype → grammar name |
+| `src/editor/builtin.rs`, `src/editor/queries/` | grammars linked into the binary and our text object and locals queries |
+| `src/editor/syntax.rs` | tree-sitter: grammar loading, incremental tree, locals, injections, highlight colors, `f`/`c`/`a` objects (see [syntax.md](syntax.md)) |
 | `src/editor/render.rs` | `Frame` layout, `draw`, cell widths |
 | `src/editor/tests.rs` | key-sequence and frame tests; the submodules keep their own unit tests |
 
@@ -162,6 +165,7 @@ After an operator (`diw`, `ca(`, `yip`) or in Visual mode (`vi"`). `i` is inner,
 | `p` | lines that are all blank or all non-blank (whitespace-only lines are blank), linewise | plus the following blank lines, or the preceding ones at the end of the text |
 | `"` `'` `` ` `` | between the first quote pair in the line ending at or after the cursor; a quote after an odd number of `\` does not count | plus the quotes and trailing blanks |
 | `(` `)` `b`, `[` `]`, `{` `}` `B`, `<` `>` | inside the `count`-th enclosing pair, across lines; linewise when both brackets sit alone at the edges of a multi-line block (`di{` on a function body) | plus the brackets |
+| `f` `c` `a` | function, class, parameter from the grammar's `textobjects.scm` (`@function.inside`/`.around`, …); the smallest holding the cursor (also inside an injected block), `count` goes outward; needs a grammar (see [syntax.md](syntax.md)); CSS rules and at-rules are classes | the `.around` capture; for a parameter also its comma |
 | `t` | between the tags of the `count`-th element enclosing the cursor (`<!…>`, `<?…>`, `…/>` skipped; unclosed tags like `<br>` ignored) | plus the tags |
 
 ### Insert
@@ -295,6 +299,7 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 | `incsearch` | `is` | on | preview and highlight the pattern being typed |
 | `scrolloff` | `so` | 0 | lines kept above and below the cursor (at most half the screen) |
 | `compactat` | | 10000 | after 1 s without keys (`main`: `event::poll`, once per quiet period), `Editor::idle` runs `:compact` when the text has more pieces than this, in Normal mode between commands; 0 disables it |
+| `filetype` | `ft` | by name | kind of file, buffer-local; set when a buffer opens from its name (`editor/filetype.rs`: extension or names like `Makefile`; empty when unknown), `:set ft=name` overrides (any value) |
 | `background` | `bg` | detected | `dark` or `light` palette |
 | `cursorlinebg` | `clbg` | palette | cursor line background, xterm 256-color index |
 | `numberfg` | `nufg` | palette | line number color |

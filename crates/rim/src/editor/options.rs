@@ -26,7 +26,7 @@ impl Palette {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Options {
     pub number: bool,
     pub relativenumber: bool,
@@ -56,6 +56,8 @@ pub(super) struct Options {
     pub cursornumberfg: Option<u8>,
     /// Pieces above which the idle compaction runs (`Editor::idle`); 0 disables it.
     pub compactat: usize,
+    /// Kind of file, detected from the name when the buffer opens; empty when unknown.
+    pub filetype: String,
 }
 
 impl Default for Options {
@@ -79,6 +81,7 @@ impl Default for Options {
             numberfg: None,
             cursornumberfg: None,
             compactat: 10_000,
+            filetype: String::new(),
         }
     }
 }
@@ -104,6 +107,7 @@ fn long(name: &str) -> Option<&'static str> {
         "numberfg" | "nufg" => "numberfg",
         "cursornumberfg" | "cnufg" => "cursornumberfg",
         "compactat" => "compactat",
+        "filetype" | "ft" => "filetype",
         _ => return None,
     })
 }
@@ -175,6 +179,7 @@ impl Options {
             "cursorlinebg" => format!("cursorlinebg={}", p.cursorline_bg),
             "numberfg" => format!("numberfg={}", p.number_fg),
             "compactat" => format!("compactat={}", self.compactat),
+            "filetype" => format!("filetype={}", self.filetype),
             _ => format!("cursornumberfg={}", p.current_number_fg),
         }
     }
@@ -185,7 +190,7 @@ impl Options {
         if args.trim().is_empty() {
             for n in [
                 "number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat",
-                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff",
+                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype",
             ] {
                 shown.push(self.show(n));
             }
@@ -208,6 +213,7 @@ impl Options {
                     "numberfg" => self.numberfg = Some(value.parse().map_err(|_| invalid())?),
                     "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
                     "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
+                    "filetype" => self.filetype = value.to_string(),
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
@@ -264,6 +270,9 @@ mod tests {
         o.set("noscs").unwrap();
         assert_eq!(o.case_pattern("aB"), "(?i)aB");
         assert!(o.list && !o.hlsearch && !o.incsearch);
+        assert_eq!(o.set("ft? ft=rust ft?"), Ok("filetype=  filetype=rust".into()));
+        assert_eq!(o.set("ft="), Ok(String::new()));
+        assert!(o.filetype.is_empty());
         assert_eq!(o.set("sw=33"), Err("Invalid argument: sw=33".into()));
         assert_eq!(o.set("so=x"), Err("Invalid argument: so=x".into()));
     }

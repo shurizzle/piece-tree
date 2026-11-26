@@ -4,7 +4,9 @@
 //! before drawing it, so both are tested without a terminal.
 
 mod buffers;
+mod builtin;
 mod ex;
+mod filetype;
 mod graphemes;
 mod layout;
 mod motion;
@@ -15,9 +17,12 @@ mod registers;
 mod render;
 mod search;
 mod substitute;
+mod syntax;
 mod windows;
 
 use std::{
+    collections::HashMap,
+    rc::Rc,
     fs,
     io,
     mem,
@@ -275,6 +280,9 @@ pub struct Editor {
     /// Reads the system clipboard (an OSC 52 query, set by `main`); none in tests and on
     /// terminals the editor does not query.
     clipboard_reader: Option<Box<dyn FnMut() -> Option<String>>>,
+    /// Directory holding `grammars/` and `queries/` (`main`: `<config dir>/rim`), and the grammars loaded from it by name.
+    runtime: Option<PathBuf>,
+    langs: HashMap<String, Option<Rc<syntax::Lang>>>,
 }
 
 impl Editor {
@@ -332,6 +340,8 @@ impl Editor {
             completion: None,
             line_reg: false,
             clipboard_reader: None,
+            runtime: None,
+            langs: HashMap::new(),
         }
     }
 
@@ -386,6 +396,11 @@ impl Editor {
         if !errors.is_empty() {
             self.msg = format!("{}: {}", path.display(), errors.join("; "));
         }
+    }
+
+    /// Where grammars and queries live; none without it (the text stays plain).
+    pub fn set_runtime(&mut self, dir: PathBuf) {
+        self.runtime = Some(dir);
     }
 
     pub fn set_background(&mut self, bg: Background) {
@@ -637,8 +652,11 @@ impl Editor {
     /// Moves every mark through the last `Document` call's edits, made to text `before`; the line
     /// indexes of `before` follow them, others are dropped.
     fn map_marks(&mut self, before: &Text) {
-        let Buffer { doc, cols, .. } = &mut self.buf;
+        let Buffer { doc, cols, syntax, .. } = &mut self.buf;
         let (edits, text) = (doc.last_edits(), doc.text());
+        if let Some(s) = syntax {
+            s.edit(before, edits, text);
+        }
         cols.get_mut().retain_mut(|ix| ix.is_of(before) && ix.update(edits, text));
         let edits = self.buf.doc.last_edits();
         for m in self.buf.marks.values_mut() {
@@ -878,6 +896,7 @@ impl Editor {
         let n = count.unwrap_or(1);
         let arg = || arg.expect("parse requires an argument");
         if let (Some(op), 'i' | 'a') = (op, key) {
+            self.sync_syntax();
             match self.text_object(key == 'a', arg(), n) {
                 Some(Obj::Chars(r)) => self.operate(op, self.pos_of(r.start), self.pos_of(r.end), Kind::Exclusive),
                 Some(Obj::Lines(a, b)) => self.operate(op, (a, 0), (b, 0), Kind::Linewise),

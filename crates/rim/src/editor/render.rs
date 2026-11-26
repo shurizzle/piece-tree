@@ -27,6 +27,8 @@ pub enum Style {
     Reverse,
     /// Search match (hlsearch, incsearch).
     Match,
+    /// Syntax highlight, xterm 256-color index of the foreground.
+    Syntax(u8),
 }
 
 #[derive(Debug)]
@@ -275,6 +277,7 @@ impl Editor {
 
         let hl = self.highlight();
         let visible = self.win.top..(self.win.top + self.win.rows).min(text.line_count());
+        let syntax = self.syntax_lines(visible.clone());
         let matches = hl.map_or_else(Default::default, |re| self.matches_in(&re, visible));
         let mut rows: Vec<Vec<Span>> = Vec::new();
         let mut cursor = (0, 0);
@@ -289,13 +292,14 @@ impl Editor {
             let want = self.win.rows - rows.len();
             let sel = if active { self.selection(n) } else { 0..0 };
             let matches = matches.get(n - self.win.top).map_or(&[][..], Vec::as_slice);
+            let syntax = syntax.get(n - self.win.top).map_or(&[][..], Vec::as_slice);
             let style_at = |i: usize| {
                 if sel.contains(&i) {
                     Style::Reverse
                 } else if matches.get(matches.partition_point(|r| r.end <= i)).is_some_and(|r| r.start <= i) {
                     Style::Match
                 } else {
-                    Style::Plain
+                    syntax.get(i).copied().flatten().map_or(Style::Plain, Style::Syntax)
                 }
             };
             let first_row = rows.len();
@@ -475,6 +479,7 @@ pub(super) fn draw(f: &Frame, out: &mut impl Write) -> io::Result<()> {
                 Style::Number => (Attribute::Reset, Some(p.number_fg), None),
                 Style::Reverse => (Attribute::Reverse, None, None),
                 Style::Match => (Attribute::Reset, Some(p.match_fg), Some(p.match_bg)),
+                Style::Syntax(c) => (Attribute::Reset, Some(c), None),
             };
             let bg = bg.or(line_bg.then_some(p.cursorline_bg));
             // `Attribute::Reset` also clears colors, so they are set after it.

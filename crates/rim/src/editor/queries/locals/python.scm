@@ -1,0 +1,17 @@
+[(function_definition) (class_definition) (lambda) (list_comprehension) (dictionary_comprehension) (set_comprehension) (generator_expression)] @local.scope
+(parameters (identifier) @local.definition)
+(default_parameter name: (identifier) @local.definition)
+(typed_parameter (identifier) @local.definition)
+(typed_default_parameter name: (identifier) @local.definition)
+(lambda_parameters (identifier) @local.definition)
+(assignment left: (identifier) @local.definition)
+(assignment left: (pattern_list (identifier) @local.definition))
+(assignment left: (tuple_pattern (identifier) @local.definition))
+(augmented_assignment left: (identifier) @local.definition)
+(for_statement left: (identifier) @local.definition)
+(for_statement left: (pattern_list (identifier) @local.definition))
+(for_in_clause left: (identifier) @local.definition)
+(for_in_clause left: (pattern_list (identifier) @local.definition))
+(as_pattern alias: (as_pattern_target (identifier) @local.definition))
+(named_expression name: (identifier) @local.definition)
+(identifier) @local.reference

@@ -14,7 +14,7 @@ pub(super) enum Obj {
 }
 
 /// Objects a repeat in Visual mode grows outward (`vi(i(`).
-pub(super) const NESTED: &str = "()b[]{}B<>t";
+pub(super) const NESTED: &str = "()b[]{}B<>tfca";
 
 /// Sentence pieces inside a paragraph: char index ranges, `true` for sentences, `false` for blank gaps.
 fn sentences(chars: &[char]) -> Vec<(Range<usize>, bool)> {
@@ -108,6 +108,7 @@ impl Editor {
             'p' => return Some(self.paragraph_object(around, n)),
             's' => return self.sentence_object(around, n),
             't' => return self.tag_object(around, n),
+            'f' | 'c' | 'a' => return self.syntax_object(around, obj, n).map(Obj::Chars),
             '"' | '\'' | '`' => return self.quote_object(around, obj),
             '(' | ')' | 'b' => ('(', ')'),
             '[' | ']' => ('[', ']'),
@@ -350,6 +351,7 @@ impl Editor {
         let sel = self.range(a, b, super::Kind::Inclusive);
         let grows = NESTED.contains(obj) && a != b;
         let mut n = n;
+        self.sync_syntax();
         loop {
             let Some(o) = self.text_object(around, obj, n) else { return };
             if let Obj::Chars(r) = &o

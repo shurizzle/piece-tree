@@ -10,7 +10,7 @@ use std::{
 
 use piece_tree::{Document, LineEnding, Text};
 
-use super::{Editor, ex, graphemes::LineIndex, options::Options, read_doc};
+use super::{Editor, ex, graphemes::LineIndex, filetype, options::Options, read_doc};
 
 /// Long lines whose cluster index a buffer keeps.
 pub(super) const INDEXES: usize = 4;
@@ -38,10 +38,13 @@ pub(super) struct Buffer {
     pub change_idx: usize,
     /// Last Visual selection (`gv`): kind, anchor and cursor offsets, shifted by edits.
     pub last_visual: Option<(super::VKind, usize, usize)>,
+    /// Syntax tree of the filetype's grammar (`Editor::sync_syntax`).
+    pub syntax: Option<super::syntax::Syntax>,
 }
 
 impl Buffer {
-    pub fn new(id: usize, doc: Document, path: PathBuf, opts: Options) -> Self {
+    pub fn new(id: usize, doc: Document, path: PathBuf, mut opts: Options) -> Self {
+        opts.filetype = filetype::detect(&path).into();
         Self {
             id,
             saved: doc.text().clone(),
@@ -55,6 +58,7 @@ impl Buffer {
             changes: Vec::new(),
             change_idx: 0,
             last_visual: None,
+            syntax: None,
         }
     }
 
@@ -120,7 +124,7 @@ impl Editor {
         }
         let doc = read_doc(&path).map_err(|e| format!("\"{file}\": {e}"))?;
         self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts));
+        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts.clone()));
         self.switch_buffer(self.next_buf);
         self.msg = self.file_info();
         Ok(())
@@ -133,7 +137,7 @@ impl Editor {
         }
         let doc = read_doc(&path)?;
         self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts));
+        self.buffers.push(Buffer::new(self.next_buf, doc, path, self.buf.opts.clone()));
         Ok(())
     }
 

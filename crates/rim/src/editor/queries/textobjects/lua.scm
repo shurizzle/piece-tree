@@ -1,0 +1,4 @@
+(function_declaration body: (_) @function.inside) @function.around
+(function_definition body: (_) @function.inside) @function.around
+(parameters (_) @parameter.inside @parameter.around)
+(arguments (_) @parameter.inside @parameter.around)

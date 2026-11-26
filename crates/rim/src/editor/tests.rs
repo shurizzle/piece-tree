@@ -2303,6 +2303,25 @@ fn stats_compact_and_idle() {
 }
 
 #[test]
+fn filetype_detected_and_set() {
+    let dir = temp_dir("filetype");
+    let (a, b, c) = (dir.join("a.rs"), dir.join("b.py"), dir.join("c"));
+    for f in [&a, &b, &c] {
+        fs::write(f, "x").unwrap();
+    }
+    let mut e = Editor::open(a).unwrap();
+    assert_eq!(e.buf.opts.filetype, "rust");
+    feed(&mut e, &format!(":e {}\n:set ft?\n", b.display()));
+    assert_eq!(e.msg, "filetype=python");
+    feed(&mut e, ":set ft=foo\n:set ft?\n");
+    assert_eq!(e.msg, "filetype=foo");
+    // A new buffer detects its own type instead of inheriting the current one.
+    feed(&mut e, &format!(":e {}\n:set ft?\n", c.display()));
+    assert_eq!(e.msg, "filetype=");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
 fn buffers_switch_list_and_delete() {
     let dir = temp_dir("buffers");
     let (a, b) = (dir.join("a.txt"), dir.join("b.txt"));
@@ -2482,3 +2501,37 @@ fn saves_waited_for_and_their_messages() {
 }
 
 
+
+/// Frame rows with syntax colors as `<color:text>`.
+fn colored(f: &Frame) -> Vec<String> {
+    f.rows
+        .iter()
+        .map(|spans| spans.iter().map(|s| if let Style::Syntax(c) = s.style { format!("<{c}:{}>", s.text) } else { s.text.clone() }).collect::<String>().trim_end().to_string())
+        .collect()
+}
+
+#[test]
+fn syntax_colors_text_and_objects() {
+    let mut e = ed("fn a() {\n    1\n}\nfn b() {\n    \"s\"\n}\n");
+    // No filetype: plain.
+    assert_eq!(colored(&e.frame(30, 8))[0], "1 fn a() {");
+    e.buf.opts.filetype = "rust".into();
+    assert_eq!(colored(&e.frame(30, 8))[..2], ["1 <176:fn> <75:a>() {", "1     <209:1>"]);
+    // Edits keep the colors right without a full reparse of the line.
+    feed(&mut e, "ggA // c\x1b");
+    assert_eq!(colored(&e.frame(30, 8))[0], "1 <176:fn> <75:a>() { <244:// c>");
+    feed(&mut e, "u");
+    assert_eq!(colored(&e.frame(30, 8))[0], "1 <176:fn> <75:a>() {");
+    // Text objects.
+    feed(&mut e, "jdif");
+    // `inside` is the body block, braces included (helix queries).
+    assert_eq!(text(&e), "fn a() \nfn b() {\n    \"s\"\n}\n");
+    feed(&mut e, "2Gvafd");
+    assert_eq!(text(&e), "fn a() \n\n");
+    feed(&mut e, "ggcia");
+    assert_eq!(text(&e), "fn a() \n\n");
+    // Another filetype drops the colors again.
+    feed(&mut e, ":set ft=foo\n");
+    assert_eq!(colored(&e.frame(30, 4))[0], "1 fn a()");
+    assert!(e.buf.syntax.is_none());
+}

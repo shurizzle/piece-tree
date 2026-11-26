@@ -1,6 +1,6 @@
 # `piece-tree` public API
 
-Exports: `Text`, `Chunks`, `Document`, `LineEnding`, `Regex`, `RegexError`, `TextCursor`. All offsets are **bytes**.
+Exports: `Text`, `Chunks`, `Document`, `LineEnding`, `Regex`, `RegexError`, `TextCursor`, `RegexCursor` (re-export of `regex_cursor::Cursor`, the trait `TextCursor` implements: `chunk`, `advance`, `offset`). All offsets are **bytes**.
 
 ## `Text`
 

@@ -30,7 +30,7 @@ let (m, rep) = text.replacement_at(&re, off, "v$1").unwrap();  // next match + i
 | `Text::replacement_at(&Regex, off, &str) -> Option<(Range, String)>` | the first match at or after `off` and its replacement expanded as `replace_all` (normalized to `\n`); for confirming substitutions one by one with `Document::splice` |
 | `Document::replace_all(&Regex, &str) -> usize` | single undo step; no match, no step |
 | `Document::replace_matching(&Regex, &str, keep) -> usize` | same, filtered |
-| `Text::cursor()`, `Text::cursor_at(off)` | `TextCursor`, an implementation of `regex_cursor::Cursor`, for using regex-cursor's engines directly |
+| `Text::cursor()`, `Text::cursor_at(off)` | `TextCursor`, an implementation of `regex_cursor::Cursor` (re-exported as `RegexCursor`, so callers can read the pieces with `chunk()`/`advance()`), for using regex-cursor's engines directly |
 
 ## Semantics worth knowing
 
