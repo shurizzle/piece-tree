@@ -10,7 +10,10 @@ use std::{
 
 use piece_tree::{Document, LineEnding, Text};
 
-use super::{Editor, ex, options::Options, read_doc};
+use super::{Editor, ex, graphemes::LineIndex, options::Options, read_doc};
+
+/// Long lines whose cluster index a buffer keeps.
+pub(super) const INDEXES: usize = 4;
 
 /// One file being edited: its text and history, its marks and options.
 pub(super) struct Buffer {
@@ -23,12 +26,18 @@ pub(super) struct Buffer {
     pub saved_eol: LineEnding,
     /// `a`–`z` and `'` (position before the last jump), as byte offsets shifted by edits.
     pub marks: HashMap<char, usize>,
-    /// Text version, line and char count of the last `line_chars`.
-    pub chars_memo: RefCell<Option<(Text, usize, usize)>>,
+    /// Cluster indexes of recently used long lines, the most recent last (`Editor::with_index`).
+    pub cols: RefCell<Vec<LineIndex>>,
     // shortcut: every option is buffer-local (window-local wrap/number are not split out), when a window-local option is needed
     pub opts: Options,
     /// Cursor byte offset when the buffer last left a window, where `:b` puts it back.
     pub last: usize,
+    /// Change list (`g;`/`g,`): offsets of recent changes, oldest first, shifted by edits;
+    /// `change_idx` is where the next `g;` goes back from (`changes.len()` after a new change).
+    pub changes: Vec<usize>,
+    pub change_idx: usize,
+    /// Last Visual selection (`gv`): kind, anchor and cursor offsets, shifted by edits.
+    pub last_visual: Option<(super::VKind, usize, usize)>,
 }
 
 impl Buffer {
@@ -40,9 +49,12 @@ impl Buffer {
             doc,
             path,
             marks: HashMap::new(),
-            chars_memo: RefCell::default(),
+            cols: RefCell::default(),
             opts,
             last: 0,
+            changes: Vec::new(),
+            change_idx: 0,
+            last_visual: None,
         }
     }
 

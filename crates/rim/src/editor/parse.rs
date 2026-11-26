@@ -7,17 +7,19 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 /// Caps counts so a typo like `99999999999p` cannot exhaust memory.
 pub(super) const MAX_COUNT: usize = 1_000_000;
 
-/// Normal-mode keys after `normal_char` mapping. Ctrl+D, Ctrl+U, Ctrl+R, Ctrl+A, Ctrl+X, Ctrl+V,
-/// Ctrl+G, Ctrl+W, Ctrl+^ are `\x04`, `\x15`, `\x12`, `\x01`, `\x18`, `\x16`, `\x07`, `\x17`, `\x1e`.
+/// Normal-mode keys after `normal_char` mapping: Ctrl+<letter> is its control char (Ctrl+D `\x04`,
+/// Ctrl+U `\x15`, ...; Tab is Ctrl+I `\x09`), Ctrl+^ is `\x1e`.
 pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'|";
-pub(super) const COMMANDS: &str = "iaIAoOxDCJpPu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&\x17\x1e";
+/// Ctrl+R redo, Ctrl+V block, Ctrl+A/X numbers, Ctrl+G file info, Ctrl+W windows, Ctrl+^ alternate
+/// buffer, Ctrl+O/Ctrl+I jumps, Ctrl+E/Ctrl+Y lines and Ctrl+F/Ctrl+B pages of scroll.
+pub(super) const COMMANDS: &str = "iaIAoOxDCJpPRu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&\x17\x1e\x0f\x09\x05\x19\x06\x02]";
 /// Keys followed by a char argument.
-pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@\x17";
+pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@\x17]";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
 pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
 /// `g<c>` motions and commands, as keys `g_key(c)`.
 pub(super) const G_MOTIONS: &str = "onNjk";
-pub(super) const G_COMMANDS: &str = "-+\x07a8&";
+pub(super) const G_COMMANDS: &str = "-+\x07a8&viJpP;,";
 
 /// Internal key for `g<c>`: a private-use char, so it never collides with a typed key.
 pub(super) const fn g_key(c: char) -> char {
@@ -202,19 +204,14 @@ pub(super) fn strip_counts(s: &str) -> String {
 pub(super) fn normal_char(key: KeyEvent) -> Option<char> {
     Some(match key.code {
         KeyCode::Char(c) if key.modifiers.contains(KeyModifiers::CONTROL) => match c {
-            'd' => '\x04',
-            'u' => '\x15',
-            'r' => '\x12',
-            'a' => '\x01',
-            'x' => '\x18',
-            'v' => '\x16',
-            'g' => '\x07',
-            'w' => '\x17',
+            'a'..='z' => char::from(c as u8 - b'a' + 1),
             // Terminals send Ctrl+^ as 0x1e, which crossterm reports as Ctrl+6.
             '6' | '^' => '\x1e',
             _ => return None,
         },
         KeyCode::Char(c) => c,
+        // Terminals send Ctrl+I as Tab.
+        KeyCode::Tab => '\x09',
         KeyCode::Left => 'h',
         KeyCode::Down => 'j',
         KeyCode::Up => 'k',
@@ -227,18 +224,44 @@ pub(super) fn normal_char(key: KeyEvent) -> Option<char> {
     })
 }
 
+/// Special keys kept in register text (a macro), as private-use chars from U+E200.
+const SPECIAL: [KeyCode; 9] =
+    [KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down, KeyCode::Home, KeyCode::End, KeyCode::PageUp, KeyCode::PageDown, KeyCode::Delete];
+
+/// A key as register text: chars as themselves, Ctrl+<letter> as its control char, Esc `\x1b`,
+/// Enter `\r`, Backspace `\x7f`, Tab `\t`, other special keys as private-use chars. None for a
+/// key that has no text (F keys).
+pub(super) fn key_char(key: KeyEvent) -> Option<char> {
+    Some(match key.code {
+        KeyCode::Char(_) if key.modifiers.contains(KeyModifiers::CONTROL) => normal_char(key)?,
+        KeyCode::Char(c) => c,
+        KeyCode::Esc => '\x1b',
+        KeyCode::Enter => '\r',
+        KeyCode::Backspace => '\x7f',
+        KeyCode::Tab => '\t',
+        code => char::from_u32(0xE200 + SPECIAL.iter().position(|&k| k == code)? as u32).expect("private-use char"),
+    })
+}
+
+/// Keys of register text (a macro, `:normal`): the inverse of `key_char`; `\n` is Enter too.
+pub(super) fn text_keys(s: &str) -> Vec<KeyEvent> {
+    s.chars()
+        .map(|c| match c {
+            '\x1b' => KeyCode::Esc.into(),
+            '\r' | '\n' => KeyCode::Enter.into(),
+            '\x7f' => KeyCode::Backspace.into(),
+            c if (0xE200..0xE200 + SPECIAL.len() as u32).contains(&(c as u32)) => SPECIAL[c as usize - 0xE200].into(),
+            c => char_key(c),
+        })
+        .collect()
+}
+
 /// Inverse of `normal_char`, for replaying stored commands.
 pub(super) fn char_key(c: char) -> KeyEvent {
     let ctrl = |c| KeyEvent::new(KeyCode::Char(c), KeyModifiers::CONTROL);
     match c {
-        '\x04' => ctrl('d'),
-        '\x15' => ctrl('u'),
-        '\x12' => ctrl('r'),
-        '\x01' => ctrl('a'),
-        '\x18' => ctrl('x'),
-        '\x16' => ctrl('v'),
-        '\x07' => ctrl('g'),
-        '\x17' => ctrl('w'),
+        '\x09' => KeyCode::Tab.into(),
+        '\x01'..='\x1a' => ctrl(char::from(c as u8 - 1 + b'a')),
         '\x1e' => ctrl('6'),
         c => KeyCode::Char(c).into(),
     }
@@ -324,10 +347,22 @@ mod tests {
 
     #[test]
     fn keys_round_trip() {
-        for c in ['a', '\x04', '\x15', '\x12', '\x01', '\x18', '\x16', '\x07', '\x17', '\x1e'] {
+        for c in ['a', '\x1e'].into_iter().chain('\x01'..='\x1a') {
             assert_eq!(normal_char(char_key(c)), Some(c));
         }
-        assert_eq!(normal_char(KeyEvent::new(KeyCode::Char('z'), KeyModifiers::CONTROL)), None);
+        assert_eq!(char_key('\x09'), KeyCode::Tab.into());
+        // Register text round trip, special keys included.
+        let keys: Vec<KeyEvent> = [KeyCode::Char('a'), KeyCode::Esc, KeyCode::Enter, KeyCode::Backspace, KeyCode::Tab, KeyCode::Left, KeyCode::Delete]
+            .into_iter()
+            .map(KeyEvent::from)
+            .chain([KeyEvent::new(KeyCode::Char('w'), KeyModifiers::CONTROL)])
+            .collect();
+        let text: String = keys.iter().map(|&k| key_char(k).unwrap()).collect();
+        assert_eq!(text, "a\x1b\r\x7f\t\u{e200}\u{e208}\x17");
+        assert_eq!(text_keys(&text), keys);
+        assert_eq!(text_keys("\n"), [KeyEvent::from(KeyCode::Enter)]);
+        assert_eq!(key_char(KeyCode::F(1).into()), None);
+        assert_eq!(normal_char(KeyEvent::new(KeyCode::Char('1'), KeyModifiers::CONTROL)), None);
         assert_eq!(normal_char(KeyCode::F(1).into()), None);
     }
 }

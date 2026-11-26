@@ -55,4 +55,4 @@ cargo test -p rim                          # editor tests (keys, frames, submodu
 | Undo/redo, writing | `crates/piece-tree/src/document.rs` |
 | Regex search/replace | `crates/piece-tree/src/search.rs` |
 | Benchmarks | `crates/piece-tree/benches/bench.rs` |
-| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (buffers and background save, windows and split layout, grammar, motions, objects, search, ex ranges and line commands, `:s`, registers, options, layout (wrap rows), render; CLI/terminal in `main.rs`) |
+| Editor | `crates/rim/src/editor.rs` + `editor/*.rs` (buffers and background save, windows and split layout, grammar, grapheme columns and line indexes, motions, objects, search, ex ranges and line commands, `:s`, registers, options, layout (wrap rows), render; CLI/terminal, init file and OSC 52 query in `main.rs`) |

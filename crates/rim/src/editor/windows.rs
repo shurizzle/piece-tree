@@ -31,6 +31,11 @@ pub(super) struct Window {
     /// Cursor byte offset while the window is parked, shifted by the edits made in other windows;
     /// `line`/`col` are recomputed from it when the window comes back.
     pub off: usize,
+    /// Jump list (`Ctrl+O`/`Ctrl+I`): buffer id and byte offset of each position jumped from,
+    /// oldest first, shifted by edits; `jump_idx` is the entry the next `Ctrl+O` goes back from
+    /// (`jumps.len()` when not moving through the list).
+    pub jumps: Vec<(usize, usize)>,
+    pub jump_idx: usize,
 }
 
 impl Window {
@@ -50,6 +55,8 @@ impl Window {
             layout: RefCell::default(),
             match_cache: RefCell::default(),
             off: 0,
+            jumps: Vec::new(),
+            jump_idx: 0,
         }
     }
 

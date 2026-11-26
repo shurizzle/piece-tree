@@ -33,8 +33,22 @@ pub(super) struct Options {
     pub cursorline: bool,
     /// Long lines continue on the next screen rows instead of scrolling sideways.
     pub wrap: bool,
-    /// Tab display width, spaces inserted by Tab, and the `>`/`<` shift.
+    /// Tab display width, and the width Tab inserts.
     pub tabstop: usize,
+    /// Tab and `>`/`<` insert spaces rather than tabs; `:retab` writes spaces.
+    pub expandtab: bool,
+    /// Width of one `>`/`<` shift; 0 means `tabstop`.
+    pub shiftwidth: usize,
+    /// Tabs show as `>` and spaces, line ends as `$`.
+    pub list: bool,
+    /// Searches ignore case; with `smartcase`, only while the pattern has no uppercase letter.
+    pub ignorecase: bool,
+    pub smartcase: bool,
+    /// Matches of the last search are highlighted; incsearch: the pattern being typed is.
+    pub hlsearch: bool,
+    pub incsearch: bool,
+    /// Lines kept above and below the cursor when scrolling.
+    pub scrolloff: usize,
     pub background: Background,
     /// Palette overrides.
     pub cursorlinebg: Option<u8>,
@@ -52,6 +66,14 @@ impl Default for Options {
             cursorline: true,
             wrap: true,
             tabstop: 4,
+            expandtab: true,
+            shiftwidth: 0,
+            list: false,
+            ignorecase: false,
+            smartcase: false,
+            hlsearch: true,
+            incsearch: true,
+            scrolloff: 0,
             background: Background::Dark,
             cursorlinebg: None,
             numberfg: None,
@@ -69,6 +91,14 @@ fn long(name: &str) -> Option<&'static str> {
         "cursorline" | "cul" => "cursorline",
         "wrap" => "wrap",
         "tabstop" | "ts" => "tabstop",
+        "expandtab" | "et" => "expandtab",
+        "shiftwidth" | "sw" => "shiftwidth",
+        "list" => "list",
+        "ignorecase" | "ic" => "ignorecase",
+        "smartcase" | "scs" => "smartcase",
+        "hlsearch" | "hls" => "hlsearch",
+        "incsearch" | "is" => "incsearch",
+        "scrolloff" | "so" => "scrolloff",
         "background" | "bg" => "background",
         "cursorlinebg" | "clbg" => "cursorlinebg",
         "numberfg" | "nufg" => "numberfg",
@@ -79,6 +109,26 @@ fn long(name: &str) -> Option<&'static str> {
 }
 
 impl Options {
+    /// Effective shift width (`shiftwidth`, or `tabstop` when 0).
+    pub fn sw(&self) -> usize {
+        if self.shiftwidth == 0 { self.tabstop } else { self.shiftwidth }
+    }
+
+    /// Indent of `width` columns: spaces with `expandtab`, else tabs then spaces.
+    pub fn indent(&self, width: usize) -> String {
+        if self.expandtab {
+            " ".repeat(width)
+        } else {
+            format!("{}{}", "\t".repeat(width / self.tabstop), " ".repeat(width % self.tabstop))
+        }
+    }
+
+    /// `pat` as the regex to search: case-insensitive under `ignorecase`, unless `smartcase` and
+    /// the pattern has an uppercase letter.
+    pub fn case_pattern(&self, pat: &str) -> String {
+        if self.ignorecase && !(self.smartcase && pat.chars().any(char::is_uppercase)) { format!("(?i){pat}") } else { pat.to_string() }
+    }
+
     pub fn palette(&self) -> Palette {
         let mut p = Palette::new(self.background);
         p.cursorline_bg = self.cursorlinebg.unwrap_or(p.cursorline_bg);
@@ -93,6 +143,12 @@ impl Options {
             "relativenumber" => Some(&mut self.relativenumber),
             "cursorline" => Some(&mut self.cursorline),
             "wrap" => Some(&mut self.wrap),
+            "expandtab" => Some(&mut self.expandtab),
+            "list" => Some(&mut self.list),
+            "ignorecase" => Some(&mut self.ignorecase),
+            "smartcase" => Some(&mut self.smartcase),
+            "hlsearch" => Some(&mut self.hlsearch),
+            "incsearch" => Some(&mut self.incsearch),
             _ => None,
         }
     }
@@ -106,7 +162,15 @@ impl Options {
             "relativenumber" => on(self.relativenumber, name),
             "cursorline" => on(self.cursorline, name),
             "wrap" => on(self.wrap, name),
+            "expandtab" => on(self.expandtab, name),
+            "list" => on(self.list, name),
+            "ignorecase" => on(self.ignorecase, name),
+            "smartcase" => on(self.smartcase, name),
+            "hlsearch" => on(self.hlsearch, name),
+            "incsearch" => on(self.incsearch, name),
             "tabstop" => format!("tabstop={}", self.tabstop),
+            "shiftwidth" => format!("shiftwidth={}", self.shiftwidth),
+            "scrolloff" => format!("scrolloff={}", self.scrolloff),
             "background" => format!("background={}", if self.background == Background::Dark { "dark" } else { "light" }),
             "cursorlinebg" => format!("cursorlinebg={}", p.cursorline_bg),
             "numberfg" => format!("numberfg={}", p.number_fg),
@@ -119,7 +183,10 @@ impl Options {
     pub fn set(&mut self, args: &str) -> Result<String, String> {
         let mut shown = Vec::new();
         if args.trim().is_empty() {
-            for n in ["number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat"] {
+            for n in [
+                "number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat",
+                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff",
+            ] {
                 shown.push(self.show(n));
             }
         }
@@ -141,6 +208,8 @@ impl Options {
                     "numberfg" => self.numberfg = Some(value.parse().map_err(|_| invalid())?),
                     "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
                     "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
+                    "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
+                    "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
                 }
             } else if let Some(name) = arg.strip_suffix('?') {
@@ -182,6 +251,21 @@ mod tests {
         assert_eq!(o.palette(), Palette { cursorline_bg: 17, number_fg: 18, current_number_fg: 19, ..Palette::new(Background::Light) });
         assert_eq!(o.set("clbg? nufg? cnufg? bg=dark bg?"), Ok("cursorlinebg=17  numberfg=18  cursornumberfg=19  background=dark".into()));
         assert!(o.set("").unwrap().starts_with("nonumber  relativenumber  nocursorline  tabstop=8"));
+    }
+
+    #[test]
+    fn new_options_and_helpers() {
+        let mut o = Options::default();
+        assert_eq!(o.set("et? sw? list? ic? scs? hls? is? so?"), Ok("expandtab  shiftwidth=0  nolist  noignorecase  nosmartcase  hlsearch  incsearch  scrolloff=0".into()));
+        assert_eq!((o.sw(), o.indent(6)), (4, "      ".into()));
+        assert_eq!(o.set("noet sw=2 list ic scs nohls nois so=3"), Ok(String::new()));
+        assert_eq!((o.sw(), o.indent(9), o.scrolloff), (2, "\t\t ".into(), 3));
+        assert_eq!((o.case_pattern("ab"), o.case_pattern("aB")), ("(?i)ab".into(), "aB".into()));
+        o.set("noscs").unwrap();
+        assert_eq!(o.case_pattern("aB"), "(?i)aB");
+        assert!(o.list && !o.hlsearch && !o.incsearch);
+        assert_eq!(o.set("sw=33"), Err("Invalid argument: sw=33".into()));
+        assert_eq!(o.set("so=x"), Err("Invalid argument: so=x".into()));
     }
 
     #[test]

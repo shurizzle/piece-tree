@@ -2,7 +2,7 @@
 
 use std::ops::Range;
 
-use super::{Editor, Pos, class};
+use super::{Editor, Pos, class, graphemes};
 
 /// A text object's extent.
 #[derive(Debug, PartialEq, Eq)]
@@ -118,11 +118,9 @@ impl Editor {
         self.bracket_object(around, open, close, n)
     }
 
-    /// Byte range of chars `cols` in `line`.
+    /// Byte range of clusters `cols` in `line`.
     pub(super) fn cols_range(&self, line: usize, cols: Range<usize>) -> Range<usize> {
-        let text = self.buf.doc.text();
-        let (start, s) = (text.line_to_offset(line), text.line(line));
-        start + super::byte_of_col(&s, cols.start)..start + super::byte_of_col(&s, cols.end)
+        self.offset_of((line, cols.start))..self.offset_of((line, cols.end))
     }
 
     /// `iw`: `n` runs of one word class (blanks are a run too); `aw`: words with their trailing
@@ -131,19 +129,25 @@ impl Editor {
         let line = self.buf.doc.text().line(self.win.line);
         let cls = |c: char| if big { u8::from(!c.is_whitespace()) } else { class(c) };
         // Everything works on byte positions in the line, moving only as far as the object extends.
-        let col = self.win.col.min(str_indices::chars::count(&line).checked_sub(1)?);
+        // Clusters are classed by their first char.
+        let col = self.win.col.min(self.line_chars(self.win.line).checked_sub(1)?);
         let at = |b: usize| line[b..].chars().next();
-        let before = |b: usize| line[..b].chars().next_back();
+        // Start of the cluster before `b` if it is of class `c`.
+        let before = |b: usize, c: u8| (b > 0).then(|| graphemes::prev(&line, b)).filter(|&p| at(p).is_some_and(|ch| cls(ch) == c));
         let blank = |b: usize| at(b).is_some_and(|c| cls(c) == 0);
         // End (exclusive) of the run starting at `b`.
         let run = |b: usize| {
             let c = cls(at(b).expect("a run starts on a char"));
-            b + line[b..].find(|ch| cls(ch) != c).unwrap_or(line.len() - b)
+            let mut e = b;
+            while at(e).is_some_and(|ch| cls(ch) == c) {
+                e = graphemes::next(&line, e);
+            }
+            e
         };
-        let bcol = super::byte_of_col(&line, col);
+        let bcol = self.line_byte(self.win.line, col);
         let mut start = bcol;
-        while let Some(p) = before(start).filter(|&p| cls(p) == cls(at(bcol).expect("col is a char"))) {
-            start -= p.len_utf8();
+        while let Some(p) = before(start, cls(at(bcol).expect("col is a char"))) {
+            start = p;
         }
         let mut end = bcol;
         for _ in 0..n {
@@ -155,8 +159,8 @@ impl Editor {
             if around && end < line.len() && blank(end) != on_blank {
                 end = run(end);
             } else if around && !on_blank {
-                while let Some(p) = before(start).filter(|&p| cls(p) == 0) {
-                    start -= p.len_utf8();
+                while let Some(p) = before(start, 0) {
+                    start = p;
                 }
             }
         }
@@ -170,7 +174,7 @@ impl Editor {
         let line = self.buf.doc.text().line(self.win.line);
         let quotes = quotes(&line, q);
         // Quotes as byte offsets; the pair is the first one ending at or after the cursor's byte.
-        let cursor = super::byte_of_col(&line, self.win.col);
+        let cursor = self.line_byte(self.win.line, self.win.col);
         let pair = quotes.as_chunks::<2>().0.iter().find(|p| p[1] >= cursor)?;
         let off = self.buf.doc.text().line_to_offset(self.win.line);
         if !around {
@@ -276,10 +280,11 @@ impl Editor {
         if self.buf.doc.text().line(self.win.line).trim().is_empty() {
             return None;
         }
-        // The paragraph as chars, line breaks included, with each char's position.
+        // The paragraph as clusters (their first chars), line breaks included, with each one's position.
         let (mut chars, mut pos) = (Vec::new(), Vec::new());
         for l in first..=last {
-            for (c, ch) in self.buf.doc.text().line(l).chars().chain((l < last).then_some('\n')).enumerate() {
+            let line = self.buf.doc.text().line(l);
+            for (c, ch) in graphemes::iter(&line).filter_map(|g| g.chars().next()).chain((l < last).then_some('\n')).enumerate() {
                 chars.push(ch);
                 pos.push((l, c));
             }
@@ -329,9 +334,8 @@ impl Editor {
                 self.mode = super::Mode::Visual(super::VKind::Line);
             }
             Obj::Chars(r) if !r.is_empty() => {
-                let last = self.buf.doc.text().slice(r.clone()).chars().next_back().map_or(0, char::len_utf8);
                 self.anchor = self.pos_of(r.start);
-                (self.win.line, self.win.col) = self.pos_of(r.end - last);
+                (self.win.line, self.win.col) = self.pos_of(r.end - 1);
                 self.win.want_col = self.win.col;
                 self.mode = super::Mode::Visual(super::VKind::Char);
             }

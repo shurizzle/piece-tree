@@ -1,8 +1,8 @@
 //! Motions: char iterators, words, finds, brackets, screen lines, marks and searches.
 
-use super::{Cmd, Editor, G_DOWN, G_UP, Kind, Pos, class, search};
+use super::{Cmd, Editor, G_DOWN, G_UP, Kind, Pos, class, graphemes, search};
 
-/// Chars of a line, then its `\n` if it has one, from byte `b` on.
+/// First char of each cluster of a line, then its `\n` if it has one, from byte `b` on.
 struct FwdChars<'a> {
     s: std::borrow::Cow<'a, str>,
     b: usize,
@@ -15,7 +15,7 @@ impl Iterator for FwdChars<'_> {
     fn next(&mut self) -> Option<char> {
         match self.s[self.b..].chars().next() {
             Some(c) => {
-                self.b += c.len_utf8();
+                self.b = graphemes::next(&self.s, self.b);
                 Some(c)
             }
             None => std::mem::take(&mut self.nl).then_some('\n'),
@@ -23,7 +23,8 @@ impl Iterator for FwdChars<'_> {
     }
 }
 
-/// Chars of a line backward from byte `b_end` (after the `\n` when `nl`), with the column of each.
+/// Clusters of a line backward from byte `b_end` (after the `\n` when `nl`), as their first char,
+/// with the column of each.
 struct BwdChars<'a> {
     s: std::borrow::Cow<'a, str>,
     b_end: usize,
@@ -38,9 +39,11 @@ impl Iterator for BwdChars<'_> {
         let c = if std::mem::take(&mut self.nl) {
             '\n'
         } else {
-            let c = self.s[..self.b_end].chars().next_back()?;
-            self.b_end -= c.len_utf8();
-            c
+            if self.b_end == 0 {
+                return None;
+            }
+            self.b_end = graphemes::prev(&self.s, self.b_end);
+            self.s[self.b_end..].chars().next().expect("a cluster")
         };
         let idx = self.idx;
         self.idx = idx.wrapping_sub(1);
@@ -52,33 +55,36 @@ impl Iterator for BwdChars<'_> {
 pub(super) const JUMPS: &str = "Gg%nN*#HML`'\u{E16F}";
 
 impl Editor {
-    /// Chars from `p` forward; each line but the last ends with `\n`. Lazy: a line is read in place and
-    /// only as far as the caller consumes it, so a word motion in a huge line costs the word.
+    /// Clusters from `p` forward, as their first chars; each line but the last ends with `\n`. Lazy: a
+    /// line is read in place and only as far as the caller consumes it, and the start is found
+    /// through the line's index, so a word motion in a huge line costs the word.
     pub(super) fn fwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
         let text = self.buf.doc.text();
         let lines = text.line_count();
+        let b0 = self.offset_of(p) - text.line_to_offset(p.0);
         (p.0..lines).flat_map(move |l| {
             let s = text.line(l);
-            let (b, c0) = if l == p.0 { (super::byte_of_col(&s, p.1), p.1) } else { (0, 0) };
+            let (b, c0) = if l == p.0 { (b0, p.1) } else { (0, 0) };
             let chars = FwdChars { s, b, nl: l + 1 < lines };
             chars.enumerate().map(move |(i, ch)| ((l, c0 + i), ch))
         })
     }
 
-    /// Chars from `p` backward, `p` included.
+    /// Clusters from `p` backward, `p` included.
     pub(super) fn bwd(&self, p: Pos) -> impl Iterator<Item = (Pos, char)> + '_ {
         let text = self.buf.doc.text();
         let lines = text.line_count();
+        let b0 = self.offset_of(p) - text.line_to_offset(p.0);
         (0..=p.0).rev().flat_map(move |l| {
             let s = text.line(l);
             let nl = l + 1 < lines;
-            // `b_end`: end of the chars still to give; `idx`: column of the next one (counted down).
-            let (b_end, nl, idx) = if l == p.0 && super::byte_of_col(&s, p.1) < s.len() {
-                // The cursor is on a char of the line: start at it, the line break is after it.
-                (super::byte_of_col(&s, p.1 + 1), false, p.1)
+            // `b_end`: end of the clusters still to give; `idx`: column of the next one (counted down).
+            let (b_end, nl, idx) = if l == p.0 && b0 < s.len() {
+                // The cursor is on a cluster of the line: start at it, the line break is after it.
+                (graphemes::next(&s, b0), false, p.1)
             } else {
-                // A line before the cursor's, or the cursor on the line break (or past it): all chars.
-                let n = str_indices::chars::count(&s);
+                // A line before the cursor's, or the cursor on the line break (or past it): all clusters.
+                let n = self.line_chars(l);
                 let nl = nl && (l < p.0 || p.1 >= n);
                 (s.len(), nl, (if nl { n } else { n.wrapping_sub(1) }).min(if l == p.0 { p.1 } else { usize::MAX }))
             };
@@ -143,13 +149,13 @@ impl Editor {
         // Byte searches (UTF-8 is self-synchronizing, so a hit is a char); columns are counted per hit.
         let hit = if matches!(kind, 'f' | 't') {
             let from = self.win.col + 1 + skip;
-            let b = super::byte_of_col(&line, from);
+            let b = self.line_byte(self.win.line, from);
             let k = memchr::memmem::find_iter(&line.as_bytes()[b..], needle).nth(n - 1)?;
-            from + str_indices::chars::count(&line[b..b + k])
+            from + graphemes::col_of(&line[b..], k)
         } else {
             let to = self.win.col.checked_sub(skip)?;
-            let k = memchr::memmem::rfind_iter(&line.as_bytes()[..super::byte_of_col(&line, to)], needle).nth(n - 1)?;
-            str_indices::chars::count(&line[..k])
+            let k = memchr::memmem::rfind_iter(&line.as_bytes()[..self.line_byte(self.win.line, to)], needle).nth(n - 1)?;
+            self.line_col(self.win.line, k)
         };
         Some(match kind {
             'f' => ((self.win.line, hit), Kind::Inclusive),
@@ -162,10 +168,10 @@ impl Editor {
     /// `%`: the bracket matching the first `()[]{}` at or after the cursor in its line.
     fn match_bracket(&self) -> Option<Pos> {
         let line = self.buf.doc.text().line(self.win.line);
-        let b = super::byte_of_col(&line, self.win.col);
+        let b = self.line_byte(self.win.line, self.win.col);
         let hay = &line.as_bytes()[b..];
         let k = [memchr::memchr3(b'(', b')', b'[', hay), memchr::memchr3(b']', b'{', b'}', hay)].into_iter().flatten().min()?;
-        let (i, ch) = (self.win.col + str_indices::chars::count(&line[b..b + k]), hay[k] as char);
+        let (i, ch) = (self.win.col + graphemes::col_of(&line[b..], k), hay[k] as char);
         let (open, close) = match ch {
             '(' | ')' => ('(', ')'),
             '[' | ']' => ('[', ']'),
@@ -177,15 +183,23 @@ impl Editor {
     /// `*`/`#`: the word under the cursor (or the next one in the line) and its start column.
     fn word_under_cursor(&self) -> Option<(String, usize)> {
         let line = self.buf.doc.text().line(self.win.line);
-        let b = super::byte_of_col(&line, self.win.col);
+        let b = self.line_byte(self.win.line, self.win.col);
         let (skipped, _) = line[b..].char_indices().find(|&(_, c)| class(c) == 1)?;
         let mut start = b + skipped;
-        let mut col = self.win.col + line[b..start].chars().count();
+        let mut col = self.win.col + graphemes::col_of(&line[b..], start - b);
+        start = b + graphemes::byte_of(&line[b..], col - self.win.col);
         // Back to the word start, then on to its end.
-        while let Some(p) = line[..start].chars().next_back().filter(|&p| class(p) == 1) {
-            (start, col) = (start - p.len_utf8(), col - 1);
+        while start > 0 {
+            let p = graphemes::prev(&line, start);
+            if line[p..].chars().next().is_none_or(|c| class(c) != 1) {
+                break;
+            }
+            (start, col) = (p, col - 1);
         }
-        let end = start + line[start..].find(|c| class(c) != 1).unwrap_or(line.len() - start);
+        let mut end = start;
+        while line[end..].chars().next().is_some_and(|c| class(c) == 1) {
+            end = graphemes::next(&line, end);
+        }
         Some((line[start..end].to_string(), col))
     }
 
@@ -233,10 +247,15 @@ impl Editor {
                 ((l, self.line_chars(l).saturating_sub(1)), Kind::Inclusive)
             }
             'g' | 'G' => first(self, count.map_or(if key == 'g' { 0 } else { last }, |c| (c - 1).min(last))),
-            'H' => first(self, (self.win.top + n - 1).min(self.bottom_line())),
+            // `scrolloff` lines stay between them and the screen edge, but at the text's ends.
+            'H' => {
+                let so = if self.win.top > 0 { self.scrolloff() } else { 0 };
+                first(self, (self.win.top + (n - 1).max(so)).min(self.bottom_line()))
+            }
             'L' => {
                 let bottom = self.bottom_line();
-                first(self, bottom.saturating_sub(n - 1).max(self.win.top.min(bottom)))
+                let so = if bottom < last { self.scrolloff() } else { 0 };
+                first(self, bottom.saturating_sub((n - 1).max(so)).max(self.win.top.min(bottom)))
             }
             'M' => {
                 // The line on the middle screen row of what is shown.
@@ -294,7 +313,7 @@ impl Editor {
                     self.msg = "No identifier under cursor".into();
                     return None;
                 };
-                let mut s = search::Search::word(&word);
+                let mut s = search::Search::word(&word, self.buf.opts.ignorecase);
                 s.back = key == '#';
                 self.last_search = Some(s);
                 let from = self.offset_of((line, start));
@@ -337,6 +356,11 @@ impl Editor {
         })
     }
 
+    /// `scrolloff` as it applies to the window: at most half the screen.
+    pub(super) fn scrolloff(&self) -> usize {
+        self.buf.opts.scrolloff.min(self.win.rows.saturating_sub(1) / 2)
+    }
+
     /// Char boundary at or before byte `b`, clamped to the text (`go`, `:goto`).
     pub(super) fn byte_pos(&self, b: usize) -> usize {
         self.buf.doc.text().floor_char_boundary(b)
@@ -359,9 +383,10 @@ impl Editor {
         }
     }
 
-    /// Records the cursor as the `''` mark before a jump.
+    /// Records the cursor as the `''` mark and in the jump list before a jump.
     pub(super) fn set_jump(&mut self) {
         self.buf.marks.insert('\'', self.offset());
+        self.push_jump();
     }
 
     /// The `n`-th match of `last_search` forward or backward from byte `from` (the cursor by

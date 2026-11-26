@@ -14,7 +14,7 @@ use crossterm::{
 };
 use unicode_width::UnicodeWidthChar;
 
-use super::{Editor, Mode, VKind, windows::Rect, layout::{LONG_LINE, Rows}, options::Palette, registers::osc52, search, sorted};
+use super::{Editor, Mode, VKind, graphemes, layout::{LONG_LINE, Rows}, options::Palette, registers::osc52, search, sorted, windows::Rect};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Style {
@@ -58,7 +58,7 @@ struct Pane {
 }
 
 impl Editor {
-    /// Char range of `line` inside the Visual selection; `len` stands for the line break.
+    /// Cluster range of `line` inside the Visual selection; `len` stands for the line break.
     fn selection(&self, line: usize) -> Range<usize> {
         if let (Mode::Confirm, Some(c)) = (&self.mode, &self.confirm) {
             let (a, b) = (self.pos_of(c.cur.start), self.pos_of(c.cur.end));
@@ -76,10 +76,7 @@ impl Editor {
         let len = self.line_chars(line);
         match kind {
             VKind::Line => 0..len + 1,
-            VKind::Block => {
-                let (c0, c1) = self.block_cols();
-                if self.win.want_col == usize::MAX { c0..len.max(c0) } else { c0..c1 + 1 }
-            }
+            VKind::Block => self.block_range(line),
             VKind::Char => {
                 let start = if line == a.0 { a.1 } else { 0 };
                 let end = if line == b.0 { b.1 + 1 } else { len + 1 };
@@ -92,7 +89,7 @@ impl Editor {
     fn highlight(&self) -> Option<Rc<piece_tree::Regex>> {
         match &self.mode {
             Mode::Search(_) => self.inc_search.as_ref().map(|s| s.re.clone()),
-            _ if self.hl => self.last_search.as_ref().map(|s| s.re.clone()),
+            _ if self.hl && self.buf.opts.hlsearch => self.last_search.as_ref().map(|s| s.re.clone()),
             _ => None,
         }
     }
@@ -164,7 +161,7 @@ impl Editor {
         self.with_rows(self.win.line, |line, rows| {
             let k = rows.row_of(line, self.win.col);
             let (start, seg) = rows.row(line, k);
-            (k, screen_col(seg, self.win.col - start, self.buf.opts.tabstop))
+            (k, graphemes::screen_col(seg, self.win.col - start, self.buf.opts.tabstop))
         })
     }
 
@@ -195,22 +192,22 @@ impl Editor {
         (line, k)
     }
 
-    /// Char index in row `k` of `line` at cell column `x`; a row that is not the last never ends past its last char.
+    /// Cluster index in row `k` of `line` at cell column `x`; a row that is not the last never ends past its last cluster.
     pub(super) fn col_at(&self, line: usize, k: usize, x: usize) -> usize {
         let ts = self.buf.opts.tabstop;
         self.with_rows(line, |text, rows| {
             rows.ensure(text, k);
             let (start, seg) = rows.row(text, k);
             let (mut cx, mut idx) = (0, 0);
-            for c in seg.chars() {
-                let cw = cell_width(c, ts);
+            for g in graphemes::iter(seg) {
+                let cw = graphemes::width(g, ts);
                 if cx + cw > x {
                     break;
                 }
                 cx += cw;
                 idx += 1;
             }
-            let max = if k + 1 < rows.len() { idx.min(str_indices::chars::count(seg).saturating_sub(1)) } else { idx };
+            let max = if k + 1 < rows.len() { idx.min(graphemes::count(seg).saturating_sub(1)) } else { idx };
             start + max
         })
     }
@@ -233,15 +230,19 @@ impl Editor {
         // The top line also counts the rows scrolled off its top.
         let cap = self.win.rows + 1;
         let (mut top, mut top_sub) = (self.win.top, self.win.top_sub);
-        if self.win.line < top {
-            (top, top_sub) = (self.win.line, 0);
+        // scrolloff: lines kept above and below the cursor line, at most half the screen.
+        let so = self.scrolloff();
+        let below = (self.win.line + so).min(text.line_count() - 1);
+        if self.win.line < top + so {
+            (top, top_sub) = (self.win.line.saturating_sub(so).min(top), 0);
         } else {
-            // Every line takes at least one row, so `top` cannot be above this; then drop rows until the cursor line fits.
-            let t = top.max((self.win.line + 1).saturating_sub(self.win.rows));
+            // Every line takes at least one row, so `top` cannot be above this; then drop rows until
+            // the cursor line and the `scrolloff` lines below it fit.
+            let t = top.max((below + 1).saturating_sub(self.win.rows));
             if t != top {
                 (top, top_sub) = (t, 0);
             }
-            let mut used = (top..=self.win.line).map(|n| self.height_to(n, cap + if n == top { top_sub } else { 0 })).sum::<usize>();
+            let mut used = (top..=below).map(|n| self.height_to(n, cap + if n == top { top_sub } else { 0 })).sum::<usize>();
             used = used.saturating_sub(top_sub);
             while used > self.win.rows && top < self.win.line {
                 used -= self.height_to(top, cap + top_sub).saturating_sub(top_sub);
@@ -263,7 +264,8 @@ impl Editor {
             self.win.left = 0;
         } else {
             let line = text.line(self.win.line);
-            let cw = line[str_indices::chars::to_byte_idx(&line, self.win.col)..].chars().next().map_or(1, |c| cell_width(c, ts).max(1));
+            let b = graphemes::byte_of(&line, self.win.col);
+            let cw = if b < line.len() { graphemes::width(&line[b..graphemes::next(&line, b)], ts) } else { 1 };
             if cx < self.win.left {
                 self.win.left = cx;
             } else if cx + cw > self.win.left + text_w {
@@ -316,10 +318,10 @@ impl Editor {
                         }
                     }
                     let last = r.done() && k + 1 == r.len();
-                    spans.extend(row_spans(seg, |i| style_at(start + i), self.win.left, text_w, ts, last));
+                    spans.extend(row_spans(seg, |i| style_at(start + i), self.win.left, text_w, ts, last, self.buf.opts.list));
                     if active && n == self.win.line && self.buf.opts.cursorline {
                         // Explicit padding: erasing with a background color is not portable (no BCE everywhere).
-                        let used: usize = spans.iter().flat_map(|s| s.text.chars()).map(|c| cell_width(c, ts)).sum();
+                        let used: usize = spans.iter().map(|s| str_width(&s.text)).sum();
                         if used < w {
                             spans.push(Span { style: Style::Plain, text: " ".repeat(w - used) });
                         }
@@ -378,10 +380,12 @@ impl Editor {
                 cursor_cols = r.x..r.x + r.w;
             }
             for (i, mut spans) in pane.rows.into_iter().enumerate() {
-                let used: usize = spans.iter().map(|s| str_width(&s.text)).sum();
                 // One window needs no padding: rows are cleared to their end.
-                if !single && used < r.w {
-                    spans.push(Span { style: Style::Plain, text: " ".repeat(r.w - used) });
+                if !single {
+                    let used: usize = spans.iter().map(|s| str_width(&s.text)).sum();
+                    if used < r.w {
+                        spans.push(Span { style: Style::Plain, text: " ".repeat(r.w - used) });
+                    }
                 }
                 put(r.x, r.y + i, spans);
             }
@@ -413,6 +417,7 @@ impl Editor {
             (Span { style: Style::Plain, text: fit(&input, w) }, (x, area.h), true)
         } else {
             let mode = match self.mode {
+                Mode::Insert if self.replacing.is_some() => "REPLACE",
                 Mode::Insert => "INSERT",
                 Mode::Visual(VKind::Char) => "VISUAL",
                 Mode::Visual(VKind::Line) => "V-LINE",
@@ -500,8 +505,8 @@ pub(super) fn line_number(line: usize, cursor: usize, nu: bool, rnu: bool) -> us
     if !rnu || (nu && line == cursor) { line + 1 } else { line.abs_diff(cursor) }
 }
 
-/// Screen cells of a char: tabs `ts`, control chars 1 (drawn as `?`), others by unicode-width.
-// shortcut: widths are per char (unicode-width), so a grapheme cluster takes several cursor positions; segment graphemes if needed.
+/// Screen cells of a char alone: tabs `ts`, control chars 1 (drawn as `?`), others by unicode-width
+/// (0 for a combining mark; `graphemes::width` gives a cluster at least 1).
 pub(super) fn cell_width(c: char, ts: usize) -> usize {
     match c {
         '\t' => ts,
@@ -515,60 +520,106 @@ pub(super) fn cell_width(c: char, ts: usize) -> usize {
     }
 }
 
-pub(super) fn screen_col(s: &str, col: usize, ts: usize) -> usize {
-    s.chars().take(col).map(|c| cell_width(c, ts)).sum()
-}
-
-/// Cells of `line` between screen columns `left` and `left + width`, styled per char.
-/// Tabs expand to spaces, control chars show as `?`, and a wide char cut by the edge shows as spaces.
-fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: usize, ts: usize, last: bool) -> Vec<Span> {
+/// Cells of `line` between screen columns `left` and `left + width`, styled per cluster.
+/// Tabs expand to spaces (`>` then spaces with `list`), control chars show as `?`, a cluster of no
+/// width (a lone combining mark) is drawn on a space, and a wide cluster cut by the edge shows as
+/// spaces.
+#[allow(clippy::too_many_arguments)]
+fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: usize, ts: usize, last: bool, list: bool) -> Vec<Span> {
     let mut spans: Vec<Span> = Vec::new();
-    // A selected line break shows as one cell, after the last row of the line.
-    let tail = (last && style_at(str_indices::chars::count(line)) == Style::Reverse).then_some(' ');
-    let mut x = 0;
-    for (i, c) in line.chars().chain(tail).enumerate() {
-        let (x0, cw) = (x, cell_width(c, ts));
-        x += cw;
-        if x0 >= left + width {
-            break;
+    let (mut x, mut i) = (0, 0);
+    let right = left + width;
+    // One cell or cluster at `x` of `cw` cells; false once past the right edge.
+    let mut put = |i: usize, x0: usize, cw: usize, glyph: Glyph| {
+        let x1 = x0 + cw;
+        if x0 >= right {
+            return false;
         }
-        let (start, end) = (x0.max(left), x.min(left + width));
-        let glyph = if cw == 0 {
-            if x0 < left {
-                continue;
-            }
-            c.to_string()
-        } else if start >= end {
-            continue;
-        } else if start == x0 && end == x && c != '\t' {
-            if c.is_control() { "?".into() } else { c.to_string() }
-        } else {
-            " ".repeat(end - start)
-        };
+        let (start, end) = (x0.max(left), x1.min(right));
+        if start >= end {
+            return true;
+        }
         let style = style_at(i);
-        match spans.last_mut() {
-            Some(s) if s.style == style => s.text.push_str(&glyph),
-            _ => spans.push(Span { style, text: glyph }),
+        if spans.last().is_none_or(|s| s.style != style) {
+            spans.push(Span { style, text: String::new() });
+        }
+        let out = &mut spans.last_mut().expect("just pushed").text;
+        let whole = start == x0 && end == x1;
+        match glyph {
+            Glyph::Tab if list => {
+                // The tab's first cell is `>`, even when the left edge cuts the tab.
+                out.push(if start == x0 { '>' } else { ' ' });
+                out.extend(std::iter::repeat_n(' ', end - start - 1));
+            }
+            Glyph::Char(c) if whole => out.push(if c.is_control() { '?' } else { c }),
+            Glyph::Str(g) if whole => match g.chars().next() {
+                Some(c) if c.is_control() => out.push('?'),
+                Some(c) if g.len() == c.len_utf8() && cell_width(c, ts) == 0 => {
+                    out.push(' ');
+                    out.push_str(g);
+                }
+                _ => out.push_str(g),
+            },
+            _ => out.extend(std::iter::repeat_n(' ', end - start)),
+        }
+        true
+    };
+    'line: for (a, e, _, run) in graphemes::spans_in(line, 0, usize::MAX) {
+        if run {
+            // Chars of a run are clusters of one char: one decode each.
+            for c in line[a..e].chars() {
+                let (cw, glyph) = if c == '\t' { (ts, Glyph::Tab) } else { (cell_width(c, ts).max(1), Glyph::Char(c)) };
+                if !put(i, x, cw, glyph) {
+                    break 'line;
+                }
+                (x, i) = (x + cw, i + 1);
+            }
+        } else {
+            let g = &line[a..e];
+            let cw = graphemes::width(g, ts);
+            if !put(i, x, cw, Glyph::Str(g)) {
+                break;
+            }
+            (x, i) = (x + cw, i + 1);
+        }
+    }
+    // The line break shows as one cell after the last row of the line when selected, or as `$` with `list`.
+    if last && x < right {
+        if list {
+            put(i, x, 1, Glyph::Str("$"));
+        } else if style_at(i) == Style::Reverse {
+            put(i, x, 1, Glyph::Char(' '));
         }
     }
     spans
 }
 
-/// Width of `s` as `fit` draws it.
+/// What `row_spans` draws for a cluster.
+enum Glyph<'a> {
+    Tab,
+    Char(char),
+    Str(&'a str),
+}
+
+/// Width of `s` as `fit` draws it (a tab as one cell, like a control char).
 fn str_width(s: &str) -> usize {
-    s.chars().map(|c| if c.is_control() { 1 } else { cell_width(c, 1) }).sum()
+    // ASCII, control chars and tabs included, is one cell per byte here.
+    if s.is_ascii() { s.len() } else { graphemes::iter(s).map(|g| graphemes::width(g, 1)).sum() }
 }
 
 /// `s` cut or padded to exactly `w` cells; control chars become `?`.
 pub(super) fn fit(s: &str, w: usize) -> String {
     let (mut out, mut x) = (String::new(), 0);
-    for c in s.chars() {
-        let (c, cw) = if c.is_control() { ('?', 1) } else { (c, cell_width(c, 1)) };
+    for g in graphemes::iter(s) {
+        let cw = graphemes::width(g, 1);
         if x + cw > w {
             break;
         }
         x += cw;
-        out.push(c);
+        match g.chars().next() {
+            Some(c) if c.is_control() => out.push('?'),
+            _ => out.push_str(g),
+        }
     }
     out.extend(std::iter::repeat_n(' ', w - x));
     out

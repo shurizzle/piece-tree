@@ -1,6 +1,6 @@
 //! Row layout of one line under `wrap`, laid out lazily and kept between frames for the cursor line.
 //!
-//! A row ends where the next char would not fit, so row starts depend on the whole prefix of the
+//! A row ends where the next cluster would not fit, so row starts depend on the whole prefix of the
 //! line. `Rows` therefore lays a line out only as far as asked (the rows on screen, the cursor row)
 //! and `Layout` keeps the rows of the cursor line across frames: after an edit the rows that end
 //! before the first changed byte stay valid and layout resumes from the last of them, so typing in a
@@ -8,16 +8,16 @@
 
 use piece_tree::Text;
 
-use super::render::cell_width;
+use super::{graphemes, render::cell_width};
 
 /// Row starts of one line at one width, found on demand.
 #[derive(Debug)]
 pub(super) struct Rows {
     w: usize,
     ts: usize,
-    /// (char index, byte offset) of each row start found so far; the first is `(0, 0)`.
+    /// (cluster index, byte offset) of each row start found so far; the first is `(0, 0)`.
     starts: Vec<(usize, usize)>,
-    /// Layout state: next byte and char to place, cells used in the current row, and the size of the
+    /// Layout state: next byte and cluster to place, cells used in the current row, and the size of the
     /// next window of the plain loop (see `extend`).
     b: usize,
     i: usize,
@@ -43,7 +43,7 @@ impl Rows {
 
     /// Lays out `line` until `stop` accepts the row starts found so far, or the line ends.
     /// Runs of plain ASCII that fit in the row are skipped 64 bytes at a time; anything else is laid
-    /// out by a plain per-char loop over a window of bytes. Each failed ASCII check doubles the window
+    /// out by a plain per-cluster loop over a window of bytes. Each failed ASCII check doubles the window
     /// (up to 4 KiB), so dense non-ASCII text costs the plain loop and a run after a lone accent is
     /// found again within 16 bytes.
     pub fn extend(&mut self, line: &str, stop: impl Fn(&[(usize, usize)]) -> bool) {
@@ -61,26 +61,44 @@ impl Rows {
             let mut end = b + 1;
             if room > 0 {
                 let chunk = &bytes[b..b + room];
-                if chunk.is_ascii() && memchr::memchr(b'\t', chunk).is_none() {
-                    (x, b, i, window) = (x + room, b + room, i + room, 16);
-                    continue;
+                if chunk.is_ascii() && memchr::memchr2(b'\t', b'\r', chunk).is_none() {
+                    // The last byte may start a cluster with a non-ASCII char after it (`e` + U+0301).
+                    let room = if bytes.get(b + room).is_none_or(u8::is_ascii) { room } else { room - 1 };
+                    if room > 0 {
+                        (x, b, i, window) = (x + room, b + room, i + room, 16);
+                        continue;
+                    }
                 }
                 end = (b + window).min(bytes.len());
                 window = (window * 2).min(4096);
             }
-            while !line.is_char_boundary(end) {
-                end += 1;
-            }
-            for (rel, c) in line[b..end].char_indices() {
-                let cw = cell_width(c, ts);
+            // Whole clusters: the last one may end past `end`. In a run of simple chars each char is
+            // a cluster, but the last one, which may join a non-simple char after it (`e` + U+0301).
+            let rend = graphemes::run_end(bytes, b, line.ceil_char_boundary(end));
+            while b < end {
+                let cell = if b < rend {
+                    graphemes::lead_cell(bytes, b, ts).or_else(|| {
+                        let c = line[b..].chars().next().expect("a char");
+                        Some((c.len_utf8(), cell_width(c, ts).max(1)))
+                    })
+                } else {
+                    None
+                };
+                let (e, cw) = match cell {
+                    Some((len, cw)) if b + len < rend || rend == bytes.len() => (b + len, cw),
+                    _ => {
+                        let e = graphemes::next(line, b);
+                        (e, graphemes::width(&line[b..e], ts))
+                    }
+                };
                 if x > 0 && x.saturating_add(cw) > w {
-                    self.starts.push((i, b + rel));
+                    self.starts.push((i, b));
                     x = 0;
                 }
                 x += cw;
                 i += 1;
+                b = e;
             }
-            b = end;
         }
         (self.b, self.i, self.x, self.window) = (b, i, x, window);
     }
@@ -90,13 +108,13 @@ impl Rows {
         self.extend(line, |s| s.len() > k + 1);
     }
 
-    /// Char index and text of row `k`; the row must be known (`ensure`).
+    /// Cluster index and text of row `k`; the row must be known (`ensure`).
     pub fn row<'a>(&self, line: &'a str, k: usize) -> (usize, &'a str) {
         let (c, b) = self.starts[k];
         (c, &line[b..self.starts.get(k + 1).map_or(line.len(), |s| s.1)])
     }
 
-    /// Index of the row holding char `col` (the last row for a `col` past the end), laid out.
+    /// Index of the row holding cluster `col` (the last row for a `col` past the end), laid out.
     pub fn row_of(&mut self, line: &str, col: usize) -> usize {
         self.extend(line, |s| s.last().is_some_and(|l| l.0 > col));
         self.starts.partition_point(|s| s.0 <= col) - 1
@@ -108,10 +126,9 @@ impl Rows {
         self.starts.len().min(cap)
     }
 
-    /// Drops what depends on bytes from `common` on, where the line changed.
-    fn retain(&mut self, common: usize) {
-        // A row start was decided by the char at it, up to 4 bytes long, and by the chars before it.
-        let keep = common.saturating_sub(3);
+    /// Drops what depends on bytes from `keep` on: `keep` is the start of the cluster the change
+    /// may extend, and a row start was decided by the cluster at it and the clusters before it.
+    fn retain(&mut self, keep: usize) {
         while self.starts.len() > 1 && self.starts.last().is_some_and(|s| s.1 >= keep) {
             self.starts.pop();
         }
@@ -149,7 +166,8 @@ impl Layout {
                     while !(self.line.is_char_boundary(common) && line.is_char_boundary(common)) {
                         common -= 1;
                     }
-                    r.retain(common);
+                    // Boundaries before `common` are the same in both lines; the one at it may not be.
+                    r.retain(if common == 0 { 0 } else { graphemes::prev(&self.line, common) });
                     self.line.truncate(common);
                     self.line.push_str(&line[common..]);
                 }
@@ -212,7 +230,7 @@ fn common_prefix(a: &[u8], b: &[u8]) -> usize {
     n
 }
 
-/// Rows of `line` at text width `w`: char index and text of each. A char never splits (a wide one that
+/// Rows of `line` at text width `w`: cluster index and text of each. A cluster never splits (a wide one that
 /// does not fit starts the next row), and an empty line is one row.
 #[cfg(test)]
 pub(super) fn segments(line: &str, w: usize, ts: usize) -> Vec<(usize, &str)> {

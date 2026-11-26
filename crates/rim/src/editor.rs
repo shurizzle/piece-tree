@@ -5,6 +5,7 @@
 
 mod buffers;
 mod ex;
+mod graphemes;
 mod layout;
 mod motion;
 mod objects;
@@ -17,7 +18,6 @@ mod substitute;
 mod windows;
 
 use std::{
-    collections::HashMap,
     fs,
     io,
     mem,
@@ -30,11 +30,13 @@ use piece_tree::{Document, Text};
 
 use objects::Obj;
 pub use options::Background;
+pub use registers::parse_osc52_reply;
 use options::Options;
 use parse::{Cmd, MAX_COUNT, OP_LOWER, OP_TOGGLE, OP_UPPER, Parse, VISUAL_KEYS, char_key, normal_char, parse, strip_counts, valid_reg};
 use registers::{Reg, RegKind, Registers};
 use search::Search;
 use buffers::Buffer;
+use graphemes::LineIndex;
 use windows::Window;
 
 const G_EARLIER: char = parse::g_key('-');
@@ -48,6 +50,15 @@ const G_PREV: char = parse::g_key('N');
 const G_DOWN: char = parse::g_key('j');
 const G_UP: char = parse::g_key('k');
 const G_SUBST: char = parse::g_key('&');
+const G_VISUAL: char = parse::g_key('v');
+const G_INSERT: char = parse::g_key('i');
+const G_JOIN: char = parse::g_key('J');
+const G_PASTE: char = parse::g_key('p');
+const G_PASTE_BEFORE: char = parse::g_key('P');
+const G_OLDER_CHANGE: char = parse::g_key(';');
+const G_NEWER_CHANGE: char = parse::g_key(',');
+/// Entries kept in a jump list and a change list.
+const LIST_MAX: usize = 100;
 
 /// Most bytes `:compact` and the idle compaction copy pieces into per chunk: the size of the
 /// library's largest add chunk, so a compacted text has as many chunks as a typed one.
@@ -93,12 +104,12 @@ struct LastChange {
     tail: Vec<KeyEvent>,
 }
 
-/// Block `I`/`A`/`c`: on Esc, the text typed on the first line is copied to `lines` at `col`
-/// (`usize::MAX`: each line's end), padding short lines with spaces when `pad`.
+/// Block `I`/`A`/`c`: on Esc, the text typed on the first line is copied to `lines` at screen
+/// column `x` (`usize::MAX`: each line's end), padding short lines with spaces when `pad`.
 struct BlockInsert {
     start: Pos,
     lines: Range<usize>,
-    col: usize,
+    x: usize,
     pad: bool,
 }
 
@@ -132,8 +143,9 @@ fn case_fn(op: char) -> Option<fn(&str) -> String> {
     }
 }
 
+/// Byte where cluster column `col` of `s` starts (`s.len()` past the end).
 fn byte_of_col(s: &str, col: usize) -> usize {
-    str_indices::chars::to_byte_idx(s, col)
+    graphemes::byte_of(s, col)
 }
 
 /// Loads `path` (missing file → empty).
@@ -230,10 +242,9 @@ pub struct Editor {
     /// Line holding only an indent added by autoindent; emptied if left that way.
     auto_indent: Option<usize>,
     block_insert: Option<BlockInsert>,
-    /// Macro register being recorded (`q`), its keys, and the stored macros.
+    /// Register being recorded into (`q`) and the keys so far; macros live in registers as text.
     recording: Option<char>,
     macro_keys: Vec<KeyEvent>,
-    macros: HashMap<char, Vec<KeyEvent>>,
     last_macro: Option<char>,
     macro_depth: usize,
     macro_abort: bool,
@@ -244,6 +255,26 @@ pub struct Editor {
     changed: bool,
     /// Lines `:g` and `:normal` have still to visit, one entry per nested command.
     line_marks: Vec<ex::LineMarks>,
+    /// Replace mode (`R`, in `Mode::Insert`): the clusters typed over, `None` for one typed past
+    /// the line end, so Backspace can put them back.
+    replacing: Option<Vec<Option<String>>>,
+    /// Where the command's last edit happened, for the change list.
+    change_off: Option<usize>,
+    /// Insert mode waits for the register of `Ctrl+R` (`'r'`) or the key of `Ctrl+V` (`'v'`).
+    insert_pending: Option<char>,
+    /// `Ctrl+O` in Insert mode: one Normal command runs, then Insert resumes; the cursor before it.
+    insert_one: Option<Pos>,
+    /// Command-line history of `:` (0) and `/`/`?` (1), oldest first; the entry being shown by
+    /// Up/Down and the text typed before the first of them.
+    history: [Vec<String>; 2],
+    hist_at: Option<(usize, String)>,
+    /// `Tab` completion: candidates, the one shown, and the line before the completed word.
+    completion: Option<(Vec<String>, usize, String)>,
+    /// The command line waits for the register of `Ctrl+R`.
+    line_reg: bool,
+    /// Reads the system clipboard (an OSC 52 query, set by `main`); none in tests and on
+    /// terminals the editor does not query.
+    clipboard_reader: Option<Box<dyn FnMut() -> Option<String>>>,
 }
 
 impl Editor {
@@ -285,7 +316,6 @@ impl Editor {
             block_insert: None,
             recording: None,
             macro_keys: Vec::new(),
-            macros: HashMap::new(),
             last_macro: None,
             macro_depth: 0,
             macro_abort: false,
@@ -293,11 +323,69 @@ impl Editor {
             grouping: false,
             changed: false,
             line_marks: Vec::new(),
+            replacing: None,
+            change_off: None,
+            insert_pending: None,
+            insert_one: None,
+            history: Default::default(),
+            hist_at: None,
+            completion: None,
+            line_reg: false,
+            clipboard_reader: None,
         }
     }
 
     pub fn open(path: PathBuf) -> io::Result<Self> {
         Ok(Self::new(read_doc(&path)?, path))
+    }
+
+    /// How `"+`/`"*` are read: `read` asks the terminal for the clipboard.
+    pub fn set_clipboard_reader(&mut self, read: impl FnMut() -> Option<String> + 'static) {
+        self.clipboard_reader = Some(Box::new(read));
+    }
+
+    /// Register `name` for reading: `+`/`*` ask the terminal (linewise when the text ends with a
+    /// line break), with an error message when it does not answer.
+    fn reg(&mut self, name: char) -> Option<Reg> {
+        if !matches!(name, '+' | '*') {
+            return self.regs.get(name).cloned();
+        }
+        match self.clipboard_reader.as_mut().and_then(|read| read()) {
+            Some(text) => {
+                let kind = if text.ends_with('\n') { RegKind::Line } else { RegKind::Char };
+                Some(Reg { text, kind })
+            }
+            None => {
+                self.msg = "Clipboard read failed: the terminal did not answer OSC 52".into();
+                None
+            }
+        }
+    }
+
+    /// Reads the init file at `path` (missing: nothing): `:set` lines, `"` comments and blank lines.
+    /// Any other line, or an option error, is reported with its line number and skipped.
+    pub fn load_init(&mut self, path: &Path) {
+        let text = match fs::read_to_string(path) {
+            Ok(t) => t,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => return,
+            Err(e) => return self.msg = format!("{}: {e}", path.display()),
+        };
+        let mut errors = Vec::new();
+        for (i, line) in text.lines().enumerate() {
+            let line = line.trim();
+            let line = line.strip_prefix(':').unwrap_or(line).trim_start();
+            if line.is_empty() || line.starts_with('"') {
+                continue;
+            }
+            let (name, args) = line.split_once(char::is_whitespace).unwrap_or((line, ""));
+            let res = if matches!(name, "se" | "set") { self.buf.opts.set(args).map(drop) } else { Err("only :set is allowed".into()) };
+            if let Err(e) = res {
+                errors.push(format!("line {}: {e}", i + 1));
+            }
+        }
+        if !errors.is_empty() {
+            self.msg = format!("{}: {}", path.display(), errors.join("; "));
+        }
     }
 
     pub fn set_background(&mut self, bg: Background) {
@@ -348,18 +436,30 @@ impl Editor {
         self.buf.doc.text().line_count()
     }
 
-    /// Chars in `line`. Counting is O(line length), so the last answer is kept for the same text version.
-    fn line_chars(&self, line: usize) -> usize {
+    /// Runs `f` on the `LineIndex` of `line` when it is long (kept in `Buffer::cols` across edits);
+    /// None for a short line, which is scanned whole.
+    fn with_index<R>(&self, line: usize, f: impl FnOnce(&LineIndex) -> R) -> Option<R> {
         let text = self.buf.doc.text();
-        let mut memo = self.buf.chars_memo.borrow_mut();
-        match &*memo {
-            Some((t, l, n)) if *l == line && t.ptr_eq(text) => *n,
-            _ => {
-                let n = text.line_char_len(line);
-                *memo = Some((text.clone(), line, n));
-                n
-            }
+        if text.line_end(line) - text.line_to_offset(line) < graphemes::INDEXED {
+            return None;
         }
+        let mut cols = self.buf.cols.borrow_mut();
+        let i = match cols.iter().position(|ix| ix.is(text, line)) {
+            Some(i) => i,
+            None => {
+                if cols.len() == buffers::INDEXES {
+                    cols.remove(0);
+                }
+                cols.push(LineIndex::build(text, line));
+                cols.len() - 1
+            }
+        };
+        Some(f(&cols[i]))
+    }
+
+    /// Clusters in `line`.
+    fn line_chars(&self, line: usize) -> usize {
+        self.with_index(line, LineIndex::count).unwrap_or_else(|| graphemes::count(&self.buf.doc.text().line(line)))
     }
 
     /// Leading blanks of `line`, read in growing windows so a huge line is not read past its indent.
@@ -371,10 +471,10 @@ impl Editor {
             let to = text.floor_char_boundary(from + window).min(end);
             let chunk = text.slice(from..to);
             let blanks = chunk.len() - chunk.trim_start().len();
-            cols += str_indices::chars::count(&chunk[..blanks]);
             if blanks < chunk.len() || to == end {
-                return cols;
+                return cols + graphemes::col_of(&chunk, blanks);
             }
+            cols += graphemes::count(&chunk);
             (from, window) = (to, window * 2);
         }
     }
@@ -386,7 +486,18 @@ impl Editor {
     /// Byte offset of `(line, col)`; a column past the line end means the end.
     fn offset_of(&self, (line, col): Pos) -> usize {
         let text = self.buf.doc.text();
-        text.line_col_to_offset(line, col.min(text.line_char_len(line)))
+        let b = self.with_index(line, |ix| ix.byte_of(col)).unwrap_or_else(|| byte_of_col(&text.line(line), col));
+        text.line_to_offset(line) + b
+    }
+
+    /// Byte of column `col` inside `line` (its length past the end).
+    fn line_byte(&self, line: usize, col: usize) -> usize {
+        self.offset_of((line, col)) - self.buf.doc.text().line_to_offset(line)
+    }
+
+    /// Column of the cluster holding byte `b` of `line`.
+    fn line_col(&self, line: usize, b: usize) -> usize {
+        self.pos_of(self.buf.doc.text().line_to_offset(line) + b).1
     }
 
     /// Byte offset of the cursor.
@@ -394,14 +505,17 @@ impl Editor {
         self.offset_of((self.win.line, self.win.col))
     }
 
+    /// Line and column of the cluster holding byte `off`.
     fn pos_of(&self, off: usize) -> Pos {
-        self.buf.doc.text().offset_to_line_col(off)
+        let text = self.buf.doc.text();
+        let line = text.offset_to_line(off);
+        let b = off - text.line_to_offset(line);
+        (line, self.with_index(line, |ix| ix.col_of(b)).unwrap_or_else(|| graphemes::col_of(&text.line(line), b)))
     }
 
     /// Offset of the `\n` ending `line`, or the text length on the last line.
     fn line_end_offset(&self, line: usize) -> usize {
-        let text = self.buf.doc.text();
-        text.line_to_offset(line) + text.line(line).len()
+        self.buf.doc.text().line_end(line)
     }
 
     fn end_pos(&self) -> Pos {
@@ -409,16 +523,88 @@ impl Editor {
         (last, self.line_chars(last))
     }
 
-    fn char_at(&self, (line, col): Pos) -> char {
-        {
-            let l = self.buf.doc.text().line(line);
-            l[str_indices::chars::to_byte_idx(&l, col)..].chars().next().unwrap_or('\n')
+    /// First char and byte length of the cluster at `p`; `('\n', 0)` past the line end. Reads a
+    /// small window of the line, grown for a long cluster.
+    fn cluster_at(&self, p: Pos) -> (char, usize) {
+        let text = self.buf.doc.text();
+        let (off, end) = (self.offset_of(p), text.line_end(p.0));
+        let mut window = 64;
+        loop {
+            let to = text.floor_char_boundary(off + window).min(end);
+            let s = text.slice(off..to);
+            let Some(c) = s.chars().next() else { return ('\n', 0) };
+            let n = graphemes::next(&s, 0);
+            if n < s.len() || to == end {
+                return (c, n);
+            }
+            window *= 2;
         }
     }
 
-    /// Visual block columns, inclusive.
+    /// First char of the cluster at `p`; `\n` past the line end.
+    fn char_at(&self, p: Pos) -> char {
+        self.cluster_at(p).0
+    }
+
+    /// Bytes of the cluster at `p`; 0 past the line end.
+    fn cluster_len(&self, p: Pos) -> usize {
+        self.cluster_at(p).1
+    }
+
+    /// Screen cell of the cluster at `p` in its line, and the cells it takes (1 past the end).
+    fn cell_of(&self, (line, col): Pos) -> (usize, usize) {
+        let (s, ts) = (self.buf.doc.text().line(line), self.buf.opts.tabstop);
+        let b = byte_of_col(&s, col);
+        let w = if b < s.len() { graphemes::width(&s[b..graphemes::next(&s, b)], ts) } else { 1 };
+        (graphemes::screen_col(&s, col, ts), w)
+    }
+
+    /// Visual block screen columns, inclusive: from the leftmost cell of its two corners to the
+    /// last cell of the rightmost one, so tabs and wide chars keep it straight.
     fn block_cols(&self) -> (usize, usize) {
-        (self.anchor.1.min(self.win.col), self.anchor.1.max(self.win.col))
+        let ((xa, wa), (xc, wc)) = (self.cell_of(self.anchor), self.cell_of((self.win.line, self.win.col)));
+        (xa.min(xc), (xa + wa).max(xc + wc) - 1)
+    }
+
+    /// Clusters of `line` in the Visual block: those with a cell in its columns, or to the line end
+    /// after `$`. A tab or wide char cut by an edge is taken whole.
+    // shortcut: a tab cut by the block edge is taken whole (vim splits it into spaces), when someone needs exact edges
+    fn block_range(&self, line: usize) -> Range<usize> {
+        self.block_range_in(line, self.block_cols())
+    }
+
+    /// `block_range` for block columns `(x0, x1)` found before the edits of an operator.
+    fn block_range_in(&self, line: usize, (x0, x1): (usize, usize)) -> Range<usize> {
+        let dollar = self.win.want_col == usize::MAX;
+        let (s, ts) = (self.buf.doc.text().line(line), self.buf.opts.tabstop);
+        let (mut x, mut c, mut start, mut end) = (0, 0, None, None);
+        for g in graphemes::iter(&s) {
+            if !dollar && x > x1 {
+                end = Some(c);
+                break;
+            }
+            let w = graphemes::width(g, ts);
+            if start.is_none() && x + w > x0 {
+                start = Some(c);
+            }
+            (x, c) = (x + w, c + 1);
+        }
+        let start = start.unwrap_or(c);
+        start..end.unwrap_or(c).max(start)
+    }
+
+    /// Column of `line` where text put at screen column `x` goes: the first cluster starting at or
+    /// after it (after a tab or wide char that covers `x`); `Err(width)` when the line is narrower.
+    fn col_at_cell(&self, line: usize, x: usize) -> Result<usize, usize> {
+        let (s, ts) = (self.buf.doc.text().line(line), self.buf.opts.tabstop);
+        let (mut cx, mut c) = (0, 0);
+        for g in graphemes::iter(&s) {
+            if cx >= x {
+                return Ok(c);
+            }
+            (cx, c) = (cx + graphemes::width(g, ts), c + 1);
+        }
+        if cx >= x { Ok(c) } else { Err(cx) }
     }
 
     /// Byte range covered by a motion from `a` to `b` (`a <= b`).
@@ -428,8 +614,7 @@ impl Editor {
         }
         let mut e = self.offset_of(b);
         if kind == Kind::Inclusive {
-            let line = self.buf.doc.text().line(b.0);
-            e += line[byte_of_col(&line, b.1)..].chars().next().map_or(0, char::len_utf8);
+            e += self.cluster_len(b);
         }
         self.offset_of(a)..e
     }
@@ -440,16 +625,21 @@ impl Editor {
             self.buf.doc.begin_group();
             self.grouping = true;
         }
+        let before = self.buf.doc.text().clone();
         let r = f(&mut self.buf.doc);
-        if !self.buf.doc.last_edits().is_empty() {
-            self.changed = true;
-            self.map_marks();
+        if let Some(e) = self.buf.doc.last_edits().last() {
+            (self.changed, self.change_off) = (true, Some(e.start));
+            self.map_marks(&before);
         }
         r
     }
 
-    /// Moves every mark through the last `Document` call's edits.
-    fn map_marks(&mut self) {
+    /// Moves every mark through the last `Document` call's edits, made to text `before`; the line
+    /// indexes of `before` follow them, others are dropped.
+    fn map_marks(&mut self, before: &Text) {
+        let Buffer { doc, cols, .. } = &mut self.buf;
+        let (edits, text) = (doc.last_edits(), doc.text());
+        cols.get_mut().retain_mut(|ix| ix.is_of(before) && ix.update(edits, text));
         let edits = self.buf.doc.last_edits();
         for m in self.buf.marks.values_mut() {
             *m = piece_tree::map_offset(edits, *m);
@@ -459,6 +649,18 @@ impl Editor {
         }
         for w in self.windows.iter_mut().filter(|w| w.buf == self.buf.id) {
             w.off = piece_tree::map_offset(edits, w.off);
+        }
+        let id = self.buf.id;
+        for w in self.windows.iter_mut().chain([&mut self.win]) {
+            for j in w.jumps.iter_mut().filter(|j| j.0 == id) {
+                j.1 = piece_tree::map_offset(edits, j.1);
+            }
+        }
+        for c in &mut self.buf.changes {
+            *c = piece_tree::map_offset(edits, *c);
+        }
+        if let Some((_, a, b)) = &mut self.buf.last_visual {
+            (*a, *b) = (piece_tree::map_offset(edits, *a), piece_tree::map_offset(edits, *b));
         }
     }
 
@@ -480,12 +682,102 @@ impl Editor {
         if mem::take(&mut self.grouping) {
             self.buf.doc.end_group();
         }
-        if mem::take(&mut self.changed)
+        let changed = mem::take(&mut self.changed);
+        if changed && let Some(off) = self.change_off.take() {
+            self.add_change(off);
+        }
+        if changed
             && !self.replaying
             && let Some((count, cmd, n)) = &self.rec_cmd
         {
             let tail = self.rec[(*n).min(self.rec.len())..].to_vec();
             self.last_change = Some(LastChange { count: *count, cmd: cmd.clone(), tail });
+        }
+    }
+
+    /// Adds a change to the change list; one on the line of the last entry replaces it (vim).
+    fn add_change(&mut self, off: usize) {
+        let text = self.buf.doc.text();
+        let line = text.offset_to_line(off.min(text.len()));
+        let ch = &mut self.buf.changes;
+        if ch.last().is_some_and(|&c| text.offset_to_line(c.min(text.len())) == line) {
+            ch.pop();
+        }
+        ch.push(off);
+        if ch.len() > LIST_MAX {
+            ch.remove(0);
+        }
+        self.buf.change_idx = ch.len();
+    }
+
+    /// `g;` (`back`) and `g,`: `n` entries through the change list.
+    fn change_list(&mut self, back: bool, n: usize) {
+        let (len, idx) = (self.buf.changes.len(), self.buf.change_idx);
+        if len == 0 {
+            return self.msg = "Change list is empty".into();
+        }
+        let to = if back { idx.checked_sub(n) } else { Some(idx + n).filter(|&i| i < len) };
+        let Some(to) = to else {
+            return self.msg = if back { "At start of change list" } else { "At end of change list" }.into();
+        };
+        self.buf.change_idx = to;
+        let off = self.buf.doc.text().floor_char_boundary(self.buf.changes[to]);
+        (self.win.line, self.win.col) = self.pos_of(off);
+        self.win.want_col = self.win.col;
+    }
+
+    /// `Ctrl+O` (`back`) and `Ctrl+I`: `n` entries through the jump list, switching buffer when
+    /// the entry is in another one.
+    fn jump_list(&mut self, back: bool, n: usize) {
+        self.win.jumps.retain(|j| j.0 == self.buf.id || self.buffers.iter().any(|b| b.id == j.0));
+        self.win.jump_idx = self.win.jump_idx.min(self.win.jumps.len());
+        if back && self.win.jump_idx == self.win.jumps.len() {
+            // Leaving the end of the list: remember where, so `Ctrl+I` comes back.
+            self.push_jump();
+            self.win.jump_idx = self.win.jumps.len() - 1;
+        }
+        let idx = self.win.jump_idx;
+        let to = if back { idx.checked_sub(n) } else { Some(idx + n).filter(|&i| i < self.win.jumps.len()) };
+        let Some(to) = to else { return };
+        self.win.jump_idx = to;
+        let (buf, off) = self.win.jumps[to];
+        if buf != self.buf.id {
+            self.switch_buffer(buf);
+        }
+        let off = self.buf.doc.text().floor_char_boundary(off);
+        (self.win.line, self.win.col) = self.pos_of(off);
+        self.win.want_col = self.win.col;
+    }
+
+    /// Adds the cursor to the end of the jump list; an older entry on the same line goes (vim).
+    pub(super) fn push_jump(&mut self) {
+        let (id, off) = (self.buf.id, self.offset());
+        let text = self.buf.doc.text();
+        let line = text.offset_to_line(off);
+        let jumps = &mut self.win.jumps;
+        jumps.retain(|&(b, o)| b != id || text.offset_to_line(o.min(text.len())) != line);
+        jumps.push((id, off));
+        if jumps.len() > LIST_MAX {
+            jumps.remove(0);
+        }
+        self.win.jump_idx = jumps.len();
+    }
+
+    /// `Ctrl+E`/`Ctrl+Y` (`lines`) and `Ctrl+F`/`Ctrl+B` (pages): scrolls the window `n` lines or
+    /// pages down (`down`) or up; the cursor moves only to stay on screen.
+    fn scroll(&mut self, down: bool, n: usize, pages: bool) {
+        let last = self.line_count() - 1;
+        let step = if pages { n * self.win.rows.saturating_sub(2).max(1) } else { n };
+        self.win.top_sub = 0;
+        self.win.top = if down { (self.win.top + step).min(last) } else { self.win.top.saturating_sub(step) };
+        let so = self.scrolloff();
+        let lo = if self.win.top > 0 { self.win.top + so } else { 0 };
+        let bottom = self.bottom_line();
+        let hi = if bottom < last { bottom.saturating_sub(so) } else { last };
+        let line = self.win.line.clamp(lo.min(hi), hi.max(lo.min(last)));
+        if line != self.win.line {
+            self.win.line = line;
+            self.win.col = self.win.want_col.min(self.line_chars(line));
         }
     }
 
@@ -497,12 +789,15 @@ impl Editor {
     /// Returns false to quit.
     pub fn key(&mut self, key: KeyEvent) -> bool {
         self.msg.clear();
+        // A `Ctrl+O` command in progress (not the `Ctrl+O` key itself).
+        let one = self.insert_one.is_some();
         if let Some(r) = self.recording
             && self.macro_depth == 0
             && !self.replaying
         {
             if self.mode == Mode::Normal && self.pending.is_empty() && key == KeyCode::Char('q').into() {
-                self.macros.insert(r, mem::take(&mut self.macro_keys));
+                let text = mem::take(&mut self.macro_keys).into_iter().filter_map(parse::key_char).collect();
+                self.regs.set_macro(r, text);
                 self.recording = None;
                 return !self.quit;
             }
@@ -522,6 +817,20 @@ impl Editor {
             Mode::Visual(kind) => self.visual_key(key, kind),
             Mode::Command(_) | Mode::Search(_) => self.line_key(key),
             Mode::Confirm => self.confirm_key(key),
+        }
+        if one
+            && self.mode == Mode::Normal
+            && self.pending.is_empty()
+            && let Some(before) = self.insert_one.take()
+        {
+            // Back to Insert after `Ctrl+O`; a command that did not move leaves the cursor where it
+            // was, also past the line end, and a vertical move may end there (`want_col`).
+            if (self.win.line, self.win.col) == (before.0, before.1.min(self.line_chars(before.0).saturating_sub(1))) {
+                (self.win.line, self.win.col) = before;
+            } else if self.win.want_col > self.win.col {
+                self.win.col = self.win.want_col.min(self.line_chars(self.win.line));
+            }
+            self.mode = Mode::Insert;
         }
         if self.quit {
             self.wait_saves();
@@ -604,8 +913,53 @@ impl Editor {
             'C' => self.normal(Cmd { op: Some('c'), key: '$', arg: None, ..cmd }),
             'S' => self.normal(Cmd { op: Some('c'), key: 'c', arg: None, ..cmd }),
             'J' => self.join(n.max(2) - 1, true),
-            'p' => self.paste(true, n),
-            'P' => self.paste(false, n),
+            G_JOIN => self.join(n.max(2) - 1, false),
+            'p' => {
+                self.paste(true, n);
+            }
+            'P' => {
+                self.paste(false, n);
+            }
+            G_PASTE | G_PASTE_BEFORE => {
+                // The cursor goes just after the pasted text.
+                if let Some(end) = self.paste(key == G_PASTE, n) {
+                    let end = end.min(self.buf.doc.text().len());
+                    (self.win.line, self.win.col) = self.pos_of(end);
+                    self.win.want_col = self.win.col;
+                }
+            }
+            ']' => {
+                if arg() == 'p' {
+                    self.paste_indented(n);
+                }
+            }
+            'R' => {
+                self.replacing = Some(Vec::new());
+                self.mode = Mode::Insert;
+            }
+            '\x0f' => self.jump_list(true, n),
+            '\x09' => self.jump_list(false, n),
+            '\x05' | '\x19' => self.scroll(key == '\x05', n, false),
+            '\x06' | '\x02' => self.scroll(key == '\x06', n, true),
+            G_OLDER_CHANGE | G_NEWER_CHANGE => self.change_list(key == G_OLDER_CHANGE, n),
+            G_VISUAL => match self.buf.last_visual {
+                Some((kind, a, c)) => {
+                    let text = self.buf.doc.text();
+                    let (a, c) = (text.floor_char_boundary(a.min(text.len())), text.floor_char_boundary(c.min(text.len())));
+                    self.anchor = self.pos_of(a);
+                    (self.win.line, self.win.col) = self.pos_of(c);
+                    self.win.want_col = self.win.col;
+                    self.mode = Mode::Visual(kind);
+                }
+                None => self.msg = "No previous Visual selection".into(),
+            },
+            G_INSERT => {
+                // At the mark `^`, where Insert mode was last left.
+                if let Some(off) = self.mark('^') {
+                    (self.win.line, self.win.col) = self.pos_of(off);
+                }
+                self.insert_at(self.win.col);
+            }
             'u' => self.undo(n),
             '\x12' => self.redo(n),
             ':' => self.mode = Mode::Command(String::new()),
@@ -665,7 +1019,7 @@ impl Editor {
                 _ => self.msg = "Invalid mark name".into(),
             },
             'q' => match arg() {
-                r @ 'a'..='z' => {
+                r @ ('a'..='z' | 'A'..='Z') => {
                     self.recording = Some(r);
                     self.macro_keys.clear();
                 }
@@ -689,7 +1043,7 @@ impl Editor {
             }
             _ => unreachable!("parse yields only known keys"),
         }
-        if matches!(key, 'i' | 'a' | 'I' | 'A' | 'o' | 'O') {
+        if matches!(key, 'i' | 'a' | 'I' | 'A' | 'o' | 'O' | 'R' | G_INSERT) {
             self.insert_repeat = (n, matches!(key, 'o' | 'O'));
         }
     }
@@ -709,8 +1063,10 @@ impl Editor {
     }
 
     fn play_macro(&mut self, r: char, n: usize) {
-        let Some(keys) = self.macros.get(&r).cloned() else {
-            self.msg = format!("Register {r} is empty");
+        let Some(keys) = self.reg(r).map(|reg| parse::text_keys(&reg.text)) else {
+            if self.msg.is_empty() {
+                self.msg = format!("Register {r} is empty");
+            }
             return;
         };
         if self.macro_depth >= MAX_MACRO_DEPTH {
@@ -746,7 +1102,7 @@ impl Editor {
         } else {
             self.edit_insert(self.buf.doc.text().line_to_offset(self.win.line), &format!("{indent}\n"));
         }
-        self.insert_at(indent.chars().count());
+        self.insert_at(graphemes::count(&indent));
         self.auto_indent = (!indent.is_empty()).then_some(self.win.line);
     }
 
@@ -794,7 +1150,7 @@ impl Editor {
                 let indent = self.indent_of(a.0);
                 self.edit_delete(range.start + indent.len()..range.end);
                 self.win.line = a.0;
-                self.insert_at(indent.chars().count());
+                self.insert_at(graphemes::count(&indent));
                 self.auto_indent = (!indent.is_empty()).then_some(a.0);
             }
             _ => {
@@ -810,33 +1166,21 @@ impl Editor {
         }
     }
 
-    /// `>`/`<`: indents lines by `times` × `tabstop` spaces (empty lines untouched), or removes up to
-    /// that much leading blank (a tab counts as `tabstop`).
+    /// `>`/`<`: moves the indent of lines by `times` × `shiftwidth` columns (a tab counts `tabstop`),
+    /// rewritten as `expandtab` says; empty lines are untouched.
     fn shift(&mut self, first: usize, last: usize, right: bool, times: usize) {
         let ts = self.buf.opts.tabstop;
-        let width = ts * times;
+        let width = self.buf.opts.sw() * times;
         for l in first..=last {
-            let start = self.buf.doc.text().line_to_offset(l);
-            if right {
-                if !self.buf.doc.text().line(l).is_empty() {
-                    self.edit_insert(start, &" ".repeat(width));
-                }
+            let line = self.buf.doc.text().line(l);
+            if line.is_empty() {
                 continue;
             }
-            let (mut w, mut bytes) = (0, 0);
-            for c in self.buf.doc.text().line(l).chars() {
-                let cw = match c {
-                    ' ' => 1,
-                    '\t' => ts,
-                    _ => break,
-                };
-                if w + cw > width {
-                    break;
-                }
-                w += cw;
-                bytes += 1;
-            }
-            self.edit_delete(start..start + bytes);
+            let blanks = line.len() - line.trim_start_matches([' ', '\t']).len();
+            let cols: usize = line[..blanks].bytes().map(|b| if b == b'\t' { ts } else { 1 }).sum();
+            let indent = self.buf.opts.indent(if right { cols + width } else { cols.saturating_sub(width) });
+            let start = self.buf.doc.text().line_to_offset(l);
+            self.edit_replace(start..start + blanks, &indent);
         }
         self.win.line = first;
         self.set_col(self.first_non_blank(first));
@@ -863,56 +1207,103 @@ impl Editor {
         }
     }
 
-    fn paste(&mut self, after: bool, n: usize) {
+    /// The register of the command (`"` by default) for a paste; reports an empty one.
+    fn paste_source(&mut self) -> Option<Reg> {
         let name = self.cur_reg.take().unwrap_or('"');
-        let Some(Reg { text, kind }) = self.regs.get(name).cloned() else {
+        let reg = self.reg(name);
+        if reg.is_none() && self.msg.is_empty() {
             self.msg = format!("Nothing in register {name}");
-            return;
-        };
+        }
+        reg
+    }
+
+    /// `p`/`P`: returns the offset just after the pasted text (not for a block).
+    fn paste(&mut self, after: bool, n: usize) -> Option<usize> {
+        let reg = self.paste_source()?;
+        self.paste_reg(reg, after, n)
+    }
+
+    fn paste_reg(&mut self, Reg { text, kind }: Reg, after: bool, n: usize) -> Option<usize> {
         if text.is_empty() {
-            return;
+            return None;
         }
         match kind {
             RegKind::Line => {
                 let s = text.repeat(n);
                 let line = if after { self.win.line + 1 } else { self.win.line };
-                if line < self.line_count() {
-                    self.edit_insert(self.buf.doc.text().line_to_offset(line), &s);
+                let at = if line < self.line_count() {
+                    let at = self.buf.doc.text().line_to_offset(line);
+                    self.edit_insert(at, &s);
+                    at
                 } else {
                     // Past the last line: move the register's trailing `\n` to the front.
-                    self.edit_insert(self.buf.doc.text().len(), &format!("\n{}", &s[..s.len() - 1]));
-                }
+                    let at = self.buf.doc.text().len();
+                    self.edit_insert(at, &format!("\n{}", &s[..s.len() - 1]));
+                    at
+                };
                 self.win.line = line;
                 self.set_col(self.first_non_blank(line));
+                Some(at + s.len())
             }
             RegKind::Char => {
                 let s = text.repeat(n);
                 let mut off = self.offset();
-                if after && self.win.col < self.line_chars(self.win.line) {
-                    off += self.char_at((self.win.line, self.win.col)).len_utf8();
+                if after {
+                    off += self.cluster_len((self.win.line, self.win.col));
                 }
                 self.edit_insert(off, &s);
-                let last = s.chars().next_back().map_or(0, char::len_utf8);
-                (self.win.line, self.win.col) = self.pos_of(off + s.len() - last);
+                (self.win.line, self.win.col) = self.pos_of(off + s.len() - 1);
                 self.win.want_col = self.win.col;
+                Some(off + s.len())
             }
             RegKind::Block => {
-                // Each register line goes into the next text line at one column, padding and adding lines.
-                let col = if after && self.line_chars(self.win.line) > 0 { self.win.col + 1 } else { self.win.col };
+                // Each register line goes into the next text line at one screen column, padding and
+                // adding lines.
+                let (cx, cw) = self.cell_of((self.win.line, self.win.col));
+                let x = if after && self.line_chars(self.win.line) > 0 { cx + cw } else { cx };
                 for (i, piece) in text.split('\n').enumerate() {
                     let l = self.win.line + i;
                     if l >= self.line_count() {
                         self.edit_insert(self.buf.doc.text().len(), "\n");
                     }
-                    let len = self.line_chars(l);
-                    if len < col {
-                        self.edit_insert(self.line_end_offset(l), &" ".repeat(col - len));
-                    }
+                    let col = match self.col_at_cell(l, x) {
+                        Ok(c) => c,
+                        Err(w) => {
+                            self.edit_insert(self.line_end_offset(l), &" ".repeat(x - w));
+                            self.line_chars(l)
+                        }
+                    };
                     self.edit_insert(self.offset_of((l, col)), &piece.repeat(n));
                 }
-                self.set_col(col);
+                self.set_col(self.col_at_cell(self.win.line, x).unwrap_or(0));
+                None
             }
         }
+    }
+
+    /// `]p`: like `p`, but a linewise register's lines get the cursor line's indent in place of
+    /// the first pasted line's, the others keeping their indent relative to it.
+    fn paste_indented(&mut self, n: usize) {
+        let Some(reg) = self.paste_source() else { return };
+        let Reg { text, kind: RegKind::Line } = &reg else {
+            self.paste_reg(reg, true, n);
+            return;
+        };
+        let ts = self.buf.opts.tabstop;
+        let width = |l: &str| -> (usize, usize) {
+            let blanks = l.len() - l.trim_start_matches([' ', '\t']).len();
+            (blanks, l[..blanks].bytes().map(|b| if b == b'\t' { ts } else { 1 }).sum())
+        };
+        let (_, want) = width(&self.indent_of(self.win.line));
+        let first = text.lines().next().map_or(0, |l| width(l).1);
+        let lines: String = text
+            .lines()
+            .map(|l| {
+                let (blanks, w) = width(l);
+                if l.is_empty() { "\n".to_string() } else { format!("{}{}\n", self.buf.opts.indent((w + want).saturating_sub(first)), &l[blanks..]) }
+            })
+            .collect();
+        self.paste_reg(Reg { text: lines, kind: RegKind::Line }, true, n);
     }
 
     fn undo(&mut self, n: usize) {
@@ -928,11 +1319,12 @@ impl Editor {
     fn history(&mut self, n: usize, mut step: impl FnMut(&mut Document) -> bool, at_end: &str) {
         let mut first = None;
         for _ in 0..n {
+            let before = self.buf.doc.text().clone();
             if !step(&mut self.buf.doc) {
                 self.msg = at_end.into();
                 break;
             }
-            self.map_marks();
+            self.map_marks(&before);
             let edits = self.buf.doc.last_edits();
             first = edits
                 .first()
@@ -962,7 +1354,7 @@ impl Editor {
         let start = if line[..i].ends_with('-') { i - 1 } else { i };
         let end = i + line[i..].find(|c: char| !c.is_ascii_digit()).unwrap_or(line.len() - i);
         let s = &line[start..end];
-        let col = str_indices::chars::count(&line[..start]);
+        let col = graphemes::col_of(&line, start);
         let Some(v) = s.parse::<i64>().ok().and_then(|v| v.checked_add(delta)) else {
             self.msg = "Number out of range".into();
             return;
@@ -970,15 +1362,16 @@ impl Editor {
         let v = v.to_string();
         let off = self.buf.doc.text().line_to_offset(self.win.line);
         self.edit_replace(off + start..off + end, &v);
-        self.set_col(col + v.chars().count() - 1);
+        self.set_col(col + v.len() - 1);
     }
 
     fn visual_key(&mut self, key: KeyEvent, kind: VKind) {
-        // `'<`/`'>`: the selection's first and last lines, kept after leaving Visual (vim).
+        // `<`/`>`: the selection's start and end, kept after leaving Visual (vim); `gv` restores it.
         let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
-        let (sa, sb) = (self.buf.doc.text().line_to_offset(a.0), self.buf.doc.text().line_to_offset(b.0));
+        let (sa, sb) = (self.offset_of(a), self.offset_of(b));
         self.buf.marks.insert('<', sa);
         self.buf.marks.insert('>', sb);
+        self.buf.last_visual = Some((kind, self.offset_of(self.anchor), self.offset()));
         if key.code == KeyCode::Esc {
             self.pending.clear();
             self.mode = Mode::Normal;
@@ -1110,45 +1503,43 @@ impl Editor {
         }
     }
 
-    /// Visual block operators on lines × columns.
+    /// Visual block operators on lines × screen columns.
     fn block_op(&mut self, c: char) {
         let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
-        let (c0, c1) = self.block_cols();
+        let cols = self.block_cols();
+        let (x0, x1) = cols;
         let dollar = self.win.want_col == usize::MAX;
         let lines = a.0..b.0 + 1;
-        let cols = |e: &Self, l: usize| {
-            let len = e.line_chars(l);
-            let start = c0.min(len);
-            start..(if dollar { len } else { (c1 + 1).min(len) }).max(start)
-        };
+        let first = self.block_range_in(a.0, cols).start;
         match c {
             'd' | 'x' | 'y' | 'c' | 's' => {
                 let parts: Vec<String> =
-                    lines.clone().map(|l| self.buf.doc.text().slice(self.cols_range(l, cols(self, l))).into_owned()).collect();
+                    lines.clone().map(|l| self.buf.doc.text().slice(self.cols_range(l, self.block_range_in(l, cols))).into_owned()).collect();
                 self.store_reg(parts.join("\n"), RegKind::Block, c == 'y');
                 if c != 'y' {
                     for l in lines.clone() {
-                        self.edit_delete(self.cols_range(l, cols(self, l)));
+                        self.edit_delete(self.cols_range(l, self.block_range_in(l, cols)));
                     }
                 }
                 self.win.line = a.0;
-                self.set_col(c0.min(self.line_chars(a.0)));
+                self.set_col(first.min(self.line_chars(a.0)));
                 if matches!(c, 'c' | 's') {
-                    self.start_block_insert(a.0 + 1..b.0 + 1, c0, false);
+                    self.start_block_insert(a.0 + 1..b.0 + 1, x0, false);
                 }
             }
             'I' => {
                 self.win.line = a.0;
-                self.start_block_insert(a.0 + 1..b.0 + 1, c0, false);
+                self.start_block_insert(a.0 + 1..b.0 + 1, x0, false);
             }
             'A' => {
                 self.win.line = a.0;
-                let col = if dollar { usize::MAX } else { c1 + 1 };
-                let len = self.line_chars(a.0);
-                if !dollar && len < col {
-                    self.edit_insert(self.line_end_offset(a.0), &" ".repeat(col - len));
+                let x = if dollar { usize::MAX } else { x1 + 1 };
+                if let Err(w) = self.col_at_cell(a.0, x)
+                    && !dollar
+                {
+                    self.edit_insert(self.line_end_offset(a.0), &" ".repeat(x - w));
                 }
-                self.start_block_insert(a.0 + 1..b.0 + 1, col, true);
+                self.start_block_insert(a.0 + 1..b.0 + 1, x, true);
             }
             _ => {
                 let f = case_fn(match c {
@@ -1158,19 +1549,20 @@ impl Editor {
                 })
                 .expect("case operator");
                 for l in lines {
-                    let range = self.cols_range(l, cols(self, l));
+                    let range = self.cols_range(l, self.block_range_in(l, cols));
                     let s = f(&self.buf.doc.text().slice(range.clone()));
                     self.edit_replace(range, &s);
                 }
                 self.win.line = a.0;
-                self.set_col(c0);
+                self.set_col(first);
             }
         }
     }
 
-    fn start_block_insert(&mut self, lines: Range<usize>, col: usize, pad: bool) {
-        let c = col.min(self.line_chars(self.win.line));
-        self.block_insert = Some(BlockInsert { start: (self.win.line, c), lines, col, pad });
+    /// Starts Insert for a block at screen column `x` of the cursor line (`usize::MAX`: its end).
+    fn start_block_insert(&mut self, lines: Range<usize>, x: usize, pad: bool) {
+        let c = self.col_at_cell(self.win.line, x).unwrap_or_else(|_| self.line_chars(self.win.line));
+        self.block_insert = Some(BlockInsert { start: (self.win.line, c), lines, x, pad });
         self.insert_at(c);
     }
 
@@ -1181,37 +1573,38 @@ impl Editor {
         if self.win.line == bi.start.0 && self.win.col >= bi.start.1 {
             let typed = self.buf.doc.text().slice(self.offset_of(bi.start)..self.offset()).into_owned();
             for l in bi.lines.clone().filter(|_| !typed.is_empty()) {
-                let len = self.line_chars(l);
-                let col = if bi.col == usize::MAX { len } else { bi.col };
-                if len < col {
-                    if !bi.pad {
-                        continue;
+                let col = match self.col_at_cell(l, bi.x) {
+                    Ok(c) => c,
+                    Err(_) if bi.x == usize::MAX => self.line_chars(l),
+                    Err(_) if !bi.pad => continue,
+                    Err(w) => {
+                        self.edit_insert(self.line_end_offset(l), &" ".repeat(bi.x - w));
+                        self.line_chars(l)
                     }
-                    self.edit_insert(self.line_end_offset(l), &" ".repeat(col - len));
-                }
+                };
                 self.edit_insert(self.offset_of((l, col)), &typed);
             }
         }
         Some(bi.start)
     }
 
-    /// Visual `r<c>`: every selected char (not line breaks) becomes `ch`.
+    /// Visual `r<c>`: every selected cluster (not line breaks) becomes `ch`.
     fn visual_replace(&mut self, ch: char, kind: VKind) {
         let (a, b) = sorted(self.anchor, (self.win.line, self.win.col));
-        let (c0, c1) = self.block_cols();
         self.mode = Mode::Normal;
         let replace = |e: &mut Self, r: Range<usize>| {
-            let s: String = e.buf.doc.text().slice(r.clone()).chars().map(|x| if x == '\n' { x } else { ch }).collect();
+            let s: String = graphemes::iter(&e.buf.doc.text().slice(r.clone())).map(|g| if g == "\n" { '\n' } else { ch }).collect();
             e.edit_replace(r, &s);
         };
         if kind == VKind::Block {
+            let cols = self.block_cols();
+            let first = self.block_range_in(a.0, cols).start;
             for l in a.0..=b.0 {
-                let len = self.line_chars(l);
-                let r = self.cols_range(l, c0.min(len)..(c1 + 1).min(len).max(c0.min(len)));
+                let r = self.cols_range(l, self.block_range_in(l, cols));
                 replace(self, r);
             }
             self.win.line = a.0;
-            self.set_col(c0);
+            self.set_col(first);
         } else {
             let (from, to, k) = self.visual_range(kind, a, b);
             let r = self.range(from, to, k);
@@ -1222,19 +1615,51 @@ impl Editor {
     }
 
     fn insert_key(&mut self, key: KeyEvent) {
-        if key.code != KeyCode::Esc {
+        if key.code != KeyCode::Esc || self.insert_pending == Some('v') {
             self.insert_keys.push(key);
         }
         if !matches!(key.code, KeyCode::Esc | KeyCode::Enter) {
             self.auto_indent = None;
         }
+        if let Some(p) = self.insert_pending.take() {
+            return self.insert_pending_key(p, key);
+        }
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         match key.code {
             KeyCode::Esc => self.leave_insert(),
-            KeyCode::Char(c) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
-                self.insert(c.encode_utf8(&mut [0; 4]));
+            KeyCode::Char('w') if ctrl => self.delete_before(true),
+            KeyCode::Char('u') if ctrl => self.delete_before(false),
+            KeyCode::Char(c @ ('r' | 'v')) if ctrl => self.insert_pending = Some(c),
+            KeyCode::Char('o') if ctrl => {
+                // One Normal command; a count no longer repeats the insert (vim).
+                self.insert_repeat = (1, false);
+                self.insert_one = Some((self.win.line, self.win.col));
+                self.mode = Mode::Normal;
             }
-            KeyCode::Tab => self.insert(&" ".repeat(self.buf.opts.tabstop)),
+            KeyCode::Char(c) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
+                if self.replacing.is_some() {
+                    self.replace_char(c);
+                } else {
+                    self.insert(c.encode_utf8(&mut [0; 4]));
+                }
+            }
+            KeyCode::Tab => self.insert(&if self.buf.opts.expandtab { " ".repeat(self.buf.opts.tabstop) } else { "\t".into() }),
             KeyCode::Enter => self.newline(),
+            KeyCode::Backspace if self.replacing.is_some() => {
+                // Replace mode: back over what was typed, putting back what it replaced.
+                let Some(Some(old)) = self.replacing.as_mut().map(Vec::pop) else {
+                    self.move_left();
+                    return;
+                };
+                let end = self.offset();
+                self.move_left();
+                let start = self.offset();
+                if let Some(old) = old {
+                    self.edit_replace(start..end, &old);
+                } else {
+                    self.edit_delete(start..end);
+                }
+            }
             KeyCode::Backspace => {
                 let end = self.offset();
                 self.move_left();
@@ -1244,9 +1669,8 @@ impl Editor {
             KeyCode::Delete => {
                 let start = self.offset();
                 if start < self.buf.doc.text().len() {
-                    let line = self.buf.doc.text().line(self.win.line);
                     // At line end the next char is the `\n`.
-                    let len = line[byte_of_col(&line, self.win.col)..].chars().next().map_or(1, char::len_utf8);
+                    let len = self.cluster_len((self.win.line, self.win.col)).max(1);
                     self.edit_delete(start..start + len);
                 }
             }
@@ -1262,9 +1686,79 @@ impl Editor {
         }
     }
 
+    /// The key after `Ctrl+R` (a register to insert) or `Ctrl+V` (a key to insert as itself: Tab
+    /// as a tab, Ctrl+<letter> as its control char, Esc as `\x1b`).
+    fn insert_pending_key(&mut self, p: char, key: KeyEvent) {
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        let s = match (p, key.code) {
+            ('r', KeyCode::Char(c)) if !ctrl => match self.reg(c) {
+                Some(r) => r.text,
+                None => return,
+            },
+            ('v', KeyCode::Char(c @ 'a'..='z')) if ctrl => char::from(c as u8 - b'a' + 1).to_string(),
+            ('v', KeyCode::Char(c)) => c.to_string(),
+            ('v', KeyCode::Tab) => "\t".into(),
+            ('v', KeyCode::Esc) => "\x1b".into(),
+            ('v', KeyCode::Enter) => "\n".into(),
+            _ => return,
+        };
+        self.insert(&s);
+    }
+
+    /// Insert `Ctrl+W` (`word`) and `Ctrl+U`: deletes the word before the cursor (blanks, then a
+    /// run of one class), or back to the indent (to the line start from the indent or before it).
+    /// At the line start they join the line to the one above, like Backspace.
+    fn delete_before(&mut self, word: bool) {
+        let (line, col) = (self.win.line, self.win.col);
+        if col == 0 {
+            let end = self.offset();
+            self.move_left();
+            let start = self.offset();
+            return self.edit_delete(start..end);
+        }
+        let to = if word {
+            let mut it = self.bwd((line, col - 1)).take_while(|&((l, _), _)| l == line).peekable();
+            let mut to = col;
+            while let Some(&((_, c), ch)) = it.peek()
+                && class(ch) == 0
+            {
+                (to, _) = (c, it.next());
+            }
+            if let Some(&(_, ch)) = it.peek() {
+                let cls = class(ch);
+                while let Some(&((_, c), ch)) = it.peek()
+                    && class(ch) == cls
+                {
+                    (to, _) = (c, it.next());
+                }
+            }
+            to
+        } else {
+            let indent = self.first_non_blank(line);
+            if col > indent { indent } else { 0 }
+        };
+        let (start, end) = (self.offset_of((line, to)), self.offset());
+        self.edit_delete(start..end);
+        self.set_col(to);
+    }
+
+    /// Replace mode: `c` takes the place of the cluster under the cursor (is added at the line end).
+    fn replace_char(&mut self, c: char) {
+        let p = (self.win.line, self.win.col);
+        let (off, len) = (self.offset(), self.cluster_len(p));
+        let old = (len > 0).then(|| self.buf.doc.text().slice(off..off + len).into_owned());
+        self.edit_replace(off..off + len, c.encode_utf8(&mut [0; 4]));
+        (self.win.line, self.win.col) = self.pos_of(off + c.len_utf8());
+        self.win.want_col = self.win.col;
+        if let Some(r) = &mut self.replacing {
+            r.push(old);
+        }
+    }
+
     /// Enter: splits the line; the new one gets the indent before the cursor (autoindent).
     fn newline(&mut self) {
-        let indent: String = self.buf.doc.text().line(self.win.line).chars().take(self.win.col).take_while(|c| c.is_whitespace()).collect();
+        let line = self.buf.doc.text().line(self.win.line);
+        let indent: String = graphemes::iter(&line).take(self.win.col).take_while(|g| g.chars().all(char::is_whitespace)).collect();
         self.clear_auto_indent();
         self.insert(&format!("\n{indent}"));
         self.auto_indent = (!indent.is_empty()).then_some(self.win.line);
@@ -1284,6 +1778,9 @@ impl Editor {
         self.insert_keys.clear();
         let block = self.finish_block_insert();
         self.clear_auto_indent();
+        self.replacing = None;
+        // `^`: where Insert mode was left, for `gi`.
+        self.buf.marks.insert('^', self.offset());
         self.end_command();
         self.mode = Mode::Normal;
         match block {
@@ -1296,9 +1793,96 @@ impl Editor {
         self.clamp_normal();
     }
 
+    /// The text of the command or search line being typed.
+    fn line_buf(&mut self) -> &mut String {
+        let (Mode::Command(buf) | Mode::Search(buf)) = &mut self.mode else {
+            unreachable!("line_buf outside command or search mode")
+        };
+        buf
+    }
+
+    /// Adds a command line or search to its history (no repeat of the last one).
+    fn push_history(&mut self, searching: bool, line: &str) {
+        let h = &mut self.history[usize::from(searching)];
+        if !line.is_empty() && h.last().is_none_or(|l| l != line) {
+            h.push(line.to_string());
+            if h.len() > LIST_MAX {
+                h.remove(0);
+            }
+        }
+    }
+
+    /// History (Up/Down: entries starting with what was typed), completion (Tab, Shift+Tab) and
+    /// `Ctrl+R x` on the command line; false for any other key.
+    fn line_edit(&mut self, key: KeyEvent, searching: bool) -> bool {
+        if !matches!(key.code, KeyCode::Up | KeyCode::Down) {
+            self.hist_at = None;
+        }
+        if !matches!(key.code, KeyCode::Tab | KeyCode::BackTab) {
+            self.completion = None;
+        }
+        if mem::take(&mut self.line_reg) {
+            if let KeyCode::Char(c) = key.code
+                && let Some(r) = self.reg(c)
+            {
+                let t = r.text.strip_suffix('\n').unwrap_or(&r.text).to_string();
+                self.line_buf().push_str(&t);
+            }
+            return true;
+        }
+        match key.code {
+            KeyCode::Char('r') if key.modifiers.contains(KeyModifiers::CONTROL) => self.line_reg = true,
+            KeyCode::Up | KeyCode::Down => {
+                let up = key.code == KeyCode::Up;
+                let typed = self.line_buf().clone();
+                let h = &self.history[usize::from(searching)];
+                let (at, prefix) = self.hist_at.take().unwrap_or((h.len(), typed));
+                let found = if up {
+                    h[..at].iter().rposition(|l| l.starts_with(&prefix))
+                } else {
+                    h.iter().skip(at + 1).position(|l| l.starts_with(&prefix)).map(|i| i + at + 1)
+                };
+                let (at, line) = match found {
+                    Some(i) => (i, h[i].clone()),
+                    // Past the newest entry: what was typed.
+                    None if !up => (h.len(), prefix.clone()),
+                    None => (at, if at < h.len() { h[at].clone() } else { prefix.clone() }),
+                };
+                *self.line_buf() = line;
+                self.hist_at = Some((at, prefix));
+            }
+            KeyCode::Tab | KeyCode::BackTab if !searching => {
+                let (list, i, base) = match self.completion.take() {
+                    Some((list, i, base)) => {
+                        let n = list.len();
+                        let i = if key.code == KeyCode::Tab { (i + 1) % n } else { (i + n - 1) % n };
+                        (list, i, base)
+                    }
+                    None => {
+                        let line = self.line_buf().clone();
+                        match ex::complete(&line) {
+                            Some((at, list)) if !list.is_empty() => {
+                                let i = if key.code == KeyCode::Tab { 0 } else { list.len() - 1 };
+                                (list, i, line[..at].to_string())
+                            }
+                            _ => return true,
+                        }
+                    }
+                };
+                *self.line_buf() = format!("{base}{}", list[i]);
+                self.completion = Some((list, i, base));
+            }
+            _ => return false,
+        }
+        true
+    }
+
     /// Command line (`:`) and search (`/`) input.
     fn line_key(&mut self, key: KeyEvent) {
         let searching = matches!(self.mode, Mode::Search(_));
+        if self.line_edit(key, searching) {
+            return self.line_changed(searching);
+        }
         let (Mode::Command(buf) | Mode::Search(buf)) = &mut self.mode else {
             unreachable!("line_key outside command or search mode")
         };
@@ -1312,6 +1896,7 @@ impl Editor {
             KeyCode::Esc => self.mode = Mode::Normal,
             KeyCode::Enter => match mem::replace(&mut self.mode, Mode::Normal) {
                 Mode::Command(cmd) => {
+                    self.push_history(false, &cmd);
                     if !self.command(&cmd) {
                         self.quit = true;
                     }
@@ -1322,6 +1907,7 @@ impl Editor {
                     }
                 }
                 Mode::Search(typed) => {
+                    self.push_history(true, &typed);
                     (self.win.line, self.win.col) = self.search_origin;
                     self.inc_search = None;
                     let (pat, off) = search::split_typed(&typed, if self.search_back { '?' } else { '/' });
@@ -1333,7 +1919,7 @@ impl Editor {
                         }
                     };
                     if !pat.is_empty() {
-                        match Search::new(pat) {
+                        match self.new_search(pat) {
                             Ok(s) => self.last_search = Some(s),
                             Err(e) => {
                                 self.msg = e;
@@ -1358,6 +1944,12 @@ impl Editor {
             },
             _ => {}
         }
+        self.line_changed(searching);
+    }
+
+    /// After a key on the search line: the incsearch preview, or the cursor back where `/` started
+    /// once the search was left with Esc.
+    fn line_changed(&mut self, searching: bool) {
         if !searching {
             return;
         }
@@ -1366,7 +1958,9 @@ impl Editor {
         (self.win.line, self.win.col) = self.search_origin;
         let delim = if self.search_back { '?' } else { '/' };
         self.inc_search = match &self.mode {
-            Mode::Search(typed) => Some(search::split_typed(typed, delim).0).filter(|p| !p.is_empty()).and_then(|p| Search::new(p).ok()),
+            Mode::Search(typed) if self.buf.opts.incsearch => {
+                Some(search::split_typed(typed, delim).0).filter(|p| !p.is_empty()).and_then(|p| self.new_search(p).ok())
+            }
             _ => None,
         };
         if let Some(s) = self.inc_search.clone()
@@ -1374,6 +1968,13 @@ impl Editor {
         {
             (self.win.line, self.win.col) = self.pos_of(m.start);
         }
+    }
+
+    /// A search for typed `pat`, with `ignorecase`/`smartcase` applied (`pat` is kept as typed).
+    fn new_search(&self, pat: &str) -> Result<Search, String> {
+        let mut s = Search::new(&self.buf.opts.case_pattern(pat))?;
+        s.pat = pat.into();
+        Ok(s)
     }
 
     /// `:earlier`/`:later` with a count or a duration (`10s`, `5m`, `1h`, `2d`), `:undo N`
@@ -1490,7 +2091,7 @@ impl Editor {
         let pattern = match s.ignore_case {
             Some(true) => format!("(?i){pat}"),
             Some(false) => format!("(?-i){pat}"),
-            None => pat.clone(),
+            None => self.buf.opts.case_pattern(&pat),
         };
         let search = match Search::new(&pattern) {
             Ok(r) => r,
@@ -1588,10 +2189,10 @@ impl Editor {
 
     /// Moves the cursor to the next match of the confirm session and asks; false when none is left.
     fn confirm_prompt(&mut self) -> bool {
+        let Some(c) = &self.confirm else { return false };
+        let Some((m, _)) = c.find(self.buf.doc.text()) else { return false };
+        let (l, col) = self.pos_of(m.start);
         let Some(c) = &mut self.confirm else { return false };
-        let text = self.buf.doc.text();
-        let Some((m, _)) = c.find(text) else { return false };
-        let (l, col) = text.offset_to_line_col(m.start);
         self.msg = format!("replace with {} (y/n/a/q/l)?", c.rep);
         c.cur = m;
         (self.win.line, self.win.col) = (l, col);
@@ -1682,16 +2283,11 @@ impl Editor {
         }
     }
 
+    /// Inserts `s` at the cursor and moves after it; a typed combining mark joins the cluster before it.
     fn insert(&mut self, s: &str) {
-        self.edit_insert(self.offset(), s);
-        for c in s.chars() {
-            if c == '\n' {
-                self.win.line += 1;
-                self.win.col = 0;
-            } else {
-                self.win.col += 1;
-            }
-        }
+        let off = self.offset();
+        self.edit_insert(off, s);
+        (self.win.line, self.win.col) = self.pos_of(off + s.len());
         self.win.want_col = self.win.col;
     }
 

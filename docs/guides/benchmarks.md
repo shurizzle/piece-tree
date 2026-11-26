@@ -766,3 +766,35 @@ Within the noise, after two fixes found by this A/B: (1) splitting `Text::insert
 **Normalization on block masks (follow-up)**: `push_normalized` and `normalize_owned` still walked `memchr_iter(b'\r')` / a restarted `memchr`, with a short copy per line. Replaced by `newlines::normalize_append` / `normalize_in_place` (block masks, constant 64-byte stores). A/B against the `memchr_iter` build, same harness, load average ~1, min over 5 rounds, ns/B: `Document::new` CRLF 1.203 -> 0.974 (-19%), `Document::from_string` CRLF 1.012 -> 0.757 (-25%); LF loads and `detect` unchanged (0.56-0.60, 0.29-0.31, 0.15-0.17: noise). Overall against the code before this section: `Document::new` CRLF 3.28 -> 0.97 (-70%), `from_string` CRLF 2.82 -> 0.76 (-73%).
 
 Not taken: fusing `count_lf` with `try_append`'s scan for pastes up to 64 KiB (the count is needed before the atomic reservation; the text is in cache). Cross-library tables: not re-run with this change (the host was not idle); `comparison-tables-linux.md` and `comparison-tables.md` are from the previous runs.
+
+## Grapheme columns on huge lines (M8, `rim`)
+
+Cursor columns became grapheme clusters (`editor/graphemes.rs`). Before, column ↔ byte conversions were the library's SIMD char conversions (`Text::line_col_to_offset`, `chars_in`, no copy); clusters need a scan the library cannot do. No library code changed, so the cross-library tables were not re-run.
+
+Release, both sides standalone copies built the same way (`cargo test --release -p rim`, HEAD `820d8d0` exported with `git archive`), the same temporary ignored test in both (removed afterwards), 100×50 screen, one 2.1 M-char line (`"abcdef ghijk, lm(no) "`, `"日本語 テスト、漢字(abc) "` or `"abcdefé "` repeated), cursor at column 500000 after typing `xyz` there (several pieces); minimum of 3 alternating runs × 5 repetitions, µs, on a desktop with a browser running (cells move by up to 2× between runs). "cold" is `500000|` + frame on a fresh editor (first jump: the index is built and the prefix laid out).
+
+| Operation | ASCII before → after | CJK before → after | accent before → after |
+|---|---|---|---|
+| `w` | 232 → 311 | 670 → 619 | 345 → 369 |
+| `b` | 255 → 309 | 727 → 610 | 439 → 379 |
+| `x` | 397 → 12 | 1119 → 21 | 493 → 14 |
+| `i` + char | 178 → 13 | 463 → 22 | 223 → 16 |
+| `i` + char + frame | 702 → 452 | 1875 → 1376 | 941 → 793 |
+| frame, same text | 139 → 70 | 125 → 108 | 160 → 122 |
+| `vl` + frame | 138 → 94 | 120 → 118 | 160 → 161 |
+| cold `500000\|` + frame | 521 → 1067 | 2162 → 4996 | 1572 → 2951 |
+
+Edits are 10–50× faster: the `LineIndex` answers a conversion from one 4 KiB window and is updated around the edit, where the library's conversions scanned the line prefix each time. Frames are as fast or faster. `w`/`b` are dominated by `Text::line` copying the 2 MB line (it spans pieces) on both sides. The first jump into a huge line pays one classification pass to build the index (`run_end`, about 0.15 ns/byte on ideographs, 0.3 on kana, against 0.08 for `str_indices::chars::count`); kept, once per line.
+
+Steps, kept and **rejected**:
+
+- Conversions by scanning `Text::line` with a per-cluster span iterator, no index: CJK `x` 34 ms, `i` + char 12 ms, accent `x` 46 ms. **Rejected** (the index below).
+- `LineIndex` per long line (checkpoints every 4 KiB, rescan from the checkpoint before an edit to the first old checkpoint found again as a boundary): CJK `x` 75 µs. Kept.
+- The rescan cut ASCII runs only at their end, so a window inside one long ASCII run never ended and the rescan went to the line end (ASCII `x` 700 µs); cutting a run at the trusted margin: 10 µs. Kept.
+- `fwd`/`bwd`, finds, `%`, `*` and objects found their start byte by scanning the line from 0: CJK `w` 10 ms; through the index: 0.6 ms. Kept.
+- Frame: a `String` per drawn cell and a width pass over every row even with one window: CJK frame 260 → 134 µs. Kept.
+- Spans as runs of simple chars of any width, counted in bulk: cold CJK 46 → 16 ms. Then fixed-stride loops per char width (ideographs 0.75 ns/char, kana ~4 ns). Superseded by the next step.
+- `graphemes::iter` keeps the current run and returns its chars from their lead bytes; `row_spans` walks runs and decodes each char once (`Glyph`): steady frame loop (3000 frames) CJK 140 → ~120 µs, accent ~175 → ~150, against HEAD ~138 / ~180. Kept.
+- `simple` as a byte predicate (`complex(c0, c1, c2)`, no decode) and `run_end` testing 32 positions at once: a `match` version did not vectorize (count 5–6 ms on CJK); written with `&`/`|` only it did, but checking every block exactly cost 0.27 ns/byte everywhere (ideographs 0.8 → 1.6 ms). Three tiers per block (lead byte alone, then E2/E3 exactly, then the full check): ideographs 0.8 ms, kana 2 ms, ASCII 0.3 ms per 2–6 MB. Kept; cold CJK 9 → 5 ms.
+- Layout of a run from its lead bytes (`lead_cell`: ASCII 1 cell, U+4000–U+9FFF but the hexagrams and U+B000–U+CFFF 2 cells, checked against `cell_width` for every char) and `run_end` directly instead of the counted spans: layout to column 500000 equal to HEAD (~2.7 ms both). A version that sent kana through `graphemes::next` + `width` per char: 27 ms. **Rejected**: a char inside a run is decoded once instead.
+- The block tiers moved into `maybe_lead`/`maybe_char` so a test can check them against `complex` exhaustively: the same machine code but one `vpcmpeqb` fewer (a duplicated `\r` test), A/B of two standalone copies pinned to one core (`taskset`), 10–20 alternating rounds: cold jump CJK −3%, kana +0.4%, accent +3% (noise); ASCII looked +10% inlined, but with `run_end` kept out of line both sides measure the same (min 263 against 255 µs), so it is code placement. Kept.

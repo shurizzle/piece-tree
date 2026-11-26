@@ -9,6 +9,8 @@ use std::{
     process::ExitCode,
     time::Duration,
 };
+#[cfg(unix)]
+use std::{io::Write, time::Instant};
 
 use crossterm::{
     cursor,
@@ -25,6 +27,10 @@ static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 /// Quiet time after the last event before `Editor::idle` runs (once per quiet period).
 const IDLE: Duration = Duration::from_secs(1);
+
+/// How long `"+p` waits for the terminal's answer to the OSC 52 clipboard query.
+#[cfg(unix)]
+const CLIPBOARD_WAIT: Duration = Duration::from_millis(500);
 
 /// How often a running background `:w` is checked for completion.
 const SAVE_POLL: Duration = Duration::from_millis(50);
@@ -44,13 +50,19 @@ fn main() -> ExitCode {
 fn run() -> io::Result<()> {
     let mut paths = env::args_os().skip(1).map(PathBuf::from);
     let mut editor = Editor::open(paths.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, USAGE))?)?;
-    for path in paths {
-        editor.open_more(path)?;
-    }
     // Asked before raw mode and the alternate screen: the query drives the terminal itself.
     if let Ok(ThemeMode::Light) = terminal_colorsaurus::theme_mode(QueryOptions::default()) {
         editor.set_background(Background::Light);
     }
+    // After the background, so `set bg=` wins; before the other files, which copy the options.
+    if let Some(dir) = env::var_os("XDG_CONFIG_HOME").map(PathBuf::from).or_else(|| env::var_os("HOME").map(|h| PathBuf::from(h).join(".config"))) {
+        editor.load_init(&dir.join("rim").join("init"));
+    }
+    for path in paths {
+        editor.open_more(path)?;
+    }
+    #[cfg(unix)]
+    editor.set_clipboard_reader(read_clipboard);
     let _guard = TerminalGuard::enter()?;
     let mut out = BufWriter::new(io::stdout());
     let mut idle = true;
@@ -72,6 +84,39 @@ fn run() -> io::Result<()> {
             && !editor.key(key)
         {
             return Ok(());
+        }
+    }
+}
+
+/// Asks the terminal for the clipboard (OSC 52 query) and reads its answer from stdin. It runs
+/// while a key is handled, when crossterm is not reading, so the reply does not reach the key
+/// parser; keys typed meanwhile are dropped. None without an answer in `CLIPBOARD_WAIT` (a
+/// terminal without OSC 52 reads, or with them disabled).
+#[cfg(unix)]
+fn read_clipboard() -> Option<String> {
+    use rustix::event::{PollFd, PollFlags, Timespec, poll};
+    use std::os::fd::AsFd;
+    let mut out = io::stdout();
+    out.write_all(b"\x1b]52;c;?\x07").ok()?;
+    out.flush().ok()?;
+    let stdin = io::stdin();
+    let fd = stdin.as_fd();
+    let deadline = Instant::now() + CLIPBOARD_WAIT;
+    let mut reply = Vec::new();
+    let mut buf = [0; 4096];
+    loop {
+        let left = deadline.checked_duration_since(Instant::now())?;
+        let timeout = Timespec { tv_sec: left.as_secs() as _, tv_nsec: left.subsec_nanos().into() };
+        if poll(&mut [PollFd::new(&fd, PollFlags::IN)], Some(&timeout)).ok()? == 0 {
+            return None;
+        }
+        let n = rustix::io::read(fd, &mut buf).ok()?;
+        if n == 0 {
+            return None;
+        }
+        reply.extend_from_slice(&buf[..n]);
+        if let Some(text) = editor::parse_osc52_reply(&reply) {
+            return Some(text);
         }
     }
 }

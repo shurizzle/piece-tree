@@ -300,8 +300,10 @@ dependencies = [
  "memchr",
  "mimalloc",
  "piece-tree",
+ "rustix",
  "str_indices",
  "terminal-colorsaurus",
+ "unicode-segmentation",
  "unicode-width",
 ]
 

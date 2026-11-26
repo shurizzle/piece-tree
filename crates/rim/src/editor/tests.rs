@@ -6,8 +6,8 @@ fn ed(s: &str) -> Editor {
     Editor::new(Document::new(s), PathBuf::from("/nonexistent/rim-test"))
 }
 
-/// Feeds keys; `\x1b` is Esc, `\n` Enter, `\x7f` Backspace, `\t` Tab, `\x04`/`\x12`/`\x15` Ctrl+D/R/U,
-/// `\x17` Ctrl+W, `\x1e` Ctrl+^.
+/// Feeds keys; `\x1b` is Esc, `\n` Enter, `\x7f` Backspace, `\t` Tab (Ctrl+I), another control
+/// char its Ctrl+letter (`\x04` Ctrl+D), `\x1e` Ctrl+^.
 /// Returns false if the editor asked to quit.
 fn feed(e: &mut Editor, keys: &str) -> bool {
     keys.chars().all(|c| {
@@ -15,9 +15,7 @@ fn feed(e: &mut Editor, keys: &str) -> bool {
             '\x1b' => KeyCode::Esc.into(),
             '\n' => KeyCode::Enter.into(),
             '\x7f' => KeyCode::Backspace.into(),
-            '\t' => KeyCode::Tab.into(),
-            '\x04' | '\x12' | '\x15' => KeyEvent::new(KeyCode::Char((c as u8 + b'a' - 1) as char), KeyModifiers::CONTROL),
-            '\x17' | '\x1e' => char_key(c),
+            '\x01'..='\x1a' | '\x1e' => char_key(c),
             c => KeyCode::Char(c).into(),
         })
     })
@@ -350,7 +348,12 @@ fn replace_toggle_case_and_shift() {
     let e = run("      a", "<<");
     assert_eq!((text(&e).as_str(), pos(&e)), ("  a", (0, 2)));
     assert_eq!(text(&run("\ta", "<<")), "a");
-    assert_eq!(text(&run("  \t a", "<<")), "\t a");
+    // The indent is rewritten: a tab counts `tabstop` columns.
+    assert_eq!(text(&run("  \t a", "<<")), "   a");
+    // shiftwidth, and noexpandtab writing tabs then spaces.
+    assert_eq!(text(&run("a", ":set sw=2\n>>")), "  a");
+    assert_eq!(text(&run("  a", ":set noet\n>>")), "\t  a");
+    assert_eq!(text(&run("\t\t a", ":set noet sw=3\n<<")), "\t  a");
     // Each is one undo step.
     assert_eq!(text(&run("a\nb", "2>>u")), "a\nb");
     assert_eq!(text(&run("abc", "3~u")), "abc");
@@ -552,6 +555,302 @@ fn frame_renders_wide_chars_tabs_and_controls() {
     // Combining marks take no cell.
     assert_eq!(snapshot("e\u{301}x", "", 20, 2).0[0], "1 e\u{301}x");
     assert_eq!(snapshot("e\u{301}x", "ll", 20, 2).1, (3, 0));
+}
+
+#[test]
+fn grapheme_clusters_are_one_column() {
+    // e + combining acute, a family emoji (ZWJ sequence), a flag (two regional indicators).
+    let (acute, family, flag) = ("e\u{301}", "\u{1f468}\u{200d}\u{1f469}\u{200d}\u{1f467}", "\u{1f1ee}\u{1f1f9}");
+    let line = format!("a{acute}{family}{flag}b");
+    let e = run(&line, "l");
+    assert_eq!(pos(&e), (0, 1));
+    assert_eq!(pos(&run(&line, "$")), (0, 4));
+    assert_eq!(pos(&run(&line, "3l")), (0, 3));
+    assert_eq!(pos(&run(&line, "$h")), (0, 3));
+    assert_eq!(pos(&run(&line, "fb")), (0, 4));
+    assert_eq!(pos(&run(&line, "$Fe")), (0, 1));
+    // `x`, `r` and `~` take whole clusters; `ga` shows the first char.
+    assert_eq!(text(&run(&line, "lx")), format!("a{family}{flag}b"));
+    assert_eq!(text(&run(&line, "llx")), format!("a{acute}{flag}b"));
+    assert_eq!(text(&run(&line, "lrz")), format!("az{family}{flag}b"));
+    assert_eq!(text(&run(&line, "l~")), format!("aE\u{301}{family}{flag}b"));
+    assert_eq!(text(&run(&line, "l2x")), format!("a{flag}b"));
+    assert_eq!(text(&run(&line, "lvlld")), "ab");
+    assert_eq!(reg(&run(&line, "lyl")).0, acute);
+    // Insert: a typed combining mark joins the cluster before it; Backspace and Delete take a cluster.
+    let e = run("ab", "a\u{301}");
+    assert_eq!((text(&e), pos(&e)), ("a\u{301}b".into(), (0, 1)));
+    assert_eq!(text(&run(&line, "A\x7f\x7f\x1b")), format!("a{acute}{family}"));
+    assert_eq!(text(&run(&line, "li\x1b\x1bi\u{1b}")), line);
+    let e = run(&line, "li");
+    let mut e = e;
+    e.key(KeyCode::Delete.into());
+    assert_eq!(text(&e), format!("a{family}{flag}b"));
+    // Words: a combining mark stays inside its word.
+    assert_eq!(pos(&run("cafe\u{301} x", "w")), (0, 5));
+    assert_eq!(pos(&run("x cafe\u{301}", "$b")), (0, 2));
+    assert_eq!(pos(&run("x cafe\u{301}", "e")), (0, 5));
+    assert_eq!(reg(&run("cafe\u{301} x", "yiw")).0, "cafe\u{301}");
+    // Screen: each cluster draws as one glyph of its width.
+    let (rows, cursor, _) = snapshot(&line, "$", 20, 2);
+    assert_eq!((rows[0].as_str(), cursor), (format!("1 a{acute}{family}{flag}b").as_str(), (8, 0)));
+    assert_eq!(snapshot(&line, "ll", 20, 2).1, (4, 0));
+    // A lone combining mark is drawn on a space and takes a cell.
+    let (rows, cursor, _) = snapshot("\u{301}x", "l", 20, 2);
+    assert_eq!((rows[0].as_str(), cursor), ("1  \u{301}x", (3, 0)));
+    // Search highlights and Visual cover whole clusters.
+    assert_eq!(snapshot(&line, "/\u{301}\n", 20, 2).0[0], format!("1 a{{{acute}}}{family}{flag}b"));
+    assert_eq!(snapshot(&line, "lvl", 20, 2).0[0], format!("1 a[{acute}{family}]{flag}b"));
+}
+
+#[test]
+fn options_list_case_hlsearch_and_scrolloff() {
+    // list: a tab is `>` then spaces, the line end `$`; a selected line end shows `$` reversed.
+    assert_eq!(snapshot("a\tb\nc", ":set list nonu nornu\n", 20, 3).0[..2], ["a>   b$", "c$"]);
+    assert_eq!(snapshot("ab\nc", ":set list nonu nornu\nV", 20, 3).0[0], "[ab$]");
+    // ignorecase, smartcase: `/`, `n`, `:s`, `:g`, `*`.
+    assert_eq!(pos(&run("x Ab ab", ":set ic\n/ab\n")), (0, 2));
+    assert_eq!(pos(&run("x ab Ab", ":set ic scs\n/Ab\n")), (0, 5));
+    assert_eq!(pos(&run("x Ab ab", ":set ic scs\n/ab\n")), (0, 2));
+    assert_eq!(pos(&run("x Ab ab", ":set ic\n/ab\nn")), (0, 5));
+    assert_eq!(text(&run("Ab ab", ":set ic\n:s/ab/x/g\n")), "x x");
+    assert_eq!(text(&run("Xc\nxb\nxa", ":set ic\n:sort /x/\n")), "xa\nxb\nXc");
+    assert_eq!(text(&run("Xc\nxb\nxa", ":sort /x/\n")), "Xc\nxa\nxb");
+    assert_eq!(text(&run("Ab\nab\nc", ":set ic\n:g/ab/d\n")), "c");
+    assert_eq!(pos(&run("Foo x foo", ":set ic scs\n*")), (0, 6));
+    assert_eq!(pos(&run("foo x Foo", ":set noic\n*")), (0, 0));
+    // nohlsearch: no highlight after a search; noincsearch: no preview while typing.
+    assert_eq!(snapshot("ab ab", ":set nohls nonu nornu\n/b\n", 20, 2).0[0], "ab ab");
+    let (rows, ..) = snapshot("ab\nxb", ":set nois nonu nornu\n/x", 20, 3);
+    assert_eq!(rows[1], "xb");
+    let e = run("ab\nxb", ":set nois\n/x");
+    assert_eq!(pos(&e), (0, 0));
+    // scrolloff: lines kept below and above the cursor; H and L stop that far from the edges.
+    let lines: String = (0..30).map(|i| format!("{i}\n")).collect();
+    let mut e = run(&lines, ":set so=2 nonu nornu\n");
+    e.frame(10, 7);
+    feed(&mut e, "4j");
+    assert_eq!(screen(&e.frame(10, 7))[0], "1");
+    feed(&mut e, "j");
+    assert_eq!(e.frame(10, 7).cursor, (0, 3));
+    feed(&mut e, "Lk");
+    e.frame(10, 7);
+    feed(&mut e, "H");
+    assert_eq!(e.win.line, e.win.top + 2);
+    feed(&mut e, "gg");
+    assert_eq!(screen(&e.frame(10, 7))[0], "0");
+    feed(&mut e, "L");
+    assert_eq!(e.win.line, 3);
+}
+
+#[test]
+fn jump_and_change_lists() {
+    // Ctrl+O back through the jumps, Ctrl+I (Tab) forward again.
+    let mut e = run("0\n1\n2\n3\n4", "Ggg");
+    feed(&mut e, "\x0f");
+    assert_eq!(pos(&e), (4, 0));
+    feed(&mut e, "\x0f");
+    assert_eq!(pos(&e), (4, 0));
+    feed(&mut e, "\t");
+    assert_eq!(pos(&e), (0, 0));
+    // Entries follow edits: a line inserted above moves them.
+    let mut e = run("a\nb\nc\nd", "3Ggg");
+    feed(&mut e, "Ox\x1b\x0f");
+    assert_eq!(pos(&e), (3, 0));
+    // A jump into another buffer switches back to it.
+    let dir = std::env::temp_dir().join(format!("rim-jumps-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let other = dir.join("o.txt");
+    fs::write(&other, "o1\no2\no3").unwrap();
+    let mut e = run("a\nb", "G");
+    feed(&mut e, &format!(":e {}\nG\x0f", other.display()));
+    assert_eq!((e.buf.id, pos(&e)), (2, (0, 0)));
+    fs::remove_dir_all(&dir).unwrap();
+    // g; and g, walk the changes, newest first; a change on the same line replaces the entry.
+    let mut e = run("a\nb\nc\nd", "x3Gxlx");
+    feed(&mut e, "ggg;");
+    assert_eq!(e.win.line, 2);
+    feed(&mut e, "g;");
+    assert_eq!(e.win.line, 0);
+    feed(&mut e, "g;");
+    assert_eq!((e.win.line, e.msg.as_str()), (0, "At start of change list"));
+    feed(&mut e, "g,");
+    assert_eq!(e.win.line, 2);
+    feed(&mut e, "g,");
+    assert_eq!(e.msg, "At end of change list");
+    assert_eq!(run("a", "g;").msg, "Change list is empty");
+}
+
+#[test]
+fn gv_gi_gj_gp_and_bracket_p() {
+    // gv: the last selection again, shifted by an edit before it.
+    let e = run("abc def", "lvl\x1b$0iXY\x1bgv");
+    assert_eq!((e.mode == Mode::Visual(VKind::Char), e.anchor, pos(&e)), (true, (0, 3), (0, 4)));
+    assert_eq!(run("ab\ncd", "Vj\x1bgggvd").buf.doc.text().len(), 0);
+    assert_eq!(run("a", "gv").msg, "No previous Visual selection");
+    // gi: Insert where it was last left.
+    assert_eq!(text(&run("abc", "Ax\x1b0giy\x1b")), "abcxy");
+    // gJ: join without touching blanks.
+    assert_eq!(text(&run("a\n  b\nc", "3gJ")), "a  bc");
+    // gp/gP: the cursor goes just after the pasted text.
+    let e = run("a\nb", "yygp");
+    assert_eq!((text(&e), pos(&e)), ("a\na\nb".into(), (2, 0)));
+    let e = run("ab", "ylgp");
+    assert_eq!((text(&e), pos(&e)), ("aab".into(), (0, 2)));
+    let e = run("ab", "lylgP");
+    assert_eq!((text(&e), pos(&e)), ("abb".into(), (0, 2)));
+    // ]p: a linewise paste takes the cursor line's indent.
+    assert_eq!(text(&run("x\n    y", "yyj]p")), "x\n    y\n    x");
+    assert_eq!(text(&run("  a\n    b\nc", "2yyG]p")), "  a\n    b\nc\na\n  b");
+    assert_eq!(text(&run("\ta\n  b", ":set noet ts=2\nyyj]p")), "\ta\n  b\n\ta");
+    assert_eq!(text(&run("ab", "yl]p")), "aab");
+}
+
+#[test]
+fn replace_mode() {
+    assert_eq!(text(&run("abc", "Rxy\x1b")), "xyc");
+    assert_eq!(text(&run("abc", "Rxyzw\x1b")), "xyzw");
+    // Backspace puts back what was typed over, and removes what was added.
+    assert_eq!(text(&run("abc", "Rxyz\x7f\x7f\x1b")), "xbc");
+    assert_eq!(text(&run("ab", "Rxyz\x7f\x7f\x7f\x7f\x1b")), "ab");
+    // Clusters are replaced whole; counts and `.` repeat; one undo step.
+    assert_eq!(text(&run("e\u{301}x", "Ra\x1b")), "ax");
+    assert_eq!(text(&run("abcdef", "2Rxy\x1b")), "xyxyef");
+    assert_eq!(text(&run("abcd", "Rx\x1bl.")), "xxcd");
+    assert_eq!(text(&run("abc", "Rxy\x1bu")), "abc");
+    let (rows, _, bar) = snapshot("abc", "R", 40, 2);
+    assert!(rows[1].contains("REPLACE") && bar);
+}
+
+#[test]
+fn scroll_lines_and_pages() {
+    let lines: String = (0..30).map(|i| format!("{i}\n")).collect();
+    let mut e = run(&lines, ":set nonu nornu\n");
+    let top = |e: &mut Editor| screen(&e.frame(10, 7))[0].clone();
+    assert_eq!(top(&mut e), "0");
+    // Ctrl+E scrolls a line down, pulling the cursor along when it would leave the screen.
+    feed(&mut e, "\x05");
+    assert_eq!((top(&mut e), e.win.line), ("1".into(), 1));
+    feed(&mut e, "3\x05");
+    assert_eq!((top(&mut e), e.win.line), ("4".into(), 4));
+    // Ctrl+Y scrolls up; the cursor stays while it is on screen.
+    feed(&mut e, "\x19");
+    assert_eq!((top(&mut e), e.win.line), ("3".into(), 4));
+    feed(&mut e, "5\x19");
+    assert_eq!((top(&mut e), e.win.line), ("0".into(), 4));
+    // Ctrl+F/Ctrl+B: a page is the screen minus two lines.
+    feed(&mut e, "\x06");
+    assert_eq!((top(&mut e), e.win.line), ("4".into(), 4));
+    feed(&mut e, "\x06");
+    assert_eq!((top(&mut e), e.win.line), ("8".into(), 8));
+    feed(&mut e, "\x02");
+    assert_eq!((top(&mut e), e.win.line), ("4".into(), 8));
+}
+
+#[test]
+fn insert_mode_ctrl_keys() {
+    // Ctrl+W: the word before the cursor, then blanks and the word; at the line start, the line break.
+    assert_eq!(text(&run("foo bar", "A\x17\x1b")), "foo ");
+    assert_eq!(text(&run("foo bar  ", "A\x17\x1b")), "foo ");
+    assert_eq!(text(&run("foo.bar", "A\x17\x17\x1b")), "foo");
+    assert_eq!(text(&run("a\nb", "jI\x17\x1b")), "ab");
+    // Ctrl+U: back to the indent, then to the line start.
+    assert_eq!(text(&run("  ab cd", "A\x15\x1b")), "  ");
+    assert_eq!(text(&run("  ab", "A\x15\x15\x1b")), "");
+    // Ctrl+R x: a register's text; Ctrl+V: the next key as itself.
+    assert_eq!(text(&run("ab", "yiwA \x12\"\x1b")), "ab ab");
+    assert_eq!(text(&run("ab", "yyA\x120\x1b")), "abab\n");
+    assert_eq!(text(&run("", ":set et\ni\x16\tx\x16\x01\x1b")), "\tx\x01");
+    // Ctrl+O: one Normal command, then Insert again at the cursor (also past the line end).
+    let e = run("abc\ndef", "A\x0fjx");
+    assert_eq!((text(&e), e.mode == Mode::Insert), ("abc\ndefx".into(), true));
+    let e = run("abc", "A\x0fzzx");
+    assert_eq!(text(&e), "abcx");
+    let e = run("abc", "A\x0f:s/a/z/\nq\x1b");
+    // `:s` leaves the cursor at the line start, as in vim.
+    assert_eq!(text(&e), "qzbc");
+    // A count is dropped after Ctrl+O; Ctrl+W replays with one.
+    assert_eq!(text(&run("", "3iab\x0f0x\x1b")), "xab");
+    assert_eq!(text(&run("", "2ix y\x17\x1b")), "x x ");
+}
+
+#[test]
+fn command_line_history_completion_and_registers() {
+    let line = |e: &Editor| match &e.mode {
+        Mode::Command(s) | Mode::Search(s) => s.clone(),
+        _ => panic!("not on the command line"),
+    };
+    let (up, down) = (KeyEvent::from(KeyCode::Up), KeyEvent::from(KeyCode::Down));
+    // Up/Down walk the history, newest first, matching what was typed; past the newest, the typed text.
+    let mut e = run("a", ":set ts=2\n:set nu\n:noh\n:se");
+    e.key(up);
+    assert_eq!(line(&e), "set nu");
+    e.key(up);
+    assert_eq!(line(&e), "set ts=2");
+    e.key(up);
+    assert_eq!(line(&e), "set ts=2");
+    e.key(down);
+    assert_eq!(line(&e), "set nu");
+    e.key(down);
+    assert_eq!(line(&e), "se");
+    // Searches have their own history; a repeat is kept once.
+    let mut e = run("ab", "/a\n/b\n/b\n:noh\n/");
+    e.key(up);
+    assert_eq!(line(&e), "b");
+    e.key(up);
+    assert_eq!(line(&e), "a");
+    e.key(KeyCode::Enter.into());
+    assert_eq!(e.history[1], ["a", "b", "a"]);
+    // Tab completes command names, cycling; Shift+Tab goes back.
+    let mut e = run("a", ":und");
+    feed(&mut e, "\t");
+    assert_eq!(line(&e), "undo");
+    feed(&mut e, "\t");
+    assert_eq!(line(&e), "undolist");
+    e.key(KeyCode::BackTab.into());
+    assert_eq!(line(&e), "undo");
+    feed(&mut e, "\n");
+    assert_eq!(e.msg, "Already at oldest change");
+    // File names after `:e`.
+    let dir = std::env::temp_dir().join(format!("rim-cmdline-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(dir.join("only.txt"), "x").unwrap();
+    let mut e = run("a", &format!(":e {}/o", dir.display()));
+    feed(&mut e, "\t");
+    assert_eq!(line(&e), format!("e {}/only.txt", dir.display()));
+    fs::remove_dir_all(&dir).unwrap();
+    // Ctrl+R x inserts a register (without the line break of a linewise one).
+    let mut e = run("foo bar", "yiwyy:s/\x12\"");
+    assert_eq!(line(&e), "s/foo bar");
+    feed(&mut e, "\x7f\x7f\x7f\x7f/x/\n");
+    assert_eq!(text(&e), "x bar");
+    let e = run("foo", "yiw/\x12\"");
+    assert_eq!(line(&e), "foo");
+}
+
+#[test]
+fn init_file_sets_options() {
+    let dir = std::env::temp_dir().join(format!("rim-init-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("init");
+    let mut e = ed("a");
+    e.load_init(&path);
+    assert_eq!((e.msg.as_str(), e.buf.opts.tabstop), ("i insert | Esc normal | :w save | :q quit", 4));
+    fs::write(&path, "\" comment\n\nset noet sw=2\n:se ts=8\n  set list\n").unwrap();
+    e.load_init(&path);
+    let o = &e.buf.opts;
+    assert_eq!((o.expandtab, o.shiftwidth, o.tabstop, o.list), (false, 2, 8, true));
+    // Errors name their lines; the other lines still apply.
+    fs::write(&path, "set nu\nmap x y\nset foo\nset rnu!").unwrap();
+    let mut e = ed("a");
+    e.load_init(&path);
+    assert_eq!(e.msg, format!("{}: line 2: only :set is allowed; line 3: Unknown option: foo", path.display()));
+    assert!(!e.buf.opts.relativenumber);
+    // A buffer opened later copies the options.
+    let other = dir.join("b.txt");
+    e.open_more(other).unwrap();
+    assert!(e.buffers.len() == 1 && [&e.buf].into_iter().chain(&e.buffers).all(|b| !b.opts.relativenumber));
+    fs::remove_dir_all(&dir).unwrap();
 }
 
 #[test]
@@ -1135,8 +1434,23 @@ fn named_numbered_and_clipboard_registers() {
     draw(&f, &mut out).unwrap();
     assert!(String::from_utf8(out).unwrap().contains(&osc52("abc\n")));
     assert_eq!(e.frame(20, 2).clipboard, None);
+    // Reading asks the terminal; without an answer nothing is pasted (no copy of the editor's own).
     feed(&mut e, "\"*p");
-    assert_eq!(text(&e), "abc\nabc");
+    assert_eq!((text(&e).as_str(), e.msg.as_str()), ("abc", "Clipboard read failed: the terminal did not answer OSC 52"));
+    e.set_clipboard_reader(|| Some("x\ny".into()));
+    feed(&mut e, "\"+p");
+    assert_eq!(text(&e), "ax\nybc");
+    e.set_clipboard_reader(|| Some("line\n".into()));
+    feed(&mut e, "gg\"*P");
+    assert_eq!(text(&e), "line\nax\nybc");
+    // Ctrl+R + in Insert mode and on the command line, `@+` as a macro.
+    feed(&mut e, "A\x12+\x1b:\x12+");
+    assert!(e.mode == Mode::Command("line".into()));
+    feed(&mut e, "\x1b");
+    assert_eq!(text(&e), "lineline\n\nax\nybc");
+    e.set_clipboard_reader(|| Some("dd".into()));
+    feed(&mut e, "gg@+");
+    assert_eq!(text(&e), "\nax\nybc");
 }
 
 #[test]
@@ -1159,6 +1473,32 @@ fn macros() {
     assert!(!feed(&mut e, "@a"));
     // Changes inside a macro still feed `.`.
     assert_eq!(text(&run("abc", "qaxq@a.")), "");
+    // Macros are register text: pasted, yanked into and edited, appended with `qA`, recorded keys
+    // (Esc, Enter, Ctrl keys) kept as their chars; `"` is left alone.
+    let e = run("x", "yiwqaA!\x1bq\"ap");
+    assert_eq!(text(&e), "x!A!\x1b");
+    assert_eq!(e.regs.get('"').map(|r| r.text.as_str()), Some("x"));
+    assert_eq!(text(&run("1\n2\nA!\x1bj", "G\"ay$gg@a")), "1!\n2\nA!\x1bj");
+    assert_eq!(text(&run("a\nb\nc", "qaA!\x1bqqAjq@a")), "a!\nb!\nc");
+    assert_eq!(text(&run("ab", "qa\x01q\"ap")), "a\x01b");
+    assert_eq!(text(&run("a1 b", "qa\x01q@a")), "a3 b");
+}
+
+#[test]
+fn visual_block_in_screen_columns() {
+    // A tab (cells 1-4 at ts=4) and wide chars keep the block straight on screen.
+    let e = run("a\tb\nabcdefgh", "ll\x16jd");
+    assert_eq!(text(&e), "a\nabgh");
+    assert_eq!(e.regs.get('"').map(|r| r.text.as_str()), Some("\tb\ncdef"));
+    assert_eq!(text(&run("日本語\nabcdef", "l\x16jd")), "語\naef");
+    assert_eq!(text(&run("a\tb\nabcdefgh", "j5l\x16kIX\x1b")), "a\tXb\nabcdeXfgh");
+    // The block ends at the last cell of 本 (screen column 3): the short line is padded.
+    assert_eq!(text(&run("ab\n日本", "l\x16jAX\x1b")), "ab  X\n日本X");
+    assert_eq!(snapshot("日本語\nabcdef", ":set nonu nornu\nl\x16j", 20, 3).0[..2], ["[日本]語", "a[bcd]ef"]);
+    // A block pastes at the cursor's screen column, padding short lines.
+    assert_eq!(text(&run("ab\ncd\n\tx\ny", "\x16jly2jlP")), "ab\ncd\n\tabx\ny   cd");
+    // Visual r over a block of wide chars.
+    assert_eq!(text(&run("日本\nabcd", "\x16jrx")), "x本\nxxcd");
 }
 
 #[test]
@@ -1247,7 +1587,9 @@ fn set_options() {
     let mut e = run("\tx", ":set ts=2\n");
     assert_eq!(screen(&e.frame(20, 2))[0], "1   x");
     feed(&mut e, "o\t\x1b>>");
-    assert_eq!(text(&e), "\tx\n  \t  ");
+    assert_eq!(text(&e), "\tx\n      ");
+    // noexpandtab: Tab inserts a tab.
+    assert_eq!(text(&run("x", ":set noet\nA\t\x1b")), "x\t");
     // Colors: palette per background, overrides by index.
     let draw_out = |keys: &str| {
         let mut e = run("a", keys);
@@ -1360,6 +1702,8 @@ fn substitute_lines_and_flags() {
     let s = "a a\na a\na a";
     assert_eq!(text(&run(s, ":s/a/b/\n")), "b a\na a\na a");
     assert_eq!(text(&run(s, ":s/a/b/g\n")), "b b\na a\na a");
+    assert_eq!(text(&run(s, ":substitute/a/b/\n")), "b a\na a\na a");
+    assert_eq!(text(&run(s, ":su/a/b/\n")), "b a\na a\na a");
     assert_eq!(text(&run(s, ":%s/a/b/\n")), "b a\nb a\nb a");
     assert_eq!(text(&run(s, ":%s/a/b/g\n")), "b b\nb b\nb b");
     assert_eq!(text(&run(s, ":2,3s/a/b/\n")), "a a\nb a\nb a");
@@ -1509,11 +1853,11 @@ fn segments_fast_path_matches_the_generic_one() {
         }
         assert_eq!(strip(&fast), want, "{line:?} {w}");
     }
-    // Random mixed text (ASCII runs, tabs, wide, combining and control chars) against the plain per-char layout.
+    // Random mixed text (ASCII runs, tabs, wide, combining and control chars) against the plain per-cluster layout.
     let naive = |line: &str, w: usize, ts: usize| {
         let (mut out, mut x, mut b0, mut c0) = (Vec::new(), 0usize, 0, 0);
-        for (i, (b, c)) in line.char_indices().enumerate() {
-            let cw = super::render::cell_width(c, ts);
+        for (i, (b, g)) in unicode_segmentation::UnicodeSegmentation::grapheme_indices(line, true).enumerate() {
+            let cw = graphemes::width(g, ts);
             if x > 0 && x.saturating_add(cw) > w {
                 out.push((c0, line[b0..b].to_string()));
                 (x, b0, c0) = (0, b, i);
@@ -1698,7 +2042,7 @@ fn cached_layouts_match_fresh_ones_over_random_sessions() {
             feed(&mut kept, k);
             feed(&mut fresh, k);
             *fresh.win.layout.borrow_mut() = Default::default();
-            *fresh.buf.chars_memo.borrow_mut() = None;
+            fresh.buf.cols.borrow_mut().clear();
             *fresh.win.match_cache.borrow_mut() = None;
             let want = screen(&fresh.frame(w, h));
             assert_eq!(screen(&kept.frame(w, h)), want, "round {round} keys {done:?} size {w}x{h}");
@@ -1813,7 +2157,7 @@ fn ex_normal() {
     assert_eq!(run("a", ":norm\n").msg, "Argument required");
     // Not recorded by `q`.
     let e = run("a\nb", "qq:norm Ax\nq");
-    assert_eq!(e.macros.get(&'q').map(Vec::len), Some(":norm Ax\n".len()));
+    assert_eq!(e.regs.get('q').map(|r| r.text.as_str()), Some(":norm Ax\r"));
 }
 
 #[test]
@@ -1907,7 +2251,9 @@ fn ex_read_write_saveas() {
 fn ex_retab_and_fileformat() {
     let e = run("\tx", ":retab 8\n");
     assert_eq!((text(&e).as_str(), e.buf.opts.tabstop), ("    x", 8));
-    assert_eq!(text(&run("        x", ":ret!\n")), "\t\tx");
+    assert_eq!(text(&run("        x", ":set noet\n:ret!\n")), "\t\tx");
+    // expandtab: tabs become spaces, `!` changes nothing more.
+    assert_eq!(text(&run("\tx  \ty", ":ret!\n")), "    x   y");
     assert_eq!(run("x", ":retab 0\n").msg, "Invalid argument: 0");
     let mut e = ed("a\nb");
     feed(&mut e, ":set ff=dos\n");
@@ -2134,3 +2480,5 @@ fn saves_waited_for_and_their_messages() {
     assert!(e.open_more(dir.clone()).is_err());
     fs::remove_dir_all(dir).unwrap();
 }
+
+

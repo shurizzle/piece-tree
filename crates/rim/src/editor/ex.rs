@@ -11,7 +11,7 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use piece_tree::{Document, Edit, LineEnding, Text};
 
-use super::{Editor, Kind, Mode, parse::{char_key, valid_reg}, search::{self, Search}, substitute};
+use super::{Editor, Kind, Mode, graphemes, parse::{self, valid_reg}, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -182,8 +182,53 @@ pub(super) fn parse(cmd: &str) -> Result<ExCmd<'_>, String> {
 /// `name` is `long` or an abbreviation of it at least as long as `short` (vim's `:d[elete]`).
 const DIRTY: &str = "No write since last change (add ! to override)";
 
-fn abbr(name: &str, short: &str, long: &str) -> bool {
+pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
     name.len() >= short.len() && long.starts_with(name)
+}
+
+/// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
+pub(super) const NAMES: &[&str] = &[
+    "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
+    "files", "global", "goto", "join", "later", "ls", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
+    "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "undo", "undolist",
+    "vglobal", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
+];
+
+/// Commands whose argument is a file name, as (shortest abbreviation, name).
+const FILE_COMMANDS: &[(&str, &str)] =
+    &[("e", "edit"), ("sp", "split"), ("vs", "vsplit"), ("r", "read"), ("w", "write"), ("sav", "saveas"), ("wq", "wq"), ("x", "xit")];
+
+/// `Tab` on command line `line`: the byte where the completed word starts and the candidates, sorted
+/// (command names for the first word after the range, file names for the argument of a file
+/// command, directories ending in `/`). None when there is nothing to complete.
+pub(super) fn complete(line: &str) -> Option<(usize, Vec<String>)> {
+    let start = line.find(|c: char| c.is_ascii_alphabetic())?;
+    let rest = &line[start..];
+    let Some((name, _)) = rest.split_once(char::is_whitespace) else {
+        let mut names: Vec<String> = NAMES.iter().filter(|n| n.starts_with(rest)).map(|n| n.to_string()).collect();
+        names.sort();
+        return Some((start, names));
+    };
+    let name = name.trim_end_matches('!');
+    FILE_COMMANDS.iter().find(|(short, long)| abbr(name, short, long))?;
+    let word = line.rfind(char::is_whitespace).map_or(0, |i| i + 1);
+    let token = &line[word..];
+    let (dir, prefix) = match token.rfind('/') {
+        Some(i) => (&token[..=i], &token[i + 1..]),
+        None => ("", token),
+    };
+    let entries = fs::read_dir(if dir.is_empty() { "." } else { dir }).ok()?;
+    let mut files: Vec<String> = entries
+        .filter_map(Result::ok)
+        .filter_map(|e| {
+            let n = e.file_name().into_string().ok()?;
+            // Hidden files only when asked for.
+            (n.starts_with(prefix) && (prefix.starts_with('.') || !n.starts_with('.')))
+                .then(|| format!("{dir}{n}{}", if e.path().is_dir() { "/" } else { "" }))
+        })
+        .collect();
+    files.sort();
+    Some((word, files))
 }
 
 /// `[x] [count]` after `:d` and `:y`.
@@ -211,18 +256,6 @@ fn count(s: &str) -> Result<Option<usize>, String> {
     }
 }
 
-/// `:normal` keys: the chars of the argument, with Esc, Enter, Backspace and Tab as their keys.
-fn normal_keys(s: &str) -> Vec<KeyEvent> {
-    s.chars()
-        .map(|c| match c {
-            '\x1b' => KeyCode::Esc.into(),
-            '\r' | '\n' => KeyCode::Enter.into(),
-            '\x7f' => KeyCode::Backspace.into(),
-            '\t' => KeyCode::Tab.into(),
-            c => char_key(c),
-        })
-        .collect()
-}
 
 fn ff_name(eol: LineEnding) -> &'static str {
     match eol {
@@ -233,12 +266,15 @@ fn ff_name(eol: LineEnding) -> &'static str {
 }
 
 /// `:retab` of one line: each run of blanks holding a tab (with `all`, also runs of two or more
-/// spaces) is rewritten for tab stop `new`, keeping its width under tab stop `old`.
-fn retab_line(s: &str, old: usize, new: usize, all: bool) -> String {
+/// spaces) is rewritten for tab stop `new`, keeping its width under tab stop `old`. Columns are
+/// screen cells of the clusters before the run (a wide char counts 2).
+fn retab_line(s: &str, old: usize, new: usize, all: bool, et: bool) -> String {
     let mut out = String::with_capacity(s.len());
     let (mut col, mut run, mut run_col, mut tab) = (0, String::new(), 0, false);
     let flush = |out: &mut String, run: &mut String, start: usize, end: usize, tab: bool| {
-        if tab || (all && run.len() > 1) {
+        if et && tab {
+            out.extend(std::iter::repeat_n(' ', end - start));
+        } else if !et && (tab || (all && run.len() > 1)) {
             let mut c = start;
             while (c / new + 1) * new <= end {
                 out.push('\t');
@@ -250,9 +286,10 @@ fn retab_line(s: &str, old: usize, new: usize, all: bool) -> String {
         }
         run.clear();
     };
-    for ch in s.chars() {
-        match ch {
-            ' ' | '\t' => {
+    for g in graphemes::iter(s) {
+        match g {
+            " " | "\t" => {
+                let ch = if g == " " { ' ' } else { '\t' };
                 if run.is_empty() {
                     (run_col, tab) = (col, false);
                 }
@@ -264,9 +301,9 @@ fn retab_line(s: &str, old: usize, new: usize, all: bool) -> String {
                 if !run.is_empty() {
                     flush(&mut out, &mut run, run_col, col, tab);
                 }
-                out.push(ch);
-                // shortcut: one column per char (wide chars shift later tab stops), when someone retabs CJK text
-                col += 1;
+                out.push_str(g);
+                // Screen cells, so a tab after wide chars keeps its place on screen.
+                col += graphemes::width(g, old);
             }
         }
     }
@@ -502,7 +539,7 @@ impl Editor {
         } else {
             pat.to_string()
         };
-        let mut s = Search::new(&format!("(?m){pat}"))?;
+        let mut s = Search::new(&format!("(?m){}", self.buf.opts.case_pattern(&pat)))?;
         s.pat = pat;
         self.last_search = Some(s.clone());
         Ok(s)
@@ -658,7 +695,7 @@ impl Editor {
     }
 
     /// `:m {address}`: the lines go below the address; the cursor ends on the last one.
-    // shortcut: marks on moved lines stay where the lines were, when marks follow lines (M8 jump lists)
+    // shortcut: marks on moved lines stay where the lines were, when marks follow moved lines
     fn move_lines(&mut self, r: Option<&LineRange>, arg: &str) -> Result<(), String> {
         let (a, b) = self.range0(r, false)?;
         let dest = self.dest(arg)?;
@@ -752,7 +789,7 @@ impl Editor {
         if keys.is_empty() {
             return Err("Argument required".into());
         }
-        let keys = normal_keys(keys);
+        let keys = parse::text_keys(keys);
         if r.is_none() {
             self.buf.doc.begin_group();
             self.run_keys(&keys);
@@ -972,15 +1009,15 @@ impl Editor {
     }
 
     /// `:ret[ab][!] [N]`: blank runs holding tabs are redone for tab stop N (then the new
-    /// `tabstop`); `!` also turns runs of spaces into tabs.
-    // shortcut: always tabs plus spaces (no 'expandtab' yet), when 'expandtab' lands (M8)
+    /// `tabstop`): as spaces with `expandtab`, else as tabs plus spaces, and then `!` also turns
+    /// runs of spaces into tabs.
     fn retab(&mut self, r: Option<&LineRange>, all: bool, arg: &str) -> Result<(), String> {
         let old = self.buf.opts.tabstop;
         let new = if arg.is_empty() { old } else { arg.parse().ok().filter(|n| (1..=32).contains(n)).ok_or_else(|| format!("Invalid argument: {arg}"))? };
         let (a, b) = self.range0(r, true)?;
         for l in a..=b {
             let line = self.buf.doc.text().line(l).into_owned();
-            let s = retab_line(&line, old, new, all);
+            let s = retab_line(&line, old, new, all, self.buf.opts.expandtab);
             if s != line {
                 let start = self.buf.doc.text().line_to_offset(l);
                 self.edit_replace(start..start + line.len(), &s);
@@ -1056,13 +1093,38 @@ mod tests {
 
     #[test]
     fn retab_lines() {
-        assert_eq!(retab_line("\tx", 4, 8, false), "    x");
-        assert_eq!(retab_line("\t\tx", 4, 8, false), "\tx");
-        assert_eq!(retab_line("ab\t x\t", 2, 4, false), "ab\t x\t");
-        assert_eq!(retab_line("\t\tx", 2, 4, false), "\tx");
-        assert_eq!(retab_line("        x  y", 4, 4, false), "        x  y");
-        assert_eq!(retab_line("        x  y", 4, 4, true), "\t\tx  y");
-        assert_eq!(retab_line("x ", 4, 4, true), "x ");
+        assert_eq!(retab_line("\tx", 4, 8, false, false), "    x");
+        assert_eq!(retab_line("\t\tx", 4, 8, false, false), "\tx");
+        assert_eq!(retab_line("ab\t x\t", 2, 4, false, false), "ab\t x\t");
+        assert_eq!(retab_line("\t\tx", 2, 4, false, false), "\tx");
+        assert_eq!(retab_line("        x  y", 4, 4, false, false), "        x  y");
+        assert_eq!(retab_line("        x  y", 4, 4, true, false), "\t\tx  y");
+        assert_eq!(retab_line("x ", 4, 4, true, false), "x ");
+        // Wide chars and clusters count their screen cells: `日` takes 2, `e` + U+0301 one.
+        assert_eq!(retab_line("日\tx", 4, 8, false, false), "日  x");
+        assert_eq!(retab_line("日\tx", 4, 4, false, true), "日  x");
+        assert_eq!(retab_line("e\u{301}\tx", 4, 8, false, true), "e\u{301}   x");
+        assert_eq!(retab_line("日本語  x", 4, 4, true, false), "日本語\tx");
+    }
+
+    #[test]
+    fn completion_of_names_and_files() {
+        assert_eq!(complete("sp"), Some((0, vec!["split".into()])));
+        assert_eq!(complete("%so").map(|c| c.1), Some(vec!["sort".into()]));
+        assert_eq!(complete("b").map(|c| c.1.len()), Some(6));
+        assert_eq!(complete(""), None);
+        assert_eq!(complete("set nu"), None);
+        let dir = std::env::temp_dir().join(format!("rim-complete-{}", std::process::id()));
+        fs::create_dir_all(dir.join("sub")).unwrap();
+        for f in ["ab.txt", "ac.txt", ".hidden"] {
+            fs::write(dir.join(f), "").unwrap();
+        }
+        let d = dir.display();
+        assert_eq!(complete(&format!("e {d}/a")), Some((2, vec![format!("{d}/ab.txt"), format!("{d}/ac.txt")])));
+        assert_eq!(complete(&format!("w! {d}/s")).map(|c| c.1), Some(vec![format!("{d}/sub/")]));
+        assert_eq!(complete(&format!("e {d}/.")).map(|c| c.1), Some(vec![format!("{d}/.hidden")]));
+        assert_eq!(complete(&format!("e {d}/")).map(|c| c.1.len()), Some(3));
+        fs::remove_dir_all(&dir).unwrap();
     }
 
     /// `LineMarks::map` against mapping every line through every edit.

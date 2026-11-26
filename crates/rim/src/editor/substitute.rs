@@ -1,6 +1,6 @@
 //! `:[range]s/pat/rep/[flags]` parsing.
 
-use super::ex::{LineRange, field, is_delim, keep_escape};
+use super::ex::{self, LineRange, field, is_delim, keep_escape};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Sub {
@@ -36,7 +36,7 @@ impl Sub {
 pub(super) fn parse(range: Option<LineRange>, name: &str, arg: &str) -> Option<Result<Sub, String>> {
     let (pat, rep, repeat, flags) = match name {
         "&" => (String::new(), String::new(), true, arg),
-        "s" => {
+        _ if ex::abbr(name, "s", "substitute") => {
             let d = arg.chars().next().filter(|&d| is_delim(d))?;
             let mut s = &arg[d.len_utf8()..];
             let (pat, _) = field(&mut s, d, keep_escape);

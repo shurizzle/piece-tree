@@ -57,9 +57,8 @@ impl Registers {
                 return;
             }
             Some('+' | '*') => {
-                // shortcut: OSC 52 is write-only in most terminals, so `"+p` pastes the editor's own copy; read the system clipboard (arboard) if needed.
+                // Read back through an OSC 52 query (`Editor::reg`), never from here.
                 self.clipboard = Some(reg.text.clone());
-                self.map.insert('+', reg.clone());
             }
             Some('"') | None if yank => {
                 self.map.insert('0', reg.clone());
@@ -79,6 +78,30 @@ impl Registers {
         }
         self.map.insert('"', reg);
     }
+}
+
+impl Registers {
+    /// `q`: a recorded macro into `name` as text, appended for `A`–`Z`; `"` and the numbered
+    /// registers stay as they are.
+    pub fn set_macro(&mut self, name: char, text: String) {
+        let e = self.map.entry(key(name)).or_insert(Reg { text: String::new(), kind: RegKind::Char });
+        if name.is_ascii_lowercase() {
+            *e = Reg { text, kind: RegKind::Char };
+        } else {
+            e.text.push_str(&text);
+        }
+    }
+}
+
+/// The text of an OSC 52 clipboard reply (`ESC ] 52 ; c ; <base64>` ended by BEL or ST) at the end
+/// of `bytes`; None while it is incomplete or when it is not one.
+pub fn parse_osc52_reply(bytes: &[u8]) -> Option<String> {
+    let start = bytes.windows(5).rposition(|w| w == b"\x1b]52;")?;
+    let body = &bytes[start + 5..];
+    let end = body.iter().position(|&b| b == 0x07).or_else(|| body.windows(2).position(|w| w == b"\x1b\\"))?;
+    // `c;` or another selection before the data.
+    let data = &body[body[..end].iter().position(|&b| b == b';')? + 1..end];
+    String::from_utf8(STANDARD.decode(data).ok()?).ok()
 }
 
 /// OSC 52 sequence setting the system clipboard to `text`.
@@ -123,7 +146,20 @@ mod tests {
     fn clipboard_register() {
         let mut r = Registers::default();
         r.store(Some('*'), chars("hi"), true);
-        assert_eq!((r.clipboard.as_deref(), text(&r, '+'), text(&r, '"')), (Some("hi"), Some("hi"), Some("hi")));
+        assert_eq!((r.clipboard.as_deref(), text(&r, '"')), (Some("hi"), Some("hi")));
         assert_eq!(osc52("hi"), "\x1b]52;c;aGk=\x07");
+        // Writing does not make `"+` readable: reads go to the terminal.
+        assert_eq!(r.get('+'), None);
+    }
+
+    #[test]
+    fn osc52_replies() {
+        assert_eq!(parse_osc52_reply(b"\x1b]52;c;aGk=\x07").as_deref(), Some("hi"));
+        assert_eq!(parse_osc52_reply(b"junk\x1b]52;p;aGk=\x1b\\").as_deref(), Some("hi"));
+        assert_eq!(parse_osc52_reply(b"\x1b]52;c;aGk=").as_deref(), None);
+        assert_eq!(parse_osc52_reply(b"\x1b]52;c;!!\x07").as_deref(), None);
+        assert_eq!(parse_osc52_reply(b"\x1b]52;c;/w==\x07").as_deref(), None);
+        assert_eq!(parse_osc52_reply(b"\x1b]11;rgb:0/0/0\x07").as_deref(), None);
+        assert_eq!(parse_osc52_reply(b"\x1b]52;c;\x07").as_deref(), Some(""));
     }
 }

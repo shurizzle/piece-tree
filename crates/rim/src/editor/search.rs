@@ -4,6 +4,8 @@ use std::{ops::Range, rc::Rc};
 
 use piece_tree::{Regex, Text};
 
+use super::graphemes;
+
 /// Where the cursor lands relative to a match (vim's search offset: `/pat/e+1`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(super) enum Offset {
@@ -54,9 +56,10 @@ impl Search {
             .map_err(|e| format!("Invalid pattern: {e}"))
     }
 
-    /// `*`/`#`: `word` as a whole word. Words are alnum and `_` only, so nothing needs escaping.
-    pub fn word(word: &str) -> Search {
-        Search::new(&format!(r"\b{word}\b")).expect("a word is a valid pattern")
+    /// `*`/`#`: `word` as a whole word, ignoring case with `ignorecase` (`smartcase` does not
+    /// apply, as in vim). Words are alnum and `_` only, so nothing needs escaping.
+    pub fn word(word: &str, ignore_case: bool) -> Search {
+        Search::new(&format!(r"{}\b{word}\b", if ignore_case { "(?i)" } else { "" })).expect("a word is a valid pattern")
     }
 }
 
@@ -96,7 +99,7 @@ pub(super) fn find_backward(text: &Text, re: &Regex, cur: usize) -> Option<(Rang
 }
 
 /// Non-empty matches starting in lines `lines` (from `Text::find_iter_in` over their bytes),
-/// cut into char ranges per line: entry `i` is for line `lines.start + i`. Matches spanning line
+/// cut into cluster column ranges per line: entry `i` is for line `lines.start + i`. Matches spanning line
 /// breaks are split at them.
 pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> Vec<Vec<Range<usize>>> {
     let mut out = vec![Vec::new(); lines.len()];
@@ -104,11 +107,15 @@ pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> V
         return out;
     }
     let (start, end) = (text.line_to_offset(lines.start), text.line_end(lines.end - 1));
-    // Matches come in order, so the char column of each one is counted from the previous one: a
+    // Matches come in order, so the column of each one is counted from the previous one: a
     // line with many matches costs its length once, not once per match. The lines are read once (in
     // place unless they span several pieces) so each count is a slice, not a tree descent.
     let region = text.slice(start..end);
-    let chars = |a: usize, b: usize| str_indices::chars::count(&region[a - start..b - start]);
+    // Cluster column and start byte of the cluster holding `b`, counted from `a` (a cluster start).
+    let locate = |a: usize, b: usize| {
+        let (c, rel) = graphemes::locate(&region[a - start..], b - a);
+        (c, a + rel)
+    };
     let (mut l, mut line_end) = (lines.start, text.line_end(lines.start));
     let (mut at, mut col) = (start, 0);
     for m in text.find_iter_in(re, start..end).filter(|m| !m.is_empty()) {
@@ -116,17 +123,21 @@ pub(super) fn visible_matches(text: &Text, re: &Regex, lines: Range<usize>) -> V
             (l, at, col) = (l + 1, line_end + 1, 0);
             line_end = text.line_end(l);
         }
-        let c0 = col + chars(at, m.start);
-        (at, col) = (m.start, c0);
+        let (dc, cluster) = locate(at, m.start);
+        let c0 = col + dc;
+        (at, col) = (cluster, c0);
         if m.end <= line_end {
-            out[l - lines.start].push(c0..c0 + chars(m.start, m.end));
+            // The last cluster touched by the match ends the range.
+            out[l - lines.start].push(c0..c0 + locate(at, m.end - 1).0 + 1);
             continue;
         }
         // Spanning line breaks: split at them.
-        let (l1, c1) = text.offset_to_line_col(m.end);
+        let l1 = text.offset_to_line(m.end);
+        let s1 = text.line_to_offset(l1);
+        let c1 = if m.end > s1 { graphemes::col_of(&text.line(l1), m.end - 1 - s1) + 1 } else { 0 };
         for k in l..=l1.min(lines.end - 1) {
             let from = if k == l { c0 } else { 0 };
-            let to = if k == l1 { c1 } else { text.line_char_len(k) };
+            let to = if k == l1 { c1 } else { graphemes::count(&text.line(k)) };
             if from < to {
                 out[k - lines.start].push(from..to);
             }
@@ -145,7 +156,8 @@ mod tests {
     fn invalid_patterns_report_the_cause() {
         let e = Search::new("(").err().unwrap();
         assert!(e.starts_with("Invalid pattern: ") && e.len() > "Invalid pattern: ".len(), "{e}");
-        assert_eq!(Search::word("foo").pat, r"\bfoo\b");
+        assert_eq!(Search::word("foo", false).pat, r"\bfoo\b");
+        assert_eq!(Search::word("foo", true).pat, r"(?i)\bfoo\b");
     }
 
     #[test]
