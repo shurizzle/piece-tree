@@ -8,6 +8,7 @@ mod builtin;
 mod ex;
 mod filetype;
 mod graphemes;
+mod highlight;
 mod layout;
 mod motion;
 mod objects;
@@ -226,6 +227,8 @@ pub struct Editor {
     inc_search: Option<Search>,
     /// hlsearch: matches of `last_search` are highlighted until `:noh`.
     hl: bool,
+    /// `:highlight` groups, for every buffer.
+    hl_groups: highlight::Highlights,
     /// Cursor when `/` started, for incsearch and Esc; `?` searches backward.
     search_origin: Pos,
     search_back: bool,
@@ -312,6 +315,7 @@ impl Editor {
             confirm: None,
             inc_search: None,
             hl: false,
+            hl_groups: highlight::Highlights::default(),
             search_origin: (0, 0),
             search_back: false,
             search_landing: None,
@@ -394,7 +398,8 @@ impl Editor {
             let res = match name {
                 "se" | "set" => self.buf.opts.set(args).map(drop),
                 _ if ex::abbr(name, "syn", "syntax") => self.syntax_cmd(args),
-                _ => Err("only :set and :syntax are allowed".into()),
+                _ if ex::abbr(name, "hi", "highlight") => self.highlight_cmd(args),
+                _ => Err("only :set, :syntax and :highlight are allowed".into()),
             };
             if let Err(e) = res {
                 errors.push(format!("line {}: {e}", i + 1));

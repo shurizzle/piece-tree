@@ -1,31 +1,11 @@
-//! `:set` options and the color palette.
+//! `:set` options.
 
-use super::syntax::known_capture;
+use super::highlight::Env;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Background {
     Dark,
     Light,
-}
-
-/// Colors as xterm 256-color indexes.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Palette {
-    pub cursorline_bg: u8,
-    pub number_fg: u8,
-    pub current_number_fg: u8,
-    pub match_fg: u8,
-    pub match_bg: u8,
-}
-
-impl Palette {
-    /// vim-like defaults: grey numbers, orange cursor line number, yellow search matches.
-    pub fn new(bg: Background) -> Self {
-        match bg {
-            Background::Dark => Self { cursorline_bg: 236, number_fg: 243, current_number_fg: 214, match_fg: 16, match_bg: 220 },
-            Background::Light => Self { cursorline_bg: 254, number_fg: 244, current_number_fg: 166, match_fg: 16, match_bg: 228 },
-        }
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -51,18 +31,14 @@ pub(super) struct Options {
     pub incsearch: bool,
     /// Lines kept above and below the cursor when scrolling.
     pub scrolloff: usize,
+    /// Selects the built-in highlight groups (`:highlight`).
     pub background: Background,
-    /// Palette overrides.
-    pub cursorlinebg: Option<u8>,
-    pub numberfg: Option<u8>,
-    pub cursornumberfg: Option<u8>,
+    /// Colors come from the `gui*` keys of `:highlight` (truecolor), falling back to the `cterm*` ones.
+    pub termguicolors: bool,
     /// Pieces above which the idle compaction runs (`Editor::idle`); 0 disables it.
     pub compactat: usize,
     /// Kind of file, detected from the name when the buffer opens; empty when unknown.
     pub filetype: String,
-    /// Syntax colors by capture name (`keyword`, `function.method`, …): an xterm 256-color index, `None` for no color.
-    /// A name covers the captures under it (`function` covers `function.method`); the last entry for a name wins.
-    pub syntaxcolors: Vec<(String, Option<u8>)>,
 }
 
 impl Default for Options {
@@ -82,39 +58,11 @@ impl Default for Options {
             incsearch: true,
             scrolloff: 0,
             background: Background::Dark,
-            cursorlinebg: None,
-            numberfg: None,
-            cursornumberfg: None,
+            termguicolors: false,
             compactat: 10_000,
             filetype: String::new(),
-            syntaxcolors: Vec::new(),
         }
     }
-}
-
-/// Why `syntaxcolors` was refused.
-enum ColorsError {
-    Invalid,
-    Unknown(String),
-}
-
-/// `name:color,…` of `syntaxcolors`: a known capture name (see `known_capture`) and a color, 0–255 or `none`.
-fn parse_colors(value: &str) -> Result<Vec<(String, Option<u8>)>, ColorsError> {
-    value
-        .split(',')
-        .filter(|e| !e.is_empty())
-        .map(|e| {
-            let (name, color) = e.split_once(':').ok_or(ColorsError::Invalid)?;
-            let color = if color == "none" { None } else { Some(color.parse().map_err(|_| ColorsError::Invalid)?) };
-            if name.is_empty() || !name.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, '.' | '_')) {
-                Err(ColorsError::Invalid)
-            } else if !known_capture(name) {
-                Err(ColorsError::Unknown(name.to_string()))
-            } else {
-                Ok((name.to_string(), color))
-            }
-        })
-        .collect()
 }
 
 /// Long name of an option given by its long or vim short name.
@@ -134,12 +82,9 @@ fn long(name: &str) -> Option<&'static str> {
         "incsearch" | "is" => "incsearch",
         "scrolloff" | "so" => "scrolloff",
         "background" | "bg" => "background",
-        "cursorlinebg" | "clbg" => "cursorlinebg",
-        "numberfg" | "nufg" => "numberfg",
-        "cursornumberfg" | "cnufg" => "cursornumberfg",
+        "termguicolors" | "tgc" => "termguicolors",
         "compactat" => "compactat",
         "filetype" | "ft" => "filetype",
-        "syntaxcolors" | "sc" => "syntaxcolors",
         _ => return None,
     })
 }
@@ -165,12 +110,9 @@ impl Options {
         if self.ignorecase && !(self.smartcase && pat.chars().any(char::is_uppercase)) { format!("(?i){pat}") } else { pat.to_string() }
     }
 
-    pub fn palette(&self) -> Palette {
-        let mut p = Palette::new(self.background);
-        p.cursorline_bg = self.cursorlinebg.unwrap_or(p.cursorline_bg);
-        p.number_fg = self.numberfg.unwrap_or(p.number_fg);
-        p.current_number_fg = self.cursornumberfg.unwrap_or(p.current_number_fg);
-        p
+    /// How `:highlight` groups are resolved for these options.
+    pub fn env(&self) -> Env {
+        Env { light: self.background == Background::Light, gui: self.termguicolors }
     }
 
     fn flag(&mut self, name: &str) -> Option<&mut bool> {
@@ -185,13 +127,13 @@ impl Options {
             "smartcase" => Some(&mut self.smartcase),
             "hlsearch" => Some(&mut self.hlsearch),
             "incsearch" => Some(&mut self.incsearch),
+            "termguicolors" => Some(&mut self.termguicolors),
             _ => None,
         }
     }
 
     /// `name=value` as `:set name?` shows it (effective colors included).
     fn show(&self, name: &str) -> String {
-        let p = self.palette();
         let on = |b: bool, n: &str| if b { n.to_string() } else { format!("no{n}") };
         match name {
             "number" => on(self.number, name),
@@ -204,16 +146,14 @@ impl Options {
             "smartcase" => on(self.smartcase, name),
             "hlsearch" => on(self.hlsearch, name),
             "incsearch" => on(self.incsearch, name),
+            "termguicolors" => on(self.termguicolors, name),
             "tabstop" => format!("tabstop={}", self.tabstop),
             "shiftwidth" => format!("shiftwidth={}", self.shiftwidth),
             "scrolloff" => format!("scrolloff={}", self.scrolloff),
             "background" => format!("background={}", if self.background == Background::Dark { "dark" } else { "light" }),
-            "cursorlinebg" => format!("cursorlinebg={}", p.cursorline_bg),
-            "numberfg" => format!("numberfg={}", p.number_fg),
             "compactat" => format!("compactat={}", self.compactat),
             "filetype" => format!("filetype={}", self.filetype),
-            "syntaxcolors" => format!("syntaxcolors={}", self.syntaxcolors.iter().map(|(n, c)| format!("{n}:{}", c.map_or("none".into(), |c| c.to_string()))).collect::<Vec<_>>().join(",")),
-            _ => format!("cursornumberfg={}", p.current_number_fg),
+            _ => unreachable!("every option name of `long` is shown"),
         }
     }
 
@@ -222,8 +162,8 @@ impl Options {
         let mut shown = Vec::new();
         if args.trim().is_empty() {
             for n in [
-                "number", "relativenumber", "cursorline", "tabstop", "background", "cursorlinebg", "numberfg", "cursornumberfg", "wrap", "compactat",
-                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype", "syntaxcolors",
+                "number", "relativenumber", "cursorline", "tabstop", "background", "termguicolors", "wrap", "compactat",
+                "expandtab", "shiftwidth", "list", "ignorecase", "smartcase", "hlsearch", "incsearch", "scrolloff", "filetype",
             ] {
                 shown.push(self.show(n));
             }
@@ -242,17 +182,8 @@ impl Options {
                             _ => return Err(invalid()),
                         }
                     }
-                    "cursorlinebg" => self.cursorlinebg = Some(value.parse().map_err(|_| invalid())?),
-                    "numberfg" => self.numberfg = Some(value.parse().map_err(|_| invalid())?),
-                    "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
                     "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
                     "filetype" => self.filetype = value.to_string(),
-                    "syntaxcolors" => {
-                        self.syntaxcolors = parse_colors(value).map_err(|e| match e {
-                            ColorsError::Invalid => invalid(),
-                            ColorsError::Unknown(name) => format!("Unknown capture: {name}"),
-                        })?
-                    }
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
@@ -293,9 +224,9 @@ mod tests {
         assert_eq!((o.tabstop, o.background), (8, Background::Light));
         assert_eq!(o.set("ts"), Ok("tabstop=8".into()));
         assert_eq!(o.set("bg?"), Ok("background=light".into()));
-        assert_eq!(o.set("clbg=17 nufg=18 cnufg=19"), Ok(String::new()));
-        assert_eq!(o.palette(), Palette { cursorline_bg: 17, number_fg: 18, current_number_fg: 19, ..Palette::new(Background::Light) });
-        assert_eq!(o.set("clbg? nufg? cnufg? bg=dark bg?"), Ok("cursorlinebg=17  numberfg=18  cursornumberfg=19  background=dark".into()));
+        assert_eq!(o.env(), Env::LIGHT);
+        assert_eq!(o.set("tgc tgc? bg=dark bg?"), Ok("termguicolors  background=dark".into()));
+        assert_eq!(o.env(), Env { light: false, gui: true });
         assert!(o.set("").unwrap().starts_with("nonumber  relativenumber  nocursorline  tabstop=8"));
     }
 
@@ -314,22 +245,6 @@ mod tests {
         assert_eq!(o.set("ft? ft=rust ft?"), Ok("filetype=  filetype=rust".into()));
         assert_eq!(o.set("ft="), Ok(String::new()));
         assert!(o.filetype.is_empty());
-        assert_eq!(o.set("sc?"), Ok("syntaxcolors=".into()));
-        assert_eq!(o.set("sc=keyword:1,function.method:none,string:200"), Ok(String::new()));
-        assert_eq!(o.syntaxcolors, [("keyword".into(), Some(1)), ("function.method".into(), None), ("string".into(), Some(200))]);
-        assert_eq!(o.set("syntaxcolors?"), Ok("syntaxcolors=keyword:1,function.method:none,string:200".into()));
-        for bad in ["sc=keyword", "sc=keyword:256", "sc=:1", "sc=Key:1", "sc=a:x"] {
-            assert_eq!(o.set(bad), Err(format!("Invalid argument: {bad}")), "{bad}");
-        }
-        // A name that is no capture is refused, a prefix of one is fine, and the options stay as they were.
-        o.set("sc=string:3").unwrap();
-        assert_eq!(o.set("sc=keywrod:5"), Err("Unknown capture: keywrod".into()));
-        assert_eq!(o.set("sc=keyword:1,function.methd:2"), Err("Unknown capture: function.methd".into()));
-        assert_eq!(o.set("sc=function:4,markup.link:none,constant.numeric.float:9"), Ok(String::new()));
-        assert_eq!(o.syntaxcolors.len(), 3);
-        assert_eq!(o.set("sc=punctuation.bracket:5"), Ok(String::new()));
-        assert_eq!(o.set("sc="), Ok(String::new()));
-        assert!(o.syntaxcolors.is_empty());
         assert_eq!(o.set("sw=33"), Err("Invalid argument: sw=33".into()));
         assert_eq!(o.set("so=x"), Err("Invalid argument: so=x".into()));
     }
@@ -346,9 +261,6 @@ mod tests {
             ("ts=0", "Invalid argument: ts=0"),
             ("ts=x", "Invalid argument: ts=x"),
             ("bg=blue", "Invalid argument: bg=blue"),
-            ("clbg=256", "Invalid argument: clbg=256"),
-            ("nufg=-1", "Invalid argument: nufg=-1"),
-            ("cnufg=x", "Invalid argument: cnufg=x"),
             ("nu=1", "Invalid argument: nu=1"),
         ] {
             assert_eq!(o.set(arg), Err(err.into()), "{arg}");

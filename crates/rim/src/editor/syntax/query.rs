@@ -13,6 +13,7 @@ use piece_tree::Text;
 use tree_sitter::{Node, QueryCursor, StreamingIterator, TextProvider, Tree};
 
 use super::lang::{Lang, LocalKind};
+use crate::editor::highlight as hl;
 
 // shortcut: locals are resolved again for the whole text when the node holding an edit is huge, and the first time (5 ms for 100 KB of Rust), so they stop past 1 MiB; when that matters
 const MAX_LOCALS: usize = 1 << 20;
@@ -173,9 +174,9 @@ pub(super) fn locals(lang: &Lang, tree: &Tree, text: &Text, cache: &mut ChunkCac
 
 /// Colors of the bytes of `range` from `lang`'s queries on `tree`: highlights, then the uses of a local
 /// definition (`refs`, from `locals`) in its color.
-pub(super) fn colors(lang: &Lang, tree: &Tree, text: &Text, range: Range<usize>, cols: &[Option<u8>], refs: &[(Range<usize>, Range<usize>)]) -> Vec<Option<u8>> {
+pub(super) fn colors(lang: &Lang, tree: &Tree, text: &Text, range: Range<usize>, cols: &[Option<hl::Style>], refs: &[(Range<usize>, Range<usize>)]) -> Vec<Option<hl::Style>> {
     let mut out = captured(lang, tree, text, range.clone(), cols);
-    let mut cache: HashMap<Range<usize>, Option<u8>> = HashMap::new();
+    let mut cache: HashMap<Range<usize>, Option<hl::Style>> = HashMap::new();
     let first = refs.partition_point(|(r, _)| r.end <= range.start);
     for (r, def) in refs[first..].iter().take_while(|(r, _)| r.start < range.end) {
         let c = *cache.entry(def.clone()).or_insert_with(|| captured(lang, tree, text, def.clone(), cols).first().copied().flatten());
@@ -187,7 +188,7 @@ pub(super) fn colors(lang: &Lang, tree: &Tree, text: &Text, range: Range<usize>,
 }
 
 /// Highlight captures over `range`: larger nodes first, so inner ones and later patterns win.
-pub(super) fn captured(lang: &Lang, tree: &Tree, text: &Text, range: Range<usize>, cols: &[Option<u8>]) -> Vec<Option<u8>> {
+pub(super) fn captured(lang: &Lang, tree: &Tree, text: &Text, range: Range<usize>, cols: &[Option<hl::Style>]) -> Vec<Option<hl::Style>> {
     let mut out = vec![None; range.len()];
     let mut cursor = QueryCursor::new();
     cursor.set_byte_range(range.clone());

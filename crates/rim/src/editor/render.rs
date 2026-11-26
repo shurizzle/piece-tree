@@ -14,21 +14,32 @@ use crossterm::{
 };
 use unicode_width::UnicodeWidthChar;
 
-use super::{Editor, Mode, VKind, graphemes, layout::{LONG_LINE, Rows}, options::Palette, registers::osc52, search, sorted, windows::Rect};
+use super::{
+    Editor, Mode, VKind, graphemes,
+    highlight::{self as hl, Attrs},
+    layout::{LONG_LINE, Rows},
+    registers::osc52,
+    search, sorted,
+    windows::Rect,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Style {
     Plain,
-    /// Line number of the cursor line.
+    /// Line number of the cursor line (`CursorLineNr`).
     CurrentNumber,
-    /// Other line numbers.
+    /// Other line numbers (`LineNr`).
     Number,
-    /// Visual selection.
+    /// Visual selection (`Visual`).
     Reverse,
-    /// Search match (hlsearch, incsearch).
+    /// Search match, hlsearch and incsearch (`Search`).
     Match,
-    /// Syntax highlight, xterm 256-color index of the foreground.
-    Syntax(u8),
+    /// Syntax highlight: what the capture's group draws.
+    Syntax(hl::Style),
+    /// Status row of the current window (`StatusLine`), of another one (`StatusLineNC`), and the `│` between windows (`VertSplit`).
+    Status,
+    StatusNc,
+    Split,
 }
 
 #[derive(Debug)]
@@ -47,7 +58,8 @@ pub struct Frame {
     pub cursor_line: Option<Range<usize>>,
     /// Columns of the current window, where `cursor_line` applies.
     pub cursor_cols: Range<usize>,
-    pub palette: Palette,
+    /// The interface groups of `:highlight`, resolved.
+    pub ui: hl::Ui,
     /// Text to copy to the system clipboard (OSC 52).
     pub clipboard: Option<String>,
 }
@@ -394,12 +406,12 @@ impl Editor {
                 put(r.x, r.y + i, spans);
             }
             if !single {
-                let style = if active { Style::Reverse } else { Style::Number };
+                let style = if active { Style::Status } else { Style::StatusNc };
                 put(r.x, r.y + text_h, vec![Span { style, text: fit(&status, r.w) }]);
             }
             if r.x + r.w < w {
                 for y in r.y..r.y + r.h {
-                    put(r.x + r.w, y, vec![Span { style: Style::Number, text: "│".into() }]);
+                    put(r.x + r.w, y, vec![Span { style: Style::Split, text: "│".into() }]);
                 }
             }
         }
@@ -441,7 +453,7 @@ impl Editor {
             } else {
                 format!(" {mode} | {pending}")
             };
-            (Span { style: Style::Reverse, text: fit(&status, w) }, cursor, self.mode == Mode::Insert)
+            (Span { style: Style::Status, text: fit(&status, w) }, cursor, self.mode == Mode::Insert)
         };
         rows.push(vec![status]);
         Frame {
@@ -450,7 +462,7 @@ impl Editor {
             bar,
             cursor_line: self.buf.opts.cursorline.then_some(cursor_rows),
             cursor_cols,
-            palette: self.buf.opts.palette(),
+            ui: hl::Ui::new(&self.hl_groups, self.buf.opts.env()),
             clipboard: self.regs.clipboard.take(),
         }
     }
@@ -461,34 +473,65 @@ impl Editor {
     }
 }
 
+const ATTRIBUTES: [(Attrs, Attribute); 6] = [
+    (Attrs::BOLD, Attribute::Bold),
+    (Attrs::ITALIC, Attribute::Italic),
+    (Attrs::UNDERLINE, Attribute::Underlined),
+    (Attrs::UNDERCURL, Attribute::Undercurled),
+    (Attrs::STRIKETHROUGH, Attribute::CrossedOut),
+    (Attrs::REVERSE, Attribute::Reverse),
+];
+
+fn color(c: hl::Color) -> Color {
+    match c {
+        hl::Color::Ansi(n) => Color::AnsiValue(n),
+        hl::Color::Rgb(r, g, b) => Color::Rgb { r, g, b },
+    }
+}
+
 pub(super) fn draw(f: &Frame, out: &mut impl Write) -> io::Result<()> {
-    let p = f.palette;
+    let ui = f.ui;
     if let Some(text) = &f.clipboard {
         queue!(out, Print(osc52(text)))?;
     }
     queue!(out, cursor::Hide)?;
     for (y, spans) in f.rows.iter().enumerate() {
-        queue!(out, cursor::MoveTo(0, y as u16), terminal::Clear(ClearType::UntilNewLine))?;
+        queue!(out, cursor::MoveTo(0, y as u16))?;
+        // The cells the row is cleared to take `Normal`'s background.
+        if let Some(c) = ui.normal.bg {
+            queue!(out, SetBackgroundColor(color(c)))?;
+        }
+        queue!(out, terminal::Clear(ClearType::UntilNewLine))?;
         let mut x = 0;
         for s in spans {
             let line_bg = f.cursor_line.as_ref().is_some_and(|r| r.contains(&y)) && f.cursor_cols.contains(&x);
             x += str_width(&s.text);
-            let (attr, fg, bg) = match s.style {
-                Style::Plain => (Attribute::Reset, None, None),
-                Style::CurrentNumber => (Attribute::Bold, Some(p.current_number_fg), None),
-                Style::Number => (Attribute::Reset, Some(p.number_fg), None),
-                Style::Reverse => (Attribute::Reverse, None, None),
-                Style::Match => (Attribute::Reset, Some(p.match_fg), Some(p.match_bg)),
-                Style::Syntax(c) => (Attribute::Reset, Some(c), None),
+            let st = match s.style {
+                Style::Plain => hl::Style::default(),
+                Style::CurrentNumber => ui.cursor_line_nr,
+                Style::Number => ui.line_nr,
+                Style::Reverse => ui.visual,
+                Style::Match => ui.search,
+                Style::Syntax(st) => st,
+                Style::Status => ui.status,
+                Style::StatusNc => ui.status_nc,
+                Style::Split => ui.split,
             };
-            let bg = bg.or(line_bg.then_some(p.cursorline_bg));
+            // A span's own background (matches) wins over the cursor line's, which wins over `Normal`'s.
+            let fg = st.fg.or(ui.normal.fg);
+            let bg = st.bg.or(if line_bg { ui.cursor_line.bg } else { None }).or(ui.normal.bg);
             // `Attribute::Reset` also clears colors, so they are set after it.
-            queue!(out, SetAttribute(attr))?;
+            queue!(out, SetAttribute(Attribute::Reset))?;
+            for (a, attr) in ATTRIBUTES {
+                if st.attrs.has(a) {
+                    queue!(out, SetAttribute(attr))?;
+                }
+            }
             if let Some(c) = fg {
-                queue!(out, SetForegroundColor(Color::AnsiValue(c)))?;
+                queue!(out, SetForegroundColor(color(c)))?;
             }
             if let Some(c) = bg {
-                queue!(out, SetBackgroundColor(Color::AnsiValue(c)))?;
+                queue!(out, SetBackgroundColor(color(c)))?;
             }
             queue!(out, Print(&s.text), SetAttribute(Attribute::Reset))?;
         }

@@ -8,7 +8,8 @@ use std::{cmp::Reverse, ops::Range};
 use tree_sitter::{QueryCursor, StreamingIterator, Tree};
 
 use super::{
-    lang::{color, language_of, read_query},
+    super::{highlight::{self as hl, Env, Highlights}, options::Background},
+    lang::{language_of, read_query},
     layers::MAX_DEPTH,
     query::Nodes,
     *,
@@ -18,6 +19,12 @@ const OBJECTS: &str = "(function_item body: (_) @function.inside) @function.arou
 
 pub fn rust() -> Rc<Lang> {
     Rc::new(Lang::new("rust", tree_sitter_rust::LANGUAGE.into(), &Queries { highlights: tree_sitter_rust::HIGHLIGHTS_QUERY, objects: OBJECTS, ..Default::default() }).unwrap())
+}
+
+/// Foreground xterm index of each byte, for the built-in groups of `bg`.
+fn fgs(s: &Syntax, t: &Text, range: Range<usize>, bg: Background) -> Vec<Option<u8>> {
+    let env = Env { light: bg == Background::Light, gui: false };
+    s.highlight(t, range, &Highlights::default(), env).into_iter().map(|c| c.and_then(|c| if let Some(hl::Color::Ansi(n)) = c.fg { Some(n) } else { None })).collect()
 }
 
 fn synced(src: &str) -> (Syntax, Text) {
@@ -31,15 +38,15 @@ fn synced(src: &str) -> (Syntax, Text) {
 fn highlights_keywords_strings_comments() {
     let src = "fn main() { let s = \"x\"; } // c";
     let (s, t) = synced(src);
-    let dark = s.highlight(&t, 0..src.len(), Background::Dark, &[]);
-    let light = s.highlight(&t, 0..src.len(), Background::Light, &[]);
+    let dark = fgs(&s, &t, 0..src.len(), Background::Dark);
+    let light = fgs(&s, &t, 0..src.len(), Background::Light);
     let at = |pat: &str| src.find(pat).unwrap();
     assert_eq!((dark[0], light[0]), (Some(176), Some(127)));
     assert_eq!(dark[at("\"x")], Some(114));
     assert_eq!(dark[at("// c")], Some(244));
     assert_eq!(dark[at("; }")], None);
     // Only the asked range is painted.
-    assert_eq!(s.highlight(&t, at("let")..at("let") + 3, Background::Dark, &[]), [Some(176); 3]);
+    assert_eq!(fgs(&s, &t, at("let")..at("let") + 3, Background::Dark), [Some(176); 3]);
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -170,7 +177,7 @@ fn every_builtin_grammar_compiles_and_parses() {
         let (mut s, t) = (Syntax::new(builtin(name)), Text::from(src));
         s.sync(&t, &mut |n| Some(builtin(n)));
         assert!(!s.tree.as_ref().unwrap().root_node().has_error(), "{name}");
-        assert!(s.highlight(&t, 0..src.len(), Background::Dark, &[]).iter().any(Option::is_some), "{name}");
+        assert!(fgs(&s, &t, 0..src.len(), Background::Dark).iter().any(Option::is_some), "{name}");
     }
     assert!(builtin::lang("nope").is_none());
 }
@@ -183,7 +190,7 @@ fn html_injects_script_and_style() {
     s.sync(&t, &mut |n| Some(builtin(n)));
     let names: Vec<_> = s.layers.iter().map(|l| l.lang.name.as_str()).collect();
     assert_eq!(names, ["javascript", "css"]);
-    let h = s.highlight(&t, 0..src.len(), Background::Dark, &[]);
+    let h = fgs(&s, &t, 0..src.len(), Background::Dark);
     let at = |pat: &str| src.find(pat).unwrap();
     assert_eq!((h[at("let")], h[at("color")], h[at("<p>") + 1]), (Some(176), Some(110), Some(168)));
 }
@@ -194,7 +201,7 @@ fn locals_color_a_use_like_its_definition() {
     let src = "fn f(x: u8) -> u8 {\n    let y = x;\n    let z = |x: u8| x;\n    y + z(x)\n}\nfn g() { x }\n";
     let (mut s, t) = (Syntax::new(builtin("rust")), Text::from(src));
     s.sync(&t, &mut |_| None);
-    let h = s.highlight(&t, 0..src.len(), Background::Dark, &[]);
+    let h = fgs(&s, &t, 0..src.len(), Background::Dark);
     let nth = |pat: &str, n: usize| src.match_indices(pat).nth(n).unwrap().0;
     let param = h[nth("x", 0)];
     assert_eq!(param, Some(216), "the parameter itself");
@@ -212,7 +219,7 @@ fn injections_highlight_fenced_code_and_inline_text() {
     let (mut s, t) = (Syntax::new(builtin("markdown")), Text::from(src));
     s.sync(&t, &mut |n| Some(builtin(n)));
     assert!(s.layers.iter().any(|l| l.lang.name == "rust") && s.layers.iter().any(|l| l.lang.name == "markdown_inline"));
-    let h = s.highlight(&t, 0..src.len(), Background::Dark, &[]);
+    let h = fgs(&s, &t, 0..src.len(), Background::Dark);
     let at = |pat: &str| src.find(pat).unwrap();
     assert_eq!(h[at("fn a")], Some(176), "keyword of the injected Rust");
     assert_eq!(h[at("a()")], Some(75), "its function name");
@@ -225,7 +232,7 @@ fn injections_highlight_fenced_code_and_inline_text() {
     doc.insert(at("fn a") + 3, "b");
     s.edit(&before, doc.last_edits(), doc.text());
     s.sync(doc.text(), &mut |n| Some(builtin(n)));
-    let h = s.highlight(doc.text(), 0..doc.text().len(), Background::Dark, &[]);
+    let h = fgs(&s, doc.text(), 0..doc.text().len(), Background::Dark);
     assert_eq!(h[at("fn a") + 3], Some(75));
     // An unknown language, and no resolver at all, leave the block plain.
     let mut s = Syntax::new(builtin("markdown"));
@@ -301,7 +308,7 @@ fn incremental_layers_match_fresh_ones() {
             }
             compared += 1;
             let len = doc.text().len();
-            let (got, want) = (syn.highlight(doc.text(), 0..len, Background::Dark, &[]), fresh.highlight(doc.text(), 0..len, Background::Dark, &[]));
+            let (got, want) = (syn.highlight(doc.text(), 0..len, &Highlights::default(), Env::DARK), fresh.highlight(doc.text(), 0..len, &Highlights::default(), Env::DARK));
             let diff: Vec<_> = (0..len).filter(|&i| got[i] != want[i]).take(5).map(|i| (i, got[i], want[i])).collect();
             assert!(diff.is_empty(), "{lang} step {step}: {diff:?} in {:?}", doc.text().slice(0..len));
         }
@@ -342,7 +349,7 @@ fn language_from_a_loaded_library() {
     let mut s = Syntax::new(Rc::new(Lang::new("rust", lang, &Queries { highlights: tree_sitter_rust::HIGHLIGHTS_QUERY, ..Default::default() }).unwrap()));
     let t = Text::from("fn a() {}");
     s.sync(&t, &mut |_| None);
-    assert_eq!(s.highlight(&t, 0..2, Background::Dark, &[]), [Some(176); 2]);
+    assert_eq!(fgs(&s, &t, 0..2, Background::Dark), [Some(176); 2]);
     assert!(language_of(this(), "nope").is_err());
 }
 
@@ -382,7 +389,7 @@ fn locals_follow_patterns_and_edits() {
     let src = "fn f(p: (u8, u8)) {\n    let (a, b) = p;\n    match a { n => n + b }\n}\n";
     let (mut s, t) = (Syntax::new(builtin("rust")), Text::from(src));
     s.sync(&t, &mut |_| None);
-    let h = s.highlight(&t, 0..src.len(), Background::Dark, &[]);
+    let h = fgs(&s, &t, 0..src.len(), Background::Dark);
     let at = |pat: &str, n: usize| src.match_indices(pat).nth(n).unwrap().0;
     let param = h[at("p:", 0)];
     assert_eq!(param, Some(216));
@@ -393,13 +400,13 @@ fn locals_follow_patterns_and_edits() {
     let mut doc = Document::new(src);
     let mut s = Syntax::new(builtin("rust"));
     s.sync(doc.text(), &mut |_| None);
-    s.highlight(doc.text(), 0..src.len(), Background::Dark, &[]);
+    fgs(&s, doc.text(), 0..src.len(), Background::Dark);
     let before = doc.text().clone();
     doc.insert(at("p:", 0), "q");
     s.edit(&before, doc.last_edits(), doc.text());
     s.sync(doc.text(), &mut |_| None);
     let text = doc.text().slice(0..doc.text().len()).into_owned();
-    let h = s.highlight(doc.text(), 0..text.len(), Background::Dark, &[]);
+    let h = fgs(&s, doc.text(), 0..text.len(), Background::Dark);
     let use_at = text.find("= p").unwrap() + 2;
     assert_eq!(h[text.find("qp:").unwrap()], Some(216));
     assert_eq!(h[use_at], None, "the use no longer resolves");
@@ -427,11 +434,13 @@ fn helix_language_names_are_normalized() {
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
-fn color_falls_back_to_prefixes() {
-    assert_eq!(color("keyword.control.return"), Some((176, 127)));
-    assert_eq!(color("variable.builtin"), Some((209, 166)));
-    assert_eq!((color("variable"), color("variable.other"), color("spell")), (None, None, None));
-    assert_eq!(color("parameter"), Some((216, 130)));
+fn capture_falls_back_to_prefixes() {
+    let h = Highlights::default();
+    let fg = |n: &str| h.capture(n, Env::DARK).and_then(|s| s.fg);
+    assert_eq!(fg("keyword.control.return"), Some(hl::Color::Ansi(176)));
+    assert_eq!(fg("variable.builtin"), Some(hl::Color::Ansi(209)));
+    assert_eq!((fg("variable"), fg("variable.other"), fg("spell")), (None, None, None));
+    assert_eq!(fg("parameter"), Some(hl::Color::Ansi(216)));
 }
 
 /// The locals of the whole text in one query, the reference for `locals`.
@@ -543,21 +552,29 @@ fn chunked_locals_match_whole_text_locals() {
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
-fn syntax_colors_override_the_table_by_prefix() {
+fn highlight_groups_override_the_defaults_by_prefix() {
     let src = "fn main() { let s = \"x\"; } // c";
     let (s, t) = synced(src);
     let at = |pat: &str| src.find(pat).unwrap();
-    let over = [("keyword".to_string(), Some(1)), ("string".to_string(), None), ("comment".to_string(), Some(2)), ("keyword".to_string(), Some(3))];
-    let h = s.highlight(&t, 0..src.len(), Background::Dark, &over);
-    assert_eq!((h[0], h[at("let")]), (Some(3), Some(3)), "the last entry for a name wins");
-    assert_eq!((h[at("\"x")], h[at("// c")]), (None, Some(2)));
-    assert_eq!(h[at("main")], Some(75), "the table for the rest");
-    // A cached frame follows the overrides.
-    let lines = s.line_colors(&t, 0..1, Background::Dark, &[]);
-    assert_eq!(lines[0][0], Some(176));
-    assert!(Rc::ptr_eq(&lines, &s.line_colors(&t, 0..1, Background::Dark, &[])));
-    assert_eq!(s.line_colors(&t, 0..1, Background::Dark, &over)[0][0], Some(3));
-    assert_eq!(s.line_colors(&t, 0..1, Background::Light, &[])[0][0], Some(127));
+    let mut groups = Highlights::default();
+    for c in ["@keyword ctermfg=1", "@string ctermfg=NONE", "@comment ctermfg=2 cterm=italic", "@keyword ctermfg=3"] {
+        groups.command(c, false).unwrap();
+    }
+    let h = s.highlight(&t, 0..src.len(), &groups, Env::DARK);
+    let fg = |i: usize| h[i].and_then(|s| s.fg);
+    assert_eq!((fg(0), fg(at("let"))), (Some(hl::Color::Ansi(3)), Some(hl::Color::Ansi(3))), "the last definition wins");
+    assert_eq!((fg(at("\"x")), fg(at("// c"))), (None, Some(hl::Color::Ansi(2))));
+    assert_eq!(h[at("// c")].unwrap().attrs, hl::Attrs::ITALIC);
+    assert_eq!(fg(at("main")), Some(hl::Color::Ansi(75)), "the defaults for the rest");
+    // A cached frame follows the groups and the `Env`.
+    let first = |g: &Highlights, env| s.line_colors(&t, 0..1, g, env)[0][0].and_then(|s| s.fg);
+    let plain = Highlights::default();
+    assert_eq!(first(&plain, Env::DARK), Some(hl::Color::Ansi(176)));
+    assert!(Rc::ptr_eq(&s.line_colors(&t, 0..1, &plain, Env::DARK), &s.line_colors(&t, 0..1, &plain, Env::DARK)));
+    assert_eq!(first(&groups, Env::DARK), Some(hl::Color::Ansi(3)));
+    assert_eq!(first(&plain, Env::LIGHT), Some(hl::Color::Ansi(127)));
+    groups.command("@keyword guifg=#010203", false).unwrap();
+    assert_eq!(first(&groups, Env { light: false, gui: true }), Some(hl::Color::Rgb(1, 2, 3)));
 }
 
 /// What each object takes in each grammar, including items with no body, an empty body, or no semicolon.
@@ -794,7 +811,7 @@ fn reader_bytes_survive_typing_into_the_shared_chunk() {
     assert_eq!(Reader::new(&typed).read(snapshot.len()).first(), Some(&b't'));
 }
 
-/// Every capture of every built-in grammar, and of the color table, is a name `:set syntaxcolors` accepts.
+/// Every capture of every built-in grammar, and of the color table, is a name `:highlight @name` accepts.
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn every_capture_name_can_be_colored() {

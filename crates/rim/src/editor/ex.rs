@@ -189,7 +189,7 @@ pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
 /// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
 pub(super) const NAMES: &[&str] = &[
     "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
-    "files", "global", "goto", "join", "later", "ls", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
+    "files", "global", "goto", "highlight", "join", "later", "ls", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
     "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "syntax", "undo", "undolist",
     "vglobal", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
@@ -465,6 +465,7 @@ impl Editor {
                 }
             }
             _ if abbr(n, "syn", "syntax") => self.syntax_cmd(a),
+            _ if abbr(n, "hi", "highlight") => self.highlight_cmd(a),
             _ if abbr(n, "noh", "nohlsearch") => {
                 self.hl = false;
                 Ok(())

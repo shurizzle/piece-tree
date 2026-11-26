@@ -31,7 +31,11 @@ pub(super) use lang::{Lang, Queries, known_capture};
 use layers::{Layer, build, discover};
 use query::{CHUNK_MAX, ChunkCache, Nodes, Refs, colors, locals};
 
-use super::{Editor, builtin, filetype, graphemes, layout::LONG_LINE, options::Background};
+use super::{
+    Editor, builtin, filetype, graphemes,
+    highlight::{self as hl, Env, Highlights},
+    layout::LONG_LINE,
+};
 
 /// Bytes highlighted at most per frame: the rest of a huge visible region stays plain.
 // shortcut: lines over `LONG_LINE` bytes and text past this many visible bytes are not highlighted, when they matter
@@ -100,13 +104,13 @@ pub(super) struct Syntax {
     frame: RefCell<Option<LineColors>>,
 }
 
-/// Colors per cluster of each line of a range of lines, for one parse, palette and set of overrides.
+/// Styles per cluster of each line of a range of lines, for one parse, set of highlight groups and `Env`.
 struct LineColors {
     version: usize,
     lines: Range<usize>,
-    bg: usize,
-    over: Vec<(String, Option<u8>)>,
-    colors: Rc<Vec<Vec<Option<u8>>>>,
+    generation: u64,
+    env: Env,
+    colors: Rc<Vec<Vec<Option<hl::Style>>>>,
 }
 
 impl Syntax {
@@ -239,10 +243,8 @@ impl Syntax {
         build(found, 0, text, resolve, 0, &mut self.next_layer, &mut self.layers, &mut reuse);
     }
 
-    /// Color of each byte of `range` (a synced tree); injected layers paint over the text they cover. `over` are the
-    /// user's colors by capture name.
-    pub fn highlight(&self, text: &Text, range: Range<usize>, bg: Background, over: &[(String, Option<u8>)]) -> Vec<Option<u8>> {
-        let bg = (bg == Background::Light) as usize;
+    /// Style of each byte of `range` (a synced tree); injected layers paint over the text they cover.
+    pub fn highlight(&self, text: &Text, range: Range<usize>, hl: &Highlights, env: Env) -> Vec<Option<hl::Style>> {
         let Some(tree) = &self.tree else { return vec![None; range.len()] };
         let refs = match &*self.refs.borrow() {
             Some((v, refs)) if *v == self.version => Some(refs.clone()),
@@ -253,7 +255,7 @@ impl Syntax {
             *self.refs.borrow_mut() = Some((self.version, refs.clone()));
             refs
         });
-        let mut out = colors(&self.lang, tree, text, range.clone(), &self.lang.capture_colors(bg, over), &refs);
+        let mut out = colors(&self.lang, tree, text, range.clone(), &self.lang.capture_styles(hl, env), &refs);
         for l in &self.layers {
             let (Some(first), Some(last)) = (l.ranges.first(), l.ranges.last()) else { continue };
             let r = first.start.max(range.start)..last.end.min(range.end);
@@ -262,29 +264,28 @@ impl Syntax {
             }
             let at = r.start - range.start;
             let refs = locals(&l.lang, &l.tree, text, &mut ChunkCache::new(), CHUNK_MAX);
-            for (k, c) in colors(&l.lang, &l.tree, text, r, &l.lang.capture_colors(bg, over), &refs).into_iter().enumerate() {
+            for (k, c) in colors(&l.lang, &l.tree, text, r, &l.lang.capture_styles(hl, env), &refs).into_iter().enumerate() {
                 out[at + k] = c.or(out[at + k]);
             }
         }
         out
     }
 
-    /// Colors per cluster of each of `lines` (empty for a line not highlighted), kept while the text, the palette and
-    /// the overrides stay as they are.
-    pub fn line_colors(&self, text: &Text, lines: Range<usize>, bg: Background, over: &[(String, Option<u8>)]) -> Rc<Vec<Vec<Option<u8>>>> {
-        let bg_index = (bg == Background::Light) as usize;
+    /// Styles per cluster of each of `lines` (empty for a line not highlighted), kept while the text, the highlight
+    /// groups and the `Env` stay as they are.
+    pub fn line_colors(&self, text: &Text, lines: Range<usize>, hl: &Highlights, env: Env) -> Rc<Vec<Vec<Option<hl::Style>>>> {
         if let Some(f) = &*self.frame.borrow()
             && f.version == self.version
             && f.lines == lines
-            && f.bg == bg_index
-            && f.over == over
+            && f.generation == hl.generation()
+            && f.env == env
         {
             return f.colors.clone();
         }
         let start = text.line_to_offset(lines.start);
         let end = text.line_end(lines.end - 1).min(start + MAX_HL);
-        let bytes = self.highlight(text, start..end, bg, over);
-        let colors: Rc<Vec<Vec<Option<u8>>>> = Rc::new(
+        let bytes = self.highlight(text, start..end, hl, env);
+        let colors: Rc<Vec<Vec<Option<hl::Style>>>> = Rc::new(
             lines
                 .clone()
                 .map(|l| {
@@ -304,7 +305,7 @@ impl Syntax {
                 })
                 .collect(),
         );
-        *self.frame.borrow_mut() = Some(LineColors { version: self.version, lines, bg: bg_index, over: over.to_vec(), colors: colors.clone() });
+        *self.frame.borrow_mut() = Some(LineColors { version: self.version, lines, generation: hl.generation(), env, colors: colors.clone() });
         colors
     }
 
@@ -387,11 +388,11 @@ impl Editor {
         self.langs[name].clone()
     }
 
-    /// Colors per cluster column for each of `lines`, empty for a line not highlighted.
-    pub(super) fn syntax_lines(&mut self, lines: Range<usize>) -> Rc<Vec<Vec<Option<u8>>>> {
+    /// Styles per cluster column for each of `lines`, empty for a line not highlighted.
+    pub(super) fn syntax_lines(&mut self, lines: Range<usize>) -> Rc<Vec<Vec<Option<hl::Style>>>> {
         self.sync_syntax();
         match &self.buf.syntax {
-            Some(syn) => syn.line_colors(self.buf.doc.text(), lines, self.buf.opts.background, &self.buf.opts.syntaxcolors),
+            Some(syn) => syn.line_colors(self.buf.doc.text(), lines, &self.hl_groups, self.buf.opts.env()),
             None => Rc::default(),
         }
     }
@@ -405,6 +406,15 @@ impl Editor {
             _ => return None,
         };
         self.buf.syntax.as_ref().filter(|_| self.syntax_on)?.object(self.buf.doc.text(), kind, around, self.offset(), n)
+    }
+
+    /// `:highlight`: sets, links, clears or shows highlight groups (see `Highlights::command`).
+    pub(super) fn highlight_cmd(&mut self, args: &str) -> Result<(), String> {
+        let shown = self.hl_groups.command(args, self.buf.opts.env().light)?;
+        if !shown.is_empty() {
+            self.msg = shown;
+        }
+        Ok(())
     }
 
     /// `:syntax [on|off]`: switches syntax highlighting and the `f`/`c`/`a` objects, or says which it is.

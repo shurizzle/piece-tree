@@ -1,6 +1,6 @@
 use piece_tree::LineEnding;
 
-use super::{registers::*, render::*, *};
+use super::{highlight as hl, registers::*, render::*, *};
 
 fn ed(s: &str) -> Editor {
     Editor::new(Document::new(s), PathBuf::from("/nonexistent/rim-test"))
@@ -523,7 +523,7 @@ fn screen(f: &Frame) -> Vec<String> {
             let row: String = spans
                 .iter()
                 .map(|s| match s.style {
-                    Style::Reverse => format!("[{}]", s.text),
+                    Style::Reverse | Style::Status => format!("[{}]", s.text),
                     Style::Match => format!("{{{}}}", s.text),
                     _ => s.text.clone(),
                 })
@@ -885,12 +885,12 @@ fn init_file_sets_options() {
     fs::write(&path, "syn on\nsyntax maybe\nmap x y").unwrap();
     e.load_init(&path);
     assert!(e.syntax_on);
-    assert!(e.msg.ends_with("line 2: Invalid argument: maybe; line 3: only :set and :syntax are allowed"), "{}", e.msg);
+    assert!(e.msg.ends_with("line 2: Invalid argument: maybe; line 3: only :set, :syntax and :highlight are allowed"), "{}", e.msg);
     // Errors name their lines; the other lines still apply.
     fs::write(&path, "set nu\nmap x y\nset foo\nset rnu!").unwrap();
     let mut e = ed("a");
     e.load_init(&path);
-    assert_eq!(e.msg, format!("{}: line 2: only :set and :syntax are allowed; line 3: Unknown option: foo", path.display()));
+    assert_eq!(e.msg, format!("{}: line 2: only :set, :syntax and :highlight are allowed; line 3: Unknown option: foo", path.display()));
     assert!(!e.buf.opts.relativenumber);
     // A buffer opened later copies the options.
     let other = dir.join("b.txt");
@@ -1670,7 +1670,7 @@ fn set_options() {
     assert_eq!(text(&e), "\tx\n      ");
     // noexpandtab: Tab inserts a tab.
     assert_eq!(text(&run("x", ":set noet\nA\t\x1b")), "x\t");
-    // Colors: palette per background, overrides by index.
+    // Colors: highlight groups per background, changed by `:highlight`.
     let draw_out = |keys: &str| {
         let mut e = run("a", keys);
         let mut out = Vec::new();
@@ -1679,10 +1679,19 @@ fn set_options() {
     };
     assert!(draw_out("").contains("\x1b[48;5;236m"));
     assert!(draw_out(":set bg=light\n").contains("\x1b[48;5;254m"));
-    assert!(draw_out(":set clbg=17 cnufg=18\n").contains("\x1b[38;5;18m\x1b[48;5;17m"));
+    assert!(draw_out(":hi CursorLine ctermbg=17\n:hi CursorLineNr ctermfg=18\n").contains("\x1b[38;5;18m\x1b[48;5;17m"));
+    // Attributes, truecolor and `Normal`.
+    assert!(draw_out(":hi CursorLineNr cterm=italic,underline\n").contains("\x1b[3m"));
+    for (attrs, code) in [("bold", "1m"), ("italic", "3m"), ("underline", "4m"), ("undercurl", "4:3m"), ("strikethrough", "9m"), ("reverse", "7m")] {
+        assert!(draw_out(&format!(":hi CursorLineNr cterm=NONE,{attrs}\n")).contains(&format!("\x1b[{code}")), "{attrs}");
+    }
+    assert!(draw_out(":hi CursorLineNr guifg=#102030\n").contains("\x1b[38;5;214m"));
+    assert!(draw_out(":hi CursorLineNr guifg=#102030\n:set tgc\n").contains("\x1b[38;2;16;32;48m"));
+    assert!(draw_out(":hi Normal ctermbg=17\n").contains("\x1b[48;5;17m\x1b[K"));
+    assert!(draw_out(":hi clear\n:hi link CursorLine NONE\n").find("48;5;236").is_none());
     let mut e = ed("a");
     e.set_background(Background::Light);
-    assert_eq!(e.frame(10, 2).palette, options::Palette::new(Background::Light));
+    assert_eq!(e.frame(10, 2).ui.cursor_line.bg, Some(hl::Color::Ansi(254)));
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2620,7 +2629,7 @@ fn saves_waited_for_and_their_messages() {
 fn colored(f: &Frame) -> Vec<String> {
     f.rows
         .iter()
-        .map(|spans| spans.iter().map(|s| if let Style::Syntax(c) = s.style { format!("<{c}:{}>", s.text) } else { s.text.clone() }).collect::<String>().trim_end().to_string())
+        .map(|spans| spans.iter().map(|s| if let Style::Syntax(hl::Style { fg: Some(hl::Color::Ansi(c)), .. }) = s.style { format!("<{c}:{}>", s.text) } else { s.text.clone() }).collect::<String>().trim_end().to_string())
         .collect()
 }
 
@@ -2679,13 +2688,21 @@ fn syntax_off_reaches_every_window() {
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
-fn syntaxcolors_reports_unknown_captures() {
+fn highlight_command_reports_and_validates() {
+    assert_eq!(ex::complete("hig"), Some((0, vec!["highlight".into()])));
+    assert_eq!(ex::complete("hi"), Some((0, vec!["highlight".into()])));
     let mut e = ed("fn a() {}");
     e.buf.opts.filetype = "rust".into();
-    feed(&mut e, ":set sc=keywrod:5\n");
-    assert_eq!((e.msg.as_str(), e.buf.opts.syntaxcolors.is_empty()), ("Unknown capture: keywrod", true));
-    feed(&mut e, ":set sc=keyword:5\n:set sc?\n");
-    assert_eq!(e.msg, "syntaxcolors=keyword:5");
+    feed(&mut e, ":hi @keywrod ctermfg=5\n");
+    assert_eq!(e.msg, "Unknown capture: @keywrod");
+    feed(&mut e, ":hi @keyword ctermfg=5\n:hi @keyword\n");
+    assert_eq!(e.msg, "@keyword ctermfg=5 cterm=NONE");
+    feed(&mut e, ":highlight Foo ctermfg=x\n");
+    assert_eq!(e.msg, "Invalid argument: ctermfg=x");
+    feed(&mut e, ":hi link Foo @keyword\n:hi Foo\n");
+    assert_eq!(e.msg, "Foo links to @keyword");
+    feed(&mut e, ":hi clear\n:hi @keyword\n");
+    assert_eq!(e.msg, "@keyword ctermfg=176 cterm=NONE");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2696,10 +2713,10 @@ fn syntax_colors_text_and_objects() {
     assert_eq!(colored(&e.frame(30, 8))[0], "1 fn a() {");
     e.buf.opts.filetype = "rust".into();
     assert_eq!(colored(&e.frame(30, 8))[..2], ["1 <176:fn> <75:a>() {", "1     <209:1>"]);
-    // The user's colors win over the table, and clearing them brings it back.
-    feed(&mut e, ":set syntaxcolors=keyword:5,function:none\n");
+    // The user's groups win over the defaults, and clearing them brings those back.
+    feed(&mut e, ":hi @keyword ctermfg=5\n:hi @function ctermfg=NONE\n");
     assert_eq!(colored(&e.frame(30, 8))[0], "1 <5:fn> a() {");
-    feed(&mut e, ":set sc=\n");
+    feed(&mut e, ":hi clear\n");
     assert_eq!(colored(&e.frame(30, 8))[0], "1 <176:fn> <75:a>() {");
     // Edits keep the colors right without a full reparse of the line.
     feed(&mut e, "ggA // c\x1b");
