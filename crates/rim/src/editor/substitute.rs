@@ -83,6 +83,7 @@ mod tests {
         Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false }))
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn patterns_replacements_and_flags() {
         assert_eq!(parse("s/a/b/"), sub(None, "a", "b", false, None));
@@ -100,6 +101,7 @@ mod tests {
         assert_eq!(parse("%s/a/b/"), sub(Some(LineRange::whole()), "a", "b", false, None));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn confirm_count_and_repeat() {
         let flags = parse("s/a/b/cn").unwrap().unwrap();
@@ -112,6 +114,7 @@ mod tests {
         assert_eq!(Sub::again(true).range, Some(LineRange::whole()));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn not_a_substitute() {
         for c in ["set nu", "3", "q", "s", "sa/b/", "s b ", "s\\a\\b", "s\"a\"b", "s|a|b", "2,3", "e!"] {

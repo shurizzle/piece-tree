@@ -275,6 +275,7 @@ mod tests {
         Parse::Cmd(Cmd { reg: None, count, op, key, arg })
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn counts_operators_and_prefixes() {
         assert_eq!(parse("3dd"), cmd(Some(3), Some('d'), 'd', None));
@@ -311,6 +312,7 @@ mod tests {
         }
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn case_operators() {
         assert_eq!(parse("guw"), cmd(None, Some(OP_LOWER), 'w', None));
@@ -323,6 +325,7 @@ mod tests {
         assert_eq!(parse("gu3j"), cmd(Some(3), Some(OP_LOWER), 'j', None));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn registers() {
         let reg = |r, count, op, key| Parse::Cmd(Cmd { reg: Some(r), count, op, key, arg: None });
@@ -332,6 +335,7 @@ mod tests {
         assert_eq!(parse("\"Add"), reg('A', None, Some('d'), 'd'));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn strips_counts() {
         assert_eq!(strip_counts("2dd"), "dd");
@@ -345,6 +349,7 @@ mod tests {
         assert_eq!(strip_counts(""), "");
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn keys_round_trip() {
         for c in ['a', '\x1e'].into_iter().chain('\x01'..='\x1a') {

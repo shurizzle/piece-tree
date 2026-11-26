@@ -22,6 +22,8 @@ use terminal_colorsaurus::{QueryOptions, ThemeMode};
 
 // The editor allocates on every key (frame layout, and the tree path when a version is kept):
 // mimalloc makes each key 6-16% faster end to end on Linux/glibc (W8d) and edits 20-29% on macOS (D18).
+// Miri cannot run mimalloc's C code.
+#[cfg(not(miri))]
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 

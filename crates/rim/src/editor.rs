@@ -283,6 +283,8 @@ pub struct Editor {
     /// Directory holding `grammars/` and `queries/` (`main`: `<config dir>/rim`), and the grammars loaded from it by name.
     runtime: Option<PathBuf>,
     langs: HashMap<String, Option<Rc<syntax::Lang>>>,
+    /// `:syntax on|off`: while off nothing is parsed or colored and the `f`/`c`/`a` objects do nothing.
+    syntax_on: bool,
 }
 
 impl Editor {
@@ -341,6 +343,7 @@ impl Editor {
             line_reg: false,
             clipboard_reader: None,
             runtime: None,
+            syntax_on: true,
             langs: HashMap::new(),
         }
     }
@@ -388,7 +391,11 @@ impl Editor {
                 continue;
             }
             let (name, args) = line.split_once(char::is_whitespace).unwrap_or((line, ""));
-            let res = if matches!(name, "se" | "set") { self.buf.opts.set(args).map(drop) } else { Err("only :set is allowed".into()) };
+            let res = match name {
+                "se" | "set" => self.buf.opts.set(args).map(drop),
+                _ if ex::abbr(name, "syn", "syntax") => self.syntax_cmd(args),
+                _ => Err("only :set and :syntax are allowed".into()),
+            };
             if let Err(e) = res {
                 errors.push(format!("line {}: {e}", i + 1));
             }

@@ -581,6 +581,7 @@ mod tests {
             .collect()
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn spans_agree_with_unicode_segmentation() {
         let mut seed = 7;
@@ -620,6 +621,7 @@ mod tests {
     }
 
     /// Edits random lines of mixed text and checks the index kept across them against a fresh one.
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn line_index_kept_across_edits_matches_a_fresh_one() {
         let mut seed = 11u64;
@@ -673,6 +675,7 @@ mod tests {
 
     /// Every char `simple` accepts forms a boundary with any other accepted char on both sides, and
     /// with nothing it does not accept before it but what segmentation agrees with.
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn simple_chars_are_their_own_clusters() {
         let accepted: Vec<char> = (0..=0x10FFFFu32)
@@ -695,6 +698,7 @@ mod tests {
 
     /// The block tiers of `run_end` never miss what `complex` matches: every lead byte with every
     /// pair of continuation bytes (or nothing after it).
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn run_end_tiers_cover_complex() {
         let next = || [0u8].into_iter().chain(0x80..=0xBF);
@@ -727,6 +731,7 @@ mod tests {
         }
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn lead_cells_agree_with_cell_width() {
         for c in (0..=0x10FFFFu32).filter_map(char::from_u32) {
@@ -738,6 +743,7 @@ mod tests {
         }
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn ascii_runs_and_cluster_widths() {
         let s = "abcdefghijklmnopqrstuvwxyz\te\u{301}x";

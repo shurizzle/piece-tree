@@ -190,7 +190,7 @@ pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
 pub(super) const NAMES: &[&str] = &[
     "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
     "files", "global", "goto", "join", "later", "ls", "move", "nohlsearch", "normal", "only", "print", "qall", "quit",
-    "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "undo", "undolist",
+    "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "syntax", "undo", "undolist",
     "vglobal", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
 
@@ -464,6 +464,7 @@ impl Editor {
                     Ok(())
                 }
             }
+            _ if abbr(n, "syn", "syntax") => self.syntax_cmd(a),
             _ if abbr(n, "noh", "nohlsearch") => {
                 self.hl = false;
                 Ok(())
@@ -1044,6 +1045,7 @@ mod tests {
         Ok(Some(LineRange { first: a, last: Some(b), semi: false }))
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn ranges() {
         let (one, last, cur) = (at(Base::Line(1), 0), at(Base::Last, 0), at(Base::Current, 0));
@@ -1066,6 +1068,7 @@ mod tests {
         }
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn names_and_arguments() {
         let name_arg = |cmd| parse(cmd).map(|c| (c.name, c.arg));
@@ -1081,6 +1084,7 @@ mod tests {
         assert!(abbr("del", "d", "delete") && !abbr("dx", "d", "delete") && !abbr("n", "norm", "normal"));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn registers_and_counts() {
         assert_eq!(reg_count(""), Ok((None, None)));
@@ -1091,6 +1095,7 @@ mod tests {
         assert_eq!(reg_count("a b"), Err("Trailing characters: b".into()));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn retab_lines() {
         assert_eq!(retab_line("\tx", 4, 8, false, false), "    x");
@@ -1107,6 +1112,7 @@ mod tests {
         assert_eq!(retab_line("日本語  x", 4, 4, true, false), "日本語\tx");
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn completion_of_names_and_files() {
         assert_eq!(complete("sp"), Some((0, vec!["split".into()])));
@@ -1128,6 +1134,7 @@ mod tests {
     }
 
     /// `LineMarks::map` against mapping every line through every edit.
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn line_marks_match_the_plain_mapping() {
         let text = Text::from("aa\nbb\ncc\ndd\nee");

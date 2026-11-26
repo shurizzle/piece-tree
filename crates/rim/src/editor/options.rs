@@ -1,5 +1,7 @@
 //! `:set` options and the color palette.
 
+use super::syntax::known_capture;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Background {
     Dark,
@@ -90,15 +92,27 @@ impl Default for Options {
     }
 }
 
-/// `name:color,…` of `syntaxcolors`: names of lowercase letters, digits, `.`, `_`; a color is 0–255 or `none`.
-fn parse_colors(value: &str) -> Option<Vec<(String, Option<u8>)>> {
+/// Why `syntaxcolors` was refused.
+enum ColorsError {
+    Invalid,
+    Unknown(String),
+}
+
+/// `name:color,…` of `syntaxcolors`: a known capture name (see `known_capture`) and a color, 0–255 or `none`.
+fn parse_colors(value: &str) -> Result<Vec<(String, Option<u8>)>, ColorsError> {
     value
         .split(',')
         .filter(|e| !e.is_empty())
         .map(|e| {
-            let (name, color) = e.split_once(':')?;
-            let ok = !name.is_empty() && name.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, '.' | '_'));
-            ok.then_some((name.to_string(), if color == "none" { None } else { Some(color.parse().ok()?) }))
+            let (name, color) = e.split_once(':').ok_or(ColorsError::Invalid)?;
+            let color = if color == "none" { None } else { Some(color.parse().map_err(|_| ColorsError::Invalid)?) };
+            if name.is_empty() || !name.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, '.' | '_')) {
+                Err(ColorsError::Invalid)
+            } else if !known_capture(name) {
+                Err(ColorsError::Unknown(name.to_string()))
+            } else {
+                Ok((name.to_string(), color))
+            }
         })
         .collect()
 }
@@ -233,7 +247,12 @@ impl Options {
                     "cursornumberfg" => self.cursornumberfg = Some(value.parse().map_err(|_| invalid())?),
                     "compactat" => self.compactat = value.parse().map_err(|_| invalid())?,
                     "filetype" => self.filetype = value.to_string(),
-                    "syntaxcolors" => self.syntaxcolors = parse_colors(value).ok_or_else(invalid)?,
+                    "syntaxcolors" => {
+                        self.syntaxcolors = parse_colors(value).map_err(|e| match e {
+                            ColorsError::Invalid => invalid(),
+                            ColorsError::Unknown(name) => format!("Unknown capture: {name}"),
+                        })?
+                    }
                     "shiftwidth" => self.shiftwidth = value.parse().ok().filter(|n| *n <= 32).ok_or_else(invalid)?,
                     "scrolloff" => self.scrolloff = value.parse().map_err(|_| invalid())?,
                     _ => return Err(invalid()),
@@ -261,6 +280,7 @@ impl Options {
 mod tests {
     use super::*;
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn set_flags_values_and_queries() {
         let mut o = Options::default();
@@ -279,6 +299,7 @@ mod tests {
         assert!(o.set("").unwrap().starts_with("nonumber  relativenumber  nocursorline  tabstop=8"));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn new_options_and_helpers() {
         let mut o = Options::default();
@@ -300,12 +321,20 @@ mod tests {
         for bad in ["sc=keyword", "sc=keyword:256", "sc=:1", "sc=Key:1", "sc=a:x"] {
             assert_eq!(o.set(bad), Err(format!("Invalid argument: {bad}")), "{bad}");
         }
+        // A name that is no capture is refused, a prefix of one is fine, and the options stay as they were.
+        o.set("sc=string:3").unwrap();
+        assert_eq!(o.set("sc=keywrod:5"), Err("Unknown capture: keywrod".into()));
+        assert_eq!(o.set("sc=keyword:1,function.methd:2"), Err("Unknown capture: function.methd".into()));
+        assert_eq!(o.set("sc=function:4,markup.link:none,constant.numeric.float:9"), Ok(String::new()));
+        assert_eq!(o.syntaxcolors.len(), 3);
+        assert_eq!(o.set("sc=punctuation.bracket:5"), Ok(String::new()));
         assert_eq!(o.set("sc="), Ok(String::new()));
         assert!(o.syntaxcolors.is_empty());
         assert_eq!(o.set("sw=33"), Err("Invalid argument: sw=33".into()));
         assert_eq!(o.set("so=x"), Err("Invalid argument: so=x".into()));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn set_errors() {
         let mut o = Options::default();

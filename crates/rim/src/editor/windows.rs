@@ -302,6 +302,7 @@ mod tests {
         out
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn insert_remove_and_leaves() {
         let mut s = Split::Win(1);
@@ -322,6 +323,7 @@ mod tests {
         assert!(!s.remove(1), "the last window stays");
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn rects_share_space_and_leave_separators() {
         let s = Split::Row(vec![Split::Win(1), Split::Col(vec![Split::Win(2), Split::Win(3)])]);
@@ -335,6 +337,7 @@ mod tests {
         );
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn neighbor_by_direction_and_cursor() {
         // 1 | 2

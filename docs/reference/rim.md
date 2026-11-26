@@ -37,7 +37,7 @@ rim <file>...
 - Non-UTF-8 file → error on startup (`read_to_string`).
 - The line ending is detected per file; `:set ff=unix|dos|mac` changes it.
 - At startup the terminal background is queried (`terminal-colorsaurus`, before raw mode); a light one selects the light palette (`background=light`). Errors or no answer → dark.
-- Then the init file `$XDG_CONFIG_HOME/rim/init` (or `~/.config/rim/init`) is read, if it exists: `set`/`se` lines (a leading `:` is allowed), `"` comments and blank lines. Any other line, or an option error, is reported on the message line with its line number (`line 2: only :set is allowed`); the other lines still apply. Files after the first copy the options.
+- Then the init file `$XDG_CONFIG_HOME/rim/init` (or `~/.config/rim/init`) is read, if it exists: `set`/`se` and `syntax`/`syn` lines (a leading `:` is allowed), `"` comments and blank lines. Any other line, or an option error, is reported on the message line with its line number (`line 2: only :set and :syntax are allowed`); the other lines still apply. Files after the first copy the options.
 
 ## Modes
 
@@ -226,6 +226,7 @@ Typed in the status row; Backspace on an empty line or Esc cancels.
 | `:[range]s/pat/rep/[flags]` | substitute, below |
 | `:[range]d …` `:m` `:t` `:g` `:sort` `:r` `:w file` … | line commands, below |
 | `:set …` | options, below |
+| `:syntax`, `:syntax on`, `:syntax off` (`:syn`) | says whether syntax is on, or switches it for the whole editor: off parses and colors nothing (the trees are dropped) and `f`/`c`/`a` do nothing; on rebuilds from each buffer's filetype. Also valid in the init file |
 | `/pat[/off]` `?pat[?off]` | search forward/backward from the cursor, wrapping; empty `pat` reuses the last one; `off` below |
 | `:s…` `:&` `:&&` | substitute / repeat the last one (`:&&` keeps its flags) |
 | `:go[to] N` | to byte N of the text |
@@ -300,7 +301,7 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 | `scrolloff` | `so` | 0 | lines kept above and below the cursor (at most half the screen) |
 | `compactat` | | 10000 | after 1 s without keys (`main`: `event::poll`, once per quiet period), `Editor::idle` runs `:compact` when the text has more pieces than this, in Normal mode between commands; 0 disables it |
 | `filetype` | `ft` | by name | kind of file, buffer-local; set when a buffer opens from its name (`editor/filetype.rs`: extension or names like `Makefile`; empty when unknown), `:set ft=name` overrides (any value) |
-| `syntaxcolors` | `sc` | empty | syntax colors by capture name, `name:color,…` (xterm 256 index, or `none`): `:set sc=keyword:176,comment:none`; a name covers the captures under it (`function` covers `function.method`), the last entry for a name wins; empty restores the table |
+| `syntaxcolors` | `sc` | empty | syntax colors by capture name, `name:color,…` (xterm 256 index, or `none`): `:set sc=keyword:176,comment:none`; a name covers the captures under it (`function` covers `function.method`), the last entry for a name wins; empty restores the table (`:syntax off` turns syntax off); a name that is no capture gives `Unknown capture: <name>` and nothing changes |
 | `background` | `bg` | detected | `dark` or `light` palette |
 | `cursorlinebg` | `clbg` | palette | cursor line background, xterm 256-color index |
 | `numberfg` | `nufg` | palette | line number color |

@@ -121,6 +121,7 @@ mod tests {
         r.get(name).map(|r| r.text.as_str())
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn yanks_deletes_and_named_registers() {
         let mut r = Registers::default();
@@ -142,6 +143,7 @@ mod tests {
         assert_eq!(text(&r, '0'), Some("q"));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn clipboard_register() {
         let mut r = Registers::default();
@@ -152,6 +154,7 @@ mod tests {
         assert_eq!(r.get('+'), None);
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn osc52_replies() {
         assert_eq!(parse_osc52_reply(b"\x1b]52;c;aGk=\x07").as_deref(), Some("hi"));

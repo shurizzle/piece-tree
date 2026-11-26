@@ -26,6 +26,7 @@ fn synced(src: &str) -> (Syntax, Text) {
     (s, t)
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn highlights_keywords_strings_comments() {
     let src = "fn main() { let s = \"x\"; } // c";
@@ -41,6 +42,7 @@ fn highlights_keywords_strings_comments() {
     assert_eq!(s.highlight(&t, at("let")..at("let") + 3, Background::Dark, &[]), [Some(176); 3]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn objects_by_size_and_count() {
     let src = "fn a() { 1 }\nfn b(x: u8) { fn c() { 2 } }";
@@ -72,6 +74,7 @@ impl Lcg {
 }
 
 /// After every edit the incrementally updated tree equals one parsed from scratch.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn incremental_tree_matches_a_fresh_parse() {
     const SNIPPETS: [&str; 8] = ["fn f() {}", "\n", "let x = 1;", "{", "}", "\"s", "//", "(a, b)"];
@@ -111,6 +114,7 @@ fn incremental_tree_matches_a_fresh_parse() {
     }
 }
 
+#[cfg_attr(miri, ignore = "dlopen and C code are foreign calls Miri cannot run; the unsafe they reach is a library load")]
 #[test]
 fn loading_grammars() {
     let dir = std::env::temp_dir().join(format!("rim-syntax-{}", std::process::id()));
@@ -141,6 +145,7 @@ fn builtin(name: &str) -> Rc<Lang> {
     Rc::new(builtin::lang(name).unwrap().unwrap())
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn every_builtin_grammar_compiles_and_parses() {
     let samples = [
@@ -170,6 +175,7 @@ fn every_builtin_grammar_compiles_and_parses() {
     assert!(builtin::lang("nope").is_none());
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn html_injects_script_and_style() {
     let src = "<p>x</p><script>let a = 1;</script><style>p { color: red }</style>";
@@ -182,6 +188,7 @@ fn html_injects_script_and_style() {
     assert_eq!((h[at("let")], h[at("color")], h[at("<p>") + 1]), (Some(176), Some(110), Some(168)));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn locals_color_a_use_like_its_definition() {
     let src = "fn f(x: u8) -> u8 {\n    let y = x;\n    let z = |x: u8| x;\n    y + z(x)\n}\nfn g() { x }\n";
@@ -198,6 +205,7 @@ fn locals_color_a_use_like_its_definition() {
     assert_eq!(h[nth("y", 0)], None, "a plain local has no color of its own");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn injections_highlight_fenced_code_and_inline_text() {
     let src = "# Title\n\n```rust\nfn a() {}\n```\n\nsome *emph* and `code`\n";
@@ -226,6 +234,7 @@ fn injections_highlight_fenced_code_and_inline_text() {
 }
 
 /// Layers kept and moved by `edit` equal the ones found from scratch, and so do the colors.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn incremental_layers_match_fresh_ones() {
     let mut cache: HashMap<String, Rc<Lang>> = HashMap::new();
@@ -300,6 +309,7 @@ fn incremental_layers_match_fresh_ones() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn injection_properties_and_nesting() {
     // `injection.combined` joins the regions of a grammar in one layer; `self` parses with the host grammar.
@@ -324,6 +334,7 @@ fn injection_properties_and_nesting() {
 
 /// The grammar of this very test binary stands in for a dylib: its symbol is `tree_sitter_rust`.
 #[cfg(unix)]
+#[cfg_attr(miri, ignore = "dlopen and C code are foreign calls Miri cannot run; the unsafe they reach is a library load")]
 #[test]
 fn language_from_a_loaded_library() {
     let this = || Library::from(libloading::os::unix::Library::this());
@@ -335,6 +346,7 @@ fn language_from_a_loaded_library() {
     assert!(language_of(this(), "nope").is_err());
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn objects_in_layers_and_parameter_commas() {
     // A function of the Rust block inside Markdown.
@@ -353,6 +365,7 @@ fn objects_in_layers_and_parameter_commas() {
     assert_eq!(&"fn f(only: u8) {}"[s1.object(&t1, "parameter", true, 7, 1).unwrap()], "only: u8");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn css_rules_are_classes() {
     let src = "a { color: red }\n@media print { b { margin: 0 } }\n";
@@ -363,6 +376,7 @@ fn css_rules_are_classes() {
     assert_eq!(&src[s.object(&t, "class", true, at("margin"), 2).unwrap()], "@media print { b { margin: 0 } }");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn locals_follow_patterns_and_edits() {
     let src = "fn f(p: (u8, u8)) {\n    let (a, b) = p;\n    match a { n => n + b }\n}\n";
@@ -391,6 +405,7 @@ fn locals_follow_patterns_and_edits() {
     assert_eq!(h[use_at], None, "the use no longer resolves");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn helix_language_names_are_normalized() {
     let host = Rc::new(
@@ -410,6 +425,7 @@ fn helix_language_names_are_normalized() {
     assert_eq!(asked, ["markdown_inline", "cpp"]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn color_falls_back_to_prefixes() {
     assert_eq!(color("keyword.control.return"), Some((176, 127)));
@@ -480,6 +496,7 @@ fn locals_whole(lang: &Lang, tree: &Tree, text: &Text, span: Range<usize>) -> Re
 }
 
 /// Chunked locals equal the whole-text ones, also while edits keep most chunks cached.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn chunked_locals_match_whole_text_locals() {
     let cases = [
@@ -524,6 +541,7 @@ fn chunked_locals_match_whole_text_locals() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn syntax_colors_override_the_table_by_prefix() {
     let src = "fn main() { let s = \"x\"; } // c";
@@ -542,15 +560,255 @@ fn syntax_colors_override_the_table_by_prefix() {
     assert_eq!(s.line_colors(&t, 0..1, Background::Light, &[])[0][0], Some(127));
 }
 
+/// What each object takes in each grammar, including items with no body, an empty body, or no semicolon.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
-fn rust_items_without_a_body_are_classes() {
-    let src = "struct X;\nstruct P(u8);\nstruct S { a: u8 }\nenum E { A }\n";
-    let (mut s, t) = (Syntax::new(builtin("rust")), Text::from(src));
-    s.sync(&t, &mut |_| None);
-    let at = |pat: &str| src.find(pat).unwrap();
-    assert_eq!(&src[s.object(&t, "class", true, at("X;"), 1).unwrap()], "struct X;");
-    assert_eq!(s.object(&t, "class", false, at("X;"), 1), None, "no body, no inside");
-    assert_eq!(&src[s.object(&t, "class", true, at("(u8)"), 1).unwrap()], "struct P(u8);");
-    assert_eq!(&src[s.object(&t, "class", false, at("a: u8"), 1).unwrap()], "{ a: u8 }");
-    assert_eq!(&src[s.object(&t, "class", true, at("A }"), 1).unwrap()], "enum E { A }");
+fn text_objects_per_grammar() {
+    // (grammar, source, [(kind, around, probe, expected)]); a probe is where the cursor is, in the first match.
+    #[allow(clippy::type_complexity)]
+    let cases: &[(&str, &str, &[(&str, bool, &str, Option<&str>)])] = &[
+        (
+            "rust",
+            "trait T { fn m(&self, a: u8); fn d(&self) {} }\nextern \"C\" { fn ext(x: i32); }\nfn empty() {}\nunion U { a: u8 }\nstruct X;\nstruct P(u8);\nenum E { A }\nimpl T for P { fn m(&self, b: u8) {} }\nconst C: u8 = { let f = |p, q| p + q; 1 };\n",
+            &[
+                ("function", true, "m(&self, a", Some("fn m(&self, a: u8);")),
+                ("function", false, "m(&self, a", None),
+                ("function", true, "d(&self)", Some("fn d(&self) {}")),
+                ("function", false, "{} }", Some("{}")),
+                ("function", true, "ext(x", Some("fn ext(x: i32);")),
+                ("function", false, "empty", None),
+                ("function", true, "empty", Some("fn empty() {}")),
+                ("class", true, "fn m(&self, a", Some("trait T { fn m(&self, a: u8); fn d(&self) {} }")),
+                ("class", false, "fn m(&self, a", Some("{ fn m(&self, a: u8); fn d(&self) {} }")),
+                ("class", true, "a: u8 }", Some("union U { a: u8 }")),
+                ("class", false, "a: u8 }", Some("{ a: u8 }")),
+                ("class", true, "X;", Some("struct X;")),
+                ("class", false, "X;", None),
+                ("class", true, "P(u8)", Some("struct P(u8);")),
+                ("class", true, "A }", Some("enum E { A }")),
+                ("class", false, "A }", Some("{ A }")),
+                ("class", true, "fn m(&self, b", Some("impl T for P { fn m(&self, b: u8) {} }")),
+                ("parameter", true, "a: u8)", Some(", a: u8")),
+                ("parameter", true, "x: i32", Some("x: i32")),
+                ("parameter", false, "p, q", Some("p")),
+                ("parameter", true, "p, q", Some("p, ")),
+                ("parameter", true, "q|", Some(", q")),
+            ],
+        ),
+        (
+            "python",
+            "def f(a, b=1):\n    return a\nl = lambda x, y: x + y\nclass C:\n    pass\n",
+            &[
+                ("function", true, "return a", Some("def f(a, b=1):\n    return a")),
+                ("function", false, "return a", Some("return a")),
+                ("function", true, "x + y", Some("lambda x, y: x + y")),
+                ("function", false, "x + y", Some("x + y")),
+                ("class", true, "pass", Some("class C:\n    pass")),
+                ("class", false, "pass", Some("pass")),
+                ("parameter", true, "b=1", Some(", b=1")),
+                ("parameter", true, "x,", Some("x, ")),
+                ("parameter", true, "y:", Some(", y")),
+            ],
+        ),
+        (
+            "javascript",
+            "function* g(x) { yield x; }\nconst e = x => x + 1;\nconst k = class { m() { return 1; } };\nclass A { static s() {} }\n",
+            &[
+                ("function", true, "yield", Some("function* g(x) { yield x; }")),
+                ("function", false, "yield", Some("{ yield x; }")),
+                ("parameter", true, "x =>", Some("x")),
+                ("function", true, "x + 1", Some("x => x + 1")),
+                ("class", true, "m()", Some("class { m() { return 1; } }")),
+                ("function", true, "return 1", Some("m() { return 1; }")),
+                ("class", false, "static", Some("{ static s() {} }")),
+                ("function", false, "{} }", Some("{}")),
+            ],
+        ),
+        (
+            "typescript",
+            "interface I { m(a: number): void; }\nabstract class B { abstract f(): void; g() {} }\nenum E { A, B }\ndeclare function over(x: number): void;\nfunction over(x: any) {}\n",
+            &[
+                ("function", true, "m(a", Some("m(a: number): void")),
+                ("function", false, "m(a", None),
+                ("class", true, "m(a", Some("interface I { m(a: number): void; }")),
+                ("class", false, "m(a", Some("{ m(a: number): void; }")),
+                ("function", true, "f()", Some("abstract f(): void")),
+                ("class", true, "g()", Some("abstract class B { abstract f(): void; g() {} }")),
+                ("class", false, "A, B", Some("{ A, B }")),
+                ("class", true, "A, B", Some("enum E { A, B }")),
+                ("function", true, "over(x: number)", Some("function over(x: number): void;")),
+                ("function", true, "over(x: any)", Some("function over(x: any) {}")),
+                ("parameter", true, "a: number", Some("a: number")),
+            ],
+        ),
+        (
+            "c",
+            "int f(int a, char *b) { return a; }\nstruct S { int x; };\nstruct S *p;\n",
+            &[
+                ("function", true, "return a", Some("int f(int a, char *b) { return a; }")),
+                ("function", false, "return a", Some("{ return a; }")),
+                ("class", true, "int x", Some("struct S { int x; }")),
+                ("class", true, "S *p", None),
+                ("parameter", true, "char *b", Some(", char *b")),
+                ("parameter", true, "int a", Some("int a, ")),
+            ],
+        ),
+        (
+            "cpp",
+            "class A { A() = default; void g() {} };\nauto l = [](int a) { return a; };\nnamespace n { struct Z {}; }\n",
+            &[
+                ("function", true, "A() =", Some("A() = default;")),
+                ("function", false, "A() =", None),
+                ("function", true, "g()", Some("void g() {}")),
+                ("function", false, "{} }", Some("{}")),
+                ("function", true, "return a", Some("[](int a) { return a; }")),
+                ("class", true, "g()", Some("class A { A() = default; void g() {} }")),
+                ("class", true, "Z {", Some("struct Z {}")),
+                ("parameter", true, "int a", Some("int a")),
+            ],
+        ),
+        (
+            "lua",
+            "local function e() end\nfunction f(a, b) return a end\nlocal g = function() end\n",
+            &[
+                ("function", true, "e()", Some("local function e() end")),
+                ("function", false, "e()", None),
+                ("function", true, "return a", Some("function f(a, b) return a end")),
+                ("function", false, "return a", Some("return a")),
+                ("function", true, "function() end", Some("function() end")),
+                ("parameter", true, "a,", Some("a, ")),
+                ("parameter", true, "b)", Some(", b")),
+            ],
+        ),
+        (
+            "bash",
+            "f() { echo hi; }\nfunction g { echo ho; }\n",
+            &[
+                ("function", true, "echo hi", Some("f() { echo hi; }")),
+                ("function", false, "echo hi", Some("{ echo hi; }")),
+                ("function", true, "echo ho", Some("function g { echo ho; }")),
+                ("function", false, "echo ho", Some("{ echo ho; }")),
+            ],
+        ),
+        (
+            "css",
+            "a { color: red }\n@media print { b { margin: 0 } }\n@supports (display: grid) { c { x: y } }\n@font-face { src: url(x) }\n@keyframes k { from { a: b } to { a: c } }\n",
+            &[
+                ("class", true, "color", Some("a { color: red }")),
+                ("class", false, "color", Some("{ color: red }")),
+                ("class", true, "margin", Some("b { margin: 0 }")),
+                ("class", true, "x: y", Some("c { x: y }")),
+                ("class", false, "x: y", Some("{ x: y }")),
+                ("class", true, "src:", Some("@font-face { src: url(x) }")),
+                ("class", true, "from", Some("from { a: b }")),
+                ("class", false, "from", Some("{ from { a: b } to { a: c } }")),
+                ("class", true, "a: c", Some("to { a: c }")),
+            ],
+        ),
+    ];
+    for (lang, src, probes) in cases {
+        let (mut s, t) = (Syntax::new(builtin(lang)), Text::from(*src));
+        s.sync(&t, &mut |_| None);
+        assert!(!s.tree.as_ref().unwrap().root_node().has_error(), "{lang}: {src}");
+        for (kind, around, probe, want) in *probes {
+            let at = src.find(probe).unwrap_or_else(|| panic!("no {probe:?} in {src:?}"));
+            let got = s.object(&t, kind, *around, at, 1).map(|r| &src[r]);
+            assert_eq!(got, *want, "{lang} {kind} {} at {probe:?}", if *around { "around" } else { "inside" });
+        }
+    }
+}
+
+/// Steps of the random reader tests: the interpreter is slow.
+#[cfg(miri)]
+const READER_STEPS: usize = 12;
+#[cfg(not(miri))]
+const READER_STEPS: usize = 150;
+
+/// Every read is a prefix of the text from its offset (the rest of one piece), empty past the end, and stays so
+/// while the reader moves on and the text is typed into: `Reader::read` is the `unsafe` of the parser's input.
+#[test]
+fn reader_returns_bytes_from_any_offset_and_they_stay_valid() {
+    let mut doc = Document::new("héllo wörld\n日本語 text\n");
+    let mut rng = Lcg(3);
+    let snippets = ["a", "é", "日本", "\n", "text ", "ö"];
+    let mut versions = vec![doc.text().clone()];
+    for _ in 0..READER_STEPS {
+        let text = doc.text().clone();
+        let len = text.len();
+        let at = text.floor_char_boundary(rng.below(len + 1));
+        if rng.below(3) == 0 && len > 0 {
+            doc.delete(at..text.floor_char_boundary((at + 1 + rng.below(9)).min(len)));
+        } else {
+            doc.insert(at, snippets[rng.below(snippets.len())]);
+        }
+        if rng.below(5) == 0 {
+            doc.undo();
+        }
+        versions.push(doc.text().clone());
+    }
+    for text in &versions {
+        let len = text.len();
+        let model = text.slice(0..len).into_owned().into_bytes();
+        let mut reader = Reader::new(text);
+        let mut held: Vec<(usize, &[u8])> = Vec::new();
+        for _ in 0..40 {
+            let byte = rng.below(len + 3);
+            let got = reader.read(byte);
+            assert!(model.get(byte..).unwrap_or(&[]).starts_with(got), "bytes at {byte}");
+            assert_eq!(got.is_empty(), byte >= len, "empty exactly past the end, at {byte}");
+            held.push((byte, got));
+        }
+        // What was handed out stays valid after the reader moved on.
+        for (byte, got) in held {
+            assert_eq!(got, &model[byte.min(len)..byte.min(len) + got.len()]);
+        }
+        // Reading on from where the last read ended gives the whole text.
+        let (mut at, mut all) = (0, Vec::new());
+        while at < len {
+            let rest = reader.read(at);
+            all.extend_from_slice(rest);
+            at += rest.len();
+        }
+        assert_eq!(all, model);
+    }
+}
+
+/// A chunk is typed into past its published end while a reader holds bytes of an older version.
+#[test]
+fn reader_bytes_survive_typing_into_the_shared_chunk() {
+    let base = Text::from("fn main() {}\n");
+    let mut typed = base.clone();
+    typed.insert_mut(typed.len(), "// ");
+    let snapshot = typed.clone();
+    let mut reader = Reader::new(&snapshot);
+    let held: Vec<&[u8]> = (0..snapshot.len()).map(|b| reader.read(b)).collect();
+    let before: Vec<Vec<u8>> = held.iter().map(|s| s.to_vec()).collect();
+    // The same chunk grows (in place while the path is unique, else by a new piece) and the old bytes do not move.
+    for word in ["typed", " ", "after", " ", "the", " ", "snapshot", "\n"] {
+        typed.insert_mut(typed.len(), word);
+    }
+    for (held, before) in held.iter().zip(&before) {
+        assert_eq!(*held, before.as_slice());
+    }
+    assert_eq!(snapshot.slice(0..snapshot.len()), "fn main() {}\n// ");
+    assert_eq!(Reader::new(&typed).read(snapshot.len()).first(), Some(&b't'));
+}
+
+/// Every capture of every built-in grammar, and of the color table, is a name `:set syntaxcolors` accepts.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn every_capture_name_can_be_colored() {
+    for n in builtin::names() {
+        for c in builtin(n).highlights.capture_names() {
+            assert!(c.starts_with('_') || *c == "none" || *c == "spell" || known_capture(c), "{n}: {c}");
+        }
+    }
+    for (name, ok) in [("keyword", true), ("function", true), ("function.method", true), ("func", false), ("keyword.", false), ("", false)] {
+        assert_eq!(known_capture(name), ok, "{name:?}");
+    }
+    // A capture of a grammar loaded later counts too.
+    assert!(!known_capture("mything.special"));
+    let lang = Lang::new("x", tree_sitter_rust::LANGUAGE.into(), &Queries { highlights: "(identifier) @mything.special", ..Default::default() }).unwrap();
+    assert!(known_capture("mything") && known_capture("mything.special") && !known_capture("mything.other"));
+    drop(lang);
 }

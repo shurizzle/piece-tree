@@ -1,4 +1,6 @@
-(function_definition body: (_) @function.inside) @function.around
+; `= default` and `= delete` have no body.
+(function_definition) @function.around
+(function_definition body: (_) @function.inside)
 (lambda_expression body: (_) @function.inside) @function.around
 (struct_specifier body: (_) @class.inside) @class.around
 (class_specifier body: (_) @class.inside) @class.around

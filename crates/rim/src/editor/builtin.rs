@@ -14,16 +14,19 @@ use super::syntax::{Lang, Queries};
 pub(super) fn lang(name: &str) -> Option<Result<Lang, String>> {
     #[allow(unused)]
     let join = |a: &str, b: &str| format!("{a}\n{b}");
-    let objects = |n: &str| match n {
-        "rust" => include_str!("queries/textobjects/rust.scm"),
-        "python" => include_str!("queries/textobjects/python.scm"),
-        "javascript" | "typescript" | "tsx" => include_str!("queries/textobjects/javascript.scm"),
-        "c" => include_str!("queries/textobjects/c.scm"),
-        "cpp" => include_str!("queries/textobjects/cpp.scm"),
-        "lua" => include_str!("queries/textobjects/lua.scm"),
-        "css" => include_str!("queries/textobjects/css.scm"),
-        "bash" => include_str!("queries/textobjects/bash.scm"),
-        _ => "",
+    let objects = |n: &str| -> String {
+        match n {
+            "rust" => include_str!("queries/textobjects/rust.scm").into(),
+            "python" => include_str!("queries/textobjects/python.scm").into(),
+            "javascript" => include_str!("queries/textobjects/javascript.scm").into(),
+            "typescript" | "tsx" => join(include_str!("queries/textobjects/javascript.scm"), include_str!("queries/textobjects/typescript.scm")),
+            "c" => include_str!("queries/textobjects/c.scm").into(),
+            "cpp" => include_str!("queries/textobjects/cpp.scm").into(),
+            "lua" => include_str!("queries/textobjects/lua.scm").into(),
+            "css" => include_str!("queries/textobjects/css.scm").into(),
+            "bash" => include_str!("queries/textobjects/bash.scm").into(),
+            _ => String::new(),
+        }
     };
     #[cfg(feature = "lang-javascript")]
     use tree_sitter_javascript as js;
@@ -71,7 +74,7 @@ pub(super) fn lang(name: &str) -> Option<Result<Lang, String>> {
         "lua" => (tree_sitter_lua::LANGUAGE.into(), tree_sitter_lua::HIGHLIGHTS_QUERY.into(), tree_sitter_lua::LOCALS_QUERY.into(), tree_sitter_lua::INJECTIONS_QUERY.into()),
         _ => return None,
     };
-    Some(Lang::new(name, language, &Queries { highlights: &highlights, locals: &locals, injections: &injections, objects: objects(name) }))
+    Some(Lang::new(name, language, &Queries { highlights: &highlights, locals: &locals, injections: &injections, objects: &objects(name) }))
 }
 
 /// The built-in grammars this build has.

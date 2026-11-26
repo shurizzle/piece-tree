@@ -64,6 +64,7 @@ pub(super) fn detect(path: &Path) -> &'static str {
 mod tests {
     use super::*;
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn by_name_and_extension() {
         for (path, ft) in [

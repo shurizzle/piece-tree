@@ -372,6 +372,7 @@ impl Editor {
 mod tests {
     use super::*;
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn splits_sentences() {
         let chars: Vec<char> = "Hi there.  (Yes!) ok\nend".chars().collect();
@@ -382,6 +383,7 @@ mod tests {
         assert_eq!(sentences(&chars), [(0..1, false), (1..5, true), (5..6, false)]);
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn finds_unescaped_quotes() {
         assert_eq!(quotes(r#""a\"b\\"c"#, '"'), [0, 7]);
@@ -390,6 +392,7 @@ mod tests {
         assert_eq!(quotes("«a»«b»", '«'), [0, 5]);
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn pairs_tags() {
         let s = "<a><b x=\"1\">t<br></b><!-- c --><img/></a></z>";

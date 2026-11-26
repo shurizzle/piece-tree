@@ -24,10 +24,10 @@ use std::{
     rc::Rc,
 };
 
-use piece_tree::{Edit, RegexCursor, Text};
+use piece_tree::{Edit, RegexCursor, Text, TextCursor};
 use tree_sitter::{InputEdit, Parser, Point, QueryCursor, StreamingIterator, Tree};
 
-pub(super) use lang::{Lang, Queries};
+pub(super) use lang::{Lang, Queries, known_capture};
 use layers::{Layer, build, discover};
 use query::{CHUNK_MAX, ChunkCache, Nodes, Refs, colors, locals};
 
@@ -42,28 +42,38 @@ fn point(text: &Text, off: usize) -> Point {
     Point { row, column: off - text.line_to_offset(row) }
 }
 
+/// Hands the parser the bytes of a `Text` from any offset on, one piece at a time and without copying.
+pub(super) struct Reader<'t> {
+    text: &'t Text,
+    cur: TextCursor<'t>,
+}
+
+impl<'t> Reader<'t> {
+    pub(super) fn new(text: &'t Text) -> Self {
+        Reader { text, cur: text.cursor_at(0) }
+    }
+
+    /// The rest of the piece holding `byte`; empty from the end of the text on.
+    pub(super) fn read(&mut self, byte: usize) -> &'t [u8] {
+        if byte >= self.text.len() {
+            return &[];
+        }
+        if byte < self.cur.offset() || byte >= self.cur.offset() + self.cur.chunk().len() {
+            self.cur = self.text.cursor_at(byte);
+        }
+        let rest = &self.cur.chunk()[byte - self.cur.offset()..];
+        // SAFETY: `rest` lies in the bytes of a piece of `*self.text`, not in the cursor: the cursor only points at the
+        // piece. Pieces never change (a chunk only grows past its published end) and `text` is borrowed for `'t`, so
+        // the bytes stay valid and unchanged for `'t`, however the cursor moves later. The borrow checker only ties
+        // `rest` to `self.cur`, which the next call replaces.
+        unsafe { slice::from_raw_parts(rest.as_ptr(), rest.len()) }
+    }
+}
+
 /// Parses `text` into `parser`'s language (its included ranges), reusing `old` if edited to match.
 fn parse(parser: &mut Parser, text: &Text, old: Option<&Tree>) -> Option<Tree> {
-    let mut cur = text.cursor_at(0);
-    let len = text.len();
-    // Each call hands out the rest of the piece holding `byte`, without copying it.
-    parser.parse_with_options(
-        &mut |byte, _| -> &[u8] {
-            if byte >= len {
-                return &[];
-            }
-            if byte < cur.offset() || byte >= cur.offset() + cur.chunk().len() {
-                cur = text.cursor_at(byte);
-            }
-            let rest = &cur.chunk()[byte - cur.offset()..];
-            // SAFETY: `rest` lies in the bytes of a piece of `text`, which outlives this call and never changes (pieces
-            // are immutable, a chunk only grows past its published end), not in the cursor; the borrow checker only
-            // ties it to `cur`, which the next call replaces.
-            unsafe { slice::from_raw_parts(rest.as_ptr(), rest.len()) }
-        },
-        old,
-        None,
-    )
+    let mut reader = Reader::new(text);
+    parser.parse_with_options(&mut |byte, _| reader.read(byte), old, None)
 }
 
 /// The syntax tree of one buffer, kept in step with its text.
@@ -340,6 +350,10 @@ fn with_comma(text: &Text, r: Range<usize>) -> Range<usize> {
 impl Editor {
     /// Points the current buffer's syntax at its filetype's grammar (loading it once) and brings the tree up to date.
     pub(super) fn sync_syntax(&mut self) {
+        if !self.syntax_on {
+            self.buf.syntax = None;
+            return;
+        }
         let want = filetype::grammar(&self.buf.opts.filetype).to_string();
         if self.buf.syntax.as_ref().is_none_or(|s| s.lang.name != *want) {
             self.buf.syntax = if want.is_empty() { None } else { self.lang(&want).map(Syntax::new) };
@@ -390,7 +404,23 @@ impl Editor {
             'a' => "parameter",
             _ => return None,
         };
-        self.buf.syntax.as_ref()?.object(self.buf.doc.text(), kind, around, self.offset(), n)
+        self.buf.syntax.as_ref().filter(|_| self.syntax_on)?.object(self.buf.doc.text(), kind, around, self.offset(), n)
+    }
+
+    /// `:syntax [on|off]`: switches syntax highlighting and the `f`/`c`/`a` objects, or says which it is.
+    pub(super) fn syntax_cmd(&mut self, arg: &str) -> Result<(), String> {
+        match arg.trim() {
+            "" => self.msg = format!("syntax {}", if self.syntax_on { "on" } else { "off" }),
+            "on" => self.syntax_on = true,
+            "off" => {
+                // The trees of buffers not shown go too, not when they are next shown.
+                self.syntax_on = false;
+                self.buf.syntax = None;
+                self.buffers.iter_mut().for_each(|b| b.syntax = None);
+            }
+            other => return Err(format!("Invalid argument: {other}")),
+        }
+        Ok(())
     }
 }
 

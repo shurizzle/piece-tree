@@ -152,6 +152,7 @@ mod tests {
     use super::*;
     use piece_tree::Document;
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn invalid_patterns_report_the_cause() {
         let e = Search::new("(").err().unwrap();
@@ -160,6 +161,7 @@ mod tests {
         assert_eq!(Search::word("foo", true).pat, r"(?i)\bfoo\b");
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn offsets_and_typed_splits() {
         assert_eq!(Offset::parse(""), Ok(Offset::None));
@@ -181,6 +183,7 @@ mod tests {
         assert_eq!(split_typed("abc", '/'), ("abc", ""));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn forward_and_backward_wrap() {
         let t = Text::from("a1 b22 c3");
@@ -196,6 +199,7 @@ mod tests {
         assert_eq!(find_backward(&t, &Regex::new("$").unwrap(), 0), Some((9..9, true)));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn finds_matches_across_pieces() {
         let mut doc = Document::new("cd");
@@ -209,6 +213,7 @@ mod tests {
         assert_eq!(find_backward(t, &re, 6), Some((2..4, false)));
     }
 
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn visible_matches_per_line() {
         let re = |p| Regex::new(p).unwrap();

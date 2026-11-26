@@ -41,6 +41,7 @@ fn reg(e: &Editor) -> (String, bool) {
     e.regs.get('"').map_or_else(Default::default, |r| (r.text.clone(), r.kind == RegKind::Line))
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn gutter_fits_the_widest_number() {
     assert_eq!(gutter_width(1), 2);
@@ -50,6 +51,7 @@ fn gutter_fits_the_widest_number() {
     assert_eq!(gutter_width(1000), 5);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn line_numbers_are_relative_except_the_cursor_line() {
     assert_eq!(line_number(4, 4, true, true), 5);
@@ -61,6 +63,7 @@ fn line_numbers_are_relative_except_the_cursor_line() {
     assert_eq!(line_number(1, 4, false, true), 3);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn word_motions_cross_lines_and_stop_on_empty_lines() {
     let s = "foo.bar  baz\n\n  qux";
@@ -83,6 +86,7 @@ fn word_motions_cross_lines_and_stop_on_empty_lines() {
     assert_eq!(pos(&run(s, "9e")), (2, 4));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn line_motions() {
     let s = "  ab\ncdef\nx";
@@ -107,6 +111,7 @@ fn line_motions() {
     assert_eq!(e.win.line, 0);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn operators_with_motions() {
     assert_eq!(text(&run("foo bar baz", "dw")), "bar baz");
@@ -127,6 +132,7 @@ fn operators_with_motions() {
     assert_eq!(text(&run("a\nb\nc\nd", "Gdgg")), "");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn linewise_delete_yank_and_paste() {
     let e = run("a\nb\nc", "ddp");
@@ -143,6 +149,7 @@ fn linewise_delete_yank_and_paste() {
     assert_eq!(text(&run("x", "p")), "x");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn charwise_yank_and_paste() {
     let e = run("foo bar", "ywP");
@@ -155,6 +162,7 @@ fn charwise_yank_and_paste() {
     assert_eq!(text(&run("ab\n", "ylj$p")), "ab\na");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn change_enters_insert_mode() {
     let e = run("foo bar", "cwxy\x1b");
@@ -167,6 +175,7 @@ fn change_enters_insert_mode() {
     assert_eq!(text(&run("  a\nb", "ccx\x1b")), "  x\nb");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn insert_commands() {
     assert_eq!(text(&run("ab", "ix\x1b")), "xab");
@@ -181,6 +190,7 @@ fn insert_commands() {
     assert_eq!((pos(&e), &e.mode), ((0, 1), &Mode::Normal));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn join_lines() {
     let e = run("a\n  b\nc", "J");
@@ -192,6 +202,7 @@ fn join_lines() {
     assert_eq!(text(&run("a", "J")), "a");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn undo_groups_whole_commands_and_insert_sessions() {
     let mut e = run("", "ihello\nworld\x1b");
@@ -214,6 +225,7 @@ fn undo_groups_whole_commands_and_insert_sessions() {
     assert_eq!((text(&e).as_str(), e.msg.as_str()), ("", "Already at newest change"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn new_edit_clears_redo_and_motions_add_no_groups() {
     let mut e = run("", "ia\x1bib\x1bu");
@@ -225,6 +237,7 @@ fn new_edit_clears_redo_and_motions_add_no_groups() {
     assert_eq!(text(&e), "a");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn undo_clamps_the_cursor() {
     let mut e = run("ab", "Acdef\x1b");
@@ -233,6 +246,7 @@ fn undo_clamps_the_cursor() {
     assert_eq!(pos(&e), (0, 1));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn quit_commands() {
     let mut e = ed("a");
@@ -248,6 +262,7 @@ fn quit_commands() {
     assert!(feed(&mut e, ":x\n:w\n"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn save_writes_and_cleans() {
     let dir = env_dir();
@@ -269,6 +284,7 @@ fn env_dir() -> PathBuf {
     dir
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn command_line_editing_and_goto() {
     let e = run("a\nb\nc", ":3\n");
@@ -281,6 +297,7 @@ fn command_line_editing_and_goto() {
     assert_eq!(run("a", ":\n").mode, Mode::Normal);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn search_wraps_and_repeats() {
     let s = "foo\nbar foo\nfoo";
@@ -300,6 +317,7 @@ fn search_wraps_and_repeats() {
     assert_eq!(run(s, "n").msg, "No previous search pattern");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn esc_and_unknown_keys_cancel_pending() {
     let e = run("a\nb", "d\x1bj");
@@ -308,6 +326,7 @@ fn esc_and_unknown_keys_cancel_pending() {
     assert_eq!(run("a", "3").pending, "3");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn find_char_motions() {
     let s = "a,b,c,d";
@@ -332,6 +351,7 @@ fn find_char_motions() {
     assert_eq!(text(&run(s, "dfz")), s);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn replace_toggle_case_and_shift() {
     let e = run("abc", "2rx");
@@ -359,6 +379,7 @@ fn replace_toggle_case_and_shift() {
     assert_eq!(text(&run("abc", "3~u")), "abc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn counted_inserts_repeat_the_typed_text() {
     assert_eq!(text(&run("", "3ix\x1b")), "xxx");
@@ -371,6 +392,7 @@ fn counted_inserts_repeat_the_typed_text() {
     assert_eq!(text(&run("", "3ix\x1bay\x1b")), "xxxy");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn dot_repeats_the_last_change() {
     assert_eq!(text(&run("a b c d", "dw.")), "c d");
@@ -389,6 +411,7 @@ fn dot_repeats_the_last_change() {
     assert_eq!(text(&run("abc", ".")), "abc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_mode_operators() {
     let e = run("abcd", "lvld");
@@ -420,6 +443,7 @@ fn visual_mode_operators() {
     assert_eq!(text(&run("abcd", "vlldu")), "abcd");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_mode_switching() {
     assert_eq!(run("a", "v").mode, Mode::Visual(VKind::Char));
@@ -443,6 +467,7 @@ fn temp_dir(name: &str) -> PathBuf {
     dir
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn reload_from_disk() {
     let dir = temp_dir("reload");
@@ -470,6 +495,7 @@ fn reload_from_disk() {
 }
 
 #[cfg(unix)]
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn save_keeps_permissions_and_symlinks() {
     use std::os::unix::fs::{PermissionsExt, symlink};
@@ -513,6 +539,7 @@ fn snapshot(s: &str, keys: &str, w: usize, h: usize) -> (Vec<String>, (usize, us
     (screen(&f), f.cursor, f.bar)
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_shows_relative_numbers_status_and_cursor() {
     let (rows, cursor, bar) = snapshot("a\nbc\nd", "jl", 58, 5);
@@ -525,6 +552,7 @@ fn frame_shows_relative_numbers_status_and_cursor() {
     assert!(snapshot("a", "2d", 80, 2).0[1].contains("| LF | 2d "));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_scrolls_vertically() {
     let s: String = (1..=20).map(|i| format!("l{i}\n")).collect();
@@ -533,6 +561,7 @@ fn frame_scrolls_vertically() {
     assert_eq!(cursor, (3, 2));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_highlights_the_visual_selection() {
     assert_eq!(snapshot("abcd", "lvl", 20, 2).0[0], "1 a[bc]d");
@@ -540,6 +569,7 @@ fn frame_highlights_the_visual_selection() {
     assert_eq!(snapshot("a\n\nb", "jV", 20, 4).0[..3], ["1 a", "2 [ ]", "1 b"]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_renders_wide_chars_tabs_and_controls() {
     assert_eq!(snapshot("\tx\x01", "", 20, 2).0[0], "1     x?");
@@ -557,6 +587,7 @@ fn frame_renders_wide_chars_tabs_and_controls() {
     assert_eq!(snapshot("e\u{301}x", "ll", 20, 2).1, (3, 0));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn grapheme_clusters_are_one_column() {
     // e + combining acute, a family emoji (ZWJ sequence), a flag (two regional indicators).
@@ -603,6 +634,7 @@ fn grapheme_clusters_are_one_column() {
     assert_eq!(snapshot(&line, "lvl", 20, 2).0[0], format!("1 a[{acute}{family}]{flag}b"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn options_list_case_hlsearch_and_scrolloff() {
     // list: a tab is `>` then spaces, the line end `$`; a selected line end shows `$` reversed.
@@ -643,6 +675,7 @@ fn options_list_case_hlsearch_and_scrolloff() {
     assert_eq!(e.win.line, 3);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn jump_and_change_lists() {
     // Ctrl+O back through the jumps, Ctrl+I (Tab) forward again.
@@ -681,6 +714,7 @@ fn jump_and_change_lists() {
     assert_eq!(run("a", "g;").msg, "Change list is empty");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn gv_gi_gj_gp_and_bracket_p() {
     // gv: the last selection again, shifted by an edit before it.
@@ -706,6 +740,7 @@ fn gv_gi_gj_gp_and_bracket_p() {
     assert_eq!(text(&run("ab", "yl]p")), "aab");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn replace_mode() {
     assert_eq!(text(&run("abc", "Rxy\x1b")), "xyc");
@@ -722,6 +757,7 @@ fn replace_mode() {
     assert!(rows[1].contains("REPLACE") && bar);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn scroll_lines_and_pages() {
     let lines: String = (0..30).map(|i| format!("{i}\n")).collect();
@@ -747,6 +783,7 @@ fn scroll_lines_and_pages() {
     assert_eq!((top(&mut e), e.win.line), ("4".into(), 8));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn insert_mode_ctrl_keys() {
     // Ctrl+W: the word before the cursor, then blanks and the word; at the line start, the line break.
@@ -774,6 +811,7 @@ fn insert_mode_ctrl_keys() {
     assert_eq!(text(&run("", "2ix y\x17\x1b")), "x x ");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn command_line_history_completion_and_registers() {
     let line = |e: &Editor| match &e.mode {
@@ -828,6 +866,7 @@ fn command_line_history_completion_and_registers() {
     assert_eq!(line(&e), "foo");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn init_file_sets_options() {
     let dir = std::env::temp_dir().join(format!("rim-init-{}", std::process::id()));
@@ -840,11 +879,18 @@ fn init_file_sets_options() {
     e.load_init(&path);
     let o = &e.buf.opts;
     assert_eq!((o.expandtab, o.shiftwidth, o.tabstop, o.list), (false, 2, 8, true));
+    fs::write(&path, "syntax off\n").unwrap();
+    e.load_init(&path);
+    assert!(!e.syntax_on);
+    fs::write(&path, "syn on\nsyntax maybe\nmap x y").unwrap();
+    e.load_init(&path);
+    assert!(e.syntax_on);
+    assert!(e.msg.ends_with("line 2: Invalid argument: maybe; line 3: only :set and :syntax are allowed"), "{}", e.msg);
     // Errors name their lines; the other lines still apply.
     fs::write(&path, "set nu\nmap x y\nset foo\nset rnu!").unwrap();
     let mut e = ed("a");
     e.load_init(&path);
-    assert_eq!(e.msg, format!("{}: line 2: only :set is allowed; line 3: Unknown option: foo", path.display()));
+    assert_eq!(e.msg, format!("{}: line 2: only :set and :syntax are allowed; line 3: Unknown option: foo", path.display()));
     assert!(!e.buf.opts.relativenumber);
     // A buffer opened later copies the options.
     let other = dir.join("b.txt");
@@ -853,6 +899,7 @@ fn init_file_sets_options() {
     fs::remove_dir_all(&dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_wraps_long_lines() {
     // Text area of 4 cells: rows break on cell width, a wide char that does not fit starts the next row.
@@ -878,6 +925,7 @@ fn frame_wraps_long_lines() {
     assert_eq!(snapshot("abcdefghij", ":set nowrap\n:set wrap\n$", 6, 4).0[2], "  ij");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn wrap_screen_rows_motions_and_scroll() {
     let w = |s: &str, keys: &str, h: usize| {
@@ -921,6 +969,7 @@ fn wrap_screen_rows_motions_and_scroll() {
     assert_eq!(e.frame(6, 5).cursor_line, Some(0..3));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn wrapped_rows_with_visual_mode_tabs_wide_chars_and_cursorline() {
     let w = |s: &str, keys: &str| {
@@ -954,6 +1003,7 @@ fn wrapped_rows_with_visual_mode_tabs_wide_chars_and_cursorline() {
     assert_eq!(out.matches("\x1b[48;5;236m").count(), f.rows[..3].iter().map(Vec::len).sum::<usize>(), "{out:?}");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_shows_the_command_line() {
     let (rows, cursor, bar) = snapshot("a", ":wq", 20, 3);
@@ -965,6 +1015,7 @@ fn frame_shows_the_command_line() {
     assert_eq!(fit("日本", 3), "日 ");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn draw_emits_text_and_cursor_shape() {
     let mut e = run("hello", "");
@@ -974,6 +1025,7 @@ fn draw_emits_text_and_cursor_shape() {
     assert!(out.contains("hello") && out.contains("\x1b[2 q"), "{out:?}");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn cursor_line_is_padded_and_drawn_on_its_background() {
     let mut e = run("a\nb日\nc", "j");
@@ -996,6 +1048,7 @@ fn cursor_line_is_padded_and_drawn_on_its_background() {
     assert_eq!(e.frame(10, 4).cursor_line, Some(2..3));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn word_objects() {
     let s = "foo bar.baz  qux";
@@ -1018,6 +1071,7 @@ fn word_objects() {
     assert_eq!(reg(&run(s, "wyiw")).0, "bar");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn quote_objects() {
     let s = r#"say "hi there" 'x' now"#;
@@ -1031,6 +1085,7 @@ fn quote_objects() {
     assert_eq!(text(&run("`a`", "da`")), "");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn bracket_objects() {
     let s = "f(a, (b), c)";
@@ -1055,6 +1110,7 @@ fn bracket_objects() {
     assert_eq!(text(&run("{a\nb}", "di{")), "{}");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn paragraph_objects() {
     let s = "a\nb\n\n\nc\nd\n\ne";
@@ -1069,6 +1125,7 @@ fn paragraph_objects() {
     assert_eq!(reg(&run(s, "yip")), ("a\nb\n".to_string(), true));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_text_objects() {
     let e = run("a\nb\n\nc", "vip");
@@ -1088,6 +1145,7 @@ fn visual_text_objects() {
     assert_eq!(text(&run("a b c", "viwd.")), "b c");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn bracket_match_and_percent() {
     assert_eq!(pos(&run("f(a[b]c)", "%")), (0, 7));
@@ -1104,6 +1162,7 @@ fn bracket_match_and_percent() {
     assert_eq!(run(s, "500%").win.line, 3);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn star_and_hash_search_whole_words() {
     let s = "foo food foo\nfoo";
@@ -1124,6 +1183,7 @@ fn star_and_hash_search_whole_words() {
     assert_eq!(text(&run("a b a", "d*")), "a");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn search_across_chunks() {
     let mut doc = Document::new("cd");
@@ -1138,6 +1198,7 @@ fn search_across_chunks() {
     assert_eq!(pos(&e), (0, 2));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn hlsearch_and_incsearch() {
     let s = "abc abc\nx";
@@ -1164,6 +1225,7 @@ fn hlsearch_and_incsearch() {
     assert_eq!(screen(&run("ab abc ab", "*").frame(20, 2))[0], "1 {ab} abc {ab}");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn backward_search_and_offsets() {
     let s = "ab cd\nab cd\nab";
@@ -1194,12 +1256,14 @@ fn backward_search_and_offsets() {
     assert_eq!(pos(&run("a/b\nc/b", "j/\\/b\n")), (1, 1));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn multi_line_matches_are_highlighted() {
     let mut e = run("ab\ncd", "/b\\nc\n");
     assert_eq!(screen(&e.frame(20, 3))[..2], ["1 a{b}", "1 {c}d"]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn substitute_confirm_count_and_repeat() {
     let s = "aa aa\nb\naa";
@@ -1250,6 +1314,7 @@ fn substitute_confirm_count_and_repeat() {
     assert_eq!(text(&e), "xx\nxx\nxa");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn gn_selects_the_match() {
     let s = "foo bar foo bar foo";
@@ -1276,6 +1341,7 @@ fn lines(n: usize) -> String {
     (1..=n).map(|i| format!("l{i}")).collect::<Vec<_>>().join("\n")
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn screen_line_motions_and_scrolling() {
     let mut e = ed(&lines(20));
@@ -1309,6 +1375,7 @@ fn screen_line_motions_and_scrolling() {
     assert_eq!(top(&mut e), " 4 l6");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn marks() {
     let s = "abc\ndef\nghi";
@@ -1337,6 +1404,7 @@ fn marks() {
     assert_eq!(pos(&run("a b c", "$ma:s/a b/q/\n`a")), (0, 2));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn undo_puts_the_cursor_on_the_change() {
     let e = run("a\nb\nc\nd", "Gddggu");
@@ -1347,6 +1415,7 @@ fn undo_puts_the_cursor_on_the_change() {
     assert_eq!(pos(&e), (0, 3));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn case_operators() {
     assert_eq!(text(&run("Foo Bar", "guiw")), "foo Bar");
@@ -1366,6 +1435,7 @@ fn case_operators() {
     assert_eq!(text(&run("ab cd", "gUiww.")), "AB CD");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn increment_and_decrement() {
     let e = run("x 9 y", "\x01");
@@ -1383,6 +1453,7 @@ fn increment_and_decrement() {
     assert_eq!(text(&run("1", "\x01.")), "3");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn autoindent() {
     assert_eq!(text(&run("  a", "ob\x1b")), "  a\n  b");
@@ -1401,6 +1472,7 @@ fn autoindent() {
     assert_eq!(text(&run("  a", "o \x1b")), "  a\n   ");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn dot_count_replaces_the_original() {
     assert_eq!(text(&run("a\nb\nc\nd\ne", "2dd3.")), "");
@@ -1413,6 +1485,7 @@ fn dot_count_replaces_the_original() {
     assert_eq!(text(&run("a\nb\nc", "dd2.u")), "b\nc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn named_numbered_and_clipboard_registers() {
     assert_eq!(text(&run("a\nb", "\"ayyj\"ap")), "a\nb\na");
@@ -1453,6 +1526,7 @@ fn named_numbered_and_clipboard_registers() {
     assert_eq!(text(&e), "\nax\nybc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn macros() {
     assert_eq!(text(&run("1\n2\n3", "qaA!\x1bjq2@a")), "1!\n2!\n3!");
@@ -1484,6 +1558,7 @@ fn macros() {
     assert_eq!(text(&run("a1 b", "qa\x01q@a")), "a3 b");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_block_in_screen_columns() {
     // A tab (cells 1-4 at ts=4) and wide chars keep the block straight on screen.
@@ -1501,6 +1576,7 @@ fn visual_block_in_screen_columns() {
     assert_eq!(text(&run("日本\nabcd", "\x16jrx")), "x本\nxxcd");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_block_delete_yank_paste() {
     let e = run("abc\ndef\nghi", "l\x16jld");
@@ -1516,6 +1592,7 @@ fn visual_block_delete_yank_paste() {
     assert_eq!(text(&run("abc\ndef", "l\x16jldu")), "abc\ndef");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_block_insert_append_change() {
     assert_eq!(text(&run("ab\ncd\nef", "l\x16jjIX\x1b")), "aXb\ncXd\neXf");
@@ -1535,6 +1612,7 @@ fn visual_block_insert_append_change() {
     assert_eq!(text(&run("ab\ncd", "l\x16jIX\x1bu")), "ab\ncd");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_block_other_operators_and_render() {
     assert_eq!(text(&run("abc\ndef", "l\x16jrx")), "axc\ndxf");
@@ -1556,6 +1634,7 @@ fn visual_block_other_operators_and_render() {
     assert_eq!(screen(&run("ab\nabcd", "\x16j$").frame(20, 3))[..2], ["1 [ab]", "2 [abcd]"]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_replace_and_insert() {
     assert_eq!(text(&run("abc\nd", "vjrx")), "xxx\nx");
@@ -1567,6 +1646,7 @@ fn visual_replace_and_insert() {
     assert_eq!(text(&run("ab\nc", "VAX\x1b")), "abX\nc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn set_options() {
     let rows = |e: &mut Editor| screen(&e.frame(20, 3))[..2].to_vec();
@@ -1605,6 +1685,7 @@ fn set_options() {
     assert_eq!(e.frame(10, 2).palette, options::Palette::new(Background::Light));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn sentence_objects() {
     let s = "Hi there. How are you?  Fine.";
@@ -1624,6 +1705,7 @@ fn sentence_objects() {
     assert_eq!(text(&run("x", "cisy\x1b")), "y");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn tag_objects() {
     let s = "<a><b>x</b> y</a>";
@@ -1638,6 +1720,7 @@ fn tag_objects() {
     assert_eq!(text(&run("x", "dit")), "x");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn escaped_quotes_and_visual_growth() {
     assert_eq!(text(&run(r#"say "a \"b\" c" ok"#, "fadi\"")), r#"say "" ok"#);
@@ -1658,6 +1741,7 @@ fn escaped_quotes_and_visual_growth() {
     assert_eq!(sel("f(lvi("), ((0, 2), (0, 7)));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn regex_search() {
     let s = "a1 b22\nc333 a";
@@ -1697,6 +1781,7 @@ fn regex_search() {
     assert_eq!((pos(&e), e.last_search.as_ref().unwrap().pat.as_str()), ((0, 12), r"\bfoo\b"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn substitute_lines_and_flags() {
     let s = "a a\na a\na a";
@@ -1724,6 +1809,7 @@ fn substitute_lines_and_flags() {
     assert_eq!(pos(&e), (0, 4));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn substitute_cursor_messages_and_undo() {
     let s = "x\n  a\na\nb";
@@ -1752,6 +1838,7 @@ fn substitute_cursor_messages_and_undo() {
     assert_eq!(text(&run("ab", ":s/a/z/\nxu")), "zb");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn substitute_on_a_visual_selection() {
     let s = "a\na\na\na";
@@ -1764,6 +1851,7 @@ fn substitute_on_a_visual_selection() {
     assert_eq!(text(&run(s, "Vj\x1bG:'<,'>s/a/c/\n")), "c\nc\na\na");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn undo_tree_commands() {
     // Two branches: "ab" (undone) and "ac".
@@ -1808,6 +1896,7 @@ fn undo_tree_commands() {
     assert_eq!(pos(&e), (2, 0));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn char_info_and_byte_motions() {
     let s = "ab é\nfoo bar\n";
@@ -1838,6 +1927,7 @@ fn char_info_and_byte_motions() {
     assert_eq!(text(&run(s, "j$d3|")), "ab é\nfor\n");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn segments_fast_path_matches_the_generic_one() {
     use super::layout::segments;
@@ -1888,6 +1978,7 @@ fn segments_fast_path_matches_the_generic_one() {
     assert_eq!(segments("a\tb", 4, 4), [(0, "a"), (1, "\t"), (2, "b")]);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn layout_kept_across_edits_matches_a_fresh_one() {
     use super::layout::{Layout, segments};
@@ -1930,6 +2021,7 @@ fn layout_kept_across_edits_matches_a_fresh_one() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn typing_in_a_wrapped_line_updates_the_screen() {
     // Same screen as laying the edited line out from scratch, after edits before and after the cursor row.
@@ -1947,6 +2039,7 @@ fn typing_in_a_wrapped_line_updates_the_screen() {
     assert_eq!(kept[0], "1 y日abcde");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn highlight_cache_follows_text_pattern_and_view() {
     let mut e = run("ab ab ab\nxb", "/b\n");
@@ -1963,6 +2056,7 @@ fn highlight_cache_follows_text_pattern_and_view() {
     assert_eq!(screen(&e.frame(12, 2))[0], "1 日{a}日{a}日{a}");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn lazy_char_iterators_match_the_plain_ones() {
     let mut seed = 0xD1B5_4A32_D192_ED03u64;
@@ -1998,6 +2092,7 @@ fn lazy_char_iterators_match_the_plain_ones() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn line_scans_count_chars_not_bytes() {
     // f/t/F/T, `%`, `*`, Ctrl-A, `iw`, `i"` after multi-byte chars (columns are chars, scans are bytes).
@@ -2016,6 +2111,7 @@ fn line_scans_count_chars_not_bytes() {
     assert_eq!(text(&run("日 \"é\" x \"y\"", "fédi\"")), "日 \"\" x \"y\"");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn cached_layouts_match_fresh_ones_over_random_sessions() {
     let mut seed = 0x1405_7B7E_F767_814Fu64;
@@ -2051,6 +2147,7 @@ fn cached_layouts_match_fresh_ones_over_random_sessions() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn wide_fast_path_agrees_with_unicode_width() {
     use unicode_width::UnicodeWidthChar;
@@ -2060,6 +2157,7 @@ fn wide_fast_path_agrees_with_unicode_width() {
     }
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn first_non_blank_reads_past_long_indents() {
     // Longer than one window, with 3-byte blanks that a window edge could split.
@@ -2070,6 +2168,7 @@ fn first_non_blank_reads_past_long_indents() {
     assert_eq!(pos(&run(&format!("{indent}x"), "$0^")), (0, 501));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_addresses() {
     let s = "a\nb\nc\nd\ne";
@@ -2093,6 +2192,7 @@ fn ex_addresses() {
     assert_eq!(run(s, ":3|\n").msg, "Not an editor command: 3|");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_delete_yank_move_copy() {
     let s = "a\nb\nc\nd\ne";
@@ -2123,6 +2223,7 @@ fn ex_delete_yank_move_copy() {
     assert_eq!(text(&run("ab\nc\nd", "x:3d\n.")), "b\n");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_shift_join_print() {
     let e = run("a\nb\nc", ":>> 2\n");
@@ -2141,6 +2242,7 @@ fn ex_shift_join_print() {
     assert_eq!(run("a\nb\nc", "j:.=\n").msg, "2");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_normal() {
     let e = run("a\nb", ":%norm Ax\n");
@@ -2160,6 +2262,7 @@ fn ex_normal() {
     assert_eq!(e.regs.get('q').map(|r| r.text.as_str()), Some(":norm Ax\r"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_global() {
     let s = "a\nb\nab\nc";
@@ -2183,6 +2286,7 @@ fn ex_global() {
     assert!(!feed(&mut ed(s), ":g/a/q!\n"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_sort() {
     let s = "c\na\nB\nb";
@@ -2201,6 +2305,7 @@ fn ex_sort() {
     assert_eq!(text(&run(s, ":sort\nu")), s);
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_read_write_saveas() {
     let dir = temp_dir("ex-files");
@@ -2247,6 +2352,7 @@ fn ex_read_write_saveas() {
     fs::remove_dir_all(&dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn ex_retab_and_fileformat() {
     let e = run("\tx", ":retab 8\n");
@@ -2267,6 +2373,7 @@ fn ex_retab_and_fileformat() {
     assert_eq!(run("a", ":set ff=xx\n").msg, "Invalid argument: ff=xx");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn stats_compact_and_idle() {
     // `x` on every other char: one piece per kept char.
@@ -2302,6 +2409,7 @@ fn stats_compact_and_idle() {
     assert_eq!(run("a", ":set compactat=x\n").msg, "Invalid argument: compactat=x");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn filetype_detected_and_set() {
     let dir = temp_dir("filetype");
@@ -2321,6 +2429,7 @@ fn filetype_detected_and_set() {
     fs::remove_dir_all(&dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn buffers_switch_list_and_delete() {
     let dir = temp_dir("buffers");
@@ -2379,6 +2488,7 @@ fn buffers_switch_list_and_delete() {
     fs::remove_dir_all(dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn windows_split_move_and_close() {
     let mut e = ed("one\ntwo\nthree");
@@ -2434,6 +2544,7 @@ fn windows_split_move_and_close() {
     assert!(!feed(&mut e, ":q!\n"));
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn insert_mode_survives_drawing_other_windows() {
     let mut e = ed("ab");
@@ -2443,6 +2554,7 @@ fn insert_mode_survives_drawing_other_windows() {
     assert_eq!(text(&e), "abc");
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn background_save_writes_the_snapshot() {
     let dir = temp_dir("bgsave");
@@ -2460,6 +2572,7 @@ fn background_save_writes_the_snapshot() {
     fs::remove_dir_all(dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn reload_clamps_a_parked_window_cursor() {
     let dir = temp_dir("repro");
@@ -2475,6 +2588,7 @@ fn reload_clamps_a_parked_window_cursor() {
     fs::remove_dir_all(dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn saves_waited_for_and_their_messages() {
     let dir = temp_dir("savewait");
@@ -2510,6 +2624,71 @@ fn colored(f: &Frame) -> Vec<String> {
         .collect()
 }
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn syntax_off_and_on() {
+    let mut e = ed("fn a() {\n    1\n}\nfn b() {}\n");
+    e.buf.opts.filetype = "rust".into();
+    let plain = |e: &mut Editor| colored(&e.frame(30, 8)).iter().all(|r| !r.contains('<'));
+    assert!(!plain(&mut e) && e.buf.syntax.is_some());
+    feed(&mut e, ":syntax\n");
+    assert_eq!(e.msg, "syntax on");
+    feed(&mut e, ":syntax off\n:syn\n");
+    assert_eq!(e.msg, "syntax off");
+    // Nothing is colored or kept, and the objects do nothing.
+    assert!(plain(&mut e) && e.buf.syntax.is_none());
+    // Also in a buffer that is not shown.
+    e.buf.opts.filetype = "rust".into();
+    let other = std::env::temp_dir().join(format!("rim-syntax-off-{}.rs", std::process::id()));
+    fs::write(&other, "fn z() {}\n").unwrap();
+    feed(&mut e, ":syn on\n");
+    feed(&mut e, &format!(":e {}\n", other.display()));
+    e.frame(30, 4);
+    assert!(e.buf.syntax.is_some());
+    feed(&mut e, "\x1e:syn off\n");
+    assert!(e.buffers.iter().all(|b| b.syntax.is_none()) && e.buf.syntax.is_none());
+    fs::remove_file(&other).unwrap();
+    feed(&mut e, "jdif");
+    assert_eq!(text(&e), "fn a() {\n    1\n}\nfn b() {}\n");
+    // On again: the tree is rebuilt from the filetype.
+    feed(&mut e, ":syn on\n");
+    assert!(!plain(&mut e) && e.buf.syntax.is_some());
+    feed(&mut e, "dif");
+    assert_eq!(text(&e), "fn a() \nfn b() {}\n");
+    feed(&mut e, ":syntax maybe\n");
+    assert_eq!(e.msg, "Invalid argument: maybe");
+    assert!(e.syntax_on);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn syntax_off_reaches_every_window() {
+    let other = std::env::temp_dir().join(format!("rim-syntax-win-{}.rs", std::process::id()));
+    fs::write(&other, "fn z() {}\n").unwrap();
+    let mut e = ed("fn a() {}\n");
+    e.buf.opts.filetype = "rust".into();
+    feed(&mut e, &format!(":sp\n:e {}\n", other.display()));
+    let colored_rows = |e: &mut Editor| colored(&e.frame(40, 12)).iter().filter(|r| r.contains("<176:fn>")).count();
+    assert_eq!(colored_rows(&mut e), 2, "both windows are colored");
+    feed(&mut e, ":syntax off\n");
+    assert_eq!(colored_rows(&mut e), 0);
+    feed(&mut e, ":syntax on\n");
+    assert_eq!(colored_rows(&mut e), 2);
+    fs::remove_file(&other).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn syntaxcolors_reports_unknown_captures() {
+    let mut e = ed("fn a() {}");
+    e.buf.opts.filetype = "rust".into();
+    feed(&mut e, ":set sc=keywrod:5\n");
+    assert_eq!((e.msg.as_str(), e.buf.opts.syntaxcolors.is_empty()), ("Unknown capture: keywrod", true));
+    feed(&mut e, ":set sc=keyword:5\n:set sc?\n");
+    assert_eq!(e.msg, "syntaxcolors=keyword:5");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn syntax_colors_text_and_objects() {
     let mut e = ed("fn a() {\n    1\n}\nfn b() {\n    \"s\"\n}\n");

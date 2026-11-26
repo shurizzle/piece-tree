@@ -1,6 +1,6 @@
 //! A grammar and its queries: loading from the runtime directory, the colors of capture names.
 
-use std::{borrow::Cow, fs, mem, path::Path};
+use std::{borrow::Cow, cell::RefCell, collections::HashSet, fs, mem, path::Path};
 
 use libloading::{Library, Symbol};
 use tree_sitter::{Language, Query};
@@ -100,6 +100,42 @@ pub(super) fn color(name: &str) -> Option<(u8, u8)> {
     }
 }
 
+/// Capture names of the highlight queries the built-in grammars and helix's use; `:set syntaxcolors` accepts these
+/// and the names under them (`function` covers `function.method`), and those of a loaded grammar.
+const CAPTURES: &[&str] = &[
+    "attribute", "boolean", "character", "charset", "comment", "comment.block",
+    "comment.block.documentation", "comment.documentation", "comment.line", "comment.line.documentation", "conditional", "constant",
+    "constant.builtin", "constant.builtin.boolean", "constant.character", "constant.character.escape", "constant.numeric", "constant.numeric.float",
+    "constant.numeric.integer", "constructor", "define", "delimiter", "diff", "diff.delta",
+    "diff.minus", "diff.plus", "embedded", "escape", "exception", "field",
+    "float", "function", "function.builtin", "function.call", "function.macro", "function.method",
+    "function.special", "import", "include", "keyframes", "keyword", "keyword.control",
+    "keyword.control.conditional", "keyword.control.exception", "keyword.control.import", "keyword.control.repeat", "keyword.control.return", "keyword.directive",
+    "keyword.function", "keyword.operator", "keyword.return", "keyword.storage", "keyword.storage.modifier", "keyword.storage.type",
+    "label", "markup.bold", "markup.heading", "markup.heading.marker", "markup.italic", "markup.link",
+    "markup.link.label", "markup.link.text", "markup.link.url", "markup.list", "markup.list.checked", "markup.list.numbered",
+    "markup.list.unchecked", "markup.list.unnumbered", "markup.quote", "markup.raw", "markup.raw.block", "markup.raw.inline",
+    "markup.strikethrough", "media", "method", "method.call", "module", "namespace",
+    "number", "operator", "parameter", "preproc", "property", "punctuation",
+    "punctuation.bracket", "punctuation.delimiter", "punctuation.special", "repeat", "special", "storageclass",
+    "string", "string.escape", "string.regexp", "string.special", "string.special.key", "string.special.path",
+    "string.special.symbol", "string.special.url", "supports", "tag", "tag.attribute", "tag.builtin",
+    "tag.delimiter", "tag.error", "text.emphasis", "text.literal", "text.reference", "text.strong",
+    "text.title", "text.uri", "type", "type.builtin", "type.enum", "type.enum.variant",
+    "type.parameter", "variable", "variable.builtin", "variable.other", "variable.other.member", "variable.parameter",
+];
+
+thread_local! {
+    /// Capture names of the grammars loaded so far.
+    static LOADED: RefCell<HashSet<String>> = RefCell::default();
+}
+
+/// Whether `name` is a capture name or the start of one (`function` for `function.method`).
+pub(in crate::editor) fn known_capture(name: &str) -> bool {
+    let under = |c: &str| c == name || c.strip_prefix(name).is_some_and(|rest| rest.starts_with('.'));
+    CAPTURES.iter().any(|c| under(c)) || LOADED.with_borrow(|l| l.iter().any(|c| under(c)))
+}
+
 /// Query source of `name`/`file` with its `; inherits:` parents first (depth-limited against cycles).
 pub(super) fn read_query(dir: &Path, name: &str, file: &str, depth: usize) -> Option<String> {
     let src = fs::read_to_string(dir.join("queries").join(name).join(file)).ok()?;
@@ -145,6 +181,7 @@ impl Lang {
         let optional = |file: &str, src: &str| if src.trim().is_empty() { Ok(None) } else { compile(file, src).map(Some) };
         let highlights = compile("highlights.scm", q.highlights)?;
         let (objects, locals, injections) = (optional("textobjects.scm", q.objects)?, optional("locals.scm", q.locals)?, optional("injections.scm", q.injections)?);
+        LOADED.with_borrow_mut(|l| l.extend(highlights.capture_names().iter().map(|n| n.to_string())));
         let colors = [0, 1].map(|i| highlights.capture_names().iter().map(|n| color(n).map(|c| [c.0, c.1][i])).collect());
         let local_kinds = locals.as_ref().map_or_else(Vec::new, |q| {
             q.capture_names()
