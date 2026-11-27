@@ -1,0 +1,466 @@
+NVIM v0.12.6
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+1
+"---
+
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+1
+"---
+
+2
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: lockvar
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: y
+line    5:
+E741: Value is locked: x
+"---
+
+Error in {file}:
+line    2:
+E940: Cannot lock or unlock variable $HOME
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: $
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:errmsg
+1
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: g:x
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: b:x
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: w:x
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: t:x
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l
+[1, [2, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[1, [2, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 5
+[1, [2, 3]]
+"---
+
+[1, [5, 3]]
+"---
+
+[5, [2, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 5
+[1, [2, 3]]
+"---
+
+[1, [5, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[1][0] = 5
+[1, [2, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[1][0] = 5
+[1, [2, 3]]
+"---
+
+Error in {file}:
+line    4:
+E1122: Variable is locked: l
+[5, [2, 3]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0]
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0:1]
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0]
+[1, 2, 3]
+"---
+
+[9, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[1] = 9
+[1, 2, 3]
+"---
+
+[9, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0:1] = [8, 9]
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 9
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[1] = 9
+[1, 2, 3]
+"---
+
+[1, 2, 9]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[2] = 9
+[1, 2, 3]
+"---
+
+[1, 9, 3]
+"---
+
+4
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: l[1] = 9
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E1122: Variable is locked: l
+[1, 2, 3, 4]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.n = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a
+{'a': 1, 'b': {'c': 2}}
+"---
+
+{'a': 5, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.n = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+{'a': 1, 'b': {'c': 5}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.b.c = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+{'a': 1, 'b': 5}
+"---
+
+{'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d['a'] = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.b.c = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.b = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "n"
+1
+"---
+
+Error in {file}:
+line    2:
+E713: Cannot use empty key after .
+1
+"---
+
+{'a': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a += 2
+{'a': 1}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d
+{'a': 1}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a .= 'x'
+{'a': 1}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+"---
+
+Error in {file}:
+line    2:
+E488: Trailing characters: -1 x
+1
+"---
+
+1
+"---
+
+1
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: m[0] = 2
+[1]
+"---
+
+[[3]]
+"---
+
+Error in {file}:
+line    2:
+E461: Illegal variable name: l:x
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E940: Cannot lock or unlock variable a:a
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E46: Cannot change read-only variable "a:a"
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E795: Cannot delete variable a:a
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of a:000[0] = 2
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of add() argument
+"---
+
+Error in {file}[6]..function F:
+line    3:
+E741: Value is locked: l:x
+"---
+
+Error in {file}[6]..function F:
+line    3:
+E741: Value is locked: x
+"---
+
+ok
+"---
+
+{'a': 1, 'f': function('1')}
+"---
+
+Error in {file}[5]..function 1:
+line    1:
+E46: Cannot change read-only variable "self"
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: d.f() dict
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    4:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    4:
+E193: :endfunction not inside a function
+"---
+
+[1]
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+1
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+3

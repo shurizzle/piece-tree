@@ -10,7 +10,7 @@ use super::{
     Scope, Value, cmdline,
     expr::{Fail, at, ends_excmd, skipwhite},
     set_env,
-    value::{Dict, List},
+    value::{Dict, List, Lock, value_check_lock, var_check_lock, var_check_ro},
     vimvars,
 };
 use crate::editor::{
@@ -49,6 +49,10 @@ pub(super) enum NameLen {
 pub(super) struct Lval {
     pub name: Option<Rc<str>>,
     pub place: Place,
+    /// The lock of the value the lvalue stands in (`ll_tv->v_lock`): of the variable, or of the item reached last.
+    pub tv_lock: Lock,
+    /// What C prints for `ll_name` once the name is followed by a subscript: the rest of the command line.
+    pub rest: String,
 }
 
 fn is_white(c: u8) -> bool {
@@ -175,7 +179,11 @@ impl Editor {
     /// the result has braces. The error is the message of the expression, if it gave one.
     fn make_expanded_name(&mut self, text: &str, start: usize, end: Option<usize>, in_end: usize) -> Result<String, Option<String>> {
         let end = end.ok_or(None)?;
-        let value = self.eval0(&text[start + 1..end]).0.map_err(Some)?;
+        // C ends the expression with a NUL at the `}`: what follows on the command line is not part of a message.
+        let rest = std::mem::take(&mut self.scripts.arg_rest);
+        let value = self.eval0(&text[start + 1..end]).0;
+        self.scripts.arg_rest = rest;
+        let value = value.map_err(Some)?;
         // `typval2string`: a List or Dictionary is written as `string()` does (and expanded again if it has braces).
         let val = if matches!(value, Value::List(_) | Value::Dict(_)) {
             let (s, recursed) = value.encode(super::value::Enc::String);
@@ -230,7 +238,7 @@ impl Editor {
     /// assign (none for `:unlet`), `fne` the flags of `find_name_end`.
     #[allow(clippy::too_many_arguments)]
     pub(super) fn get_lval(&mut self, s: &str, start: usize, rettv: Option<&Value>, unlet: bool, skip: bool, quiet: bool, fne: u32, read_only: bool) -> (Option<usize>, Lval) {
-        let mut lv = Lval { name: None, place: Place::Var };
+        let mut lv = Lval { name: None, place: Place::Var, tv_lock: Lock::Unlocked, rest: String::new() };
         let rest = &s[start..];
         if skip {
             // When skipping just find the end of the name.
@@ -257,6 +265,7 @@ impl Editor {
             }
             if lv.name.is_none() && !quiet {
                 let t = self.tail(s, start);
+                self.scripts.emsg_severe = true;
                 self.error(format!("E475: Invalid argument: {t}"));
                 return (None, lv);
             }
@@ -275,6 +284,8 @@ impl Editor {
             return (None, lv);
         };
         lv.place = Place::VarTv;
+        lv.rest = self.tail(s, start);
+        lv.tv_lock = self.find_item(&name).map_or(Lock::Unlocked, |(d, k)| d.borrow().map.get(&*k).map_or(Lock::Unlocked, |i| i.lock));
         let mut range = false;
         // Loop until no more [idx] or .key is following.
         while at(s, p) == b'[' || (at(s, p) == b'.' && at(s, p + 1) != b'=' && at(s, p + 1) != b'.') {
@@ -369,7 +380,7 @@ impl Editor {
                         Some(r) => s[r.clone()].to_string(),
                         None => var1.as_ref().map(|v| self.tv_str(v)).unwrap_or_default(),
                     };
-                    let existing = d.borrow().get(&k).cloned();
+                    let existing = d.borrow().map.get(k.as_str()).cloned();
                     let scope = self.dict_scope(&d);
                     // When assigning to a scope dictionary check that the variable name is valid.
                     if rettv.is_some() && scope.is_some() && !valid_varname(&k) {
@@ -400,12 +411,16 @@ impl Editor {
                         }
                         Some(item) => {
                             // An existing variable, check that it can be changed.
-                            if !read_only && scope == Some(Scope::Vim) && vimvars::is_ro(&k) {
-                                self.error(format!("E46: Cannot change read-only variable \"{}\"", &s[start..p]));
-                                return (None, lv);
+                            if !read_only {
+                                let shown = &s[start..p];
+                                if let Some(m) = var_check_ro(item.flags, shown).or_else(|| var_check_lock(item.flags, shown)) {
+                                    self.error(m);
+                                    return (None, lv);
+                                }
                             }
                             lv.place = Place::Key { dict: d, key: k };
-                            cur = item;
+                            lv.tv_lock = item.lock;
+                            cur = item.tv;
                         }
                     }
                 }
@@ -441,6 +456,7 @@ impl Editor {
                         }
                     }
                     cur = l.borrow()[first].clone();
+                    lv.tv_lock = l.borrow().items[first].lock;
                     lv.place = if range { Place::Range { list: l, first, last, empty2 } } else { Place::Item { list: l, idx: first } };
                 }
                 _ => unreachable!("checked to be a List or a Dictionary"),
@@ -528,11 +544,46 @@ impl Editor {
     }
 
     /// `set_var_lval`: assigns `rettv` to the lvalue, or applies `op` (`=`, `+`, `-`, `*`, `/`, `%`, `.`) with it.
-    pub(super) fn set_var_lval(&mut self, lv: &Lval, rettv: &Value, op: char) {
+    pub(super) fn set_var_lval(&mut self, lv: &Lval, rettv: &Value, op: char, is_const: bool) {
         let name = lv.name.as_deref().unwrap_or("");
+        // A locked value, or a locked Dictionary a key is added to (the name is the rest of the command line).
+        let locked = match &lv.place {
+            Place::Var => None,
+            Place::NewKey { dict, .. } => value_check_lock(dict.borrow().lock, Some(&lv.rest)),
+            _ => value_check_lock(lv.tv_lock, Some(&lv.rest)),
+        };
+        if let Some(m) = locked {
+            return self.error(m);
+        }
+        if is_const {
+            // `:const` makes a variable: not an operator, a slice, nor an item.
+            match &lv.place {
+                Place::Var if op == '=' => {}
+                Place::Var => return self.error("E995: Cannot modify existing variable"),
+                Place::Range { .. } => return self.error("E996: Cannot lock a range"),
+                _ => return self.error("E996: Cannot lock a list or dict"),
+            }
+        }
         match &lv.place {
             Place::Var => {
                 if op != '=' {
+                    // `tv_check_lock` of the variable.
+                    if let Some((d, k)) = self.find_item(name) {
+                        let d = d.borrow();
+                        let it = &d.map[&*k];
+                        let container = match &it.tv {
+                            Value::List(l) => l.borrow().lock,
+                            Value::Dict(x) => x.borrow().lock,
+                            _ => Lock::Unlocked,
+                        };
+                        let m = var_check_ro(it.flags, name)
+                            .or_else(|| value_check_lock(it.lock, Some(name)))
+                            .or_else(|| if container == Lock::Unlocked { None } else { value_check_lock(container, Some(name)) });
+                        if let Some(m) = m {
+                            drop(d);
+                            return self.error(m);
+                        }
+                    }
                     // handle +=, -=, *=, /=, %= and .=
                     let tv = match self.eval_variable(name) {
                         Ok(v) => v,
@@ -550,7 +601,11 @@ impl Editor {
                     {
                         self.error(e);
                     }
-                } else if let Err(e) = self.set_var(name, rettv.clone()) {
+                } else if let Err(e) = {
+                    // Asked before the clone below is made.
+                    let shared = rettv.is_shared();
+                    self.set_var_const(name, rettv.clone(), is_const, shared)
+                } {
                     self.error(e);
                 }
             }
@@ -570,6 +625,19 @@ impl Editor {
             Place::Range { list, first, last, empty2 } => {
                 let Value::List(src) = rettv else { return };
                 let src = src.borrow().to_vec();
+                // Any locked item stops it before a change is made.
+                let (mut idx, mut at) = (*first as i64, *first);
+                for _ in 0..src.len() {
+                    let Some(lock) = list.borrow().items.get(at).map(|i| i.lock) else { break };
+                    if let Some(m) = value_check_lock(lock, Some(&lv.rest)) {
+                        return self.error(m);
+                    }
+                    if (!*empty2 && *last == idx) || at + 1 >= list.borrow().len() {
+                        break;
+                    }
+                    at += 1;
+                    idx += 1;
+                }
                 self.assign_range(list, &src, *first, *last, *empty2, op);
             }
             Place::NewKey { dict, key } => {
@@ -630,12 +698,13 @@ impl Editor {
 
     /// `ex_let_vars`: assigns `tv` to the variable, or the `[a, b; c]` variables, at `s[start..]`. `op` is `=` or the
     /// operator of `+=` and the like; none for `:for`.
-    pub(super) fn ex_let_vars(&mut self, s: &str, start: usize, tv: &Value, semicolon: bool, var_count: usize, op: Option<char>) -> bool {
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn ex_let_vars(&mut self, s: &str, start: usize, tv: &Value, semicolon: bool, var_count: usize, is_const: bool, op: Option<char>) -> bool {
         let mut p = start;
         if at(s, p) != b'[' {
             // ":let var = expr" or ":for var in list": what follows the name is the operator (`ex_let_one(.., op, op)`).
             let ends = op.map(String::from);
-            return self.ex_let_one(s, p, tv, ends.as_deref(), op).is_some();
+            return self.ex_let_one(s, p, tv, is_const, ends.as_deref(), op).is_some();
         }
         // ":let [v1, v2] = list" or ":for [v1, v2] in listlist"
         let Value::List(l) = tv else {
@@ -655,13 +724,13 @@ impl Editor {
         let mut item = 0;
         while at(s, p) != b']' {
             p = skipwhite(s, p + 1);
-            let Some(e) = self.ex_let_one(s, p, &items[item], Some(",;]"), op) else { return false };
+            let Some(e) = self.ex_let_one(s, p, &items[item], is_const, Some(",;]"), op) else { return false };
             item += 1;
             p = skipwhite(s, e);
             if at(s, p) == b';' {
                 // Put the rest of the list (may be empty) in the var after ';'.
                 let rest = Value::list(items.iter().skip(item).cloned().collect());
-                return self.ex_let_one(s, skipwhite(s, p + 1), &rest, Some("]"), op).is_some();
+                return self.ex_let_one(s, skipwhite(s, p + 1), &rest, is_const, Some("]"), op).is_some();
             } else if at(s, p) != b',' && at(s, p) != b']' {
                 self.error("E685: Internal error: ex_let_vars()");
                 return false;
@@ -672,7 +741,7 @@ impl Editor {
 
     /// `ex_let_one`: assigns one item of `:let var = expr` or `:let [v1, v2] = list`. `endchars` are the characters
     /// that may follow the name. The position after the name, or none for an error.
-    pub(super) fn ex_let_one(&mut self, s: &str, p: usize, tv: &Value, endchars: Option<&str>, op: Option<char>) -> Option<usize> {
+    pub(super) fn ex_let_one(&mut self, s: &str, p: usize, tv: &Value, is_const: bool, endchars: Option<&str>, op: Option<char>) -> Option<usize> {
         let opc = op.unwrap_or('=');
         let unexpected = |e: &mut Editor, at_end: usize| {
             let c = at(s, skipwhite(s, at_end));
@@ -683,6 +752,15 @@ impl Editor {
             bad
         };
         match at(s, p) {
+            b'$' | b'&' | b'@' if is_const => {
+                let what = match at(s, p) {
+                    b'$' => "an environment variable",
+                    b'&' => "an option",
+                    _ => "a register",
+                };
+                self.error(format!("E996: Cannot lock {what}"));
+                None
+            }
             b'$' => {
                 // ":let $VAR = expr": Set environment variable.
                 let from = p + 1;
@@ -771,7 +849,7 @@ impl Editor {
                 if let (Some(e), Some(_)) = (end, &lv.name)
                     && !unexpected(self, e)
                 {
-                    self.set_var_lval(&lv, tv, opc);
+                    self.set_var_lval(&lv, tv, opc, is_const);
                     out = Some(e);
                 }
                 out

@@ -15,7 +15,6 @@ pub(in crate::editor) type DictMap = HashMap<Rc<str>, Value>;
 
 /// `VarLockStatus`: `:lockvar` sets `Locked`, `Fixed` is what a built-in variable or a `v:` Dictionary has.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Trace)]
-#[expect(dead_code, reason = ":lockvar sets them (next step)")]
 pub(in crate::editor) enum Lock {
     #[default]
     Unlocked,
@@ -221,6 +220,11 @@ impl DictData {
 
     pub fn values(&self) -> impl Iterator<Item = &Value> {
         self.map.values().map(|i| &i.tv)
+    }
+
+    /// `DI_FLAGS_RO | DI_FLAGS_FIX` item with the lock `lock`: what `a:` variables, `l:self` and `v:` ones are.
+    pub fn insert_fixed(&mut self, k: Rc<str>, v: Value, lock: Lock) {
+        self.map.insert(k, DictItem { tv: v, lock, flags: DI_RO | DI_FIX });
     }
 
     /// The values by key, unlocked.
@@ -488,4 +492,73 @@ pub(super) fn str_to_float(s: &str) -> f64 {
         }
     }
     s[..end].parse().unwrap_or(0.0)
+}
+
+// ---- locks and `di_flags` (`typval.c`, `vars.c`) ------------------------------------------------
+
+/// `DI_FLAGS_RO`: `E46` on a change. `DI_FLAGS_RO_SBX` only matters in the sandbox, which rim has not.
+pub(in crate::editor) const DI_RO: u8 = 1;
+pub(in crate::editor) const DI_RO_SBX: u8 = 2;
+/// `DI_FLAGS_FIX`: the variable cannot be deleted (`E795`).
+pub(in crate::editor) const DI_FIX: u8 = 4;
+/// `DI_FLAGS_LOCK`: `:lockvar` on the variable itself (`E1122`).
+pub(in crate::editor) const DI_LOCK: u8 = 8;
+/// `DICT_MAXNEST`.
+pub(in crate::editor) const MAX_NEST: usize = 100;
+
+/// `value_check_lock`: the message of a locked value, none when it is not locked. `name` is none for the bare form.
+pub(in crate::editor) fn value_check_lock(lock: Lock, name: Option<&str>) -> Option<String> {
+    match (lock, name) {
+        (Lock::Unlocked, _) => None,
+        (Lock::Locked, None) => Some("E741: Value is locked".into()),
+        (Lock::Locked, Some(n)) => Some(format!("E741: Value is locked: {n}")),
+        (Lock::Fixed, None) => Some("E742: Cannot change value".into()),
+        (Lock::Fixed, Some(n)) => Some(format!("E742: Cannot change value of {n}")),
+    }
+}
+
+/// `var_check_ro`.
+pub(in crate::editor) fn var_check_ro(flags: u8, name: &str) -> Option<String> {
+    (flags & DI_RO != 0).then(|| format!("E46: Cannot change read-only variable \"{name}\""))
+}
+
+/// `var_check_lock`.
+pub(in crate::editor) fn var_check_lock(flags: u8, name: &str) -> Option<String> {
+    (flags & DI_LOCK != 0).then(|| format!("E1122: Variable is locked: {name}"))
+}
+
+/// `var_check_fixed`.
+pub(in crate::editor) fn var_check_fixed(flags: u8, name: &str) -> Option<String> {
+    (flags & DI_FIX != 0).then(|| format!("E795: Cannot delete variable {name}"))
+}
+
+impl Lock {
+    /// `CHANGE_LOCK`: a fixed one stays fixed.
+    pub fn change(&mut self, lock: bool) {
+        if *self != Lock::Fixed {
+            *self = if lock { Lock::Locked } else { Lock::Unlocked };
+        }
+    }
+}
+
+impl Value {
+    /// C's `refcount > 1` of a List or Dictionary: something else holds it. Ask it of the value where it is kept, before
+    /// any clone is made.
+    pub fn is_shared(&self) -> bool {
+        match self {
+            Value::List(l) => dumpster::unsync::Gc::ref_count(l).get() > 1,
+            Value::Dict(d) => dumpster::unsync::Gc::ref_count(d).get() > 1,
+            _ => false,
+        }
+    }
+
+    /// `tv_islocked` for a value in a slot with the lock `slot`: the slot or the container is locked (a fixed one is not).
+    pub fn is_locked(&self, slot: Lock) -> bool {
+        slot == Lock::Locked
+            || match self {
+                Value::List(l) => l.borrow().lock == Lock::Locked,
+                Value::Dict(d) => d.borrow().lock == Lock::Locked,
+                _ => false,
+            }
+    }
 }

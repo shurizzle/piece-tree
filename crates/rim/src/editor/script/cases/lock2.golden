@@ -1,0 +1,3440 @@
+NVIM v0.12.6
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+"---
+
+[3, 1, 2, 4]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+[4, 3, 1, 2]
+"---
+
+[4, 3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+[3, 4, 1, 2]
+"---
+
+[3, 4, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+[1, 2]
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+[2]
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+"---
+
+[3, 1, 2, 4]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+[4, 3, 1, 2]
+"---
+
+[4, 3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+"---
+
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: uniq() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: uniq() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: uniq() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: uniq() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: reverse() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: reverse() argument
+[3, 1, 2]
+"---
+
+[2, 1, 3]
+"---
+
+[2, 1, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: reverse() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: reverse() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+[3, 2]
+"---
+
+[3, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+"---
+
+[4, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+3
+1
+2
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[4, 2, 3]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[3, 1, 2, 4]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+0
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+0
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+[1, 2, 3]
+"---
+
+[1, 2, 3]
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+0
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+0
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+[1, 2, 3]
+"---
+
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+{'b': 2}
+"---
+
+{'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+{'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2, 'c': 3}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 3, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E737: Key already exists: a
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+{'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 2, 'b': 3}
+"---
+
+{'a': 2, 'b': 3}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+{}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E716: Key not present in Dictionary: "zz"
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E716: Key not present in Dictionary: "zz"
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    3:
+E716: Key not present in Dictionary: "zz"
+{'a': 1, 'b': 2}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: remove() argument
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: insert() argument
+[1, 2, 3]
+"---
+
+Error in {file}[2]..function <lambda>1:
+line    1:
+E121: Undefined variable: l
+E116: Invalid arguments for function add
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: sort() argument
+[1, 2, 3]
+"---
+
+[1, 1, 1]
+"---
+
+[5, '', '']
+"---
+
+5
+"---
+
+[1, 2, 3]
+"---
+
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: extend() argument
+{'a': 1}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: remove() argument
+{'a': 1}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: extend() argument
+{'a': 1}
+"---
+
+{'a': 1}
+"---
+
+{'a': ''}
+"---
+
+{'a': 1}
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+Error in {file}:
+line    5:
+E786: Range not allowed
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+Error in {file}:
+line    5:
+E716: Key not present in Dictionary: "n"
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  y
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1x
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+Error in {file}:
+line    5:
+E684: List index out of range: 5
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+Error in {file}:
+line    5:
+E713: Cannot use empty key after .
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    5:
+E689: Can only index a List, Dictionary or Blob
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: $HOME
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: @a
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: &tw
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument:  l
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters:  
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E731: Using a Dictionary as a String
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+Error in {file}:
+line    5:
+E475: Invalid argument: 1.5
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:count"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:count"
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:errmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:errmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:errmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:errmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:errmsg
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:version
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:version
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:version
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:version
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:version
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:version"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:version"
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:true
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:true
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:true
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:true
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:true
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:true"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:true"
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:null
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:null
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:null
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:null
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:null
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:null"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:null"
+1
+"---
+
+0
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:argv
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:argv"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:argv"
+1
+"---
+
+0
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:event
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:event"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:event"
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:exception
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:exception
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:exception
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:exception
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:exception
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:exception"
+1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:exception"
+1
+"---
+
+0
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:statusmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:statusmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:statusmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E940: Cannot lock or unlock variable v:statusmsg
+1
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:statusmsg
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "v:key"
+1
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: v:key
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: v:key
+1
+"---
+
+-1
+1
+"---
+
+Error in {file}:
+line    1:
+E742: Cannot change value of v:argv[0] = 'x'
+1
+"---
+
+Error in {file}:
+line    1:
+E742: Cannot change value of add() argument
+1
+"---
+
+Error in {file}:
+line    1:
+E742: Cannot change value of v:argv[0]
+1
+"---
+
+Error in {file}:
+line    2:
+E940: Cannot lock or unlock variable v:errmsg
+b
+"---
+
+0 0 0 0 0
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E46: Cannot change read-only variable "a:000"
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E46: Cannot change read-only variable "a:1"
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E46: Cannot change read-only variable "a:a"
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E46: Cannot change read-only variable "a:000"
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of a:000[0] = 2
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of extend() argument
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of sort() argument
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of remove() argument
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of map() argument
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E742: Cannot change value of a:000[0]
+"---
+
+Error in {file}[6]..function 1:
+line    2:
+E741: Value is locked: self.a = 1
+{'f': function('1')}
+"---
+
+Error in {file}[6]..function 1:
+line    1:
+E741: Value is locked: self.a = 1
+{'f': function('1')}
+"---
+
+1
+Error in {file}[6]..function 1:
+line    1:
+E716: Key not present in Dictionary: "a" -1
+"---
+
+Error in {file}[5]..function 1:
+line    1:
+E795: Cannot delete variable self
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    4:
+E193: :endfunction not inside a function
+{'f': 1}
+"---
+
+Error in {file}:
+line    4:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    5:
+E193: :endfunction not inside a function
+1
+"---
+
+Error in {file}:
+line    4:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    5:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: d.g() dict
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: d.g() dict
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    4:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E124: Missing '(': d.f() dict
+line    4:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E718: Funcref required
+"---
+
+Error in {file}:
+line    3:
+E718: Funcref required
+E718: Funcref required
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: g:l[0] = 2
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+"---
+
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: g:l
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: g:l
+"---
+
+3
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: g:l
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: g:l[0] = 6
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: s:x
+"---
+
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: b:l
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: b:l
+"---
+
+2
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: t:l
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0:0] = [2]
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0:2] = [4, 5, 6]
+[1, 2, 3]
+"---
+
+[4, 5, 3]
+"---
+
+Error in {file}:
+line    3:
+E710: List value has more items than target
+[4, 5, 3]
+"---
+
+Error in {file}:
+line    3:
+E711: List value has not enough items
+[4, 5, 3]
+"---
+
+Error in {file}:
+line    3:
+E711: List value has not enough items
+[1, 4, 3]
+"---
+
+Error in {file}:
+line    3:
+E711: List value has not enough items
+[1, 6, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[2] += 1
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[2] .= 1
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[2] -= 1
+[1, 2, 3]
+"---
+
+[1, 2]
+"---
+
+[1, 2]
+"---
+
+[1, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0][0] = 5
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0][0] = 5
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 5
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a[0] = 5
+{'a': [1]}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a[0] = 5
+{'a': [1]}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+{'a': [1]}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a = 5
+{'a': [1]}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a.b = 5
+{'a': {'b': 1}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a.b = 5
+{'a': {'b': 1}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a.c = 5
+{'a': {'b': 1}}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.a.b
+{'a': {'b': 1}}
+"---
+
+{}
+"---
+
+{'a': {'b': 5}}
+"---
+
+1
+"---
+
+Error in {file}:
+line    3:
+E743: Variable nested too deep for (un)lock
+E743: Variable nested too deep for (un)lock
+1 1
+"---
+
+1
+"---
+
+Error in {file}:
+line    3:
+E743: Variable nested too deep for (un)lock
+1
+"---
+
+Error in {file}:
+line    3:
+E743: Variable nested too deep for (un)lock
+E743: Variable nested too deep for (un)lock
+0
+"---
+
+Error in {file}:
+line    4:
+E743: Variable nested too deep for (un)lock
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    4:
+E743: Variable nested too deep for (un)lock
+1
+"---
+
+1
+Error in {file}:
+line    5:
+E741: Value is locked: add() argument
+"---
+
+1
+Error in {file}:
+line    5:
+E741: Value is locked: add() argument
+"---
+
+0
+"---
+
+1 1 1
+"---
+
+[1, 2]
+"---
+
+[2] 0 0
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: m[0] = 2
+"---
+
+2
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: m[0] = 2
+"---
+
+[2]
+"---
+
+[2]
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: m.a[0] = 2
+{'a': [1]}
+"---
+
+[1]
+"---
+
+[[3]]
+"---
+
+1
+"---
+
+"---
+
+Vim(let):E741: Value is locked: x
+"---
+
+Vim(let):E741: Value is locked: x
+"---
+
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+1
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+1
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: sort() argument
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: reverse() argument
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: remove() argument
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: insert() argument
+0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: filter() argument
+[1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+[1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: map() argument
+{'a': 1, 'b': 2}
+"---
+
+{}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+2
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+{'a': 3, 'b': 2, 'c': 3}

@@ -1,0 +1,90 @@
+NVIM v0.12.6
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "> add(1, 2)"
+E475: Invalid argument: {-> add(1, 2)}()
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E475: Invalid argument: {x -> x}(1)
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E475: Invalid argument: {x}()
+"---
+
+F
+"---
+
+F
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "> 1"
+E475: Invalid argument: {-> 1}() | echo 'next'
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "> 1"
+Error in {file}:
+line    1:
+E475: Invalid argument: {-> 1}() | echo 'next'
+"---
+
+Error in {file}[2]..{file}:
+line    1:
+E15: Invalid expression: "> 1"
+E475: Invalid argument: {-> 1}() | catch | echo 'c' | endtry
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E475: Invalid argument: {x}{y}()
+"---
+
+Error in {file}:
+line    3:
+E117: Unknown function: Add
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+E475: Invalid argument: {}()
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: 1
+"---
+
+Error in {file}:
+line    1:
+E107: Missing parentheses: {'F'}
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: {
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "> "
+E475: Invalid argument: {-> }()
+"---
+
+"---
+
+Error in {file}:
+line    2:
+E729: Using a Funcref as a String
+E117: Unknown function: 

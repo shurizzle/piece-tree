@@ -1,0 +1,1386 @@
+NVIM v0.12.6
+
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: x
+1
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: x
+1
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1
+"---
+
+1
+"---
+
+2
+"---
+
+2
+"---
+
+1
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: x
+a
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: x
+1.5
+"---
+
+v:true
+"---
+
+v:null
+"---
+
+2
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command: conste x = 1
+line    2:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command: consta x = 1
+line    2:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: x = 1: con x = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+1
+"---
+
+x                     #1
+1
+"---
+
+x                     #1
+Error in {file}:
+line    2:
+E121: Undefined variable: y
+1
+"---
+
+Error in {file}:
+line    2:
+E475: Invalid argument: 
+1
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: 1x
+E488: Trailing characters: = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 2
+1
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "("
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+0
+"---
+
+1
+"---
+
+1 2
+"---
+
+1
+"---
+
+[1, [2]]
+1 1 1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l[0] = 5
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l[1][0] = 5
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l[0]
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: sort() argument
+[1, [2]]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: sort() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: reverse() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: remove() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: insert() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: extend() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: map() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: filter() argument
+[3, 1]
+"---
+
+[3, 1, 0] 0
+"---
+
+[3, 1, 0] 0
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[3, 1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+1 1
+"---
+
+1 1 1
+"---
+
+1 1 1 1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.a = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.b.c = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.n = 5
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.a
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: remove() argument
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: extend() argument
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d
+{'a': 1, 'b': {'c': 2}}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.a = 1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+{'a': [1]}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: d.a[0] = 2
+{'a': [1]}
+"---
+
+1
+"---
+
+1
+"---
+
+[1, 2] [1, 2] 0 1
+"---
+
+[1, 2] [1, 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: b
+"---
+
+[1] 1
+"---
+
+Error in {file}:
+line    4:
+E741: Value is locked: add() argument
+"---
+
+[[1, 2]] 0 1 1
+"---
+
+[[1, 2]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+{'k': [1, 2]} 1
+"---
+
+{'k': [1, 2]}
+"---
+
+[[1, 2], [1, 2]] 1
+"---
+
+0 1 1
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+1 1
+"---
+
+[[1], 2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+[[1], 1]
+"---
+
+[[1, 1]]
+"---
+
+Error in {file}:
+line    2:
+E461: Illegal variable name: l:x
+1
+"---
+
+[[1, 2]]
+"---
+
+[[1, 2]]
+"---
+
+{'a': [1, 2]}
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: l
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: F
+"---
+
+Error in {file}:
+line    1:
+E704: Funcref variable name must start with a capital: f
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: F
+"---
+
+[2]
+"---
+
+1
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: a
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: b
+2
+"---
+
+1 [2, 3] 1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[2, 3]
+"---
+
+[1, 1] [2] 1 1
+"---
+
+[5]
+"---
+
+{'x': 5}
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+1
+"---
+
+Error in {file}:
+line    1:
+E687: Less targets than List items
+1
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+1
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+1
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+1
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+1
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+0
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1 1
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+E995: Cannot modify existing variable
+1
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: [b]] = [1, [2]]
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: b] = [1, 2]
+1
+"---
+
+1 2
+"---
+
+1
+"---
+
+1 2
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an environment variable
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an option
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock a register
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: l
+1
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+1 [0]
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+1 {}
+"---
+
+2 []
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an environment variable
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an option
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an option
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock a register
+
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock a register
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an environment variable
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an option
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock a register
+1
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a range
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a range
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+{'a': 1}
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+{'a': 1}
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+{'a': 1}
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+1
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 1
+[1]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: d.k = 1
+{}
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0] = 5
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0:1] = [5, 6]
+"---
+
+Error in {file}:
+line    2:
+E996: Cannot lock a list or dict
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+[1, 2]
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: g:x
+1
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+[1]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: s:x
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: b:x
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: w:x
+1
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: t:x
+1
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: v:x
+1
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+E995: Cannot modify existing variable
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: a:x
+1
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: l:x
+line    2:
+E121: Undefined variable: l:x
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: g:
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: :y = 1
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    3:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+E475: Invalid argument: {nosuch} = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+E475: Invalid argument: {} = 1
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a{ = 1
+1
+"---
+
+2
+"---
+
+2
+"---
+
+2
+"---
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    1:
+E996: Cannot lock an environment variable
+1
+"---
+
+Vim(const):E995: Cannot modify existing variable
+"---
+
+Vim(let):E741: Value is locked: x
+"---
+
+Vim(const):E996: Cannot lock an environment variable
+"---
+
+Error in {file}[2]..{file}:
+line    1:
+E741: Value is locked: add() argument
+"---
+
+Vim(let):E741: Value is locked: l[0] = 2 | catch | echo v:exception | endtry
+"---
+
+Vim(unlet):E741: Value is locked: l[0]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: x
+1
+"---
+
+1
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: x
+1
+"---
+
+Error in {file}:
+line    3:
+E995: Cannot modify existing variable
+0
+"---
+
+1 2
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    1:
+E995: Cannot modify existing variable
+1
+"---
+
+1
+"---
+
+2
+"---
+
+1
+"---
+
+
+Error in {file}:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+['a', 'b'] 1
+"---
+
+Error in {file}:
+line    5:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    5:
+E741: Value is locked: x
+"---
+
+Error in {file}:
+line    6:
+E990: Missing end marker 'END'
+"---
+
+['3']
+"---
+
+[] 1
+"---
+
+1 2
+"---
+
+1 ['2', '3']
+"---
+
+Error in {file}:
+line    6:
+E995: Cannot modify existing variable
+['a']
+"---
+
+Error in {file}:
+line    4:
+E995: Cannot modify existing variable
+1
+"---
+
+Error in {file}:
+line    3:
+E996: Cannot lock an option
+1
+"---
+
+Error in {file}:
+line    3:
+E996: Cannot lock an environment variable
+1
+"---
+
+Error in {file}:
+line    3:
+E996: Cannot lock a register
+1
+"---
+
+Error in {file}:
+line    4:
+E684: List index out of range: 0
+[]
+"---
+
+Error in {file}:
+line    3:
+E990: Missing end marker 'END'
+"---
+
+Error in {file}:
+line    1:
+E172: Missing marker
+1
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "<< END"
+"---
+
+0
+"---
+
+1
+"---
+
+Error in {file}[5]..function F:
+line    2:
+E741: Value is locked: x
+"---
+
+Error in {file}[5]..function F:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+Error in {file}[5]..function F:
+line    2:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line    6:
+E741: Value is locked: add() argument
+[1] 1
+"---
+
+[1, 2]
+"---
+
+ok
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E461: Illegal variable name: a:b
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}[5]..function F:
+line    2:
+E742: Cannot change value of add() argument
+"---
+
+1
+"---
+
+Error in {file}[5]..function F:
+line    2:
+E741: Value is locked: l:x
+"---
+
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E741: Value is locked: add() argument
+1
+"---
+
+
+"---
+
+"---
+
+Error in {file}[6]..function F:
+line    2:
+E995: Cannot modify existing variable
+"---
+
+Error in {file}[6]..function F:
+line    2:
+E995: Cannot modify existing variable
+after
+"---
+
+{'a': 1, 'f': function('1')}
+"---
+
+Error in {file}[5]..function 1:
+line    1:
+E995: Cannot modify existing variable
+"---
+
+2
+1
+"---
+
+"---
+
+Error in {file}[5]..function F:
+line    1:
+E121: Undefined variable: x
+"---
+
+2
+"---
+
+Error in {file}[6]..function F:
+line    3:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}[6]..function F:
+line    3:
+E741: Value is locked: y
+"---
+
+[1]
+"---
+
+[1]
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: m[0][0] = 2
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: m.a[0] = 2
+"---
+
+[1, 2]
+"---
+
+[1, 2, 3]
+"---
+
+[1, 3]
+"---
+
+[1, 3]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: add() argument
+[[1]]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: e.b = 2
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+{'a': 1, 'b': 2}
+"---
+
+{'a': 2}
+"---
+
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: sort() argument
+0
+"---
+
+[2, 1, 3]
+"---
+
+[3, 1, 2]
+"---
+
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    2:
+E741: Value is locked: flatten() argument
+[[3], 1, 2]
+"---
+
+1 1
+Error in {file}:
+line    2:
+E786: Range not allowed -1
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+-1
+"---
+
+[3, 1, 2] 3 3
+"---
+
+abc d
+"---
+
+1 2
+"---
+
+[1, 0, 0, 0, 0]
+"---
+
+Error in {file}:
+line    3:
+E741: Value is locked: l[0]
+"---
+
+Vim(unlet):E741: Value is locked: l[0]
+"---
+
+Vim(unlet):E741: Value is locked: d.a
+"---
+
+Vim(unlet):E741: Value is locked: l[0:]

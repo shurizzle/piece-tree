@@ -1,0 +1,61 @@
+NVIM v0.12.6
+
+['abc', '  def'] 1
+"---
+
+E741: Value is locked: add() argument
+"---
+
+E741: Value is locked: x
+"---
+
+E990: Missing end marker 'END'
+['a', ' b', 'END']
+"---
+
+['3']
+"---
+
+1 2
+"---
+
+E741: Value is locked: a
+"---
+
+E995: Cannot modify existing variable
+['a']
+"---
+
+E995: Cannot modify existing variable
+1
+"---
+
+E996: Cannot lock an environment variable
+1
+"---
+
+E741: Value is locked: l
+"---
+
+E741: Value is locked: add() argument
+"---
+
+E741: Value is locked: x
+"---
+
+E995: Cannot modify existing variable
+"---
+
+1 2
+"---
+
+E996: Cannot lock an environment variable
+"---
+
+E996: Cannot lock an option
+"---
+
+E996: Cannot lock a register
+"---
+
+E996: Cannot lock a list or dict

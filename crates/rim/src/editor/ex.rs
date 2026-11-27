@@ -195,10 +195,10 @@ const CMDWIN_REFUSES: &[(&str, &str)] = &[
 
 /// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
 pub(super) const NAMES: &[&str] = &[
-    "bNext", "bdelete", "bnext", "bprevious", "break", "buffer", "buffers", "call", "close", "compact", "continue", "copy", "defer", "delete", "digraphs", "earlier", "echo", "echoerr",
+    "bNext", "bdelete", "bnext", "bprevious", "break", "buffer", "buffers", "call", "close", "compact", "const", "continue", "copy", "defer", "delete", "digraphs", "earlier", "echo", "echoerr",
     "echomsg", "echon", "edit", "else", "elseif", "endfor", "endif", "endwhile", "enew", "execute", "files", "finish", "for", "global", "goto", "highlight", "if", "join", "later",
-    "let", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit", "quitall", "read", "redo", "retab", "saveas", "set", "sort", "source", "split",
-    "stats", "substitute", "syntax", "undo", "undolist", "unlet", "vglobal", "vnew", "vsplit", "while", "wq", "wqall", "write", "xall", "xit", "yank",
+    "let", "lockvar", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit", "quitall", "read", "redo", "retab", "saveas", "set", "sort", "source", "split",
+    "stats", "substitute", "syntax", "undo", "undolist", "unlet", "unlockvar", "vglobal", "vnew", "vsplit", "while", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
 
 /// Commands whose argument is a file name, as (shortest abbreviation, name).
@@ -418,12 +418,15 @@ impl Editor {
                 self.only_window();
                 Ok(())
             }
-            "let" => self.let_cmd(a),
+            "let" => self.let_cmd(a, false),
+            _ if abbr(n, "cons", "const") => self.let_cmd(a, true),
             _ if abbr(n, "so", "source") => match self.source_cmd(r, bang, a) {
                 Ok(go) => return go,
                 Err(e) => Err(e),
             },
             _ if abbr(n, "unl", "unlet") => self.unlet_cmd(bang, a),
+            _ if abbr(n, "lockv", "lockvar") => self.lockvar_cmd(true, bang, a),
+            _ if abbr(n, "unlo", "unlockvar") => self.lockvar_cmd(false, bang, a),
             _ if abbr(n, "ec", "echo") => self.echo_cmd(script::Echo::Plain, a),
             "echon" => self.echo_cmd(script::Echo::NoNewline, a),
             _ if abbr(n, "echom", "echomsg") => self.echo_cmd(script::Echo::Msg, a),

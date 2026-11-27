@@ -336,7 +336,7 @@ impl Editor {
             }
         };
         self.scripts.arg_rest.clear();
-        self.ex_let_vars(&fi.vars, 0, &item, fi.semicolon, fi.var_count, None)
+        self.ex_let_vars(&fi.vars, 0, &item, fi.semicolon, fi.var_count, false, None)
     }
 
     /// `ex_while` for `:while` and `:for`.

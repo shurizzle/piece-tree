@@ -113,6 +113,7 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("stats", "stats", TRLBAR),
     c("compact", "compact", TRLBAR),
     c("let", "let", EXTRA | NOTRLCOM),
+    c("cons", "const", EXTRA | NOTRLCOM),
     c("fu", "function", BANG | EXTRA),
     c("retu", "return", EXTRA | NOTRLCOM),
     c("try", "try", TRLBAR),
@@ -123,6 +124,8 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("endf", "endfunction", TRLBAR),
     c("delf", "delfunction", BANG | NEEDARG | EXTRA),
     c("unl", "unlet", BANG | EXTRA | NEEDARG),
+    c("lockv", "lockvar", BANG | EXTRA | NEEDARG),
+    c("unlo", "unlockvar", BANG | EXTRA | NEEDARG),
     c("ec", "echo", EXTRA | NOTRLCOM),
     c("redi", "redir", BANG | XFILE | EXTRA | TRLBAR),
     c("echon", "echon", EXTRA | NOTRLCOM),
@@ -880,7 +883,7 @@ fn sort_end(arg: &str) -> End {
 /// what follows them. `None` when `long` is not one of them.
 pub(super) fn own_end(e: &mut Editor, long: &str, arg: &str) -> Option<End> {
     Some(match long {
-        "let" => let_end(e, arg),
+        "let" | "const" => let_end(e, arg),
         "function" | "delfunction" | "catch" => whole(arg),
         "return" => match arg.as_bytes().first() {
             None | Some(b'|' | b'\n') => cut(arg, 0),
@@ -889,7 +892,7 @@ pub(super) fn own_end(e: &mut Editor, long: &str, arg: &str) -> Option<End> {
                 Err(next) => (arg.to_string(), next),
             },
         },
-        "unlet" => unlet_end(arg),
+        "unlet" | "lockvar" | "unlockvar" => unlet_end(arg),
         "echo" | "echon" | "echomsg" | "echoerr" | "execute" => echo_end(e, arg),
         "call" | "if" | "elseif" | "while" | "throw" => match expr_end(e, arg) {
             Ok(end) => cut(arg, end),
@@ -934,6 +937,6 @@ pub(super) fn own_end(e: &mut Editor, long: &str, arg: &str) -> Option<End> {
 pub(super) fn skipped_when_inactive(long: &str) -> bool {
     !matches!(
         long,
-        "while" | "endwhile" | "for" | "endfor" | "if" | "elseif" | "else" | "endif" | "call" | "defer" | "echo" | "echoerr" | "echomsg" | "echon" | "execute" | "let" | "unlet" | "function" | "delfunction" | "return" | "try" | "catch" | "finally" | "endtry" | "throw" | "substitute" | "&" | "&&" | "~" | "syntax" | "vertical"
+        "while" | "endwhile" | "for" | "endfor" | "if" | "elseif" | "else" | "endif" | "call" | "defer" | "echo" | "echoerr" | "echomsg" | "echon" | "execute" | "let" | "const" | "unlet" | "lockvar" | "unlockvar" | "function" | "delfunction" | "return" | "try" | "catch" | "finally" | "endtry" | "throw" | "substitute" | "&" | "&&" | "~" | "syntax" | "vertical"
     )
 }

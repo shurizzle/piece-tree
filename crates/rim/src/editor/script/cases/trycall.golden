@@ -1,0 +1,945 @@
+NVIM v0.12.6
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+caught Vim(call):E730: Using a List as a String
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E118: Too many arguments for function: add
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}:
+line   16:
+E118: Too many arguments for function: add
+end
+"---
+
+Error in {file}:
+line   16:
+E118: Too many arguments for function: add
+end
+"---
+
+Error in {file}:
+line   16:
+E118: Too many arguments for function: add
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E119: Not enough arguments for function: len
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}:
+line   16:
+E119: Not enough arguments for function: len
+end
+"---
+
+Error in {file}:
+line   16:
+E119: Not enough arguments for function: len
+end
+"---
+
+Error in {file}:
+line   16:
+E119: Not enough arguments for function: len
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E117: Unknown function: nosuch
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}:
+line   16:
+E117: Unknown function: nosuch
+end
+"---
+
+Error in {file}:
+line   16:
+E117: Unknown function: nosuch
+end
+"---
+
+Error in {file}:
+line   16:
+E117: Unknown function: nosuch
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(echo):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+1
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+1
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+1
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(let):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E684: List index out of range: 5
+"---
+
+caught Vim(call):E684: List index out of range: 5
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E684: List index out of range: 5
+"---
+
+Error in {file}:
+line   16:
+E684: List index out of range: 5
+end
+"---
+
+Error in {file}:
+line   16:
+E684: List index out of range: 5
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E684: List index out of range: 5
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E121: Undefined variable: x
+"---
+
+caught Vim(call):E121: Undefined variable: x
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: x
+end
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: x
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: x
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E121: Undefined variable: throw
+"---
+
+caught Vim(call):E121: Undefined variable: throw
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E121: Undefined variable: throw
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: throw
+end
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: throw
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E121: Undefined variable: throw
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: add() argument
+"---
+
+caught Vim(call):E741: Value is locked: add() argument
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: add() argument
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: add() argument
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: add() argument
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: add() argument
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: extend() argument
+"---
+
+caught Vim(call):E741: Value is locked: extend() argument
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: extend() argument
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: extend() argument
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: extend() argument
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: extend() argument
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: sort() argument
+"---
+
+caught Vim(call):E741: Value is locked: sort() argument
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E741: Value is locked: sort() argument
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: sort() argument
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: sort() argument
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E741: Value is locked: sort() argument
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}[16]..function G:
+line    1:
+E897: List or Blob required
+end
+"---
+
+Error in {file}[16]..function G:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function G:
+line    1:
+E897: List or Blob required
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught x
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}[16]..function H[1]..{file}[16]..function H:
+line    1:
+E605: Exception not caught: x
+"---
+
+Error in {file}[16]..function H[1]..{file}[16]..function H:
+line    1:
+E605: Exception not caught: x
+same line
+end
+"---
+
+caught
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E726: Stride is zero
+"---
+
+caught Vim(call):E726: Stride is zero
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E726: Stride is zero
+"---
+
+Error in {file}:
+line   16:
+E726: Stride is zero
+end
+"---
+
+Error in {file}:
+line   16:
+E726: Stride is zero
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E726: Stride is zero
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+caught Vim(call):E730: Using a List as a String
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E745: Using a List as a Number
+"---
+
+caught Vim(call):E745: Using a List as a Number
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+end
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E700: Unknown function: nosuch
+"---
+
+caught Vim(call):E700: Unknown function: nosuch
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E700: Unknown function: nosuch
+"---
+
+Error in {file}:
+line   16:
+E700: Unknown function: nosuch
+end
+"---
+
+Error in {file}:
+line   16:
+E700: Unknown function: nosuch
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E700: Unknown function: nosuch
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+caught Vim(call):E730: Using a List as a String
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E730: Using a List as a String
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E745: Using a List as a Number
+"---
+
+caught Vim(call):E745: Using a List as a Number
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+inside
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function F:
+line    1:
+E897: List or Blob required
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+end
+"---
+
+caught
+end
+"---
+
+caught Vim(call):E897: List or Blob required
+end
+"---
+
+caught
+fin
+end
+"---
+
+Error in {file}[16]..function 1:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+Error in {file}[16]..function 1:
+line    1:
+E897: List or Blob required
+same line
+end
+"---
+
+caught
+"---
+
+Error in {file}[19]..{file}:
+line   17:
+E897: List or Blob required
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E897: List or Blob required
+"---
+
+Error in {file}:
+line   16:
+E897: List or Blob required
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E745: Using a List as a Number
+"---
+
+caught Vim(call):E745: Using a List as a Number
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+end
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+same line
+end
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+inside
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E15: Invalid expression: "> add(1, 2)"
+E475: Invalid argument: {-> add(1, 2)}() | catch | echo 'caught' | endtry
+"---
+
+caught Vim(call):E475: Invalid argument: {-> add(1, 2)}()
+end
+"---
+
+Error in {file}[18]..{file}:
+line   16:
+E15: Invalid expression: "> add(1, 2)"
+E475: Invalid argument: {-> add(1, 2)}() | catch | echo 'caught' | finally | echo 'fin' | endtry
+"---
+
+Error in {file}:
+line   16:
+E15: Invalid expression: "> add(1, 2)"
+E475: Invalid argument: {-> add(1, 2)}() | echo 'same line'
+end
+"---
+
+Error in {file}:
+line   16:
+E15: Invalid expression: "> add(1, 2)"
+Error in {file}:
+line   16:
+E475: Invalid argument: {-> add(1, 2)}() | echo 'same line'
+end
+"---
+
+Error in {file}:
+line   16:
+E15: Invalid expression: "> add(1, 2)"
+Error in {file}:
+line   16:
+E475: Invalid argument: {-> add(1, 2)}() | echo 'inside' | catch | echo 'caught' | endtry
+end
+Error in {file}[18]..{file}:
+line   18:
+E600: Missing :endtry
+"---
+
+Error in {file}[20]..function W[2]..{file}[20]..function W:
+line    1:
+E897: List or Blob required

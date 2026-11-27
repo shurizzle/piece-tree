@@ -79,6 +79,13 @@ impl Editor {
         self.scripts.did_emsg = e.did_emsg;
     }
 
+    /// `update_force_abort`: the first error of a command reset `force_abort`; give it back before the throw point.
+    pub(super) fn update_force_abort(&mut self) {
+        if self.scripts.cause_abort {
+            self.scripts.force_abort = true;
+        }
+    }
+
     /// `aborting`: an error under `abort`, or an exception that was not caught yet.
     pub(super) fn aborting(&self) -> bool {
         (self.scripts.did_emsg && self.scripts.force_abort) || self.scripts.did_throw

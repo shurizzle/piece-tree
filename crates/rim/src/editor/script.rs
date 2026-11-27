@@ -31,7 +31,28 @@ pub(super) use docmd::State;
 
 /// The `v:` dictionary at start.
 pub(in crate::editor) fn init_vim_vars() -> Vars {
-    Vars::new(std::cell::RefCell::new(value::DictData::new(vimvars::init())))
+    {
+    let mut d = value::DictData::new(vimvars::init());
+    // `vimvardict.dv_lock = VAR_FIXED` and the flags of `vimvars[]`.
+    d.lock = value::Lock::Fixed;
+    for &(name, _, flags) in vimvars::VIMVARS {
+        if let Some(i) = d.map.get_mut(name) {
+            i.flags = value::DI_FIX | if flags & vimvars::RO != 0 { value::DI_RO } else if flags & vimvars::RO_SBX != 0 { value::DI_RO_SBX } else { 0 };
+        }
+    }
+    // `set_argv_var`: the List and its items are fixed; `v:event` and `v:completed_item` are fixed Dictionaries.
+    if let Some(Value::List(l)) = d.map.get("argv").map(|i| &i.tv) {
+        let mut l = l.borrow_mut();
+        l.lock = value::Lock::Fixed;
+        l.items.iter_mut().for_each(|i| i.lock = value::Lock::Fixed);
+    }
+    for k in ["event", "completed_item"] {
+        if let Some(Value::Dict(x)) = d.map.get(k).map(|i| &i.tv) {
+            x.borrow_mut().lock = value::Lock::Fixed;
+        }
+    }
+    Vars::new(std::cell::RefCell::new(d))
+}
 }
 
 /// `vim_str2nr` of the start of `s` with every base allowed and a strict end: the value and the length used.
@@ -97,6 +118,29 @@ impl Editor {
         }
     }
 
+    /// `find_var`: the Dictionary that holds the variable `name` and its key (a closure sees the variables of the calls
+    /// it was made in, `find_var_in_scoped_ht`).
+    pub(super) fn find_item(&self, name: &str) -> Option<(value::Dict, std::rc::Rc<str>)> {
+        let (scope, n) = self.scope_of(name);
+        if n.is_empty() {
+            return None;
+        }
+        if self.vars(scope).borrow().contains_key(n) {
+            return Some((self.vars(scope).clone(), n.into()));
+        }
+        if matches!(scope, Scope::Func | Scope::Args) {
+            let mut sc = self.scripts.calls.last().and_then(|c| c.func.scoped.clone());
+            while let Some(s) = sc {
+                let d = if scope == Scope::Func { &s.l_vars } else { &s.a_vars };
+                if d.borrow().contains_key(n) {
+                    return Some((d.clone(), n.into()));
+                }
+                sc = s.parent.clone();
+            }
+        }
+        None
+    }
+
     pub(super) fn lookup_var(&self, name: &str) -> Option<Value> {
         // `g:` alone is the dictionary of the scope.
         if let Some((prefix, "")) = name.split_once(':')
@@ -125,6 +169,14 @@ impl Editor {
     }
 
     fn set_var(&mut self, name: &str, value: Value) -> Res<()> {
+        self.set_var_const(name, value, false, false)
+    }
+
+    /// `set_var_const`: a variable is set; with `is_const` it is made, locked, and what it holds is locked too.
+    ///
+    /// `shared`: something besides the caller holds the value (`refcount > 1`), asked of it before the clone that is
+    /// passed here.
+    fn set_var_const(&mut self, name: &str, value: Value, is_const: bool, shared: bool) -> Res<()> {
         let (scope, n) = self.scope_of(name);
         let mut value = value;
         // `*varname == NUL`: `g:` alone is a scope, not a variable. `l:` and `a:` need a function; `a:` cannot get a new one.
@@ -144,9 +196,24 @@ impl Editor {
                 return Err(format!("E705: Variable name conflicts with existing function: {name}"));
             }
         }
+        // An existing variable that is read-only or locked (`set_var_const`: in this order).
+        if is_const && self.find_item(name).is_some() {
+            return Err("E995: Cannot modify existing variable".into());
+        }
+        if let Some((d, k)) = self.find_item(name) {
+            let d = d.borrow();
+            let it = &d.map[&*k];
+            if let Some(m) = value::var_check_ro(it.flags, name).or_else(|| value::value_check_lock(it.lock, Some(name))).or_else(|| value::var_check_lock(it.flags, name)) {
+                return Err(m);
+            }
+        }
         if scope == Scope::Args {
             // The arguments are read-only (`DI_FLAGS_RO`).
             return Err(if self.vars(scope).borrow().contains_key(n) { format!("E46: Cannot change read-only variable \"{name}\"") } else { format!("E461: Illegal variable name: {name}") });
+        }
+        if scope == Scope::Vim && !self.vars(scope).borrow().contains_key(n) {
+            // `v:val` and `v:key` are not in the dictionary until `filter()` gives them a value.
+            return Err(format!("E461: Illegal variable name: v:{n}"));
         }
         if scope == Scope::Vim {
             // A String or Number variable takes any value as its text or number; the others keep their type.
@@ -172,7 +239,22 @@ impl Editor {
                 sc = s.parent.clone();
             }
         }
-        self.vars(scope).borrow_mut().insert(n.to_string().into(), value);
+        let dict = self.vars(scope).clone();
+        dict.borrow_mut().insert(n.into(), value);
+        if is_const {
+            // Like `:lockvar! name`, but a List or Dictionary that something else holds too stays as it is: only literal
+            // values are locked.
+            let (tv, mut slot) = {
+                let mut d = dict.borrow_mut();
+                let it = d.map.get_mut(n).expect("just added");
+                it.flags |= value::DI_LOCK;
+                (it.tv.clone(), it.lock)
+            };
+            self.item_lock_in(&mut slot, &tv, value::MAX_NEST as i32, true, Some(shared), 0);
+            if let Some(it) = dict.borrow_mut().map.get_mut(n) {
+                it.lock = slot;
+            }
+        }
         Ok(())
     }
 
@@ -196,7 +278,7 @@ impl Editor {
     // ---- :let ---------------------------------------------------------------------------------
 
     /// `ex_let`: `:let` alone lists the variables; `:let x y` shows them; `:let x = 1` assigns.
-    pub(super) fn let_cmd(&mut self, arg: &str) -> Res<()> {
+    pub(super) fn let_cmd(&mut self, arg: &str, is_const: bool) -> Res<()> {
         // The variables (or list of them) first, then what follows says what to do.
         let (argend, var_count, semicolon) = cmdline::skip_var_list_n(arg)?;
         let expr = arg[argend..].trim_start_matches([' ', '\t']);
@@ -218,7 +300,7 @@ impl Editor {
             // `heredoc_get`: the lines of the here document are assigned like the value of an expression.
             let cmdline = self.scripts.cmdlinep.clone();
             if self.heredoc_is_typed(here) {
-                let target = heredoc::HeredocTarget { arg: arg.to_string(), var_count, semicolon };
+                let target = heredoc::HeredocTarget { arg: arg.to_string(), var_count, semicolon, is_const };
                 self.heredoc_pend(&cmdline, here, false, Some(target));
                 return Ok(());
             }
@@ -226,7 +308,7 @@ impl Editor {
             self.scripts.nextcmd = next;
             if let Some(lines) = list {
                 let rhs = Value::list(lines.into_iter().map(|s| Value::Str(s.into())).collect());
-                self.ex_let_vars(arg, 0, &rhs, semicolon, var_count, Some('='));
+                self.ex_let_vars(arg, 0, &rhs, semicolon, var_count, is_const, Some('='));
             }
             return Ok(());
         }
@@ -238,7 +320,7 @@ impl Editor {
             (expr.as_bytes()[0] as char, 2)
         };
         let rhs = self.eval(expr[len..].trim_start_matches([' ', '\t']))?;
-        self.ex_let_vars(arg, 0, &rhs, semicolon, var_count, Some(op));
+        self.ex_let_vars(arg, 0, &rhs, semicolon, var_count, is_const, Some(op));
         Ok(())
     }
 
@@ -420,6 +502,25 @@ impl Editor {
     /// error the names are only skipped over; a name that cannot be parsed ends the command and takes the rest of
     /// its line (`nextcmd` stays NULL).
     pub(super) fn unlet_cmd(&mut self, bang: bool, arg: &str) -> Res<()> {
+        self.unletlock(None, bang, arg)
+    }
+
+    /// `ex_lockvar` and `ex_unlockvar`: the depth is `!` (everything), a number, or 2.
+    pub(super) fn lockvar_cmd(&mut self, lock: bool, bang: bool, arg: &str) -> Res<()> {
+        let (mut deep, mut arg) = (2i32, arg);
+        if bang {
+            deep = -1;
+        } else if arg.as_bytes().first().is_some_and(u8::is_ascii_digit) {
+            let end = arg.find(|c: char| !c.is_ascii_digit()).unwrap_or(arg.len());
+            // `getdigits_int`: a number that does not fit is -1.
+            deep = arg[..end].parse::<i32>().unwrap_or(-1);
+            arg = arg[end..].trim_start_matches([' ', '\t']);
+        }
+        self.unletlock(Some((lock, deep)), false, arg)
+    }
+
+    /// `ex_unletlock`: `lock` is none for `:unlet`, else (lock or unlock, depth).
+    fn unletlock(&mut self, lock: Option<(bool, i32)>, bang: bool, arg: &str) -> Res<()> {
         if arg.is_empty() {
             return Err("E471: Argument required".into());
         }
@@ -438,7 +539,12 @@ impl Editor {
                     self.scripts.drop_next = true;
                     return Ok(());
                 }
-                if !error && let Err(e) = set_env(&arg[from..q], None) {
+                if !error && lock.is_some() {
+                    // `do_lock_var` of an environment variable (the name goes on to the end of the command line).
+                    let t = self.tail(arg, p);
+                    self.error(format!("E940: Cannot lock or unlock variable {t}"));
+                    error = true;
+                } else if !error && let Err(e) = set_env(&arg[from..q], None) {
                     self.error(e);
                     error = true;
                 }
@@ -455,13 +561,18 @@ impl Editor {
                 if bad {
                     if let Some(e) = end {
                         let t = self.tail(arg, e);
+                        self.scripts.emsg_severe = true;
                         self.error(format!("E488: Trailing characters: {t}"));
                     }
                     self.scripts.drop_next = true;
                     return Ok(());
                 }
                 name_end = end.unwrap_or(p);
-                if !error && !self.do_unlet_var(&lv, bang) {
+                let ok = !error && match lock {
+                    None => self.do_unlet_var(&lv, bang, &arg[p..name_end]),
+                    Some((l, deep)) => self.do_lock_var(&lv, l, deep),
+                };
+                if !error && !ok {
                     error = true;
                 }
             }
@@ -473,13 +584,15 @@ impl Editor {
     }
 
     /// `do_unlet_var`: removes what the lvalue points to; false for an error (the message is given).
-    fn do_unlet_var(&mut self, lv: &lval::Lval, forceit: bool) -> bool {
+    fn do_unlet_var(&mut self, lv: &lval::Lval, forceit: bool, shown: &str) -> bool {
         match &lv.place {
             lval::Place::Var => {
                 let name = lv.name.as_deref().unwrap_or("");
                 self.do_unlet(name, forceit)
             }
             lval::Place::VarTv => true,
+            lval::Place::Range { list, .. } | lval::Place::Item { list, .. } if self.unlet_locked(shown, Some(list), None) => false,
+            lval::Place::Key { dict, .. } if self.unlet_locked(shown, None, Some(dict)) => false,
             lval::Place::Range { list, first, last, empty2 } => {
                 let len = list.borrow().len();
                 let end = if *empty2 { len - 1 } else { (*last as usize).min(len - 1) };
@@ -500,12 +613,148 @@ impl Editor {
         }
     }
 
+    /// `do_unlet_var` checks of a List item, a slice or a Dictionary item: the container is locked (`E741`, the name is
+    /// the rest of the command line). The message is given.
+    fn unlet_locked(&mut self, shown: &str, list: Option<&value::List>, dict: Option<&value::Dict>) -> bool {
+        let lock = list.map(|l| l.borrow().lock).or_else(|| dict.map(|d| d.borrow().lock)).unwrap_or_default();
+        match value::value_check_lock(lock, Some(shown)) {
+            Some(m) => {
+                self.error(m);
+                true
+            }
+            None => false,
+        }
+    }
+
+    /// `do_lock_var`: locks or unlocks the variable, item or slice and, `deep` levels down, what it holds.
+    fn do_lock_var(&mut self, lv: &lval::Lval, lock: bool, deep: i32) -> bool {
+        match &lv.place {
+            lval::Place::Var => {
+                let name = lv.name.as_deref().unwrap_or("");
+                // A scope alone (`g:`) is the Dictionary of its variables: its own item is fixed.
+                if let Some((_, "")) = name.split_once(':')
+                    && let Some(tv) = self.lookup_var(name)
+                {
+                    let mut slot = value::Lock::Fixed;
+                    if deep != 0 {
+                        self.tv_item_lock(&mut slot, &tv, deep, lock);
+                    }
+                    return true;
+                }
+                let Some((d, k)) = self.find_item(name) else { return false };
+                let (tv, mut slot) = {
+                    let mut b = d.borrow_mut();
+                    let it = b.map.get_mut(&*k).expect("found");
+                    // For historical reasons a List or Dictionary of a fixed variable may be locked.
+                    if it.flags & value::DI_FIX != 0 && !matches!(it.tv, Value::List(_) | Value::Dict(_)) {
+                        drop(b);
+                        self.error(format!("E940: Cannot lock or unlock variable {name}"));
+                        return false;
+                    }
+                    if lock {
+                        it.flags |= value::DI_LOCK;
+                    } else {
+                        it.flags &= !value::DI_LOCK;
+                    }
+                    (it.tv.clone(), it.lock)
+                };
+                if deep != 0 {
+                    self.tv_item_lock(&mut slot, &tv, deep, lock);
+                    if let Some(it) = d.borrow_mut().map.get_mut(&*k) {
+                        it.lock = slot;
+                    }
+                }
+            }
+            _ if deep == 0 => {}
+            lval::Place::Range { list, first, last, empty2 } => {
+                let mut i = *first;
+                while i < list.borrow().len() && (*empty2 || *last >= i as i64) {
+                    self.lock_list_item(list, i, deep, lock);
+                    i += 1;
+                }
+            }
+            lval::Place::Item { list, idx } => self.lock_list_item(list, *idx, deep, lock),
+            lval::Place::Key { dict, key } => {
+                let Some((tv, mut slot)) = dict.borrow().map.get(&**key).map(|i| (i.tv.clone(), i.lock)) else { return true };
+                self.tv_item_lock(&mut slot, &tv, deep, lock);
+                if let Some(it) = dict.borrow_mut().map.get_mut(&**key) {
+                    it.lock = slot;
+                }
+            }
+            lval::Place::VarTv | lval::Place::NewKey { .. } => {}
+        }
+        true
+    }
+
+    fn lock_list_item(&mut self, list: &value::List, i: usize, deep: i32, lock: bool) {
+        let Some((tv, mut slot)) = list.borrow().items.get(i).map(|it| (it.tv.clone(), it.lock)) else { return };
+        self.tv_item_lock(&mut slot, &tv, deep, lock);
+        if let Some(it) = list.borrow_mut().items.get_mut(i) {
+            it.lock = slot;
+        }
+    }
+
+    /// `tv_item_lock` (without `check_refcount`): locks or unlocks the slot, the container the value is, and `deep - 1`
+    /// levels of what it holds (`-1` is everything). Deeper than `DICT_MAXNEST` is `E743`.
+    pub(super) fn tv_item_lock(&mut self, slot: &mut value::Lock, tv: &Value, deep: i32, lock: bool) {
+        self.item_lock_in(slot, tv, deep, lock, None, 0);
+    }
+
+    /// `check_refcount` is `Some(shared)`: a List or Dictionary that something else holds is not locked, `shared` says
+    /// it of `tv`, and of each child it is asked before the child is cloned. None locks all.
+    pub(super) fn item_lock_in(&mut self, slot: &mut value::Lock, tv: &Value, deep: i32, lock: bool, check: Option<bool>, recurse: usize) {
+        if recurse >= value::MAX_NEST {
+            self.error("E743: Variable nested too deep for (un)lock");
+            return;
+        }
+        if deep == 0 {
+            return;
+        }
+        slot.change(lock);
+        let shared = check == Some(true);
+        match tv {
+            Value::List(l) if !shared => {
+                l.borrow_mut().lock.change(lock);
+                if !(0..=1).contains(&deep) {
+                    let n = l.borrow().len();
+                    for i in 0..n {
+                        let Some((child, mut s, sh)) = l.borrow().items.get(i).map(|it| { let sh = it.tv.is_shared(); (it.tv.clone(), it.lock, sh) }) else { break };
+                        self.item_lock_in(&mut s, &child, deep - 1, lock, check.map(|_| sh), recurse + 1);
+                        if let Some(it) = l.borrow_mut().items.get_mut(i) {
+                            it.lock = s;
+                        }
+                    }
+                }
+            }
+            Value::Dict(d) if !shared => {
+                d.borrow_mut().lock.change(lock);
+                if !(0..=1).contains(&deep) {
+                    let keys: Vec<std::rc::Rc<str>> = d.borrow().keys().cloned().collect();
+                    for k in keys {
+                        let Some((child, mut s, sh)) = d.borrow().map.get(&*k).map(|it| { let sh = it.tv.is_shared(); (it.tv.clone(), it.lock, sh) }) else { continue };
+                        self.item_lock_in(&mut s, &child, deep - 1, lock, check.map(|_| sh), recurse + 1);
+                        if let Some(it) = d.borrow_mut().map.get_mut(&*k) {
+                            it.lock = s;
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
     /// `do_unlet`: a variable by name; a `v:` variable cannot go, a missing one is an error unless `forceit`.
     fn do_unlet(&mut self, name: &str, forceit: bool) -> bool {
         let (scope, n) = self.scope_of(name);
         if !n.is_empty() && self.vars(scope).borrow().contains_key(n) {
-            if scope == Scope::Vim || scope == Scope::Args {
-                self.error(format!("E795: Cannot delete variable {name}"));
+            let d = self.vars(scope).borrow();
+            let it = &d.map[n];
+            let m = value::var_check_fixed(it.flags, name)
+                .or_else(|| value::var_check_ro(it.flags, name))
+                .or_else(|| value::value_check_lock(d.lock, Some(name)));
+            drop(d);
+            if let Some(m) = m {
+                self.error(m);
                 return false;
             }
             self.vars(scope).borrow_mut().remove(n);
@@ -688,7 +937,7 @@ impl Editor {
             return;
         }
         let emsg_before = self.scripts.called_emsg;
-        self.set_var_lval(&lv, &Value::Str(String::new().into()), if append { '.' } else { '=' });
+        self.set_var_lval(&lv, &Value::Str(String::new().into()), if append { '.' } else { '=' }, false);
         if self.scripts.called_emsg > emsg_before {
             return;
         }
@@ -706,7 +955,7 @@ impl Editor {
         let Some((name, text)) = self.msgs.var_redir.take() else { return };
         let (end, lv) = self.get_lval(&name, 0, None, false, false, false, cmdline::FNE_CHECK_START, false);
         if end.is_some() && lv.name.is_some() {
-            self.set_var_lval(&lv, &Value::Str(text.into()), '.');
+            self.set_var_lval(&lv, &Value::Str(text.into()), '.', false);
         }
     }
 
@@ -718,10 +967,14 @@ impl Editor {
         if end == Some(0) {
             return Err("E129: Function name required".into());
         }
-        let Some(end) = end else { return Ok(()) };
+        let Some(end) = end else {
+            self.scripts.drop_next = true;
+            return Ok(());
+        };
         if let lval::Place::NewKey { key, .. } = &lv.place {
             // Still needed: the message for the missing key.
             self.error(format!("E716: Key not present in Dictionary: \"{key}\""));
+            self.scripts.drop_next = true;
             return Ok(());
         }
         // A Funcref in a Dictionary or List item is the function; the Dictionary is its `self`.
@@ -745,6 +998,7 @@ impl Editor {
             // A name with a subscript is a function in a Dictionary: no Funcref exists yet.
             let t = self.tail(arg, 0);
             self.error(if matches!(lv.place, lval::Place::Range { .. }) { format!("E475: Invalid argument: {t}") } else { "E718: Funcref required".to_string() });
+            self.scripts.drop_next = true;
             return Ok(());
         }
         let full = lv.name.unwrap_or_default();
@@ -752,7 +1006,10 @@ impl Editor {
         let translated;
         let name = if userfunc::eval_fname_script(arg) > 0 {
             let mut q = 0;
-            let Some(n) = self.trans_function_name(arg, &mut q, false, userfunc::TFN_INT) else { return Ok(()) };
+            let Some(n) = self.trans_function_name(arg, &mut q, false, userfunc::TFN_INT) else {
+                self.scripts.drop_next = true;
+                return Ok(());
+            };
             translated = n;
             &*translated
         } else {
@@ -760,6 +1017,7 @@ impl Editor {
             if name.contains(':') {
                 let t = self.tail(arg, 0);
                 self.error(format!("E884: Function name cannot contain a colon: {t}"));
+                self.scripts.drop_next = true;
                 return Ok(());
             }
             name
@@ -769,6 +1027,7 @@ impl Editor {
         if expr::at(arg, start) != b'(' {
             let t = self.tail(arg, 0);
             self.error(format!("E107: Missing parentheses: {t}"));
+            self.scripts.drop_next = true;
             return Ok(());
         }
         if defer {
@@ -823,8 +1082,6 @@ impl Editor {
                         self.error(m);
                     }
                     failed = true;
-                    // Nothing that follows on the line runs (`eap->nextcmd` is not set).
-                    self.scripts.drop_next = true;
                     break;
                 }
             };
@@ -843,9 +1100,17 @@ impl Editor {
             }
         }
         p = expr::skipwhite(arg, p);
-        if !failed && !expr::ends_excmd(expr::at(arg, p)) {
-            let t = self.tail(arg, p);
-            self.error(format!("E488: Trailing characters: {t}"));
+        // When inside :try the following `| catch` or `| endtry` is looked for, also after a failed call. Not after an
+        // error that aborts, but after an exception that was thrown: then `eap->nextcmd` stays NULL and the rest of the
+        // line does not run.
+        if (!self.aborting() || self.scripts.did_throw) && (!failed || self.scripts.trylevel > 0) {
+            if !expr::ends_excmd(expr::at(arg, p)) && !failed && !self.aborting() {
+                let t = self.tail(arg, p);
+                self.scripts.emsg_severe = true;
+                self.error(format!("E488: Trailing characters: {t}"));
+            }
+        } else {
+            self.scripts.drop_next = true;
         }
         Ok(())
     }

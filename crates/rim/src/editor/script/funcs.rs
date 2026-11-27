@@ -11,7 +11,7 @@ use piece_tree::{Regex, Text};
 use super::{
     Res, Value,
     expr::{self, skipwhite},
-    value::{DictItem, DictMap, Enc, Item},
+    value::{DI_LOCK, Dict, DictItem, DictMap, Enc, Item, List, Lock, value_check_lock, var_check_fixed, var_check_ro},
 };
 use crate::editor::{Editor, graphemes};
 
@@ -63,6 +63,7 @@ const FUNCS: &[Func] = &[
     func("has_key", 2, 2, f_has_key),
     func("index", 2, 4, f_index),
     func("insert", 2, 3, f_insert),
+    func("islocked", 1, 1, f_islocked),
     func("items", 1, 1, |e, a| f_dict2list(e, a, Dict2List::Items)),
     func("join", 1, 2, f_join),
     func("keys", 1, 1, |e, a| f_dict2list(e, a, Dict2List::Keys)),
@@ -146,6 +147,7 @@ impl Editor {
     pub(in crate::editor) fn call_named(&mut self, name: &str, args: Vec<Value>, selfdict: Option<super::value::Dict>) -> Res<Value> {
         // A name that is not a builtin's is a user function.
         if let Some(r) = self.call_user(name, args.clone(), selfdict) {
+            self.update_force_abort();
             return r;
         }
         let f = find(name).ok_or_else(|| format!("E117: Unknown function: {name}"))?;
@@ -155,7 +157,10 @@ impl Editor {
         if args.len() > f.max {
             return Err(format!("E118: Too many arguments for function: {name}"));
         }
-        Ok((f.run)(self, &args))
+        let r = (f.run)(self, &args);
+        // An error in the function has not reached its throw point yet (`call_func`).
+        self.update_force_abort();
+        Ok(r)
     }
 
     // ---- `tv_get_*`: the conversions with the messages of typval.c -----------------------------
@@ -546,8 +551,61 @@ fn f_len(e: &mut Editor, a: &[Value]) -> Value {
     }
 }
 
+/// `value_check_lock` of a List argument: the message is given when it is locked.
+fn list_locked(e: &mut Editor, l: &List, what: &str) -> bool {
+    value_check_lock(l.borrow().lock, Some(what)).map(|m| e.error(m)).is_some()
+}
+
+/// `value_check_lock` of a Dictionary argument.
+fn dict_locked(e: &mut Editor, d: &Dict, what: &str) -> bool {
+    value_check_lock(d.borrow().lock, Some(what)).map(|m| e.error(m)).is_some()
+}
+
+/// `f_islocked`: -1 when the name is none, an error was given or the variable does not exist.
+fn f_islocked(e: &mut Editor, a: &[Value]) -> Value {
+    use super::lval::Place;
+    let s = e.tv_str(&a[0]);
+    let (end, lv) = e.get_lval(&s, 0, None, false, false, false, super::cmdline::FNE_CHECK_START, true);
+    let (Some(end), Some(name)) = (end, lv.name.clone()) else { return int(-1) };
+    if end < s.len() {
+        let t = e.tail(&s, end);
+        e.error(format!("{}: {t}", if name.is_empty() { "E475: Invalid argument" } else { "E488: Trailing characters" }));
+        return int(-1);
+    }
+    match &lv.place {
+        Place::Var => match e.find_item(&name) {
+            Some((d, k)) => {
+                let d = d.borrow();
+                let it = &d.map[&*k];
+                int(i64::from(it.flags & DI_LOCK != 0 || it.tv.is_locked(it.lock)))
+            }
+            None => int(-1),
+        },
+        Place::Range { .. } => {
+            e.error("E786: Range not allowed");
+            int(-1)
+        }
+        Place::NewKey { key, .. } => {
+            e.error(format!("E716: Key not present in Dictionary: \"{key}\""));
+            int(-1)
+        }
+        Place::Item { list, idx } => {
+            let b = list.borrow();
+            int(i64::from(b.items[*idx].tv.is_locked(b.items[*idx].lock)))
+        }
+        Place::Key { dict, key } => {
+            let b = dict.borrow();
+            int(i64::from(b.map[&**key].tv.is_locked(b.map[&**key].lock)))
+        }
+        Place::VarTv => int(-1),
+    }
+}
+
 fn f_add(e: &mut Editor, a: &[Value]) -> Value {
     if let Value::List(l) = &a[0] {
+        if list_locked(e, l, "add() argument") {
+            return int(1);
+        }
         l.borrow_mut().push(a[1].clone());
         return a[0].clone();
     }
@@ -681,6 +739,9 @@ fn f_insert(e: &mut Editor, a: &[Value]) -> Value {
         e.error("E899: Argument of insert() must be a List or Blob");
         return int(0);
     };
+    if list_locked(e, l, "insert() argument") {
+        return int(0);
+    }
     let mut before = 0;
     if let Some(b) = a.get(2) {
         match e.nr_chk(b) {
@@ -712,7 +773,15 @@ fn f_remove(e: &mut Editor, a: &[Value]) -> Value {
                 e.error("E118: Too many arguments for function: remove()");
                 return int(0);
             }
+            if dict_locked(e, d, "remove() argument") {
+                return int(0);
+            }
             let Some(key) = e.str_chk(&a[1]) else { return int(0) };
+            let flags = d.borrow().map.get(key.as_str()).map(|i| i.flags);
+            if let Some(m) = flags.and_then(|f| var_check_fixed(f, "remove() argument").or_else(|| var_check_ro(f, "remove() argument"))) {
+                e.error(m);
+                return int(0);
+            }
             let removed = d.borrow_mut().remove(&key);
             match removed {
                 Some(v) => v,
@@ -723,6 +792,9 @@ fn f_remove(e: &mut Editor, a: &[Value]) -> Value {
             }
         }
         Value::List(l) => {
+            if list_locked(e, l, "remove() argument") {
+                return int(0);
+            }
             let Some(idx) = e.nr_chk(&a[1]) else { return int(0) };
             let len = l.borrow().len();
             let Some(item) = list_find(len, idx) else {
@@ -757,6 +829,9 @@ fn f_remove(e: &mut Editor, a: &[Value]) -> Value {
 fn f_extend(e: &mut Editor, a: &[Value]) -> Value {
     match (&a[0], &a[1]) {
         (Value::List(l1), Value::List(l2)) => {
+            if list_locked(e, l1, "extend() argument") {
+                return int(0);
+            }
             let len = l1.borrow().len();
             let mut at = len;
             if let Some(b) = a.get(2) {
@@ -780,6 +855,9 @@ fn f_extend(e: &mut Editor, a: &[Value]) -> Value {
             a[0].clone()
         }
         (Value::Dict(d1), Value::Dict(d2)) => {
+            if dict_locked(e, d1, "extend() argument") {
+                return int(0);
+            }
             let mut action = "force".to_string();
             if let Some(act) = a.get(2) {
                 let Some(s) = e.str_chk(act) else { return int(0) };
@@ -793,6 +871,14 @@ fn f_extend(e: &mut Editor, a: &[Value]) -> Value {
             for (k, v) in add {
                 let exists = d1.borrow().contains_key(&k);
                 if !exists || action == "force" {
+                    // An item that is replaced must be unlocked and writable.
+                    let old = d1.borrow().map.get(&*k).map(|i| (i.lock, i.flags));
+                    if let Some((lock, flags)) = old
+                        && let Some(m) = value_check_lock(lock, Some("extend() argument")).or_else(|| var_check_ro(flags, "extend() argument"))
+                    {
+                        e.error(m);
+                        break;
+                    }
                     d1.borrow_mut().insert(k, v);
                 } else if action == "error" {
                     e.error(format!("E737: Key already exists: {k}"));
@@ -821,6 +907,10 @@ fn f_flatten(e: &mut Editor, a: &[Value]) -> Value {
             return int(0);
         }
         maxdepth = n;
+    }
+    if list_locked(e, l, "flatten() argument") {
+        // The List is the result already (`rettv->vval.v_list = list`).
+        return a[0].clone();
     }
     let len = l.borrow().len();
     flatten(e, l, 0, len, maxdepth);
@@ -969,6 +1059,9 @@ fn f_reverse(e: &mut Editor, a: &[Value]) -> Value {
     match &a[0] {
         Value::Str(s) => Value::Str(graphemes::iter(s).collect::<Vec<_>>().into_iter().rev().collect::<String>().into()),
         Value::List(l) => {
+            if list_locked(e, l, "reverse() argument") {
+                return int(0);
+            }
             l.borrow_mut().reverse();
             // The links of the items are swapped: the next one of a `:for` stays the same item.
             let len = l.borrow().len();
@@ -1271,6 +1364,9 @@ fn do_sort_uniq(e: &mut Editor, a: &[Value], sort: bool) -> Value {
         e.error(format!("E686: Argument of {name} must be a List"));
         return int(0);
     };
+    if list_locked(e, l, if sort { "sort() argument" } else { "uniq() argument" }) {
+        return int(0);
+    }
     if l.borrow().len() <= 1 {
         return a[0].clone();
     }
@@ -1796,11 +1892,28 @@ fn filter_map(e: &mut Editor, a: &[Value], kind: FilterMap) -> Value {
     let save_val = e.vim_vars.borrow_mut().remove("val");
     let save_key = e.vim_vars.borrow_mut().remove("key");
     let expr = &a[1];
+    let what = format!("{func_name} argument");
     let result = match &a[0] {
         Value::Dict(d) => {
             let items: Vec<(Rc<str>, Value)> = d.borrow().iter().map(|(k, v)| (k.clone(), v.clone())).collect();
             let mut out = DictMap::new();
+            let blocked = kind == FilterMap::Filter && dict_locked(e, d, &what);
+            let items = if blocked { Vec::new() } else { items };
+            // The Dictionary is locked while the expression runs.
+            let prev_lock = d.borrow().lock;
+            if prev_lock == Lock::Unlocked && !blocked {
+                d.borrow_mut().lock = Lock::Locked;
+            }
             for (k, v) in items {
+                if kind == FilterMap::Map {
+                    let cur = d.borrow().map.get(&*k).map(|i| (i.lock, i.flags));
+                    if let Some((lock, flags)) = cur
+                        && let Some(m) = value_check_lock(lock, Some(&what)).or_else(|| var_check_ro(flags, &what))
+                    {
+                        e.error(m);
+                        break;
+                    }
+                }
                 e.vim_vars.borrow_mut().insert("key".into(), Value::Str(k.clone()));
                 let r = filter_map_one(e, &v, expr, kind);
                 e.vim_vars.borrow_mut().remove("key");
@@ -1816,18 +1929,36 @@ fn filter_map(e: &mut Editor, a: &[Value], kind: FilterMap) -> Value {
                         out.insert(k, new);
                     }
                     FilterMap::Filter if rem => {
+                        let flags = d.borrow().map.get(&*k).map_or(0, |i| i.flags);
+                        if let Some(m) = var_check_fixed(flags, &what).or_else(|| var_check_ro(flags, &what)) {
+                            e.error(m);
+                            break;
+                        }
                         d.borrow_mut().remove(&k);
                     }
                     _ => {}
                 }
             }
+            d.borrow_mut().lock = prev_lock;
             if kind == FilterMap::Mapnew { Value::dict(out) } else { ret }
         }
         Value::List(l) => {
             let mut out = Vec::new();
             let mut idx = 0usize;
             let mut pos = 0usize;
-            while pos < l.borrow().len() {
+            let blocked = kind == FilterMap::Filter && list_locked(e, l, &what);
+            // The List is locked while the expression runs.
+            let prev_lock = l.borrow().lock;
+            if prev_lock == Lock::Unlocked && !blocked {
+                l.borrow_mut().lock = Lock::Locked;
+            }
+            while !blocked && pos < l.borrow().len() {
+                if kind == FilterMap::Map
+                    && let Some(m) = value_check_lock(l.borrow().items[pos].lock, Some(&what))
+                {
+                    e.error(m);
+                    break;
+                }
                 let item = l.borrow()[pos].clone();
                 e.vim_vars.borrow_mut().insert("key".into(), int(idx as i64));
                 let r = filter_map_one(e, &item, expr, kind);
@@ -1848,6 +1979,7 @@ fn filter_map(e: &mut Editor, a: &[Value], kind: FilterMap) -> Value {
                 }
                 idx += 1;
             }
+            l.borrow_mut().lock = prev_lock;
             if kind == FilterMap::Mapnew { Value::list(out) } else { ret }
         }
         _ => {

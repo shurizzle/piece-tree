@@ -8,7 +8,7 @@ use super::{
     docmd::ReaderBase,
     expr::{self, at, ends_excmd, skipwhite},
     lval::Place,
-    value::Value,
+    value::{Lock, Value},
 };
 use crate::editor::Editor;
 
@@ -78,6 +78,8 @@ pub(in crate::editor) struct FuncDict {
 
 /// What `:function` found before the body: the pieces that the definition needs once the lines are read.
 pub(super) struct FuncDef {
+    /// `eap->arg`, for the message of a locked Dictionary.
+    arg: String,
     name: Option<Rc<str>>,
     args: Vec<Rc<str>>,
     def_args: Vec<String>,
@@ -520,7 +522,7 @@ impl Editor {
             // `msg_putchar('\n')`: the lines of the body do not overwrite the name.
             self.capture_msg("\n", true);
         }
-        let def = FuncDef { name, args: newargs, def_args: default_args, varargs, flags, skip, forceit, saved_did_emsg, fudi };
+        let def = FuncDef { arg: arg.to_string(), name, args: newargs, def_args: default_args, varargs, flags, skip, forceit, saved_did_emsg, fudi };
         let cmdline = self.scripts.cmdlinep.clone();
         // The lines of the body.
         let mut body = FuncBody::new();
@@ -722,7 +724,7 @@ impl Editor {
     /// The end of `ex_function` once the body has been read: define the function, or give up (`erret`).
     fn func_finish(&mut self, def: FuncDef, lines: Vec<Option<String>>, got_body: bool, next: Option<String>) {
         self.scripts.nextcmd = next;
-        let FuncDef { name, args, def_args, varargs, mut flags, skip, forceit, saved_did_emsg, fudi } = def;
+        let FuncDef { arg, name, args, def_args, varargs, mut flags, skip, forceit, saved_did_emsg, fudi } = def;
         let ok = got_body && !self.scripts.did_emsg && !skip;
         if ok && (name.is_some() || fudi.dict.is_some()) {
             let (sid, seq) = (self.scripts.cur, self.scripts.cur_seq);
@@ -732,6 +734,16 @@ impl Editor {
                 // `function d.f()`: the function has a number for a name, the Dictionary item holds it.
                 if fudi.newkey.is_none() && !forceit {
                     self.error("E717: Dictionary entry already exists");
+                    self.scripts.did_emsg |= saved_did_emsg;
+                    return;
+                }
+                // A function cannot be added to a locked Dictionary, nor change a locked item.
+                let lock = match &fudi.key {
+                    None => dict.borrow().lock,
+                    Some(k) => dict.borrow().map.get(&**k).map_or(Lock::Unlocked, |i| i.lock),
+                };
+                if let Some(m) = super::value::value_check_lock(lock, Some(&arg)) {
+                    self.error(m);
                     self.scripts.did_emsg |= saved_did_emsg;
                     return;
                 }
@@ -1096,19 +1108,25 @@ impl Editor {
         let (l_vars, a_vars) = (super::Vars::default(), super::Vars::default());
         if let Some(d) = selfdict {
             // `l:self`
-            l_vars.borrow_mut().insert("self".to_string().into(), Value::Dict(d));
+            l_vars.borrow_mut().insert_fixed("self".into(), Value::Dict(d), Lock::Unlocked);
         }
+        a_vars.borrow_mut().lock = Lock::Fixed;
         let islambda = fp.name.starts_with("<lambda>");
         let noargs = fp.flags & FC_NOARGS != 0;
         // `a:0`, `a:000`, `a:firstline`, `a:lastline` (none in a lambda that does not use `a:`), the named arguments and `a:1`...
         let named = fp.args.len();
         if !noargs {
             let mut a = a_vars.borrow_mut();
-            a.insert("0".to_string().into(), Value::Int(args.len().saturating_sub(named) as i64));
-            let extra: Vec<Value> = args.iter().skip(named).cloned().collect();
-            a.insert("000".to_string().into(), Value::list(extra));
-            a.insert("firstline".to_string().into(), Value::Int(firstline as i64));
-            a.insert("lastline".to_string().into(), Value::Int(lastline as i64));
+            a.insert_fixed("0".into(), Value::Int(args.len().saturating_sub(named) as i64), Lock::Fixed);
+            let extra = Value::list(args.iter().skip(named).cloned().collect());
+            if let Value::List(l) = &extra {
+                let mut l = l.borrow_mut();
+                l.lock = Lock::Fixed;
+                l.items.iter_mut().for_each(|i| i.lock = Lock::Fixed);
+            }
+            a.insert_fixed("000".into(), extra, Lock::Fixed);
+            a.insert_fixed("firstline".into(), Value::Int(firstline as i64), Lock::Fixed);
+            a.insert_fixed("lastline".into(), Value::Int(lastline as i64), Lock::Fixed);
         }
         let mut default_arg_err = false;
         for i in 0..args.len().max(named) {
@@ -1132,12 +1150,12 @@ impl Editor {
                     }
                 };
                 // The named arguments of a lambda are local variables.
-                if islambda { &l_vars } else { &a_vars }.borrow_mut().insert(fp.args[i].clone(), value);
+                if islambda { &l_vars } else { &a_vars }.borrow_mut().insert_fixed(fp.args[i].clone(), value, Lock::Fixed);
             } else {
                 if noargs {
                     break;
                 }
-                a_vars.borrow_mut().insert((i - named + 1).to_string().into(), args[i].clone());
+                a_vars.borrow_mut().insert_fixed((i - named + 1).to_string().into(), args[i].clone(), Lock::Fixed);
             }
         }
         let idx = self.scripts.calls.len();
@@ -1179,7 +1197,8 @@ impl Editor {
     /// `get_func_line`: the next line of the body of call `c`, none after a `:return` or an error of an `abort` function.
     pub(super) fn get_func_line(&mut self, c: usize) -> Option<String> {
         let call = &self.scripts.calls[c];
-        if (call.func.flags & FC_ABORT != 0 && self.scripts.did_emsg) || call.returned {
+        if // The `abort` flag is ignored after an error inside a try conditional (`aborted_in_try()` is `force_abort`).
+        (call.func.flags & FC_ABORT != 0 && self.scripts.did_emsg && !self.scripts.force_abort) || call.returned {
             return None;
         }
         let func = call.func.clone();

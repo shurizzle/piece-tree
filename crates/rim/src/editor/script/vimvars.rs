@@ -130,6 +130,8 @@ pub(super) const VIMVARS: &[(&str, VType, u8)] = &[
 ];
 
 pub(super) const RO: u8 = 2;
+/// `VV_RO_SBX`: read-only only in the sandbox.
+pub(super) const RO_SBX: u8 = 4;
 
 /// The value of a `v:` variable of a type before anything sets it.
 fn default_of(t: VType) -> Option<Value> {
@@ -203,9 +205,4 @@ pub(super) fn check_set(name: &str) -> Result<VType, String> {
         return Err(format!("E46: Cannot change read-only variable \"v:{name}\""));
     }
     Ok(t)
-}
-
-/// `var_check_ro` of a `v:` variable that exists.
-pub(super) fn is_ro(name: &str) -> bool {
-    VIMVARS.iter().any(|&(n, _, flags)| n == name && flags & RO != 0)
 }

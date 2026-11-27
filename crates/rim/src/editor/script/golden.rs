@@ -17,7 +17,7 @@ fn load(vim: &str, golden: &str) -> (Vec<String>, Vec<String>) {
 
 /// Cases that differ from Neovim and are known to: (file, case numbers, from 0). Each phase of
 /// docs/reference/vimscript.md empties its part of this list; it never grows.
-const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[])];
+const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[])];
 
 /// The lines of `s` in order.
 fn sorted_lines(s: &str) -> String {
@@ -280,4 +280,40 @@ fn try_cases_match_neovim() {
 #[test]
 fn try2_cases_match_neovim() {
     run("try2", include_str!("cases/try2.vim"), include_str!("cases/try2.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn lock_cases_match_neovim() {
+    run("lock", include_str!("cases/lock.vim"), include_str!("cases/lock.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn lock2_cases_match_neovim() {
+    run("lock2", include_str!("cases/lock2.vim"), include_str!("cases/lock2.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn trycall_cases_match_neovim() {
+    run("trycall", include_str!("cases/trycall.vim"), include_str!("cases/trycall.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn callname_cases_match_neovim() {
+    run("callname", include_str!("cases/callname.vim"), include_str!("cases/callname.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn const_cases_match_neovim() {
+    run("const", include_str!("cases/const.vim"), include_str!("cases/const.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn const_typed_cases_match_neovim() {
+    run_as("const.typed", include_str!("cases/const.typed.vim"), include_str!("cases/const.typed.golden"), true);
 }

@@ -492,7 +492,12 @@ impl Editor {
                 String::new()
             }
         };
-        let out = self.vim_vsnprintf_typval(&fmt, args);
+        // C formats twice: once for the length, and for real when that gave no error. Under `:silent!` an error does
+        // not set `did_emsg`, so it is given twice.
+        let mut out = self.vim_vsnprintf_typval(&fmt, args);
+        if !self.scripts.did_emsg {
+            out = self.vim_vsnprintf_typval(&fmt, args);
+        }
         let failed = self.scripts.did_emsg;
         self.scripts.did_emsg |= saved_did_emsg;
         if failed {

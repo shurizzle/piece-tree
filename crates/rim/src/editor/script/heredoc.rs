@@ -32,6 +32,7 @@ pub(super) struct HeredocTarget {
     pub arg: String,
     pub var_count: usize,
     pub semicolon: bool,
+    pub is_const: bool,
 }
 
 /// A here document typed at the `:` prompt: the following lines typed are its text. `target` is None when it is
@@ -198,7 +199,7 @@ impl Editor {
         }
         if let (false, Some(t)) = (p.hd.eval_failed, p.target) {
             let rhs = Value::list(p.hd.lines.into_iter().map(|s| Value::Str(s.into())).collect());
-            self.ex_let_vars(&t.arg, 0, &rhs, t.semicolon, t.var_count, Some('='));
+            self.ex_let_vars(&t.arg, 0, &rhs, t.semicolon, t.var_count, t.is_const, Some('='));
         }
     }
     /// `eval_all_expr_in_str`: `{expr}` in `s` is replaced by its value, `{{` and `}}` are a brace. None for an error.
