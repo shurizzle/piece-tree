@@ -1,0 +1,588 @@
+NVIM v0.12.6
+
+Error in {file}:
+line    2:
+E121: Undefined variable: nosuch
+end
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+2
+"---
+
+1
+"---
+
+1
+"---
+
+"---
+
+done
+"---
+
+1
+3
+"---
+
+4
+"---
+
+1
+3
+out 4
+"---
+
+Error in {file}:
+line    1:
+E518: Unknown option: | 
+"---
+
+a|b
+c|d
+"---
+
+aXY
+"---
+
+a|b
+"---
+
+Xb
+"---
+
+Xb
+"---
+
+Error in {file}:
+line    2:
+E486: Pattern not found: a | echo 1
+ab
+"---
+
+"---
+
+"---
+
+2
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: normal
+"---
+
+x
+"---
+
+8
+"---
+
+1
+"---
+
+1
+"---
+
+ok
+"---
+
+1
+2
+Error in {file}:
+line    1:
+E114: Missing quote: " c
+"---
+
+inside
+after
+"---
+
+1
+2
+"---
+
+"---
+
+Error in {file}:
+line    1:
+x
+after
+"---
+
+Error in {file}:
+line    1:
+x
+after
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E749: Empty buffer
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command: foo
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command:  foo | echo 1
+"---
+
+1
+Error in {file}:
+line    1:
+E492: Not an editor command:  foo | echo 2
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command: 3foo
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: foo: endif foo
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: foo: close foo
+"---
+
+Error in {file}:
+line    1:
+E481: No range allowed: 3echo 1
+"---
+
+Error in {file}:
+line    1:
+E477: No ! allowed: echo! 1
+"---
+
+Error in {file}:
+line    2:
+E171: Missing :endif
+"---
+
+ok
+"---
+
+ok
+"---
+
+2
+"---
+
+Error in {file}:
+line    2:
+E171: Missing :endif
+"---
+
+ei
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+ok
+"---
+
+1
+"---
+
+else
+"---
+
+b
+"---
+
+1
+Error in {file}:
+line    1:
+E580: :endif without :if:  endif 
+"---
+
+1
+Error in {file}:
+line    1:
+E588: :endwhile without :while:  endwhile 
+"---
+
+1
+Error in {file}:
+line    1:
+E732: Using :endfor with :while:  endfor
+"---
+
+1
+Error in {file}:
+line    1:
+E733: Using :endwhile with :for:  endwhile
+"---
+
+Error in {file}:
+line    1:
+E588: :endwhile without :while:  endwhile
+"---
+
+1
+2
+3
+"---
+
+a
+b
+"---
+
+1 2
+"---
+
+1 [2, 3]
+"---
+
+1
+"---
+
+3 2
+"---
+
+1
+2
+"---
+
+1
+2
+"---
+
+[1, 2]
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E697: Missing end of List ']': 
+line    2:
+E492: Not an editor command:  2]
+line    4:
+E121: Undefined variable: l
+"---
+
+a^H
+"---
+
+a
+b
+"---
+
+x
+"---
+
+colon
+"---
+
+colons
+"---
+
+1
+2
+"---
+
+x
+"---
+
+a
+b
+"---
+
+1
+2
+"---
+
+1
+2
+3
+"---
+
+1
+"---
+
+in
+"---
+
+Error in {file}:
+line    1:
+E518: Unknown option: foo
+"---
+
+Error in {file}:
+line    1:
+E518: Unknown option: nofoo
+"---
+
+Error in {file}:
+line    1:
+E518: Unknown option: foo=1
+"---
+
+Error in {file}:
+line    1:
+E518: Unknown option: foo?
+"---
+
+Error in {file}:
+line    1:
+E521: Number required after =: ts=abc
+"---
+
+Error in {file}:
+line    1:
+E521: Number required after =: ts=
+"---
+
+Error in {file}:
+line    1:
+E487: Argument must be positive: ts=-1
+"---
+
+Error in {file}:
+line    1:
+E487: Argument must be positive: ts=0
+"---
+
+"---
+
+"---
+
+  tabstop=8
+"---
+
+  tabstop=8
+Error in {file}:
+line    1:
+E488: Trailing characters: ts!
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument: nots
+"---
+
+  scrolloff=3
+"---
+
+  report=5
+"---
+
+Error in {file}:
+line    1:
+E521: Number required after =: report=abc
+"---
+
+  tabstop=4
+"---
+
+"---
+
+  tabstop=9
+"---
+
+  tabstop=7
+"---
+
+  tabstop=16
+"---
+
+  list
+"---
+
+  tabstop=4
+  shiftwidth=2
+"---
+
+1
+2
+3
+4
+"---
+
+1
+2
+4
+"---
+
+1
+2
+3
+"---
+
+1
+2
+9
+3
+"---
+
+1
+2
+3
+"---
+
+1
+2
+3
+4
+"---
+
+1
+2
+4
+5
+"---
+
+1
+2
+3
+"---
+
+1
+2
+3
+"---
+
+a
+b
+"---
+
+1 2
+3 4
+"---
+
+done
+"---
+
+Error in {file}:
+line    1:
+E1098: String, List or Blob required
+"---
+
+3
+1
+2
+3
+[1, 2, 3]
+"---
+
+1
+2
+1
+"---
+
+1
+2
+3
+2
+1
+"---
+
+4
+2
+3
+4
+"---
+
+1
+2
+3
+[1, 2, 3]
+"---
+
+1
+2
+3
+"---
+
+1
+3
+"---
+
+1
+9
+8
+4
+"---
+
+1
+2
+3
+"---
+
+[1]
+"---
+
+b
+a
+Error in {file}:
+line    2:
+E117: Unknown function: x
+E702: Sort compare function failed
+"---
+
+a<200b>b  |­|<070f>|<200f>|<202a>|<2060>|<206f>|<feff>|<fff9>|<fffe>|<ffff>| |Ā
+"---
+a<200b>😀󠀁􏿿
+"---
+
+x<200b>y
+"---
+
+q<200b>r 'q<200b>r' 5
+"---
+
+1
+[1, 5]
+"---
+
+  shortmess=ltToOCF
+  shortmess=ltoOCFT
+  shortmess=oOCFT
+  shortmess=aoOCFT
+"---
+
+  shortmess=ltToOCF
+  shortmess=tToOCFl
+  shortmess=
+"---
+
+Error in {file}:
+line    1:
+E539: Illegal character <y>: shm=xyz
+"---
+
+Error in {file}:
+line    1:
+E539: Illegal character <Q>: shm+=Q
+"---
+
+  shortmess=am
+am
+tT
+Error in {file}:
+line    6:
+E539: Illegal character <Z>

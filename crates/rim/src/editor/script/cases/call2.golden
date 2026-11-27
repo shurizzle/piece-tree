@@ -1,0 +1,386 @@
+NVIM v0.12.6
+
+Error in {file}[4]..function Foo:
+line    1:
+E131: Cannot delete function Foo: It is in use
+1
+"---
+
+Error in {file}[6]..function Foo:
+line    3:
+E127: Cannot redefine function Foo: It is in use
+E127: Cannot redefine function Foo: It is in use
+0
+"---
+
+Error in {file}[7]..function A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B[1]..A[1]..B:
+line    1:
+E132: Function call depth is higher than 'maxfuncdepth'
+-1
+"---
+
+done
+done
+Error in {file}[6]..function A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A[1]..A:
+line    1:
+E132: Function call depth is higher than 'maxfuncdepth'
+-1
+"---
+
+98
+"---
+
+yes
+"---
+
+1
+2
+3
+"---
+
+done
+"---
+
+foo
+1
+foo
+"---
+
+foo
+1
+"---
+
+foofoo
+"---
+
+9
+"---
+
+-3 0 a
+"---
+
+[3, 4]
+"---
+
+{'a': 3}
+"---
+
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+"---
+
+20
+"---
+
+['local', 'arg', 'local', 'localb', 'localb']
+"---
+
+arg ga
+"---
+
+['l', 'g', 'l']
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E121: Undefined variable: x
+"---
+
+glm
+"---
+
+{'j': 2, 'k': 1}
+"---
+
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E738: Can't list variables for a:
+"---
+
+{} {'0': 0, '000': [], 'firstline': 1, 'lastline': 1}
+"---
+
+4 4
+"---
+
+['v', '0', '000', 'a', 'firstline', 'lastline']
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E461: Illegal variable name: a:['new'] = 1
+"---
+
+1
+"---
+
+Error in {file}[5]..function Foo:
+line    2:
+E108: No such variable: "l:nosuch"
+"---
+
+0
+"---
+
+3 reg env
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E113: Unknown option: nosuch
+0
+"---
+
+[1, 1]
+"---
+
+hello
+"---
+
+Error in {file}[7]..function Foo:
+line    1:
+E16: Invalid range:   1,2call Bar()
+"---
+
+1
+"---
+
+Error in {file}:
+line    5:
+E16: Invalid range: 2,3call Bar()
+[1, 1, 1]
+line    7:
+E16: Invalid range: 3call Bar()
+"---
+
+Error in {file}:
+line    5:
+E16: Invalid range: 2,3call Bar()
+[1, 1, 1]
+"---
+
+1
+"---
+
+Error in {file}:
+line    5:
+E492: Not an editor command: gg
+1
+line    7:
+E492: Not an editor command: G
+1
+"---
+
+a
+b
+c
+"---
+ab
+c
+"---
+
+m
+Error in {file}[6]..function Foo:
+line    2:
+e
+after e
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+e1 e2
+e1 e2
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E117: Unknown function: nosuch
+E117: Unknown function: nosuch
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E684: List index out of range: 5
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E688: More targets than List items
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E15: Invalid expression: "1 +"
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E492: Not an editor command:   nosuchcommand
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E492: Not an editor command:   1,2nosuchcommand
+"---
+
+Error in {file}[5]..function Foo:
+line    2:
+E15: Invalid expression: ""
+E171: Missing :endif
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E588: :endwhile without :while:   endwhile
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E587: :break without :while or :for:   break
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E586: :continue without :while or :for:   continue
+"---
+
+1
+"---
+
+[1, 1]
+"---
+
+1
+3
+4
+"---
+
+[0, 'one', 2]
+"---
+
+['hd']
+['hd']
+['hd']
+"---
+
+1
+2
+"---
+
+Error in {file}[9]..function Foo[2]..Bar:
+line    1:
+E121: Undefined variable: nosuch
+E121: Undefined variable: nosuch
+"---
+
+1
+Error in {file}[7]..function Foo:
+line    3:
+E121: Undefined variable: nosuch
+"---
+
+1
+Error in {file}[7]..function Foo:
+line    3:
+E121: Undefined variable: nosuch
+2
+E121: Undefined variable: nosuch
+"---
+
+1
+Error in {file}[9]..function Foo:
+line    4:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E117: Unknown function: nosuch
+E117: Unknown function: nosuch
+"---
+
+x
+Error in {file}[4]..function Foo:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+x
+Error in {file}[4]..function Foo:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+bc
+"---
+
+['aa', 'bb']
+"---
+
+[2, 3]
+"---
+
+[1, 2, 3]
+"---
+
+[3, 2, 1]
+"---
+
+Error in {file}[5]..function Cmp:
+line    1:
+E121: Undefined variable: nosuch
+E121: Undefined variable: nosuch
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: NoCmp
+E702: Sort compare function failed
+[3, 1, 2]
+"---
+
+3
+"---
+
+bar
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E117: Unknown function: Bar
+0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E117: Unknown function: Bar
+E117: Unknown function: Bar
+"---
+
+v:true 6
+"---
+
+v:null 7
+"---
+
+0 0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E488: Trailing characters: 'b'
+0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E488: Trailing characters: , 2
+0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E110: Missing ')'
+0

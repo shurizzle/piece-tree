@@ -1,0 +1,821 @@
+NVIM v0.12.6
+
+2 7 ['  alpha beta', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '    last para line']
+"---
+
+3 fewer lines
+2 7 ['  alpha beta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+3 2 ['  alpha beta', ' gamma', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+3 fewer lines
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '    last para line']
+"---
+
+1 7 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '    last para line']
+"---
+
+4 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '  nine ten', '', '    last para line']
+"---
+
+7 fewer lines
+1 7 ['  alpha beta']
+"---
+
+6 fewer lines
+2 2 ['  alpha beta', ' gamma']
+"---
+
+1 1 ['']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+4 fewer lines
+4 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '']
+"---
+
+1 7 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 fewer lines
+1 18 ['    last para line']
+"---
+
+5 fewer lines
+1 9 ['  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '    last para line']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '    last para line']
+"---
+
+4 fewer lines
+1 7 ['  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 fewer lines
+1 2 ['  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 fewer lines
+1 1 ['  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+3 fewer lines
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '    last para line']
+"---
+
+7 fewer lines
+1 7 ['  alpha beta']
+"---
+
+6 fewer lines
+2 2 ['  alpha beta', ' gamma']
+"---
+
+1 1 ['']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+4 fewer lines
+4 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '']
+"---
+
+3 fewer lines
+2 7 ['  alpha beta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+3 2 ['  alpha beta', ' gamma', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+3 fewer lines
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', ' gamm', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', ' ', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 8 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five s', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '  nine ten', '', '    last para line']
+"---
+
+2 6 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', 'gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', 'gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', '    last para line']
+"---
+
+7 lines <ed 1 time
+2 5 ['  alpha beta', 'gamma', 'delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', 'last para line']
+"---
+
+6 lines <ed 1 time
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', 'last para line']
+"---
+
+8 lines <ed 1 time
+1 1 ['alpha beta', 'gamma', 'delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', 'last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+4 lines <ed 1 time
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', 'last para line']
+"---
+
+2 7 ['  alpha beta', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', 'gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', 'nine ten', '', '    last para line']
+"---
+
+2 6 ['  alpha beta', ' gamma epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '   five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five sn', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', 'delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', 'five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 7 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 fewer lines
+1 18 ['    last para line']
+"---
+
+5 fewer lines
+1 9 ['  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', '   delta epsilon zeta', ' gamma', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 4 ['  alpha beta', ' gamma', '', '   delta epsilon zeta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 3 [' gamma', '  alpha beta', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '    last para line', '']
+"---
+
+6 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  nine ten', '  five six seven eight', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', ' gamm', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', ' ', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 8 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five s', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '', '  nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', ' gamm', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '  delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five sx seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 7 ['  alpha beta', ' gamma delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 21 ['  alpha beta', ' gamma', '   delta epsilon zeta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 13 ['  alpha beta gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', 'last para line']
+"---
+
+5 23 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight nine ten', '', '    last para line']
+"---
+
+2 7 ['  alpha beta', ' gamma   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 21 ['  alpha beta', ' gamma', '   delta epsilon zeta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 13 ['  alpha beta gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '    last para line']
+"---
+
+5 23 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight  nine ten', '', '    last para line']
+"---
+
+2 6 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 fewer lines
+3 18 ['  alpha beta', ' gamma', '    last para line']
+"---
+
+3 fewer lines
+3 9 ['  alpha beta', ' gamma', '  nine ten', '', '    last para line']
+"---
+
+1 7 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 fewer lines
+1 18 ['    last para line']
+"---
+
+5 fewer lines
+1 9 ['  nine ten', '', '    last para line']
+"---
+
+1 7 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 fewer lines
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 fewer lines
+1 18 ['    last para line']
+"---
+
+5 fewer lines
+1 9 ['  nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', ' gamm', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 2 ['  alpha beta', ' gamma', '  delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 [' alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five sx seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 5 ['  alpha beta', ' gama', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '  delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 8 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five ix seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 1 ['  alpha beta', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+3 1 ['  alpha beta', ' gamma', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+5 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight']
+"---
+
+5 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+2 6 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+3 2 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+2 6 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+3 2 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+1 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+Error in {file}:
+line   14:
+E20: Mark not set
+5 9 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 21 ['   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+6 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+6 10 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+2 6 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 10 ['alpha beta', 'gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+7 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', 'last para line']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 1 ['', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 fewer lines
+1 3 ['  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 fewer lines
+1 22 ['  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+4 fewer lines
+4 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '']
+"---
+
+4 fewer lines
+4 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '']
+"---
+
+1 3 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 1 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+8 18 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 3 ['  amma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 11 ['  alpha bet', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']
+"---
+
+1 12 ['  alpha beta', ' gamma', '   delta epsilon zeta', '', '  five six seven eight', '  nine ten', '', '    last para line']

@@ -66,6 +66,7 @@ fn run() -> io::Result<()> {
         editor.load_init(&dir.join("rim").join("init"));
     }
     editor.open_rest(args, &mut stdin)?;
+    editor.finish_start();
     #[cfg(unix)]
     editor.set_clipboard_reader(read_clipboard);
     let _guard = TerminalGuard::enter()?;

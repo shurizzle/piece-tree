@@ -1,0 +1,93 @@
+NVIM v0.12.6
+
+
+1
+"---
+
+
+Error in function Foo:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+
+Error in function Foo:
+line    1:
+E121: Undefined variable: nosuch
+next
+"---
+
+
+
+Error in function Foo[1]..Bar:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+
+42
+E119: Not enough arguments for function: Foo
+E118: Too many arguments for function: Foo
+"---
+
+
+[1, 1]
+"---
+
+E133: :return not inside a function
+E133: :return not inside a function
+"---
+
+E168: :finish used outside of a sourced file
+"---
+
+
+Error in function Foo:
+line    1:
+E168: :finish used outside of a sourced file
+"---
+
+E117: Unknown function: Nope
+E116: Invalid arguments for function Nope
+E107: Missing parentheses: Nope
+"---
+
+
+   function Foo()
+1    return 1
+   endfunction
+E123: Undefined function: Foo
+"---
+
+
+1
+1
+"---
+
+
+1
+2
+"---
+
+E117: Unknown function: Nope
+"---
+
+
+1
+E121: Undefined variable: x
+"---
+
+
+Error in function Foo:
+line    1:
+E492: Not an editor command:   unknowncmd
+"---
+
+
+
+2
+"---
+
+
+
+2

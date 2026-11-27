@@ -2,7 +2,7 @@ use piece_tree::LineEnding;
 
 use super::{highlight as hl, registers::*, render::*, *};
 
-fn ed(s: &str) -> Editor {
+pub(super) fn ed(s: &str) -> Editor {
     Editor::new(Document::new(s), PathBuf::from("/nonexistent/rim-test"))
 }
 
@@ -290,7 +290,7 @@ fn command_line_editing_and_goto() {
     let e = run("a\nb\nc", ":3\n");
     assert_eq!((pos(&e), &e.mode), ((2, 0), &Mode::Normal));
     assert_eq!(run("a\nb\nc", ":99\n").win.line, 2);
-    assert_eq!(run("a", ":foo\n").msg(), "Not an editor command: foo");
+    assert_eq!(run("a", ":foo\n").msg(), "E492: Not an editor command: foo");
     assert_eq!(run("a\nb", ":x\x7f2\n").win.line, 1);
     assert_eq!(run("a", ":\x7f").mode, Mode::Normal);
     assert_eq!(run("a", ":q\x1b").mode, Mode::Normal);
@@ -313,7 +313,7 @@ fn search_wraps_and_repeats() {
     feed(&mut e, "gg/\n");
     assert_eq!(pos(&e), (1, 4));
     assert_eq!(text(&run(s, "/bar\nggdn")), "bar foo\nfoo");
-    assert_eq!(run(s, "/zzz\n").msg(), "Pattern not found: zzz");
+    assert_eq!(run(s, "/zzz\n").msg(), "E486: Pattern not found: zzz");
     assert_eq!(run(s, "n").msg(), "No previous search pattern");
 }
 
@@ -366,7 +366,8 @@ fn replace_toggle_case_and_shift() {
     assert_eq!(text(&run("a\nb", "2>>")), "    a\n    b");
     assert_eq!(text(&run("a\n\nb", ">G")), "    a\n\n    b");
     let e = run("      a", "<<");
-    assert_eq!((text(&e).as_str(), pos(&e)), ("  a", (0, 2)));
+    // 'nostartofline': the cursor goes back to the column it had.
+    assert_eq!((text(&e).as_str(), pos(&e)), ("  a", (0, 0)));
     assert_eq!(text(&run("\ta", "<<")), "a");
     // The indent is rewritten: a tab counts `tabstop` columns.
     assert_eq!(text(&run("  \t a", "<<")), "   a");
@@ -875,6 +876,7 @@ fn command_line_history_completion_and_registers() {
 fn init_file_sets_options() {
     let dir = std::env::temp_dir().join(format!("rim-init-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
+    let dir = fs::canonicalize(&dir).unwrap();
     let path = dir.join("init");
     let mut e = ed("a");
     e.load_init(&path);
@@ -887,14 +889,16 @@ fn init_file_sets_options() {
     e.load_init(&path);
     assert!(!e.syntax_on);
     fs::write(&path, "syn on\nsyntax maybe\nmap x y").unwrap();
+    e.msgs.redir = Some(String::new());
     e.load_init(&path);
     assert!(e.syntax_on);
-    assert!(e.msg().ends_with("line 2: Invalid argument: maybe; line 3: only :set, :syntax and :highlight are allowed"), "{}", e.msg());
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {}:\nline    2:\nInvalid argument: maybe\nline    3:\nE492: Not an editor command: map x y", path.display()));
     // Errors name their lines; the other lines still apply.
     fs::write(&path, "set nu\nmap x y\nset foo\nset rnu!").unwrap();
     let mut e = ed("a");
+    e.msgs.redir = Some(String::new());
     e.load_init(&path);
-    assert_eq!(e.msg(), format!("{}: line 2: only :set, :syntax and :highlight are allowed; line 3: Unknown option: foo", path.display()));
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {}:\nline    2:\nE492: Not an editor command: map x y\nline    3:\nE518: Unknown option: foo", path.display()));
     assert!(!e.buf.opts.relativenumber);
     // A buffer opened later copies the options.
     let other = dir.join("b.txt");
@@ -1274,7 +1278,7 @@ fn substitute_confirm_count_and_repeat() {
     // Count only.
     let e = run(s, ":%s/a/x/gn\n");
     assert_eq!((text(&e).as_str(), e.msg()), (s, "6 matches on 2 lines"));
-    assert_eq!(run(s, ":s/q/x/n\n").msg(), "Pattern not found: q");
+    assert_eq!(run(s, ":s/q/x/n\n").msg(), "E486: Pattern not found: q");
     // Confirm: y n a q l, one undo step, per-line without `g`.
     let mut e = run(s, ":%s/a/x/c\n");
     assert_eq!((pos(&e), e.msg()), ((0, 0), "replace with x (y/n/a/q/l)?"));
@@ -1282,7 +1286,7 @@ fn substitute_confirm_count_and_repeat() {
     assert_eq!(pos(&e), (2, 0));
     feed(&mut e, "n");
     assert_eq!((text(&e).as_str(), &e.mode), ("xa aa\nb\naa", &Mode::Normal));
-    assert_eq!(e.msg(), "1 substitution on 1 line");
+    assert_eq!(e.msg(), "");
     feed(&mut e, "u");
     assert_eq!(text(&e), s);
     let mut e = run(s, ":%s/a/x/gc\nyn");
@@ -1300,12 +1304,12 @@ fn substitute_confirm_count_and_repeat() {
     assert_eq!(screen(&e.frame(20, 3))[..2], ["1 a[b] a{b}", "1 {cd}"]);
     feed(&mut e, "y");
     assert_eq!(screen(&e.frame(20, 3))[..2], ["1 aX a[b ]", "1 [cd]"]);
-    assert_eq!(run(s, ":s/q/x/c\n").msg(), "Pattern not found: q");
+    assert_eq!(run(s, ":s/q/x/c\n").msg(), "E486: Pattern not found: q");
     // Empty matches advance; replacements that grow the text keep the range.
     assert_eq!(text(&run("ab", ":s/x*/-/gc\nyyy")), "-a-b-");
     assert_eq!(text(&run("ab\ncd", ":1,1s/b/XYZ/gc\ny")), "aXYZ\ncd");
     // `&`, `:&`, `:&&`, `g&`.
-    assert_eq!(run(s, "&").msg(), "No previous substitute");
+    assert_eq!(run(s, "&").msg(), "E33: No previous substitute regular expression");
     let mut e = run(s, ":s/a/x/g\n");
     assert_eq!(text(&e), "xx xx\nb\naa");
     feed(&mut e, "G&");
@@ -1332,7 +1336,7 @@ fn gn_selects_the_match() {
     assert_eq!(text(&run(s, "/foo\nggcgnX\x1b..")), "X bar X bar X");
     assert_eq!(pos(&run(s, "/bar\ngg0gn")), (0, 6));
     assert_eq!(run(s, "/bar\ngg0gn").mode, Mode::Visual(VKind::Char));
-    assert_eq!(run(s, "/zzz\ngn").msg(), "Pattern not found: zzz");
+    assert_eq!(run(s, "/zzz\ngn").msg(), "E486: Pattern not found: zzz");
     // In Visual, `gn` extends to the next match's end, `gN` to the previous match's start.
     let e = run(s, "/bar\ngg0vgnd");
     assert_eq!((text(&e).as_str(), &e.mode), (" foo bar foo", &Mode::Normal));
@@ -1398,7 +1402,7 @@ fn marks() {
     assert_eq!(pos(&run(s, "G''''")), (2, 0));
     assert_eq!(pos(&run(s, "/h\n``")), (0, 0));
     assert_eq!(pos(&run(s, ":3\n''")), (0, 0));
-    assert_eq!(run(s, "'z").msg(), "Mark not set");
+    assert_eq!(run(s, "'z").msg(), "E20: Mark not set");
     assert_eq!(run(s, "m1").msg(), "Invalid mark name");
     // Undo and redo move marks back with the text.
     assert_eq!(pos(&run("日本\nx", "jmaggddu`a")), (1, 0));
@@ -1663,10 +1667,10 @@ fn set_options() {
     feed(&mut e, ":set nocul\n");
     assert_eq!(e.frame(20, 3).cursor_line, None);
     feed(&mut e, ":set ts?\n");
-    assert_eq!(e.msg(), "tabstop=4");
+    assert_eq!(e.msg(), "  tabstop=4");
     feed(&mut e, ":set foo\n");
-    assert_eq!(e.msg(), "Unknown option: foo");
-    assert!(run("a", ":set\n").msg().starts_with("number  relativenumber  cursorline  tabstop=4"));
+    assert_eq!(e.msg(), "E518: Unknown option: foo");
+    assert!(run("a", ":set\n").msg().starts_with("  number\n  relativenumber\n  cursorline\n  tabstop=4"));
     // tabstop: display, Tab key and shifts.
     let mut e = run("\tx", ":set ts=2\n");
     assert_eq!(screen(&e.frame(20, 2))[0], "1   x");
@@ -1806,7 +1810,7 @@ fn substitute_lines_and_flags() {
     assert_eq!(text(&run(s, ":%s/a/b/g\n")), "b b\nb b\nb b");
     assert_eq!(text(&run(s, ":2,3s/a/b/\n")), "a a\nb a\nb a");
     assert_eq!(text(&run(s, "j:.,$s/a/b/\n")), "a a\nb a\nb a");
-    assert_eq!(text(&run(s, ":3,2s/a/b/\n")), "a a\nb a\nb a");
+    assert_eq!(text(&run(s, ":3,2s/a/b/\ny")), "a a\nb a\nb a");
     assert_eq!(text(&run(s, "jma:'as/a/b/\n")), "a a\nb a\na a");
     assert_eq!(text(&run(s, ":.+1s/a/b/\n")), "a a\nb a\na a");
     assert_eq!(text(&run("Ab", ":s/a/x/i\n")), "xb");
@@ -1827,24 +1831,26 @@ fn substitute_lines_and_flags() {
 fn substitute_cursor_messages_and_undo() {
     let s = "x\n  a\na\nb";
     let mut e = run(s, ":%s/a/z/g\n");
-    assert_eq!((text(&e).as_str(), pos(&e), e.msg()), ("x\n  z\nz\nb", (2, 0), "2 substitutions on 2 lines"));
+    assert_eq!((text(&e).as_str(), pos(&e), e.msg()), ("x\n  z\nz\nb", (2, 0), ""));
     feed(&mut e, "u");
     assert_eq!(text(&e), s);
     feed(&mut e, "\x12");
     assert_eq!(text(&e), "x\n  z\nz\nb");
-    assert_eq!(run("aa", ":s/a/b/g\n").msg(), "2 substitutions on 1 line");
-    assert_eq!(run("a", ":s/a/b/\n").msg(), "1 substitution on 1 line");
+    // Reported only over 'report' substitutions (2): `:s/a/b/g` of two matches says nothing, of three it does when typed.
+    assert_eq!(run("aaa", ":s/a/b/g\n").msg(), "3 substitutions on 1 line");
+    assert_eq!(run("aa", ":s/a/b/g\n").msg(), "");
+    assert_eq!(run("a", ":s/a/b/\n").msg(), "");
     // The cursor goes where the last substitution ends, past the line breaks it added.
     assert_eq!(pos(&run("a,b\nc,d", concat!(r":%s/,/\n/", "\n"))), (3, 0));
     let e = run(s, ":%s/q/z/\n");
-    assert_eq!((text(&e).as_str(), e.msg()), (s, "Pattern not found: q"));
+    assert_eq!((text(&e).as_str(), e.msg()), (s, "E486: Pattern not found: q"));
     assert_eq!(run(s, ":%s/(/z/\n").msg().split(':').next(), Some("Invalid pattern"));
-    assert_eq!(run(s, ":s//z/\n").msg(), "No previous regular expression");
-    assert_eq!(run(s, ":9s/a/z/\n").msg(), "Invalid range");
+    assert_eq!(run(s, ":s//z/\n").msg(), "E35: No previous regular expression");
+    assert_eq!(run(s, ":9s/a/z/\n").msg(), "E16: Invalid range");
     // Line 0 counts as line 1 (vim).
     assert_eq!(text(&run(s, ":0s/a/z/\n")), text(&run(s, ":1s/a/z/\n")));
-    assert_eq!(run(s, ":'qs/a/z/\n").msg(), "Mark not set");
-    assert_eq!(run(s, ":s/a/z/q\n").msg(), "Trailing characters: q");
+    assert_eq!(run(s, ":'qs/a/z/\n").msg(), "E20: Mark not set");
+    assert_eq!(run(s, ":s/a/z/q\n").msg(), "E488: Trailing characters: q");
     // `.` does not repeat it: it repeats the `x` before.
     assert_eq!(text(&run("a a a", "x:s/a/z/\nw.")), " z ");
     // Undo after a substitute and a normal edit: separate steps.
@@ -1898,7 +1904,7 @@ fn undo_tree_commands() {
     assert_eq!(text(&e), "a");
     feed(&mut e, ":later 1h\n");
     assert_eq!(text(&e), "ac", "nothing that late: the newest version");
-    for bad in [":earlier 3x\n", ":later 99999999999999999999999\n", ":redo 2\n", ":undo 1s\n"] {
+    for bad in [":earlier 3x\n", ":later 99999999999999999999999\n"] {
         feed(&mut e, bad);
         assert!(e.msg().starts_with("Invalid argument: "), "{bad:?}: {}", e.msg());
     }
@@ -1932,7 +1938,7 @@ fn char_info_and_byte_motions() {
     assert_eq!(text(&run(s, "d4go")), "é\nfoo bar\n");
     assert_eq!(pos(&run(s, ":goto 9\n")), (1, 2));
     assert_eq!(pos(&run(s, "j$:go\n")), (0, 0));
-    assert_eq!(run(s, ":goto x\n").msg(), "Invalid argument: x");
+    assert_eq!(run(s, ":goto x\n").msg(), "E488: Trailing characters: x");
     // Column motion.
     assert_eq!(pos(&run(s, "j4|")), (1, 3));
     assert_eq!(pos(&run(s, "j99|")), (1, 6));
@@ -2195,15 +2201,15 @@ fn ex_addresses() {
     assert_eq!(text(&run(s, ":/b/;/d/d\n")), "a\ne");
     assert_eq!(text(&run(s, "/c\n:\\/d\n")), "a\nb\nd\ne");
     assert_eq!(text(&run(s, ":s/d/x/\n:\\&d\n")), "a\nb\nc\ne");
-    assert_eq!(run(s, ":/zz/d\n").msg(), "Pattern not found: zz");
-    assert_eq!(run(s, ":\\/d\n").msg(), "No previous regular expression");
-    assert_eq!(run(s, ":9d\n").msg(), "Invalid range");
+    assert_eq!(run(s, ":/zz/d\n").msg(), "E486: Pattern not found: zz");
+    assert_eq!(run(s, ":\\/d\n").msg(), "E35: No previous regular expression");
+    assert_eq!(run(s, ":9d\n").msg(), "E16: Invalid range");
     // `/pat/` sets the last search; `^` matches at line starts.
     let e = run("xa\na", ":/^a/\n");
     assert_eq!((e.win.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
     assert_eq!(pos(&run(s, ":'q\n")), (0, 0));
-    assert_eq!(run(s, ":'q\n").msg(), "Mark not set");
-    assert_eq!(run(s, ":3|\n").msg(), "Not an editor command: 3|");
+    assert_eq!(run(s, ":'q\n").msg(), "E20: Mark not set");
+    assert_eq!(run(s, ":3|\n").msg(), "c", ":3| shows line 3");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2214,7 +2220,7 @@ fn ex_delete_yank_move_copy() {
     assert_eq!((reg(&e), pos(&e)), (("b\nc\n".into(), true), (1, 0)));
     let e = run(s, ":2d x 2\n");
     assert_eq!((text(&e).as_str(), e.regs.get('x').map(|r| r.text.as_str())), ("a\nd\ne", Some("b\nc\n")));
-    assert_eq!(run(s, ":d %\n").msg(), "Invalid register: %");
+    assert_eq!(run(s, ":d %\n").msg(), "E488: Trailing characters: %");
     let e = run(s, "j:3,4y\n");
     assert_eq!((text(&e).as_str(), reg(&e), pos(&e)), (s, ("c\nd\n".into(), true), (1, 0)));
     let e = run(s, ":2,3m0\n");
@@ -2224,8 +2230,8 @@ fn ex_delete_yank_move_copy() {
     let e = run(s, ":1m2\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("b\na\nc\nd\ne", 1));
     assert_eq!(text(&run(s, ":2,3m1\n")), s);
-    assert_eq!(run(s, ":1,2m1\n").msg(), "Cannot move a range of lines into itself");
-    assert_eq!(run(s, ":m\n").msg(), "Invalid address");
+    assert_eq!(run(s, ":1,2m1\n").msg(), "E134: Cannot move a range of lines into itself");
+    assert_eq!(run(s, ":m\n").msg(), "E16: Invalid range");
     let e = run(s, ":1t.\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("a\na\nb\nc\nd\ne", 1));
     let e = run(s, ":1,2t$\n");
@@ -2243,7 +2249,7 @@ fn ex_shift_join_print() {
     let e = run("a\nb\nc", ":>> 2\n");
     assert_eq!((text(&e).as_str(), e.win.line), ("        a\n        b\nc", 1));
     assert_eq!(text(&run("        a", ":<\n")), "    a");
-    assert_eq!(run("a", ":> 0\n").msg(), "Positive count required");
+    assert_eq!(run("a", ":> 0\n").msg(), "E939: Positive count required");
     let s = "a\n  b\nc";
     assert_eq!(text(&run(s, ":j\n")), "a b\nc");
     assert_eq!(text(&run(s, ":1,3j\n")), "a b c");
@@ -2270,7 +2276,7 @@ fn ex_normal() {
     // Lines follow the edits: deleted ones are skipped.
     assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm dd\n")), "a\nd");
     assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm jdd\n")), "a\nb\nd");
-    assert_eq!(run("a", ":norm\n").msg(), "Argument required");
+    assert_eq!(run("a", ":norm\n").msg(), "E471: Argument required");
     // Not recorded by `q`.
     let e = run("a\nb", "qq:norm Ax\nq");
     assert_eq!(e.regs.get('q').map(|r| r.text.as_str()), Some(":norm Ax\r"));
@@ -2291,10 +2297,12 @@ fn ex_global() {
     assert_eq!(text(&run("a\nb\na", ":g/a/norm Ax\n")), "ax\nb\nax");
     assert_eq!(text(&run("a\nb\na", ":g/a/t.\n")), "a\na\nb\na\na");
     let e = run(s, ":g/b\n");
-    assert_eq!((e.msg(), e.win.line), ("ab", 2));
-    assert_eq!(run(s, ":g/zz/d\n").msg(), "Pattern not found: zz");
+    // Every matching line is printed, below each other, as `:g/b` does in Neovim.
+    assert_eq!((e.msg(), e.win.line), ("b\nab", 2));
+    assert_eq!(run(s, ":g/zz/d\n").msg(), "E486: Pattern not found: zz");
     assert_eq!(run(s, ":v/./d\n").msg(), "Pattern found in every line: .");
     assert_eq!(run(s, ":g\n").msg(), "Regular expression missing from :global");
+    // The first error ends the `:global` (`emsg` makes `global_busy` 2), as in Neovim.
     assert_eq!(run(s, ":g/a/g/b/d\n").msg(), "Cannot do :global recursive");
     assert_eq!(run(s, ":g/a/s/a/x/c\n").msg(), "The c flag cannot be used here");
     assert!(!feed(&mut ed(s), ":g/a/q!\n"));
@@ -2334,7 +2342,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, "u");
     assert_eq!(text(&e), "a\n1\n2\nb\nc");
     feed(&mut e, ":r /nonexistent/rim\n");
-    assert!(e.msg().starts_with("Can't open file /nonexistent/rim"), "{}", e.msg());
+    assert!(e.msg().starts_with("E484: Can't open file /nonexistent/rim"), "{}", e.msg());
     let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
     feed(&mut e, &format!(":2,3w {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc");
@@ -2345,7 +2353,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":w >> {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "a\na\nb\nc");
     feed(&mut e, ":2w\n");
-    assert_eq!(e.msg(), "Use ! to write partial buffer");
+    assert_eq!(e.msg(), "E140: Use ! to write partial buffer");
     feed(&mut e, ":2w!\n");
     assert_eq!(fs::read_to_string(&own).unwrap(), "b\n");
     // Line endings follow the document's.
@@ -2362,7 +2370,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":sav {}\n", new.display()));
     assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_deref(), e.is_dirty()), ("xy", Some(new.as_path()), false));
     feed(&mut e, ":sav\n");
-    assert_eq!(e.msg(), "Argument required");
+    assert_eq!(e.msg(), "E471: Argument required");
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -2419,8 +2427,8 @@ fn stats_compact_and_idle() {
     e.idle();
     assert_eq!(e.buf.doc.text().piece_count(), 1);
     feed(&mut e, ":set compactat=0\n:set compactat?\n");
-    assert_eq!(e.msg(), "compactat=0");
-    assert_eq!(run("a", ":set compactat=x\n").msg(), "Invalid argument: compactat=x");
+    assert_eq!(e.msg(), "  compactat=0");
+    assert_eq!(run("a", ":set compactat=x\n").msg(), "E521: Number required after =: compactat=x");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2434,12 +2442,12 @@ fn filetype_detected_and_set() {
     let mut e = Editor::open(a).unwrap();
     assert_eq!(e.buf.opts.filetype, "rust");
     feed(&mut e, &format!(":e {}\n:set ft?\n", b.display()));
-    assert_eq!(e.msg(), "filetype=python");
+    assert_eq!(e.msg(), "  filetype=python");
     feed(&mut e, ":set ft=foo\n:set ft?\n");
-    assert_eq!(e.msg(), "filetype=foo");
+    assert_eq!(e.msg(), "  filetype=foo");
     // A new buffer detects its own type instead of inheriting the current one.
     feed(&mut e, &format!(":e {}\n:set ft?\n", c.display()));
-    assert_eq!(e.msg(), "filetype=");
+    assert_eq!(e.msg(), "  filetype=");
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -2473,7 +2481,7 @@ fn buffers_switch_list_and_delete() {
     for (cmd, msg) in [
         (":b 9", "Buffer 9 does not exist"),
         (":b zzz", "E94: No matching buffer for zzz"),
-        (":bn x", "Invalid count: x"),
+        (":bn x", "E488: Trailing characters: x"),
         (":bd x", "Invalid buffer number: x"),
         (":bd 9", "Buffer 9 does not exist"),
         (":bd 2", "No write since last change for buffer 2 (add ! to override)"),
@@ -2509,7 +2517,7 @@ fn windows_split_move_and_close() {
     let mut e = ed("one\ntwo\nthree");
     e.buf.opts.winwidth = 1;
     feed(&mut e, "jj:sp\n");
-    assert_eq!((e.window_ids(), pos(&e)), (vec![2, 1], (2, 0)));
+    assert_eq!((e.window_ids(), pos(&e)), (vec![1001, 1000], (2, 0)));
     // An edit above it in one window moves the cursor of the other one.
     feed(&mut e, "ggOzero\x1b");
     let f = e.frame(20, 9);
@@ -2529,22 +2537,22 @@ fn windows_split_move_and_close() {
     );
     assert_eq!(f.cursor, (5, 0));
     feed(&mut e, "\x17j");
-    assert_eq!((e.win.id, pos(&e)), (1, (3, 0)));
+    assert_eq!((e.win.id, pos(&e)), (1000, (3, 0)));
     feed(&mut e, "\x17k\x17k");
-    assert_eq!(e.win.id, 2, "no window above");
+    assert_eq!(e.win.id, 1001, "no window above");
     feed(&mut e, ":vs\n");
-    assert_eq!(e.window_ids(), [3, 2, 1]);
+    assert_eq!(e.window_ids(), [1002, 1001, 1000]);
     let f = e.frame(21, 7);
     assert_eq!(screen(&f)[..3], ["1 zero    │1 zero", "1 one     │1 one", "[ /nonexist]│ /nonexist"]);
     assert_eq!(f.cursor_cols, 0..10);
     feed(&mut e, "\x17l");
-    assert_eq!(e.win.id, 2);
+    assert_eq!(e.win.id, 1001);
     feed(&mut e, "\x17h3\x17w");
-    assert_eq!(e.win.id, 1, "a count picks the window");
+    assert_eq!(e.win.id, 1000, "a count picks the window");
     feed(&mut e, "\x17w");
-    assert_eq!(e.win.id, 3, "w wraps around");
+    assert_eq!(e.win.id, 1002, "w wraps around");
     feed(&mut e, "\x17c");
-    assert_eq!((e.window_ids(), e.win.id), (vec![2, 1], 2));
+    assert_eq!((e.window_ids(), e.win.id), (vec![1001, 1000], 1001));
     feed(&mut e, "\x17s\x17v\x17x");
     assert_eq!(e.window_ids().len(), 4);
     feed(&mut e, "\x17o");
@@ -2749,13 +2757,13 @@ fn syntax_colors_text_and_objects() {
 fn messages_have_a_kind_and_survive_motions() {
     use super::messages::Level;
     let mut e = run("a\nb", ":foo\n");
-    assert_eq!((e.msg(), e.msgs.level()), ("Not an editor command: foo", Level::Error));
+    assert_eq!((e.msg(), e.msgs.level()), ("E492: Not an editor command: foo", Level::Error));
     feed(&mut e, "j");
-    assert_eq!(e.msg(), "Not an editor command: foo");
+    assert_eq!(e.msg(), "E492: Not an editor command: foo");
     feed(&mut e, "i");
     assert_eq!(e.msg(), "");
     feed(&mut e, "\x1b/zzz\n");
-    assert_eq!(e.msg(), "Pattern not found: zzz");
+    assert_eq!(e.msg(), "E486: Pattern not found: zzz");
     feed(&mut e, ":");
     assert_eq!(e.msg(), "");
     let e = run("a\nb", "G/a\n");
@@ -2767,9 +2775,9 @@ fn messages_have_a_kind_and_survive_motions() {
 #[test]
 fn multi_row_messages_wait_for_a_key() {
     let mut e = run("a\nb", ":foo\n:bar\n:messages\n");
-    assert_eq!(e.msg(), "Not an editor command: foo\nNot an editor command: bar");
+    assert_eq!(e.msg(), "E492: Not an editor command: foo\nE492: Not an editor command: bar");
     let f = e.frame(40, 6);
-    assert_eq!(screen(&f)[3..], ["Not an editor command: foo", "Not an editor command: bar", "Press ENTER or type command to continue"]);
+    assert_eq!(screen(&f)[3..], ["E492: Not an editor command: foo", "E492: Not an editor command: bar", "Press ENTER or type command to continue"]);
     assert_eq!(f.cursor.1, 5);
     // Enter only dismisses; the message was not added to the history again.
     feed(&mut e, "\n");
@@ -2788,19 +2796,19 @@ fn multi_row_messages_wait_for_a_key() {
 #[test]
 fn messagesopt_sets_history_and_prompt() {
     let mut e = run("a", ":set mopt?\n");
-    assert_eq!(e.msg(), "messagesopt=hit-enter,history:500");
+    assert_eq!(e.msg(), "  messagesopt=hit-enter,history:500");
     feed(&mut e, ":set mopt=hit-enter,wait:50,history:2\n:set mopt?\n");
-    assert_eq!(e.msg(), "messagesopt=hit-enter,wait:50,history:2");
+    assert_eq!(e.msg(), "  messagesopt=hit-enter,wait:50,history:2");
     for bad in ["history:3", "wait:x", "hit-enter,history:10001", "foo"] {
         feed(&mut e, &format!(":set mopt={bad}\n"));
-        assert_eq!(e.msg(), format!("Invalid argument: mopt={bad}"));
+        assert_eq!(e.msg(), format!("E474: Invalid argument: mopt={bad}"));
     }
     feed(&mut e, ":foo1\n:foo2\n:foo3\n");
     assert_eq!(e.msgs.list().lines().count(), 2);
     // Without `hit-enter` the rows show without a prompt and any key runs.
     feed(&mut e, ":set mopt=wait:0\n:messages\n");
     let f = e.frame(40, 6);
-    assert_eq!(screen(&f)[4..], ["Not an editor command: foo2", "Not an editor command: foo3"]);
+    assert_eq!(screen(&f)[4..], ["E492: Not an editor command: foo2", "E492: Not an editor command: foo3"]);
     feed(&mut e, "\n");
     assert_eq!(e.msg(), "");
     // `wait:N`: the message goes away by itself once N ms passed (`main` polls for `message_wait`).
@@ -2832,7 +2840,7 @@ fn laststatus_showmode_and_showcmd() {
     feed(&mut e, ":set smd\n");
     assert_eq!(screen(&e.frame(40, 4))[3].find("recording @a"), Some(0));
     feed(&mut e, ":set ls=3\n");
-    assert_eq!(e.msg(), "Invalid argument: ls=3");
+    assert_eq!(e.msg(), "");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -3057,19 +3065,19 @@ fn command_line_history_and_completion_at_the_cursor() {
     press(&mut e, KeyCode::PageDown);
     assert_eq!(line(&e).0, "se");
     // Tab completes the word before the cursor and keeps what follows it; Ctrl+N and Ctrl+P cycle.
-    feed(&mut e, "\x15so :x");
+    feed(&mut e, "\x15sy :x");
     press(&mut e, KeyCode::Left);
     press(&mut e, KeyCode::Left);
     press(&mut e, KeyCode::Left);
     press(&mut e, KeyCode::Left);
     press(&mut e, KeyCode::Left);
-    assert_eq!(line(&e), ("so :x".into(), 0));
+    assert_eq!(line(&e), ("sy :x".into(), 0));
     press(&mut e, KeyCode::Right);
     press(&mut e, KeyCode::Right);
     press(&mut e, KeyCode::Tab);
-    assert_eq!(line(&e), ("sort :x".into(), 4));
+    assert_eq!(line(&e), ("syntax :x".into(), 6));
     press(&mut e, KeyCode::Tab);
-    assert_eq!(line(&e).0, "sort :x", "a single candidate");
+    assert_eq!(line(&e).0, "syntax :x", "a single candidate");
     feed(&mut e, "\x15s");
     press(&mut e, KeyCode::Tab);
     let first = line(&e).0;
@@ -3141,10 +3149,10 @@ fn buffers_without_a_file() {
     // Nothing to write to, and `:r`/`:e!` have no file either.
     for cmd in [":w\n", ":r\n", ":wq\n"] {
         feed(&mut e, cmd);
-        assert_eq!(e.msg(), "No file name", "{cmd:?}");
+        assert_eq!(e.msg(), "E32: No file name", "{cmd:?}");
     }
     feed(&mut e, "ix\x1b:e!\n");
-    assert_eq!(e.msg(), "No file name");
+    assert_eq!(e.msg(), "E32: No file name");
     assert!(e.is_dirty());
     assert!(feed(&mut e, ":q\n"), "a modified buffer stays");
     // `:w file` names the buffer and writes it, unless the file exists.
@@ -3173,9 +3181,9 @@ fn buffers_without_a_file() {
     feed(&mut e, ":set bt=nofile\nix\x1b:w\n");
     assert_eq!((e.is_dirty(), e.msg()), (false, "Cannot write, 'buftype' option is set"));
     feed(&mut e, ":set bt?\n");
-    assert_eq!(e.msg(), "buftype=nofile");
+    assert_eq!(e.msg(), "  buftype=nofile");
     feed(&mut e, ":set bt=foo\n");
-    assert_eq!(e.msg(), "Invalid argument: bt=foo");
+    assert_eq!(e.msg(), "E474: Invalid argument: bt=foo");
     assert!(!feed(&mut e, ":q\n"));
     // The window status shows `[No Name]`.
     let mut e = Editor::with_path(Document::new(""), None);
@@ -3209,7 +3217,7 @@ fn start_with_no_file_or_stdin() {
     let mut e = start(vec!["-".into()], &mut stdin).unwrap();
     assert_eq!((e.buf.name().as_str(), text(&e).as_str(), e.is_dirty()), ("[No Name]", "in1\n", true));
     feed(&mut e, ":w\n");
-    assert_eq!(e.msg(), "No file name");
+    assert_eq!(e.msg(), "E32: No file name");
     // Files and `-` in any order: the first is shown, the others are hidden buffers.
     let e = start(vec![f.clone(), "-".into(), f.clone()], &mut stdin).unwrap();
     assert_eq!((e.buf.id, text(&e).as_str(), e.buffers.len()), (1, "file", 1), "the same file twice is one buffer");
@@ -3541,13 +3549,23 @@ fn ctrl_v_codes_and_ctrl_k_digraphs_in_insert_and_on_the_command_line() {
 fn expressions_evaluate_like_vim() {
     let mut e = ed("one\ntwo\nthree");
     feed(&mut e, "\"ayyj$");
-    let mut ev = |src: &str| e.eval_text(src).unwrap_or_else(|m| format!("!{m}"));
+    let mut ev = |src: &str| {
+        // An error a function gives does not fail the expression (`emsg()`): it is what the redirection got.
+        e.msgs.redir = Some(String::new());
+        let v = e.eval_text(src);
+        let errs = e.msgs.redir.take().unwrap_or_default();
+        match v {
+            Err(m) => format!("!{m}"),
+            Ok(_) if !errs.is_empty() => format!("!{}", errs.trim_start_matches('\n').replace('\n', " | ")),
+            Ok(v) => v,
+        }
+    };
     let table: &[(&str, &str)] = &[
         // Arithmetic, with vim's division by zero and truncation.
         ("1+2*3", "7"), ("(1+2)*3", "9"), ("10/3", "3"), ("10%3", "1"), ("-7/2", "-3"), ("7/0", "9223372036854775807"), ("-7/0", "-9223372036854775807"),
         ("0/0", "-9223372036854775808"), ("5%0", "0"), ("0x1f+0b11+010", "42"), ("1 - -2", "3"), ("+3", "3"),
         // Floats.
-        ("1.5+1", "2.5"), ("10/4.0", "2.5"), ("1.0/3", "0.333333"), ("1/3.0*3", "1.0"), ("2.0*3", "6.0"), ("1.0e3", "1000.0"), ("1.5e10", "1.5e+10"), ("-2.5", "-2.5"), ("1.5%2", "!E804: Cannot use '%' with Float"),
+        ("1.5+1", "2.5"), ("10/4.0", "2.5"), ("1.0/3", "0.333333"), ("1/3.0*3", "1.0"), ("2.0*3", "6.0"), ("1.0e3", "1000.0"), ("1.5e10", "1.5e10"), ("-2.5", "-2.5"), ("1.5%2", "!E804: Cannot use '%' with Float"),
         // Strings and their numbers.
         ("'a'.'b'", "ab"), ("'a' . 1", "a1"), ("'a'..'b'", "ab"), ("'it''s'", "it's"), ("\"a\\tb\"", "a\tb"), ("\"\\x41\\u20ac\\101\"", "A€A"), ("\"12abc\"+1", "13"),
         ("'abc'+1", "1"), ("'0x1f'+0", "31"), ("'-5'+0", "-5"), ("'abc'[1]", "b"), ("'abcdef'[2:3]", "cd"), ("'abc'[1:]", "bc"), ("'abc'[:1]", "ab"), ("'abc'[9]", ""),
@@ -3559,8 +3577,8 @@ fn expressions_evaluate_like_vim() {
         ("[1,2,3]", "1\n2\n3"), ("[1,2]+[3]", "1\n2\n3"), ("[1,2,3][1]", "2"), ("[1,2,3][-1]", "3"), ("[1,2,3][1:]", "2\n3"), ("[1,2,3][:1]", "1\n2"), ("[1,2,3][2:1]", ""),
         ("[1,2,3][5]", "!E684: List index out of range: 5"), ("[]", ""),
         // Errors.
-        ("1+", "!E15: Invalid expression: \"1+\""), ("(1", "!E15: Invalid expression: \"(1\""), ("1 2", "!E15: Invalid expression: \"1 2\""), ("'abc", "!E15: Invalid expression: \"'abc\""),
-        ("@", "!E15: Invalid expression: \"@\""), ("foo(1)", "!E117: Unknown function: foo"), ("abs()", "!E119: Not enough arguments for function: abs"),
+        ("1+", "!E15: Invalid expression: \"1+\""), ("(1", "!E110: Missing ')'"), ("1 2", "!E488: Trailing characters: 2"), ("'abc", "!E115: Missing quote: 'abc"), ("\"abc", "!E114: Missing quote: \"abc"), ("[1", "!E696: Missing comma in List: "), ("[1,", "!E697: Missing end of List ']': "), ("{'a' 1}", "!E720: Missing colon in Dictionary: 1}"), ("{'a': 1", "!E722: Missing comma in Dictionary: "), ("{'a': 1,", "!E723: Missing end of Dictionary '}': "), ("1 ? 2", "!E109: Missing ':' after '?'"), ("[1][0", "!E111: Missing ']'"), ("len(1", "!E116: Invalid arguments for function len"), ("len(1 2)", "!E116: Invalid arguments for function len"), ("1 +* 2", "!E15: Invalid expression: \"* 2\""), ("#{", "!E723: Missing end of Dictionary '}': "), ("#{: 1}", "!E15: Invalid expression: \"#{: 1}\""), ("[1,]", "1"), ("3 ~ 4", "!E488: Trailing characters: ~ 4"), ("x->", "!E121: Undefined variable: x"),
+        ("@", ""), ("foo(1)", "!E117: Unknown function: foo"), ("abs()", "!E119: Not enough arguments for function: abs"),
         ("abs(1,2)", "!E118: Too many arguments for function: abs"), ("[1]+1", "!E745: Using a List as a Number"), ("'a'.[1]", "!E730: Using a List as a String"),
         ("&nosuch", "!E113: Unknown option: nosuch"), ("[1]<2", "!E691: Can only compare List with List"), ("[1]<[2]", "!E692: Invalid operation for List"),
         // Registers, options, the text.
@@ -3572,25 +3590,27 @@ fn expressions_evaluate_like_vim() {
         ("str2float('1.5abc')", "1.5"), ("string('a')", "'a'"), ("string([1,'a''b'])", "[1, 'a''b']"), ("string(1.5)", "1.5"), ("string(7)", "7"),
         // Strings.
         ("len('héllo')", "6"), ("strlen('héllo')", "6"), ("strchars('héllo')", "5"), ("strcharlen(\"e\\u0301x\")", "2"), ("len([1,2])", "2"), ("toupper('aé')", "AÉ"), ("tolower('AÉ')", "aé"),
-        ("repeat('ab',3)", "ababab"), ("repeat([1],2)", "1\n1"), ("join([1,2,3],'-')", "1-2-3"), ("join(['a','b'])", "a b"), ("split('a b  c')", "a\nb\nc"), ("split('a,b,,c',',')", "a\nb\nc"),
+        ("repeat('ab',3)", "ababab"), ("repeat([1],2)", "1\n1"), ("join([1,2,3],'-')", "1-2-3"), ("join(['a','b'])", "a b"), ("split('a b  c')", "a\nb\nc"), ("split('a,b,,c',',')", "a\nb\n\nc"),
         ("split('a,b,,c',',',1)", "a\nb\n\nc"), ("split('a1b22c','\\d+')", "a\nb\nc"), ("range(4)", "0\n1\n2\n3"), ("range(2,4)", "2\n3\n4"), ("range(0,10,5)", "0\n5\n10"), ("range(3,1,-1)", "3\n2\n1"),
         ("range(1,2,0)", "!E726: Stride is zero"), ("reverse([1,2,3])", "3\n2\n1"), ("reverse('abc')", "cba"), ("sort(['b','a','c'])", "a\nb\nc"), ("sort([10,9,100])", "10\n100\n9"),
         ("add([1],2)", "1\n2"), ("index([1,2,3],2)", "1"), ("index([1],5)", "-1"), ("get([1,2],1)", "2"), ("get([1,2],5,'x')", "x"), ("get([1,2],5)", "0"), ("empty('')", "1"), ("empty([1])", "0"),
         ("empty(0)", "1"), ("strpart('abcdef',2,3)", "cde"), ("strpart('abc',1)", "bc"), ("stridx('hello','l')", "2"), ("stridx('hello','l',3)", "3"), ("strridx('hello','l')", "3"), ("stridx('a','z')", "-1"),
-        ("char2nr('A')", "65"), ("nr2char(8364)", "€"), ("escape('a.b','.')", "a\\.b"), ("tr('abc','ab','xy')", "xyc"), ("tr('a','ab','x')", "!E475: Invalid argument: tr()"),
+        ("char2nr('A')", "65"), ("nr2char(8364)", "€"), ("escape('a.b','.')", "a\\.b"), ("tr('abc','ab','xy')", "xyc"), ("tr('a','ab','x')", "x"),
         ("matchstr('foo123bar','\\d+')", "123"), ("matchstr('foo','\\d+')", ""), ("substitute('foo bar','o','0','g')", "f00 bar"), ("substitute('foo bar','o','0','')", "f0o bar"),
         ("substitute('a b','(\\w) (\\w)','$2 $1','')", "b a"), ("trim('  x  ')", "x"), ("trim('xxaxx','x')", "a"), ("copy([1])", "1"),
         // printf.
         ("printf('%d-%s',5,'a')", "5-a"), ("printf('%05d',42)", "00042"), ("printf('%-5d|',42)", "42   |"), ("printf('%5.2f',3.14159)", " 3.14"), ("printf('%x %X %o %b',255,255,8,5)", "ff FF 10 101"),
         ("printf('%#x %#o %#b',255,8,5)", "0xff 010 0b101"), ("printf('%+d % d',5,5)", "+5  5"), ("printf('%c',65)", "A"), ("printf('%.3s',[1])", "[1]"), ("printf('%.3s','abcdef')", "abc"),
-        ("printf('%5s|%-5s|','a','b')", "    a|b    |"), ("printf('%e',1500.0)", "1.500000e+03"), ("printf('%E',0.00015)", "1.500000E-04"), ("printf('%g',0.0001)", "0.0001"), ("printf('%g',1.0e-5)", "1e-05"),
-        ("printf('%g',100000.0)", "100000"), ("printf('%g',1.0e6)", "1e+06"), ("printf('%%')", "%"), ("printf('%3d',-5)", " -5"), ("printf('%03d',-5)", "-05"), ("printf('%08.3f',3.14159)", "0003.142"),
-        ("printf('%.3d',5)", "005"), ("printf('%u',-1)", "18446744073709551615"), ("printf('%ld',5)", "5"), ("printf('%d')", "!E766: Insufficient arguments for printf()"),
-        ("printf('x',1)", "!E767: Too many arguments for printf()"), ("printf('%q',1)", "!E767: Invalid format specifier: %q"),
+        ("printf('%5s|%-5s|','a','b')", "    a|b    |"), ("printf('%e',1500.0)", "1.500000e+03"), ("printf('%E',0.00015)", "1.500000E-04"), ("printf('%g',0.0001)", "1.0e-4"), ("printf('%g',1.0e-5)", "1.0e-5"),
+        ("printf('%g',100000.0)", "100000.0"), ("printf('%g',1.0e6)", "1000000.0"), ("printf('%%')", "%"), ("printf('%3d',-5)", " -5"), ("printf('%03d',-5)", "-05"), ("printf('%08.3f',3.14159)", "0003.142"),
+        ("printf('%.3d',5)", "005"), ("printf('%u',-1)", "18446744073709551615"), ("printf('%ld',5)", "5"),
+        // The errors of `printf()` are in the golden cases of funcs.vim.
     ];
-    for (src, want) in table {
-        assert_eq!(ev(src), *want, "{src}");
-    }
+    let bad: Vec<String> = table.iter().filter_map(|(src, want)| {
+        let got = ev(src);
+        (got != *want).then(|| format!("{src}\n   want {want:?}\n   got  {got:?}"))
+    }).collect();
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
     // `ignorecase` decides the plain string comparison, `#` and `?` do not care about it.
     e.buf.opts.ignorecase = true;
     assert_eq!((e.eval_text("'a'=='A'").unwrap(), e.eval_text("'a'==#'A'").unwrap(), e.eval_text("'abc'=~'B'").unwrap()), ("1".into(), "0".into(), "1".into()));
@@ -3665,8 +3685,8 @@ fn completion_sources() {
     let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
     // Command names, and nothing where no command takes an argument.
     assert_eq!(cand(&e, "sp"), Some((0, v(&["split"]))));
-    assert_eq!(cand(&e, "%so").map(|c| c.1), Some(v(&["sort"])));
-    assert_eq!(cand(&e, "b").map(|c| c.1.len()), Some(6));
+    assert_eq!(cand(&e, "%so").map(|c| c.1), Some(v(&["sort", "source"])));
+    assert_eq!(cand(&e, "b").map(|c| c.1.len()), Some(7));
     assert!(cand(&e, "").is_none() && cand(&e, "normal x").is_none() && cand(&e, "s/a").is_some_and(|c| c.1.is_empty()));
     // Files: sorted, directories end in `/`, hidden ones after a dot, `wildignore`, `wildignorecase`.
     assert_eq!(cand(&e, &format!("e {d}/a")), Some((2, vec![format!("{d}/ab.txt"), format!("{d}/ac.rs")])));
@@ -3722,10 +3742,10 @@ fn wildmode_full_menu_and_keys() {
     assert_eq!(line(&e), ("saveas".into(), 6));
     let f = e.frame(40, 12);
     // The popup above the command line, from the column of the word.
-    assert_eq!(screen(&f)[4..11], ["  saveas", "  set", "  sort", "  split", "  stats", "  substitute", "  syntax"].map(String::from));
+    assert_eq!(screen(&f)[3..11], ["  saveas", "  set", "  sort", "  source", "  split", "  stats", "  substitute", "  syntax"].map(String::from));
     assert_eq!((screen(&f)[11].as_str(), f.cursor), (":saveas", (7, 11)));
     // More Tabs go on, after the last one the typed word, then the first again; Shift+Tab goes back.
-    for want in ["set", "sort", "split", "stats", "substitute", "syntax", "s", "saveas"] {
+    for want in ["set", "sort", "source", "split", "stats", "substitute", "syntax", "s", "saveas"] {
         tab(&mut e);
         assert_eq!(line(&e).0, want);
     }
@@ -3761,7 +3781,7 @@ fn wildmode_full_menu_and_keys() {
     assert_eq!(e.mode, Mode::Normal);
     assert!(e.msg().contains("tabstop=4"), "{}", e.msg());
     // A single match is the completion: no menu, and the next Tab starts again.
-    feed(&mut e, ":so");
+    feed(&mut e, ":sor");
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.is_none()), ("sort", true));
     // The text after the cursor stays, and the word before it is the one completed.
@@ -3784,7 +3804,7 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     let mut e = ed("a");
     let tab = |e: &mut Editor| press(e, KeyCode::Tab);
     // `longest,full`: the common start, then the candidates one by one.
-    feed(&mut e, ":set wim=longest,full\n:u");
+    feed(&mut e, ":set wim=longest,full\n:und");
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(false)));
     tab(&mut e);
@@ -3792,7 +3812,7 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     tab(&mut e);
     assert_eq!(line(&e).0, "undolist");
     // `longest:full` starts the menu with the first press.
-    feed(&mut e, "\x1b:set wim=longest:full\n:u");
+    feed(&mut e, "\x1b:set wim=longest:full\n:und");
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(true)));
     // `list`: the first press lists, the next complete.
@@ -3800,12 +3820,12 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("s", Some(true)));
     let rows = screen(&e.frame(40, 8));
-    assert_eq!(rows[4..7], ["saveas      set         sort", "split       stats       substitute", "syntax"].map(String::from));
+    assert_eq!(rows[4..7], ["saveas      set         sort", "source      split       stats", "substitute  syntax"].map(String::from));
     assert_eq!(rows[3], "");
     tab(&mut e);
     assert_eq!(line(&e).0, "saveas");
     // `list:longest`.
-    feed(&mut e, "\x1b:set wim=list:longest\n:u");
+    feed(&mut e, "\x1b:set wim=list:longest\n:und");
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("undo", Some(true)));
     assert_eq!(screen(&e.frame(40, 8))[6], "undo      undolist");
@@ -3818,10 +3838,10 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     feed(&mut e, "\x15s\x04");
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("s", Some(true)));
     feed(&mut e, "\x15s\x01");
-    assert_eq!(line(&e).0, "saveas set sort split stats substitute syntax");
-    feed(&mut e, "\x15u\x0c");
+    assert_eq!(line(&e).0, "saveas set sort source split stats substitute syntax");
+    feed(&mut e, "\x15und\x0c");
     assert_eq!(line(&e).0, "undo");
-    feed(&mut e, "\x15so\x0c");
+    feed(&mut e, "\x15sor\x0c");
     assert_eq!(line(&e).0, "sort");
     // Fuzzy.
     feed(&mut e, "\x1b:set wim=full wop=fuzzy\n:sytx");
@@ -3830,13 +3850,13 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     // `wildoptions` without `pum`: one row above the command line.
     feed(&mut e, "\x1b:set wop=\n:s");
     tab(&mut e);
-    let rows = screen(&e.frame(60, 8));
+    let rows = screen(&e.frame(70, 8));
     let plain = |r: &str| r.replace(['[', ']'], "").trim_end().to_string();
-    assert_eq!(plain(&rows[6]), "  saveas  set  sort  split  stats  substitute  syntax");
+    assert_eq!(plain(&rows[6]), "  saveas  set  sort  source  split  stats  substitute  syntax");
     tab(&mut e);
     assert_eq!(line(&e).0, "set");
     // Not enough room: scrolled to the selected one, with markers.
-    for _ in 0..4 {
+    for _ in 0..5 {
         tab(&mut e);
     }
     let rows = screen(&e.frame(24, 8));
@@ -3859,11 +3879,11 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     feed(&mut e, "@c");
     assert_eq!(line(&e).0, "s", "wildchar does not in a macro");
     feed(&mut e, "\x1b:set wc=bad\n");
-    assert_eq!(e.msg(), "Invalid argument: wc=bad");
+    assert_eq!(e.msg(), "E474: Invalid argument: wc=bad");
     feed(&mut e, ":set wim=a,b,c,d,e\n");
-    assert_eq!(e.msg(), "Invalid argument: wim=a,b,c,d,e");
+    assert_eq!(e.msg(), "E474: Invalid argument: wim=a,b,c,d,e");
     feed(&mut e, ":set wop=popup\n");
-    assert_eq!(e.msg(), "Invalid argument: wop=popup");
+    assert_eq!(e.msg(), "E474: Invalid argument: wop=popup");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -3879,9 +3899,9 @@ fn popup_menu_scrolls_clamps_and_keeps_a_width() {
     for _ in 0..3 {
         tab(&mut e);
     }
-    assert_eq!(line(&e).0, "split");
+    assert_eq!(line(&e).0, "source");
     let f = e.frame(30, 10);
-    assert_eq!(screen(&f)[6..9], ["  set", "  sort", "  split"].map(String::from));
+    assert_eq!(screen(&f)[6..9], ["  set", "  sort", "  source"].map(String::from));
     // The scroll bar column has its thumb where the window is among the items: one of four rows down is still the first row of three.
     let bar: Vec<Style> = f.rows[6..9].iter().map(|r| r.last().unwrap().style).collect();
     assert_eq!(bar, [Style::PmenuThumb, Style::PmenuSbar, Style::PmenuSbar]);
@@ -3982,7 +4002,7 @@ fn equalalways_winheight_winwidth_and_the_least_sizes() {
     feed(&mut e, ":set wmh=1 wmw=5\n:vs\n\x17|");
     assert_eq!(sizes(&mut e, 31)[..2], [(25, 10), (5, 10)], "a split evens the heights out again");
     feed(&mut e, ":set wh=0\n");
-    assert_eq!(e.msg(), "Invalid argument: wh=0");
+    assert_eq!(e.msg(), "E487: Argument must be positive: wh=0");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -3997,9 +4017,9 @@ fn cedit_lastused_and_globs() {
     feed(&mut e, "\x03\x1b:set cedit=\n:x\x07");
     assert!(e.cmdwin.is_none());
     feed(&mut e, "\x1b:set cedit=bad\n");
-    assert_eq!(e.msg(), "Invalid argument: cedit=bad");
+    assert_eq!(e.msg(), "E474: Invalid argument: cedit=bad");
     feed(&mut e, ":set cedit?\n");
-    assert_eq!(e.msg(), "cedit=");
+    assert_eq!(e.msg(), "  cedit=");
     // `lastused`: the buffers most recently left first, the current one on top.
     let dir = std::env::temp_dir().join(format!("rim-lastused-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
@@ -4061,9 +4081,9 @@ fn mouse_clicks_drags_wheel_and_windows() {
     assert_eq!(pos(&e).0, 0);
     assert!(!e.mouse_enabled());
     feed(&mut e, ":set mouse=a\n:set mouse?\n");
-    assert_eq!((e.msg(), e.mouse_enabled()), ("mouse=a", true));
+    assert_eq!((e.msg(), e.mouse_enabled()), ("  mouse=a", true));
     feed(&mut e, ":set mouse=z\n");
-    assert_eq!(e.msg(), "Invalid argument: mouse=z");
+    assert_eq!(e.msg(), "E474: Invalid argument: mouse=z");
     // The wheel scrolls `mousescroll` lines, and the cursor stays on screen.
     let mut e = ed(&lines(30));
     e.frame(30, 8);
@@ -4075,7 +4095,7 @@ fn mouse_clicks_drags_wheel_and_windows() {
     e.mouse(ev(K::ScrollDown, 5, 2), t0);
     assert_eq!(e.win.top, 1);
     feed(&mut e, ":set mousescroll=bad\n");
-    assert_eq!(e.msg(), "Invalid argument: mousescroll=bad");
+    assert_eq!(e.msg(), "E474: Invalid argument: mousescroll=bad");
     // Windows: a click in another window enters it; the wheel scrolls the one under it.
     let mut e = ed(&lines(30));
     feed(&mut e, ":vs\n");
@@ -4096,7 +4116,8 @@ fn mouse_clicks_drags_wheel_and_windows() {
     e.mouse(ev(K::Up(B::Left), 10, 2), t0);
     assert!(e.frame(31, 8).cursor.0 > 10);
     assert_eq!(e.win_rects().iter().map(|(_, r)| r.w).collect::<Vec<_>>(), [10, 20]);
-    feed(&mut e, ":sp\n");
+    // The drag left Visual mode, where `:` brings `'<,'>`, which `:split` does not take (E16, as in Neovim).
+    feed(&mut e, "\x1b:sp\n");
     e.frame(31, 8);
     let top = e.win_rects()[1].1;
     let status_row = (top.y + top.h - 1) as u16;
@@ -4210,4 +4231,760 @@ fn fuzzy_completion_orders_by_score_and_drags_clamp_at_the_minimum() {
     e.mouse(ev(K::Drag(B::Left), 3, 10), t);
     e.mouse(ev(K::Down(B::Left), 3, 60), t);
     assert_eq!(e.win_rects(), before);
+}
+
+/// Runs the command lines and returns the message the last one left.
+fn script(e: &mut Editor, cmds: &[&str]) -> String {
+    for c in cmds {
+        // A command that says nothing must not show the message of the one before.
+        e.msgs.clear();
+        e.command(c);
+    }
+    e.msg().to_string()
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn let_sets_variables_in_their_scopes() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let x = 1", "let g:y = 'a'", "echo x g:y"]), "1 a");
+    assert_eq!(script(&mut e, &["let x += 4", "echo x"]), "5");
+    assert_eq!(script(&mut e, &["let x -= 1", "let x *= 6", "let x /= 4", "let x %= 4", "echo x"]), "2");
+    assert_eq!(script(&mut e, &["let s = 'a'", "let s .= 'b'", "let s ..= 'c'", "echo s"]), "abc");
+    assert_eq!(script(&mut e, &["let x = 1 + 2", "let y = x * 2", "echo y"]), "6");
+    // `b:` goes with the buffer, `w:` with the window, `v:` is read-only.
+    assert_eq!(script(&mut e, &["let b:v = 2", "let w:v = 3", "echo b:v w:v"]), "2 3");
+    assert_eq!(script(&mut e, &["enew", "echo b:v"]), "E121: Undefined variable: b:v");
+    assert_eq!(script(&mut e, &["let v:x = 1"]), "E461: Illegal variable name: v:x");
+    assert_eq!(script(&mut e, &["echo nosuch"]), "E121: Undefined variable: nosuch");
+    // Showing: one variable, or all the global ones.
+    assert_eq!(script(&mut e, &["let x"]), format!("{:<22}#3", "x"));
+    assert_eq!(script(&mut e, &["let s"]), format!("{:<23}abc", "s"));
+    assert!(script(&mut e, &["let"]).starts_with("s "));
+    // Expressions see them.
+    assert_eq!(e.eval_text("x + 1").unwrap(), "4");
+    assert!(script(&mut e, &["let x"]).contains("#3"));
+    assert_eq!(script(&mut e, &["unlet x", "echo x"]), "E121: Undefined variable: x");
+    assert_eq!(script(&mut e, &["unlet x"]), "E108: No such variable: \"x\"");
+    assert_eq!(script(&mut e, &["unlet! x s", "echo s"]), "E121: Undefined variable: s");
+    assert_eq!(script(&mut e, &["echo exists('s') exists('g:s') exists('&ts') exists('*len') exists('$HOME') exists('@a') exists('nosuch')"]), "0 0 1 1 1 0 0");
+    assert_eq!(script(&mut e, &["unlet"]), "E471: Argument required");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn lists_and_dictionaries_are_shared_by_reference() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let a = [1, 2]", "let b = a", "call add(b, 3)", "echo a"]), "[1, 2, 3]");
+    assert_eq!(script(&mut e, &["let c = copy(a)", "call add(c, 4)", "echo a c"]), "[1, 2, 3] [1, 2, 3, 4]");
+    assert_eq!(script(&mut e, &["echo a is b a is c a == [1, 2, 3] a isnot c"]), "1 0 1 1");
+    assert_eq!(script(&mut e, &["let a[0] = 9", "let a[-1] = 8", "echo b"]), "[9, 2, 8]");
+    assert_eq!(script(&mut e, &["let a[1:2] = [7, 6]", "echo a"]), "[9, 7, 6]");
+    assert_eq!(script(&mut e, &["let a[1:2] = [7]"]), "E711: List value has not enough items");
+    assert_eq!(script(&mut e, &["let a[1:1] = [7, 8]"]), "E710: List value has more items than target");
+    assert_eq!(script(&mut e, &["let a[5] = 1"]), "E684: List index out of range: 5");
+    assert_eq!(script(&mut e, &["let a += [1]", "echo b"]), "[9, 7, 6, 1]");
+    assert_eq!(script(&mut e, &["let [p, q] = [1, 2]", "echo p q"]), "1 2");
+    assert_eq!(script(&mut e, &["let [h; t] = [1, 2, 3]", "echo h t"]), "1 [2, 3]");
+    assert_eq!(script(&mut e, &["let [h, i] = [1]"]), "E688: More targets than List items");
+    assert_eq!(script(&mut e, &["let [h] = [1, 2]"]), "E687: Less targets than List items");
+    assert_eq!(script(&mut e, &["let [h] = 1"]), "E714: List required");
+    assert_eq!(script(&mut e, &["let d = {'a': 1, 'b': 2}", "let e2 = d", "let e2.c = 3", "echo d"]), "{'a': 1, 'b': 2, 'c': 3}");
+    assert_eq!(script(&mut e, &["echo d.a d['b'] d.c"]), "1 2 3");
+    assert_eq!(script(&mut e, &["let d['a'] += 10", "let d.b .= 'x'", "echo d"]), "{'a': 11, 'b': '2x', 'c': 3}");
+    assert_eq!(script(&mut e, &["echo d.zz"]), "E716: Key not present in Dictionary: \"zz\"");
+    assert_eq!(script(&mut e, &["echo #{x: 1, y-z: 'q', 3: 4}"]), "{'3': 4, 'x': 1, 'y-z': 'q'}");
+    assert_eq!(script(&mut e, &["echo {'a': 1} == {'a': 1} {'a': 1} != {'a': 2}"]), "1 1");
+    assert_eq!(script(&mut e, &["echo {} < {}"]), "E736: Invalid operation for Dictionary");
+    assert_eq!(script(&mut e, &["echo {} == 1"]), "E735: Can only compare Dictionary with Dictionary");
+    assert_eq!(script(&mut e, &["echo {} + 1"]), "E728: Using a Dictionary as a Number");
+    assert_eq!(script(&mut e, &["echo {} . 'a'"]), "E731: Using a Dictionary as a String");
+    // `.` is a concatenation unless the left side is a Dictionary.
+    assert_eq!(script(&mut e, &["let k = 'v'", "let t = 'a' . k", "echo t"]), "av");
+    assert_eq!(script(&mut e, &["let t = 'a'", "echo t.k"]), "av");
+    assert_eq!(script(&mut e, &["unlet d.a", "unlet d['b']", "echo d"]), "{'c': 3}");
+    assert_eq!(script(&mut e, &["unlet d.a"]), "E716: Key not present in Dictionary: \"a\"");
+    assert_eq!(script(&mut e, &["unlet! d.a"]), "");
+    assert_eq!(script(&mut e, &["let l = [1, 2, 3, 4]", "unlet l[0]", "unlet l[1:2]", "echo l"]), "[2]");
+    assert_eq!(script(&mut e, &["unlet l[3]"]), "E684: List index out of range: 3");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn cycles_print_and_copy() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let a = []", "call add(a, a)", "echo a"]), "[[...@0]]");
+    assert_eq!(script(&mut e, &["let d = {}", "let d.me = d", "echo d"]), "{'me': {...@0}}");
+    assert_eq!(script(&mut e, &["let b = deepcopy(a)", "echo b is b[0] b is a"]), "1 0");
+    assert_eq!(script(&mut e, &["echo deepcopy(a, 1)"]), "E698: Variable nested too deep for making a copy\n[]");
+    assert_eq!(script(&mut e, &["let x = [[1], [1]]", "let y = deepcopy(x)", "call add(y[0], 2)", "echo x y"]), "[[1], [1]] [[1, 2], [1]]");
+    // Nothing keeps a cycle alive once its names are gone; collecting it must not touch the rest.
+    assert_eq!(script(&mut e, &["unlet a d", "echo garbagecollect()", "echo b"]), "[[...@0]]");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn let_alone_lists_every_scope_in_order() {
+    let mut e = ed("a");
+    let out = script(&mut e, &["let g:a = 1", "let b:x = 2", "let w:y = 3", "let t:z = 4", "let"]);
+    let rows: Vec<&str> = out.lines().collect();
+    let at = |prefix: &str| rows.iter().position(|r| r.starts_with(prefix)).unwrap_or(usize::MAX);
+    // `list_glob_vars`, `list_buf_vars`, `list_win_vars`, `list_tab_vars`, then `list_vim_vars` (a typed line has no `s:`).
+    assert!(at("a ") < at("b:x") && at("b:x") < at("w:y") && at("w:y") < at("t:z") && at("t:z") < at("v:version"), "{out}");
+    assert!(rows.iter().any(|r| r.starts_with("v:version") && r.ends_with("#801")), "{out}");
+    // A `v:` String that was never set is not listed.
+    assert_eq!(at("v:errmsg"), usize::MAX, "{out}");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn let_sets_options_and_registers() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let &ts = 8", "echo &ts &l:tabstop &g:tabstop"]), "8 8 8");
+    assert_eq!(script(&mut e, &["let &et = 1", "echo &expandtab", "let &et = 0", "echo &et"]), "0");
+    assert_eq!(script(&mut e, &["let &ts += 1", "echo &ts"]), "9");
+    assert_eq!(script(&mut e, &["let &nosuch = 1"]), "E355: Unknown option: nosuch");
+    assert_eq!(script(&mut e, &["let @a = 'hi'", "echo @a"]), "hi");
+    assert_eq!(e.regs.get('a').map(|r| r.kind), Some(super::registers::RegKind::Char));
+    script(&mut e, &["let @b = \"x\\n\"", "let @b .= 'y'"]);
+    assert_eq!(e.regs.get('b').map(|r| (r.text.clone(), r.kind)), Some(("x\ny".into(), super::registers::RegKind::Char)));
+    assert_eq!(script(&mut e, &["let @\u{1} = 'x'"]), "E354: Invalid register name: '^A'");
+    assert_eq!(script(&mut e, &["let $RIM_LET_TEST = 'x'", "echo $RIM_LET_TEST exists('$RIM_LET_TEST')"]), "x 1");
+    assert_eq!(script(&mut e, &["let $RIM_LET_TEST .= 'y'", "echo $RIM_LET_TEST"]), "xy");
+    assert_eq!(script(&mut e, &["unlet $RIM_LET_TEST", "echo exists('$RIM_LET_TEST')"]), "0");
+    assert_eq!(script(&mut e, &["let 1 = 2"]), "E121: Undefined variable: 1\nE488: Trailing characters: = 2");
+}
+
+/// The message row translates control characters (`msg_outtrans` for `:echomsg`, `msg_multiline` for the
+/// others) and `:messages` shows the remembered raw text in the multiline form.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn messages_translate_control_characters() {
+    let mut e = ed("x");
+    e.command("echomsg \"a\\nb\\tc\\x08d\\re\\x7f\"");
+    assert_eq!(e.msg(), "a^@b^Ic^Hd^Me^?");
+    assert!(!e.msgs.hit_enter);
+    e.command("echo \"a\\tb\\x08c\\x07\"");
+    assert_eq!(e.msg(), "a\tb^Hc");
+    e.command("echo \"a\\nb\"");
+    assert_eq!(e.msg(), "a\nb");
+    assert!(e.msgs.hit_enter);
+    e.msgs.clear_history();
+    e.command("echomsg \"a\\nb\\tc\\x08\"");
+    assert_eq!(e.msgs.list(), "a\nb\tc^H");
+}
+
+/// The messages of one typed command line go below each other and wait for a key (`msg_scroll`), the next
+/// command line starts again.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn messages_of_a_command_line_stack_and_wait_for_a_key() {
+    let mut e = ed("x");
+    e.command("echom \"ciao\" | echom \"ciao\" | echom \"ciao\"");
+    assert_eq!((e.msg(), e.msgs.hit_enter), ("ciao\nciao\nciao", true));
+    assert_eq!(e.msgs.list(), "ciao\nciao\nciao");
+    e.command("echo 1");
+    assert_eq!((e.msg(), e.msgs.hit_enter), ("1", false));
+    e.command("echo 1 | echo 2 | echon 3 | echon 4 | echo 5");
+    assert_eq!((e.msg(), e.msgs.hit_enter), ("1\n234\n5", true));
+    e.command("echom 'a' | echo 'b' | echoerr 'c'");
+    // Each message keeps its own colour.
+    assert_eq!(e.msg(), "a\nb\nc");
+    let lv = |i| e.msgs.line_level(i);
+    assert_eq!((lv(0), lv(1), lv(2)), (super::messages::Level::Info, super::messages::Level::Info, super::messages::Level::Error));
+    // An empty `:echo` shows nothing new, and clears the row only when nothing was shown before.
+    e.command("echo 'x' | echo");
+    assert_eq!(e.msg(), "x");
+    e.command("echo");
+    assert_eq!(e.msg(), "");
+}
+
+#[test]
+fn echo_execute_and_call() {
+    let mut e = ed("one\ntwo");
+    assert_eq!(script(&mut e, &["echo 'a' 1 ([1, 'b']) 1.5"]), "a 1 [1, 'b'] 1.5");
+    assert_eq!(script(&mut e, &["echon 'a' 1"]), "a1");
+    assert_eq!(script(&mut e, &["echo"]), "");
+    assert_eq!(script(&mut e, &["echo 1 +"]), "E15: Invalid expression: \"1 +\"");
+    // `:echo` stays out of `:messages`, `:echomsg` and `:echoerr` do not.
+    e.msgs.clear_history();
+    script(&mut e, &["echo 'plain'", "echon 'plain'"]);
+    assert_eq!(e.msgs.list(), "");
+    script(&mut e, &["echomsg 'kept' 2"]);
+    assert_eq!((e.msgs.list(), e.msgs.level()), ("kept 2".into(), super::messages::Level::Info));
+    script(&mut e, &["echoerr 'bad'"]);
+    assert_eq!((e.msg(), e.msgs.level()), ("bad", super::messages::Level::Error));
+    assert_eq!(e.msgs.list(), "kept 2\nbad");
+    // `:execute` runs the text of its values as a command.
+    assert_eq!(script(&mut e, &["execute 'let z = ' . 5", "echo z"]), "5");
+    assert_eq!(script(&mut e, &["execute 'let' 'w = 1'", "echo w"]), "1");
+    assert_eq!(script(&mut e, &["execute 'nosuchcmd'"]), "E492: Not an editor command: nosuchcmd");
+    assert_eq!(script(&mut e, &["execute [1]"]), "E730: Using a List as a String");
+    assert!(!e.command("execute 'quit'"));
+    // `:call` evaluates a function call and drops the value.
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let l = []", "call add(l, 1)", "call add(l, 2)", "echo l"]), "[1, 2]");
+    assert_eq!(script(&mut e, &["call 5"]), "E129: Function name required");
+    assert_eq!(script(&mut e, &["call nosuch()"]), "E117: Unknown function: nosuch");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn container_functions_and_value_kinds() {
+    let mut e = ed("a");
+    let mut ev = |src: &str| {
+        // An error a function gives does not fail the expression (`emsg()`): it is what the redirection got.
+        e.msgs.redir = Some(String::new());
+        let v = e.eval_text(src);
+        let errs = e.msgs.redir.take().unwrap_or_default();
+        match v {
+            Err(m) => format!("!{m}"),
+            Ok(_) if !errs.is_empty() => format!("!{}", errs.trim_start_matches('\n').replace('\n', " | ")),
+            Ok(v) => v,
+        }
+    };
+    let table: &[(&str, &str)] = &[
+        ("string(v:true)", "v:true"), ("string(v:false)", "v:false"), ("string(v:null)", "v:null"), ("v:true+1", "2"), ("v:null+1", "1"),
+        ("v:true == 1", "1"), ("v:false is 0", "0"), ("v:true is v:true", "1"), ("1 is 1", "1"), ("1 is '1'", "0"), ("'a' is 'a'", "1"), ("1.5 is 1.5", "1"), ("'a' isnot# 'A'", "1"), ("[1] is [1]", "0"),
+        ("map([], 'x')", ""),
+        ("type(1).type('')", "01"), ("type([])", "3"), ("type({})", "4"), ("type(1.0)", "5"), ("type(v:true)", "6"), ("type(v:null)", "7"),
+        ("len({'a': 1})", "1"), ("empty({})", "1"), ("empty({'a': 1})", "0"), ("empty(v:null)", "1"), ("empty(v:false)", "1"), ("empty(v:true)", "0"),
+        ("sort(keys({'b': 1, 'a': 2}))", "a\nb"), ("sort(values({'b': 1, 'a': 2}))", "1\n2"), ("string(sort(items({'b': 1, 'a': 2})))", "[['a', 2], ['b', 1]]"), ("keys([])", "!E1206: Dictionary required for argument 1"),
+        ("has_key({'a': 1}, 'a')", "1"), ("has_key({'a': 1}, 'b')", "0"), ("has_key([], 'b')", "!E1206: Dictionary required for argument 1"),
+        ("get({'a': 1}, 'a')", "1"), ("get({'a': 1}, 'b', 'd')", "d"), ("get({'a': 1}, 'b')", "0"), ("get(1, 2)", "!E896: Argument of get() must be a List, Dictionary or Blob"),
+        ("min({'a': 3, 'b': 1})", "1"), ("max({'a': 3, 'b': 1})", "3"), ("min(1)", "!E712: Argument of min() must be a List or Dictionary"),
+        ("string(remove([1, 2, 3], 1))", "2"), ("string(remove([1, 2, 3], -1))", "3"), ("string(remove([1, 2, 3, 4], 1, 2))", "[2, 3]"), ("remove([1], 5)", "!E684: List index out of range: 5"),
+        ("remove([1, 2, 3], 2, 1)", "!E16: Invalid range"), ("remove({'a': 1}, 'a')", "1"), ("remove({'a': 1}, 'b')", "!E716: Key not present in Dictionary: \"b\""), ("remove(1, 1)", "!E896: Argument of remove() must be a List, Dictionary or Blob"),
+        ("string(insert([2, 3], 1))", "[1, 2, 3]"), ("string(insert([1, 3], 2, 1))", "[1, 2, 3]"), ("string(insert([1], 2, -1))", "[2, 1]"), ("string(insert([1], 2, 1))", "[1, 2]"), ("insert([1], 2, 5)", "!E684: List index out of range: 5"),
+        ("insert(1, 2)", "!E899: Argument of insert() must be a List or Blob"), ("add(1, 2)", "!E897: List or Blob required"),
+        ("string(extend([1], [2, 3]))", "[1, 2, 3]"), ("string(extend([1, 4], [2, 3], 1))", "[1, 2, 3, 4]"), ("string(extend({'a': 1}, {'a': 2, 'b': 3}))", "{'a': 2, 'b': 3}"),
+        ("string(extend({'a': 1}, {'a': 2, 'b': 3}, 'keep'))", "{'a': 1, 'b': 3}"), ("extend({'a': 1}, {'a': 2}, 'error')", "!E737: Key already exists: a"), ("extend({}, {}, 'x')", "!E475: Invalid argument: x"),
+        ("extend([1], {})", "!E712: Argument of extend() must be a List or Dictionary"), ("extend({}, [1])", "!E712: Argument of extend() must be a List or Dictionary"), ("extend(1, 1)", "!E712: Argument of extend() must be a List or Dictionary"),
+        ("count([1, 2, 1], 1)", "2"), ("count(['a', 'A'], 'a')", "1"), ("count(['a', 'A'], 'a', 1)", "2"), ("count({'x': 1, 'y': 1}, 1)", "2"), ("count('abab', 'ab')", "2"), ("count('aA', 'a', 1)", "2"), ("count('abc', '')", "0"), ("count(1, 1)", "!E706: Argument of count() must be a List, String or Dictionary"),
+        ("string(uniq([1, 1, 2, 2, 1]))", "[1, 2, 1]"), ("string(flatten([1, [2, [3]]]))", "[1, 2, 3]"), ("string(flatten([1, [2, [3]]], 1))", "[1, 2, [3]]"), ("flatten([], -1)", "!E900: maxdepth must be non-negative number"), ("flatten(1)", "!E686: Argument of flatten() must be a List"),
+        ("uniq(1)", "!E686: Argument of uniq() must be a List"), ("string(reverse([1, 2]))", "[2, 1]"), ("string(sort([3, 10, 2]))", "[10, 2, 3]"), ("string(copy({'a': [1]}))", "{'a': [1]}"),
+        ("eval('1 + 2')", "3"), ("eval('[')", "!E697: Missing end of List ']':  | E15: Invalid expression: \"[\""), ("has('float')", "1"), ("has('nosuch')", "0"), ("string({'a': 'it''s'})", "{'a': 'it''s'}"),
+        ("[1, 2]->len()", "2"), ("'abc'->toupper()", "ABC"), ("[3, 1]->sort()->string()", "[1, 3]"), ("{'a': 1}->keys()->string()", "['a']"),
+        ("printf('%s %s', [1], {'a': 1})", "[1] {'a': 1}"), ("$HOME != ''", "1"), ("&l:ts", "4"), ("&g:ts", "4"),
+    ];
+    let bad: Vec<String> = table.iter().filter_map(|(src, want)| {
+        let got = ev(src);
+        (got != *want).then(|| format!("{src}\n   want {want:?}\n   got  {got:?}"))
+    }).collect();
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn cyclic_values_never_overflow_or_panic() {
+    let mut e = ed("a");
+    script(&mut e, &["let a = []", "call add(a, a)", "let b = []", "call add(b, b)", "let d = {}", "let d.me = d", "let f = {}", "let f.me = f"]);
+    // Equal by identity, else compared down to a limit that falls, and taken as equal (`tv_equal`).
+    assert_eq!(script(&mut e, &["echo a == a d == d"]), "1 1");
+    assert_eq!(script(&mut e, &["echo a == b"]), "1");
+    assert_eq!(script(&mut e, &["echo d == f"]), "1");
+    assert_eq!(script(&mut e, &["echo sort(a)"]), "[[...@0]]");
+    assert_eq!(script(&mut e, &["let a[0] = 1", "echo a"]), "[1]");
+    assert_eq!(script(&mut e, &["let l = [1, 2]", "call extend(l, l)", "call extend(l, l, 1)", "let l[0:1] = l[0:1]", "echo l"]), "[1, 1, 2, 1, 2, 2, 1, 2]");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn dot_is_a_member_only_without_blanks_and_a_bracket_always_subscripts() {
+    let mut e = ed("a");
+    script(&mut e, &["let d = {'a': 1}", "let a = 'x'", "let l = [5, 6]"]);
+    assert_eq!(script(&mut e, &["echo d.a"]), "1");
+    assert_eq!(script(&mut e, &["echo d . a"]), "E731: Using a Dictionary as a String");
+    assert_eq!(script(&mut e, &["echo d .a"]), "E731: Using a Dictionary as a String");
+    // A blank before "[" makes it a new item of `:echo` (`handle_subscript`).
+    assert_eq!(script(&mut e, &["echo l [1]"]), "[5, 6] [1]");
+    assert_eq!(script(&mut e, &["echo 'a' ."]), "E15: Invalid expression: \"'a' .\"");
+    assert_eq!(script(&mut e, &["echo 'a'.a"]), "ax");
+    assert_eq!(script(&mut e, &["echo 'a'. a"]), "ax");
+    assert_eq!(script(&mut e, &["echo {'k': [1, 2]}.k[1]"]), "2");
+    assert_eq!(script(&mut e, &["echo len(d.a . 'xy')"]), "3");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn let_option_takes_its_value_whole() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let &wildignore = '*.o *.a'", "echo &wildignore"]), "*.o *.a");
+    assert_eq!(script(&mut e, &["let &ts = 99"]), "");
+}
+
+/// Writes `text` to a file of a fresh directory and returns the editor with `cmds` run, then the file path.
+fn with_script(name: &str, text: &str) -> (Editor, std::path::PathBuf, std::path::PathBuf) {
+    let dir = std::env::temp_dir().join(format!("rim-script-{name}-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    // Sourced files are named by their real directory.
+    let dir = fs::canonicalize(&dir).unwrap();
+    let path = dir.join("s.vim");
+    fs::write(&path, text).unwrap();
+    (ed("a"), path, dir)
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn bar_joins_commands_and_blocks_run_on_the_command_line() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["let x = 1 | let y = x + 1 | echo y"]), "2");
+    assert_eq!(script(&mut e, &["if x == 1 | echo 'one' | else | echo 'other' | endif"]), "one");
+    assert_eq!(script(&mut e, &["if x == 2 | echo 'two' | elseif x == 1 | echo 'one' | else | echo 'other' | endif"]), "one");
+    assert_eq!(script(&mut e, &["if 0 | echo 1 | elseif 0 | echo 2 | else | echo 3 | endif"]), "3");
+    assert_eq!(script(&mut e, &["let n = 0 | while n < 3 | let n += 1 | endwhile | echo n"]), "3");
+    assert_eq!(script(&mut e, &["let t = 0 | for i in [1, 2, 3] | let t += i | endfor | echo t"]), "6");
+    assert_eq!(script(&mut e, &["let t = 0 | for [a, b] in [[1, 2], [3, 4]] | let t += a * b | endfor | echo t"]), "14");
+    assert_eq!(script(&mut e, &["let t = 0 | for i in range(10) | if i == 2 | continue | endif | if i == 5 | break | endif | let t += i | endfor | echo t"]), "8");
+    // The loop keeps a pointer to the next item: one added while the last one runs is not visited,
+    // one added before it is.
+    assert_eq!(script(&mut e, &["let l = [1] | for i in l | if i < 3 | call add(l, i + 1) | endif | endfor | echo l"]), "[1, 2]");
+    assert_eq!(script(&mut e, &["let l = [1, 2] | for i in l | if i < 3 | call add(l, i + 2) | endif | endfor | echo l"]), "[1, 2, 3, 4]");
+    // Nested loops: `break` leaves the inner one.
+    assert_eq!(script(&mut e, &["let c = 0 | for i in [1, 2] | for j in [1, 2, 3] | if j == 2 | break | endif | let c += 1 | endfor | endfor | echo c"]), "2");
+    // A typed `:echo` does not join the previous message; `normal` and `:g` keep their bars.
+    assert_eq!(script(&mut e, &["echo 'a'", "echo 'b'"]), "b");
+    assert_eq!(script(&mut e, &["echo 'a' | echo 'b' | echon 'c'"]), "a\nbc");
+    script(&mut e, &["normal ix|y"]);
+    assert_eq!(e.buf.doc.text().line(0), "x|ya");
+    // Comments.
+    assert_eq!(script(&mut e, &["let z = 5 \" set to five | echo 1", "echo z"]), "5");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn block_errors_have_vims_messages() {
+    let mut e = ed("a");
+    for (cmd, want) in [
+        ("endif", "E580: :endif without :if"), ("else", "E581: :else without :if"), ("elseif 1", "E582: :elseif without :if"), ("endwhile", "E588: :endwhile without :while"),
+        ("endfor", "E588: :endfor without :for"), ("break", "E587: :break without :while or :for"), ("continue", "E586: :continue without :while or :for"),
+        ("finish", "E168: :finish used outside of a sourced file"), ("if 0 | else | else | endif", "E583: Multiple :else"), ("if 0 | else | elseif 1 | endif", "E584: :elseif after :else"),
+        ("for i [1] | endfor", "E690: Missing \"in\" after :for"), ("for i in 1 | endfor", "E1098: String, List or Blob required"), ("if nosuch | endif", "E121: Undefined variable: nosuch"),
+        ("source /nonexistent/x.vim", "E484: Can't open file /nonexistent/x.vim"),
+    ] {
+        assert_eq!(script(&mut e, &[cmd]), want, "{cmd}");
+    }
+    // An error in a condition makes it false, and the body is skipped.
+    // The error ends the line: what follows on it is skipped.
+    assert_eq!(script(&mut e, &["let r = 0 | if nosuch | let r = 1 | endif | echo r"]), "E121: Undefined variable: nosuch");
+    assert_eq!(script(&mut e, &["echo r"]), "0");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn source_runs_a_file_with_continuations_blocks_and_script_variables() {
+    let (mut e, path, dir) = with_script("ok", "\" a script\nlet s:n = 0\nlet g:out = []\nfor i in range(3)\n  let s:n += i\n  call add(g:out,\n\\   s:n)\nendfor\nlet g:total = s:n\nif g:total == 3\n  let g:flag = 'yes'\nendif\nfinish\nlet g:flag = 'no'\n");
+    e.command(&format!("source {}", path.display()));
+    assert_eq!(e.msg(), "i insert | Esc normal | :w save | :q quit");
+    assert_eq!(script(&mut e, &["echo g:out g:total g:flag"]), "[0, 1, 3] 3 yes");
+    // `s:` belongs to the file: the command line does not see it, another file has its own.
+    assert_eq!(script(&mut e, &["echo s:n"]), "E121: Undefined variable: s:n");
+    let other = dir.join("t.vim");
+    fs::write(&other, "let g:seen = exists('s:n')\nlet s:n = 'other'\nlet g:n2 = s:n\n").unwrap();
+    e.command(&format!("so {}", other.display()));
+    assert_eq!(script(&mut e, &["echo g:seen g:n2"]), "0 other");
+    // Sourcing the first file again finds its `s:` variables.
+    fs::write(&path, "let g:again = s:n\n").unwrap();
+    e.command(&format!("source {}", path.display()));
+    assert_eq!(script(&mut e, &["echo g:again"]), "3");
+    // `:source` from a script, then the rest of the first one.
+    fs::write(&other, "let g:inner = 1\n").unwrap();
+    fs::write(&path, format!("source {}\nlet g:outer = g:inner + 1\n", other.display())).unwrap();
+    e.command(&format!("source {}", path.display()));
+    assert_eq!(script(&mut e, &["echo g:inner g:outer"]), "1 2");
+    // A file that sources itself stops at the recursion limit.
+    fs::write(&path, format!("source {}\n", path.display())).unwrap();
+    e.command(&format!("source {}", path.display()));
+    assert!(e.msg().contains("E169: Command too recursive"), "{}", e.msg());
+    // `:quit` in a script quits the editor.
+    fs::write(&path, "let g:q = 1\nquit\nlet g:q = 2\n").unwrap();
+    assert!(!e.command(&format!("source {}", path.display())));
+    assert_eq!(script(&mut e, &["echo g:q"]), "1");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn script_errors_name_the_file_and_the_line_and_the_rest_runs() {
+    let (mut e, path, dir) = with_script("err", "let g:a = 1\nlet g:b = nosuch\nif 1\n  let g:c = 3\n  echo 1 +\nlet g:x = 1\nendif\nlet g:d = 4\nendif\n");
+    e.msgs.redir = Some(String::new());
+    e.command(&format!("source {}", path.display()));
+    let p = path.display();
+    // The error in the block skips the rest of the block; the header comes once per file.
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {p}:\nline    2:\nE121: Undefined variable: nosuch\nline    5:\nE15: Invalid expression: \"1 +\"\nline    9:\nE580: :endif without :if: endif"));
+    assert_eq!(script(&mut e, &["echo g:a g:c g:d exists('g:x')"]), "1 3 4 0");
+    // An error of a nested file names the chain.
+    let inner = dir.join("i.vim");
+    fs::write(&inner, "\nlet x = nosuch2\n").unwrap();
+    fs::write(&path, format!("let g:a = 1\nsource {}\n", inner.display())).unwrap();
+    e.msgs.redir = Some(String::new());
+    e.command(&format!("source {}", path.display()));
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {p}[2]..{}:\nline    2:\nE121: Undefined variable: nosuch2", inner.display()));
+    // A block left open at the end of a file.
+    fs::write(&path, "if 1\nlet g:e = 1\n").unwrap();
+    e.msgs.redir = Some(String::new());
+    e.command(&format!("source {}", path.display()));
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {p}:\nline    3:\nE171: Missing :endif"));
+    assert_eq!(script(&mut e, &["echo g:e"]), "1");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn source_runs_the_lines_of_the_buffer_and_expands_the_environment() {
+    // `:source` without a file runs the buffer (a range of it); errors give the buffer and the line.
+    let mut e = ed("let g:z = 5\necho g:z\necho nosuch\necho 'last'");
+    e.msgs.redir = Some(String::new());
+    e.command("source");
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\n5\nError in {}:\nline    3:\nE121: Undefined variable: nosuch\nlast", e.buf.path.as_ref().unwrap().display()));
+    e.msgs.redir = Some(String::new());
+    e.command("2,3source");
+    // The same file and line as the last error: neither is named again.
+    assert_eq!(e.msgs.redir.take().unwrap(), "\n5\nE121: Undefined variable: nosuch");
+    // A range and a file name do not go together; `$VAR` and `~` in the name are expanded.
+    assert_eq!(script(&mut e, &["1source x"]), "E481: No range allowed");
+    let dir = std::env::temp_dir().join(format!("rim-source-env-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(dir.join("s.vim"), "let g:viaenv = 1\n").unwrap();
+    // SAFETY: the test thread is the only one using the environment (the editor's save thread never reads it).
+    unsafe { std::env::set_var("RIM_SOURCE_DIR", &dir) };
+    assert_eq!(script(&mut e, &["source $RIM_SOURCE_DIR/s.vim", "echo g:viaenv"]), "1");
+    assert_eq!(script(&mut e, &["source ${RIM_SOURCE_DIR}/s.vim | echo 2"]), "2");
+    assert_eq!(script(&mut e, &["source $RIM_NOT_SET_AT_ALL/s.vim"]), "E484: Can't open file $RIM_NOT_SET_AT_ALL/s.vim");
+    assert_eq!(script(&mut e, &[&format!("source {}", dir.display())]), format!("Cannot source a directory: \"{0}\"\nE484: Can't open file {0}", dir.display()));
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn silent_hides_messages_and_silent_bang_hides_errors() {
+    let mut e = ed("a");
+    // `:silent` shows nothing on the message row, but a redirection gets it.
+    e.msgs.clear();
+    e.msgs.redir = Some(String::new());
+    e.command("silent echo 'quiet'");
+    let redir = e.msgs.redir.take().unwrap();
+    assert_eq!((e.msg(), redir.as_str()), ("", "\nquiet"));
+    e.command("echo 'loud'");
+    assert_eq!(e.msg(), "loud");
+    // An error switches messages back on; `:silent!` hides it, writes it to the redirection and lets the line go on.
+    e.command("silent echo nosuch");
+    assert_eq!(e.msg(), "E121: Undefined variable: nosuch");
+    e.command("echo 'clear'");
+    e.msgs.redir = Some(String::new());
+    e.command("silent! echo nosuch | echo 'went on'");
+    let redir = e.msgs.redir.take().unwrap();
+    assert_eq!((e.msg(), redir.as_str()), ("went on", "\nE121: Undefined variable: nosuch\nwent on"));
+    // `:unsilent` undoes `:silent`; a count of modifiers nests.
+    e.command("silent unsilent echo 'back'");
+    assert_eq!(e.msg(), "back");
+    // After a command the state is as before.
+    e.command("silent set ts=3");
+    e.command("echo 'again'");
+    assert_eq!(e.msg(), "again");
+}
+
+#[cfg(unix)]
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn source_names_the_real_directory_of_the_file() {
+    let base = fs::canonicalize(std::env::temp_dir()).unwrap().join(format!("rim-fixfname-{}", std::process::id()));
+    fs::create_dir_all(base.join("real")).unwrap();
+    std::os::unix::fs::symlink(base.join("real"), base.join("link")).unwrap();
+    fs::write(base.join("real/s.vim"), "echo nosuch\n").unwrap();
+    let mut e = ed("");
+    e.msgs.redir = Some(String::new());
+    // The directory goes by its real name (`..` and links resolved); the file name stays as written.
+    e.command(&format!("source {}/link/../link/s.vim", base.display()));
+    assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {}/real/s.vim:\nline    1:\nE121: Undefined variable: nosuch", base.display()));
+    fs::remove_dir_all(&base).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn ranges_follow_get_address() {
+    let mut e = ed("a\nb\nc\nd\ne\nf");
+    let lines = |e: &Editor| text(e);
+    // Several addresses: the last two count; `;` moves the cursor for the next; a number after one is added.
+    e.command("1,2,4d");
+    assert_eq!(lines(&e), "a\ne\nf");
+    let mut e = ed("a\nb\nc\nd\ne\nf");
+    e.command("/c/;+1d");
+    assert_eq!(lines(&e), "a\nb\ne\nf");
+    // What lies between the range and the command name is skipped (`find_excmd_after_range`).
+    e.command("2.d");
+    assert_eq!(lines(&e), "a\ne\nf");
+    // A line offset after a pattern stays inside the text.
+    let mut e = ed("x\ny\nz");
+    e.command("/z/+5d");
+    assert_eq!(lines(&e), "x\ny");
+    // Errors: backwards range in a script, too far, a mark or pattern that is not there.
+    let mut e = ed("a\nb\nc");
+    for (cmd, want) in [("9d", "E16: Invalid range"), ("'zd", "E20: Mark not set"), ("/zz/d", "E486: Pattern not found: zz"), ("\\xd", "E10: \\ should be followed by /, ? or &"), ("3echo 1", "E481: No range allowed")] {
+        e.command(cmd);
+        assert_eq!(e.msg(), want, "{cmd}");
+    }
+    // A range with no command goes to the line, clamped (`ex_range_without_command`).
+    e.command("99");
+    assert_eq!(e.win.line, 2);
+    e.command("1");
+    assert_eq!(e.win.line, 0);
+}
+
+/// `^` and `$` are line anchors in `:s`, `:g` and the searches.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn line_anchors_in_substitute() {
+    assert_eq!(text(&run("ab\ncd", ":s/b$/!/\n")), "a!\ncd");
+    assert_eq!(text(&run("ab\ncd", ":s/$/!/\n")), "ab!\ncd");
+    assert_eq!(text(&run("ab\ncd", ":2s/^/>/\n")), "ab\n>cd");
+    assert_eq!(text(&run("ab\ncd", ":%s/$/!/\n")), "ab!\ncd!");
+    assert_eq!(text(&run("ab\ncd", ":g/./s/$/!/\n")), "ab!\ncd!");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn backwards_range_asks_before_swapping() {
+    let s = "a\nb\nc\nd";
+    // `y` swaps and runs the command, the rest of the line with it (checked against Neovim 0.12.6).
+    let mut e = run(s, ":3,2d | let g:rest = 1\n");
+    assert_eq!((&e.mode, e.msg()), (&Mode::Confirm, "Backwards range given, OK to swap (y/n)?"));
+    assert_eq!(text(&e), s);
+    feed(&mut e, "y");
+    assert_eq!((text(&e).as_str(), &e.mode, e.msg()), ("a\nd", &Mode::Normal, ""));
+    assert_eq!(e.eval_text("g:rest").unwrap(), "1");
+    feed(&mut e, "u");
+    assert_eq!(text(&e), s);
+    // `n`, Esc and Ctrl+C refuse; the rest of the line is dropped too; other keys ask again.
+    for no in ["n", "\x1b", "\x03"] {
+        let mut e = run(s, ":3,2d | let g:rest = 1\nz");
+        assert_eq!(e.mode, Mode::Confirm);
+        feed(&mut e, no);
+        assert_eq!((text(&e).as_str(), &e.mode), (s, &Mode::Normal));
+        assert!(e.eval_text("exists('g:rest')").unwrap() == "0");
+    }
+    // `:silent` swaps without asking, `:global` does not swap, a forward range does not ask.
+    assert_eq!(text(&run(s, ":silent 3,2d\n")), "a\nd");
+    assert_eq!(run(s, ":2,3d\n").mode, Mode::Normal);
+    // The prompt is not part of a typed `:if`, `:execute` is an error (E493), as in Neovim.
+    let e = run(s, ":exe '3,2d'\n");
+    assert_eq!((&e.mode, e.msg()), (&Mode::Normal, "E493: Backwards range given: 3,2d"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn long_messages_are_cut_to_the_row() {
+    let long = format!("{}{}{}", "x".repeat(40), "y".repeat(100), "z".repeat(40));
+    let mut e = ed("a");
+    e.buf.opts.laststatus = 2;
+    // A Normal mode message: `msg_strtrunc` cuts the middle, 80 columns less the showcmd column and one (as Neovim's 68 cells).
+    e.info(long.clone());
+    assert_eq!(e.msg(), format!("{}...{}", "x".repeat(32), "z".repeat(33)));
+    // Without `T`, or with `showcmd` off (more room), or in a command line (`msg_scroll`: it scrolls instead), it is not.
+    e.buf.opts.shortmess = "lt".into();
+    e.info(long.clone());
+    assert_eq!(e.msg(), long);
+    e.buf.opts.shortmess = "ltToOCF".into();
+    e.buf.opts.showcmd = false;
+    e.info(long.clone());
+    assert_eq!(e.msg(), format!("{}...{}", "x".repeat(38), "z".repeat(38)));
+    e.buf.opts.showcmd = true;
+    e.msgs.scroll = true;
+    e.info(long.clone());
+    assert_eq!(e.msg(), long);
+    e.msgs.scroll = false;
+    // `g Ctrl+G` is shown whole, a short message untouched, clusters are never split (a wide char counts 2, a family emoji 2).
+    e.info("short");
+    assert_eq!(e.msg(), "short");
+    e.info("あ".repeat(60));
+    assert_eq!(e.msg().chars().filter(|&c| c == 'あ').count() * 2 + 3, 67);
+    let family = "👨‍👩‍👧‍👦".repeat(40);
+    e.info(family.clone());
+    assert!(e.msg().contains("...") && e.msg().matches("👨‍👩‍👧‍👦").count() > 10);
+    // `Ctrl+G` loses the start of a long name (`shortmess` `t`), a typed `:file` too.
+    let mut e = Editor::new(Document::new("a"), PathBuf::from(format!("/{}/file.txt", "d".repeat(100))));
+    e.buf.opts.laststatus = 2;
+    feed(&mut e, "\x07");
+    let m = e.msg().to_string();
+    assert!(m.starts_with('<') && m.ends_with("1 line --100%--") && m.chars().count() <= 68, "{m}");
+    e.buf.opts.shortmess = "lT".into();
+    feed(&mut e, "\x07");
+    // With `T` the middle goes instead.
+    assert!(e.msg().starts_with('"') && e.msg().contains("...") && e.msg().chars().count() == 68, "{}", e.msg());
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn shortmess_is_a_flag_list() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["echo &shm"]), "ltToOCF");
+    assert_eq!(script(&mut e, &["set shm+=Tl", "echo &shm"]), "toOCFTl");
+    assert_eq!(script(&mut e, &["set shm=a", "echo &shortmess"]), "a");
+    assert!(e.buf.opts.shortmess('l') && e.buf.opts.shortmess('a') && !e.buf.opts.shortmess('T'));
+    assert_eq!(script(&mut e, &["set shm=Zl"]), "E539: Illegal character <Z>: shm=Zl");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn redir_collects_messages_into_a_variable() {
+    // Expected values come from Neovim 0.12.6 (`:redir` closes the oracle's own redirection, so they are not golden cases).
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["redir => out", "echo 1", "echo 'two'", "redir END", "echo string(out)"]), "'\n1\ntwo'");
+    assert_eq!(script(&mut e, &["redir => out", "echo 1", "redir END", "redir =>> out", "echon 'x'", "redir END", "echo string(out)"]), "'\n1x'");
+    assert_eq!(script(&mut e, &["let d = {'k': 'a'}", "redir => d.k", "echo 'b'", "redir END", "echo d"]), "{'k': '\nb'}");
+    assert_eq!(script(&mut e, &["redir => out", "echo 1", "redir => out2", "echo 2", "redir END", "echo string(out) string(out2)"]), "'\n1' '\n2'");
+    assert_eq!(script(&mut e, &["redir => out", "redir END", "echo string(out)"]), "''");
+    assert_eq!(script(&mut e, &["redir => out | echo 'a' | redir END | echo string(out)"]), "a\n'\na'");
+    assert_eq!(script(&mut e, &["redir END", "echo 'ok'"]), "ok");
+    assert_eq!(script(&mut e, &["redir => 1x"]), "E474: Invalid argument");
+    assert_eq!(script(&mut e, &["redir => out extra"]), "E488: Trailing characters:  extra");
+    assert_eq!(script(&mut e, &["redir => nosuch[0]"]), "E121: Undefined variable: nosuch\nE475: Invalid argument: nosuch[0]");
+    assert_eq!(script(&mut e, &["redir foo"]), "E475: Invalid argument: foo");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn redir_to_registers_and_files() {
+    // Expected values come from Neovim 0.12.6.
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["redir @a", "echo 1", "echo 'two'", "redir END", "echo string(@a)"]), "'\n1\ntwo'");
+    assert_eq!(script(&mut e, &["let @a = 'old'", "redir @a>>", "echon 'x'", "redir END", "echo string(@a)"]), "'oldx'");
+    assert_eq!(script(&mut e, &["let @a = 'old'", "redir @A", "echo 'x'", "redir END", "echo string(@a)"]), "'old\nx'");
+    assert_eq!(script(&mut e, &["let @a = 'old'", "redir @a", "redir END", "echo string(@a)"]), "''");
+    assert_eq!(script(&mut e, &["redir @_"]), "E475: Invalid argument: @_");
+    assert_eq!(script(&mut e, &["redir @a x"]), "E475: Invalid argument: @a x");
+    assert_eq!(script(&mut e, &["redir @"]), "");
+    let dir = std::env::temp_dir().join(format!("rim-redir-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let f = dir.join("out.txt");
+    let p = f.display().to_string();
+    script(&mut e, &[&format!("redir > {p}"), "echo 'f'", "echo 'g'", "redir END"]);
+    assert_eq!(std::fs::read_to_string(&f).unwrap(), "\nf\ng");
+    assert_eq!(script(&mut e, &[&format!("redir > {p}")]), format!("E189: \"{p}\" exists (add ! to override)"));
+    script(&mut e, &[&format!("redir! > {p}"), "echo 'again'", "redir END"]);
+    assert_eq!(std::fs::read_to_string(&f).unwrap(), "\nagain");
+    script(&mut e, &[&format!("redir >> {p}"), "echo 'app'", "redir END"]);
+    assert_eq!(std::fs::read_to_string(&f).unwrap(), "\nagain\napp");
+    let d = dir.display().to_string();
+    assert_eq!(script(&mut e, &[&format!("redir > {d}")]), format!("E17: \"{d}\" is a directory"));
+    assert_eq!(script(&mut e, &["redir > /nonexistent/dir/x"]), "E190: Cannot open \"/nonexistent/dir/x\" for writing");
+    std::fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn host_variables_are_set() {
+    let mut e = ed("a");
+    assert_eq!(script(&mut e, &["echo v:progname v:startreason"]), "rim normal");
+    assert_eq!(script(&mut e, &["echo type(v:argv) len(v:argv) > 0"]), "3 1");
+    #[cfg(not(miri))]
+    assert_eq!(script(&mut e, &["echo v:starttime > 0 v:progpath != ''"]), "1 1");
+    // The locale is the one of the environment, `C` without one.
+    assert_eq!(script(&mut e, &["echo v:lang != ''"]), "1");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn vim_starting_is_true_until_the_start_is_finished() {
+    let mut e = ed("");
+    assert_eq!(e.eval_text("has('vim_starting')").unwrap(), "1");
+    e.finish_start();
+    assert_eq!(e.eval_text("has('vim_starting')").unwrap(), "0");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn a_typed_here_document_reads_the_lines_typed_next() {
+    let mut e = ed("");
+    // Not typed (`Editor::command`, a mapping): nothing to read the lines from.
+    e.msgs.redir = Some(String::new());
+    e.command("let x =<< END");
+    assert!(e.msgs.redir.take().unwrap().contains("E991: Cannot use =<< here"));
+    // Typed: the command line opens again, without the `:`, for each line up to the marker.
+    feed(&mut e, ":let x =<< trim END\n");
+    assert_eq!(e.mode, Mode::Command(String::new()));
+    assert!(!screen(&e.frame(40, 8)).last().unwrap().contains(':'));
+    feed(&mut e, "  one\n");
+    assert_eq!(e.mode, Mode::Command(String::new()), "still waiting");
+    feed(&mut e, "  two\nEND\n");
+    assert_eq!(e.mode, Mode::Normal);
+    assert_eq!(e.eval_text("string(x)").unwrap(), "['one', 'two']");
+    // Esc: the end marker is missing, the lines so far are assigned.
+    e.msgs.redir = Some(String::new());
+    feed(&mut e, ":let y =<< END\nabc\n\x1b");
+    assert_eq!(e.mode, Mode::Normal);
+    assert!(e.msgs.redir.take().unwrap().contains("E990: Missing end marker 'END'"));
+    assert_eq!(e.eval_text("string(y)").unwrap(), "['abc']");
+    // A here document inside the argument works anywhere.
+    e.command("execute \"let z =<< END\\nl1\\nEND\"");
+    assert_eq!(e.eval_text("string(z)").unwrap(), "['l1']");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn a_typed_append_reads_its_lines_from_the_prompt() {
+    let mut e = ed("");
+    feed(&mut e, ":append\n");
+    assert_eq!(e.mode, Mode::Command(String::new()), "the lines are typed next, without the `:`");
+    assert!(!screen(&e.frame(40, 8)).last().unwrap().contains(':'));
+    // Autoindent: the next line starts with the indent of the one before.
+    feed(&mut e, "  a\n");
+    assert_eq!(e.mode, Mode::Command("  ".into()));
+    feed(&mut e, "b\n.\n");
+    assert_eq!(e.mode, Mode::Normal);
+    assert_eq!(e.eval_text("string(getline(1, '$'))").unwrap(), "['  a', '  b']");
+    assert_eq!(e.eval_text("line('.')").unwrap(), "2");
+    // Esc ends the text, what was typed stays.
+    feed(&mut e, ":insert\nc\n\x1b");
+    assert_eq!(e.mode, Mode::Normal);
+    assert_eq!(e.eval_text("string(getline(1, '$'))").unwrap(), "['  a', '  c', '  b']");
+}
+
+#[cfg_attr(miri, ignore = "reads a file")]
+#[test]
+fn quitting_inside_a_function_runs_the_deferred_calls_and_nothing_else() {
+    // Recorded from Neovim (`:source` of this file with `redir` on): the deferred calls of every running function run at
+    // once, the innermost first and each one's last first; the `:finally` and what follows the `:qa!` do not.
+    let script = "function E(...)\n  echo 'E' a:000\nendfunction\nfunction Inner()\n  defer E('inner1')\n  defer E('inner2')\n  echo 'in inner'\n  qa!\n  echo 'NOT'\nendfunction\nfunction F()\n  defer E('outer')\n  try\n    call Inner()\n  finally\n    echo 'finally'\n  endtry\n  echo 'NOT after'\nendfunction\ncall F()\necho 'NOT top'\n";
+    let dir = temp_dir("defer-quit");
+    let file = dir.join("q.vim");
+    std::fs::write(&file, script).unwrap();
+    let mut e = ed("");
+    e.msgs.redir = Some(String::new());
+    assert!(!e.command(&format!("source {}", file.display())), "quits");
+    assert_eq!(e.msgs.redir.take().unwrap(), "\nin inner\nE ['inner2']\nE ['inner1']\nE ['outer']");
+    // Quitting from a deferred call: the ones that are left still run, the rest of that function does not.
+    let script = "function E(...)\n  echo 'E' a:000\nendfunction\nfunction Q()\n  echo 'Q'\n  qa!\n  echo 'NOTQ'\nendfunction\nfunction F()\n  defer E('last')\n  defer Q()\n  defer E('first')\nendfunction\ncall F()\necho 'NOT'\n";
+    std::fs::write(&file, script).unwrap();
+    let mut e = ed("");
+    e.msgs.redir = Some(String::new());
+    assert!(!e.command(&format!("source {}", file.display())), "quits");
+    assert_eq!(e.msgs.redir.take().unwrap(), "\nE ['first']\nQ\nE ['last']");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn a_typed_function_reads_its_body_from_the_prompt() {
+    let mut e = ed("");
+    feed(&mut e, ":function! Foo(a)\n");
+    assert_eq!(e.mode, Mode::Command(String::new()), "the body is typed next");
+    feed(&mut e, "  echo a:a\n  if 1\n    echo 2\n  endif\n");
+    assert_eq!(e.mode, Mode::Command(String::new()));
+    feed(&mut e, "endfunction\n");
+    assert_eq!(e.mode, Mode::Normal);
+    assert!(e.scripts.funcs.contains_key("Foo"));
+    // A function that exists is refused before its body is typed.
+    e.msgs.redir = Some(String::new());
+    feed(&mut e, ":function Foo()\n");
+    assert_eq!(e.mode, Mode::Normal);
+    assert!(e.msgs.redir.take().unwrap().contains("E122: Function Foo already exists, add ! to replace it"));
+    // Esc: the end is missing and nothing is defined.
+    e.msgs.redir = Some(String::new());
+    feed(&mut e, ":function Bar()\n  echo 1\n\x1b");
+    assert_eq!(e.mode, Mode::Normal);
+    assert!(e.msgs.redir.take().unwrap().contains("E126: Missing :endfunction"));
+    assert!(!e.scripts.funcs.contains_key("Bar"));
 }

@@ -1,0 +1,96 @@
+NVIM v0.12.6
+
+
+   function Foo(a)
+1    echo a:a
+   endfunction
+"---
+
+
+   function Foo(a)
+   endfunction
+"---
+
+
+function! Foo()
+  echo 1
+  if 1
+    echo 2
+  endif
+endfunction
+"---
+
+
+E123: Undefined function: Inner
+"---
+
+
+   function Foo()
+1    let x =<< END
+2  endfunction
+3  END
+   endfunction
+"---
+
+
+E488: Trailing characters: | echo 1
+E122: Function Foo already exists, add ! to replace it
+"---
+
+
+E126: Missing :endfunction
+"---
+
+
+after
+"---
+
+
+   function Foo()
+1    append
+2  endfunction
+3  .
+   endfunction
+"---
+
+
+   function E1()
+1    echo 1
+   endfunction
+"---
+
+
+   function E2()
+1    echo 2
+   endfunction
+"---
+
+
+E122: Function Foo already exists, add ! to replace it
+"---
+
+
+E488: Trailing characters: | echo 1
+E122: Function Foo already exists, add ! to replace it
+"---
+
+
+E122: Function Foo already exists, add ! to replace it
+"---
+
+E488: Trailing characters: | echo 1
+"---
+
+E488: Trailing characters: | echo 1
+"---
+
+E128: Function name must start with a capital or "s:": bad()
+"---
+
+E853: Duplicate argument name: a
+"---
+
+E125: Illegal argument: 
+"---
+
+E128: Function name must start with a capital or "s:": bad()

@@ -1,0 +1,62 @@
+NVIM v0.12.6
+
+['abc', '  def']
+"---
+
+E990: Missing end marker 'END'
+['a', ' b', 'END']
+"---
+
+['3', '{x}']
+"---
+
+[]
+"---
+
+['one'] ['two']
+"---
+
+1 2
+"---
+
+[['q']]
+"---
+
+E172: Missing marker
+next line is a command
+"---
+
+E221: Marker cannot start with lower case letter
+next
+"---
+
+E488: Trailing characters:  junk
+next
+"---
+
+E990: Missing end marker 'END'
+this is heredoc text
+['no end']
+"---
+
+before
+['t']
+"---
+
+E488: Trailing characters:  | echo 'no'
+E121: Undefined variable: x
+"---
+
+['l1']
+"---
+
+['typed line']
+"---
+
+['\ starts with backslash']
+"---
+
+['']
+"---
+
+['a\']

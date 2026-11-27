@@ -21,13 +21,15 @@ pub(super) struct Sub {
     pub repeat: bool,
     /// `&` flag (`:&&`): also keep the flags of the last substitute.
     pub keep: bool,
+    /// A count after the flags: that many lines from the last line of the range.
+    pub lines: Option<usize>,
 }
 
 impl Sub {
     /// `&` (cursor line) or `g&` (whole text): the last substitute again, `g&` keeping its flags.
     pub fn again(whole: bool) -> Sub {
         let range = whole.then(LineRange::whole);
-        Sub { range, pat: String::new(), rep: String::new(), all: false, ignore_case: None, confirm: false, count: false, repeat: true, keep: whole }
+        Sub { range, pat: String::new(), rep: String::new(), all: false, ignore_case: None, confirm: false, count: false, repeat: true, keep: whole, lines: None }
     }
 }
 
@@ -51,7 +53,9 @@ pub(super) fn parse(range: Option<LineRange>, name: &str, arg: &str) -> Option<R
         }
         _ => return None,
     };
-    let mut sub = Sub { range, pat, rep, all: false, ignore_case: None, confirm: false, count: false, repeat, keep: false };
+    let mut sub = Sub { range, pat, rep, all: false, ignore_case: None, confirm: false, count: false, repeat, keep: false, lines: None };
+    // The flags run up to the first char that is none; then a count, then the end of the command (or a comment).
+    let mut end = flags.len();
     for (i, c) in flags.char_indices() {
         match c {
             'g' => sub.all = true,
@@ -61,9 +65,23 @@ pub(super) fn parse(range: Option<LineRange>, name: &str, arg: &str) -> Option<R
             'n' => sub.count = true,
             // Only meaningful first, as in vim; later it is just redundant.
             '&' => sub.keep = true,
-            c if c.is_whitespace() => {}
-            _ => return Some(Err(format!("Trailing characters: {}", &flags[i..]))),
+            _ => {
+                end = i;
+                break;
+            }
         }
+    }
+    let mut rest = flags[end..].trim_start();
+    if rest.starts_with(|c: char| c.is_ascii_digit()) {
+        let len = rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len());
+        match rest[..len].parse::<usize>() {
+            Ok(n) if n > 0 => sub.lines = Some(n),
+            _ => return Some(Err("E487: Argument must be positive".into())),
+        }
+        rest = rest[len..].trim_start();
+    }
+    if !rest.is_empty() && !rest.starts_with('"') {
+        return Some(Err(format!("E488: Trailing characters: {rest}")));
     }
     Some(Ok(sub))
 }
@@ -80,7 +98,7 @@ mod tests {
     }
 
     fn sub(range: Option<LineRange>, pat: &str, rep: &str, all: bool, ignore_case: Option<bool>) -> Option<Result<Sub, String>> {
-        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false }))
+        Some(Ok(Sub { range, pat: pat.into(), rep: rep.into(), all, ignore_case, confirm: false, count: false, repeat: false, keep: false, lines: None }))
     }
 
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -97,7 +115,7 @@ mod tests {
         assert_eq!(parse(r"s/a/1\n2\t3\\4\$5$1\q/"), sub(None, "a", "1\n2\t3\\4$$5$1q", false, None));
         assert_eq!(parse(r"s/a\"), sub(None, r"a\", "", false, None));
         assert_eq!(parse("s//x/"), sub(None, "", "x", false, None));
-        assert_eq!(parse("s/a/b/gx"), Some(Err("Trailing characters: x".into())));
+        assert_eq!(parse("s/a/b/gx"), Some(Err("E488: Trailing characters: x".into())));
         assert_eq!(parse("%s/a/b/"), sub(Some(LineRange::whole()), "a", "b", false, None));
     }
 
@@ -110,7 +128,7 @@ mod tests {
         assert!(r.repeat && r.keep && r.all && r.range.is_none());
         let r = parse("%&").unwrap().unwrap();
         assert!(r.repeat && !r.keep && r.range.is_some());
-        assert_eq!(parse("&x"), Some(Err("Trailing characters: x".into())));
+        assert_eq!(parse("&x"), Some(Err("E488: Trailing characters: x".into())));
         assert_eq!(Sub::again(true).range, Some(LineRange::whole()));
     }
 

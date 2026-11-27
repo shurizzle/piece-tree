@@ -1,0 +1,1577 @@
+NVIM v0.12.6
+
+0 1 3 4 5 6 7
+"---
+
+6 6 5 2 2 1 3
+"---
+
+AÉ aé
+"---
+
+ababab [1, 1] 
+"---
+
+1-2-3 a b
+"---
+
+['a', 'b', 'c'] ['a', 'b', '', 'c'] ['a', 'b', '', 'c'] ['a', 'b', '', 'c']
+"---
+
+[0, 1, 2, 3] [2, 3, 4] [0, 5, 10] [3, 2, 1]
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+[3, 2, 1] cba
+"---
+
+['a', 'b', 'c'] [10, 100, 9] [1, 2, 3]
+"---
+
+[1, 2] 1 -1 2 x 0
+"---
+
+1 0 1 1 1 1 1
+"---
+
+cde bc 2 3 3 -1
+"---
+
+65 € a\.b xyc
+"---
+
+x
+"---
+
+1  f00 bar f0o bar
+"---
+
+a-b x a
+"---
+
+5-a 00042 42   |  3.14
+"---
+
+ff FF 10 101 0xff 010 0b101 +5  5 A
+"---
+
+abc     a|b    | 1.500000e+03 1.500000E-04 1.0e-4 1.0e-5
+"---
+
+100000.0 1000000.0 %  -5 -05 0003.142
+"---
+
+005 18446744073709551615 5
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+[1] {'a': 1}
+"---
+
+3 2.5 1 3 3.0 2.0 3.0 4.0 1024.0 1.0 3.0 3
+"---
+
+12 255 31 3 1.5 'a' [1, 'a''b'] 1.5 7
+"---
+
+['a', 'b'] [1, 2] [['a', 2], ['b', 1]]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+1 0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+1 d 0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+1 3
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+2 3 [2, 3] 1
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+Error in {file}:
+line    1:
+E16: Invalid range
+0
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "b"
+0
+"---
+
+[1, 2, 3] [1, 2, 3] [2, 1] [1, 2]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+[1, 2, 3] [1, 2, 3, 4] [['a', 2], ['b', 3]] [['a', 1], ['b', 3]]
+"---
+
+Error in {file}:
+line    1:
+E737: Key already exists: a
+{'a': 1}
+"---
+
+2 1 2 2 2
+"---
+
+[1, 2, 1] [1, 2, 3] [1, 2, [3]] {'a': [1]}
+"---
+
+Error in {file}:
+line    1:
+E900: maxdepth must be non-negative number
+0
+"---
+
+3 1 0
+"---
+
+Error in {file}:
+line    1:
+E697: Missing end of List ']': 
+E15: Invalid expression: "["
+0
+"---
+
+2 ABC [1, 3] ['a']
+"---
+
+Error in {file}:
+line    1:
+E724: unable to correctly dump variable with self-referencing container
+[1, [...@0]]
+"---
+
+[]
+"---
+
+1
+"---
+
+0 0
+"---
+
+1 0
+"---
+
+Error in {file}:
+line    1:
+E698: Variable nested too deep for making a copy
+[]
+"---
+
+1234.568 1.234e-4 1234567.0 1.234568e7 1.5E-10 2 0.3333333333
+"---
+
+1.500000e+03 1.500000E-04 1.23e+04 5e+00 0.000000e+00 1.000000e+100 1.000000e-100
+"---
+
+1.500000 3.14 2 4 1.500000 100000000000000000000.000000 -0.001
+"---
+
+inf -inf inf nan INF INF NAN +inf  inf
+"---
+
+inf 9999999999999999860310597602564577717002641838126363875249660735883565852672743849064846414228960666786379280392654615393353172850252103336275952370615397010730691664689375178569039851073146339641623266071126720011020169553304018596457812688561947201171488461172921822139066929851282122002676667750021070848.000000 9899999999999999749441474215210942534161650311422930895203030729030243484627734023481029032457442359714629928627969882963907006135921724829463555999769599624044971094520714033783030349063845572133710202164997423786658650977175253785635146461127368354161664726358708744142125248791491958399984544365670301696.000000
+"---
+
++5  5 +1.50  1.50 +1.500000e+00 +1.5
+"---
+
+   3.142| 3.142   | 0003.142| -003.142| +003.142|
+"---
+
+       1.5| 1.5       | 00000001.5| 1.500000e+00| 1.500000e+00|
+"---
+
+1.5 1.0e10 inf str2float('inf') 1.5e-7x
+"---
+
+1.5 str2float('inf')
+Error in {file}:
+line    1:
+E805: Using a Float as a Number 
+"---
+
+12 0 [1, 2] {'a': 1}    ab| ab   | a|
+"---
+
+ff FF 10 101 0xff 010 0b101 0XFF 0B101
+"---
+
+ffffffffffffffff 1777777777777777777777 1111111111111111111111111111111111111111111111111111111111111111 18446744073709551615 000000ff 00ff     00ff|
+"---
+
+A     A| A    | x A
+"---
+
+%     % abc 
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+b a 7 7
+"---
+
+   42| 42   | 3.14
+"---
+
+5 5 5 5 ff
+"---
+
+5     5| ab a
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: printf
+"---
+
+5
+"---
+
+v:true 1 v:null 0
+"---
+
+   é| é   |     é|  日本| 日| 日| |
+"---
+
++5   |    +5|  0005| -0005| 010| | | 0| 0| 0
+"---
+
+a a b a    5| 3.14
+"---
+
+Error in {file}:
+line    1:
+E1500: Cannot mix positional and non-positional arguments: %1$s %s
+
+"---
+
+Error in {file}:
+line    1:
+E1500: Cannot mix positional and non-positional arguments: %s %1$s
+
+"---
+
+Error in {file}:
+line    1:
+E1505: Invalid format specifier: %0$s
+
+"---
+
+Error in {file}:
+line    1:
+E1501: format argument 1 unused in $-style format: %2$s
+
+"---
+
+Error in {file}:
+line    1:
+E1504: Positional argument 1 type used inconsistently: int/string
+
+"---
+
+Error in {file}:
+line    1:
+E1501: format argument 1 unused in $-style format: %3$s
+
+"---
+
+Error in {file}:
+line    1:
+E1500: Cannot mix positional and non-positional arguments: %1$
+
+"---
+
+Error in {file}:
+line    1:
+E1510: Value too large: 99999999999
+
+"---
+
+Error in {file}:
+line    1:
+E1510: Value too large: 
+
+"---
+
+Error in {file}:
+line    1:
+E1510: Value too large: 
+
+"---
+
+1    | 1    | 1|
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+[1, 'a', {'b': 2}]
+"---
+
+Error in {file}:
+line    1:
+E807: Expected Float argument for printf()
+
+"---
+
+3.000000 3.000000e+00 3.0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+E766: Insufficient arguments for printf()
+E766: Insufficient arguments for printf()
+
+"---
+
+4464 4464 1170 5 -5 5 18446744073709551615 10
+"---
+
+99.50% 100% %d 5%
+"---
+
+a
+b
+"---
+
+    3.1416| 1.23e+04  | -0.0 -0.0 -0.000000
+"---
+
+100.0 0.1
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e-3) printf('%g', 9.9e-4) printf('%g', 9999999.0) printf('%g', 1.0e7) printf('%.2g', 1234.0) printf('%g', -1.5e20)"
+E116: Invalid arguments for function printf
+"---
+
+0.10000000000000000555 0.100000000000000 1.234e-04
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+['a', 'age', 'b', 'city', 'name', 'x1', 'x2', 'zz']
+[1, 2, 3, 4, 5, 6, 7, 8]
+[['a', 4], ['age', 2], ['b', 5], ['city', 3], ['name', 1], ['x1', 7], ['x2', 8], ['zz', 6]]
+8
+"---
+
+40 ['key0', 'key1', 'key10', 'key11', 'key12', 'key13', 'key14', 'key15', 'key16', 'key17', 'key18', 'key19', 'key2', 'key20', 'key21', 'key22', 'key23', 'key24', 'key25', 'key26', 'key27', 'key28', 'key29', 'key3', 'key30', 'key31', 'key32', 'key33', 'key34', 'key35', 'key36', 'key37', 'key38', 'key39', 'key4', 'key5', 'key6', 'key7', 'key8', 'key9']
+"---
+
+20 ['k1', 'k11', 'k13', 'k15', 'k17', 'k19', 'k21', 'k23', 'k25', 'k27', 'k29', 'k3', 'k31', 'k33', 'k35', 'k37', 'k39', 'k5', 'k7', 'k9']
+40 ['k1', 'k11', 'k13', 'k15', 'k17', 'k19', 'k21', 'k23', 'k25', 'k27', 'k29', 'k3', 'k31', 'k33', 'k35', 'k37', 'k39', 'k5', 'k7', 'k9', 'n0', 'n1', 'n10', 'n11', 'n12', 'n13', 'n14', 'n15', 'n16', 'n17', 'n18', 'n19', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9']
+"---
+
+['a', 'b', 'c'] [['a', 2], ['b', 4], ['c', 3]]
+"---
+
+1 1 [['five', 5], ['four', 4], ['one', 1], ['three', 3], ['two', 2], ['z', 0]] [['five', 5], ['four', 4], ['three', 3]] [['five', 10], ['four', 8], ['one', 2], ['three', 6], ['two', 4]]
+"---
+
+17 ['eight', 'eleven', 'fifteen', 'five', 'four', 'fourteen', 'nine', 'one', 'seven', 'seventeen', 'six', 'sixteen', 'ten', 'thirteen', 'three', 'twelve', 'two']
+1 17
+"---
+
+['alpha', 'beta', 'delta', 'gamma']
+"---
+
+['', ' ', 'A', 'a', 'é', '日本']
+"---
+
+3 3 2.5 0 4 1
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+-1
+"---
+
+[1, 2] [[3]]
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+0.785398 0.463648 0.785398 8.0 1.414214 0.5
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+2.0 -1.0 3.0 -2.0 2.0 3.0 -3.0 2.0 7.0
+"---
+
+1.0 0.0 0.0 1.0 2.718282 0.0 2.0 4.0 1.414214 str2float('nan') -str2float('inf') str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+97 233 26085 0 97 97
+"---
+
+97
+"---
+
+A é 日 x A
+"---
+
+Error in {file}:
+line    1:
+E5070: Character number must not be less than zero
+0
+"---
+
+Error in {file}:
+line    1:
+E5071: Character number must not be greater than INT_MAX (2147483647)
+0
+"---
+
+A
+"---
+
+[1, [2]] {'a': 1} s 1.5 [1, [2]] 1 {'a': [1]}
+"---
+
+[1, [2, 3]] [1, [2, 3]] [1, [2]]
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+[[1]] [[1]]
+"---
+
+2 1 0 3 2
+"---
+
+2 1 0 2 0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+2
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+1 0 1 0 1 0 1 0 1 0 0 1 1
+"---
+
+a\.b\*c \\a  éa a\ b
+"---
+
+3 [1, 2] x 3 1.5
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1 +"
+0
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 2
+1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+E15: Invalid expression: "nosuch"
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+0 1 1 0 1 0 1 0 2 0 0 0
+"---
+
+1 1 1 0 1 0 0 0
+"---
+
+[1, 2, 3] [1, 2, 3, 4] [2, 1] [1, 2] [2, 1]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+[2, 1]
+"---
+
+[['a', 2], ['b', 3]] [['a', 1], ['b', 3]]
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: nosuch
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+[1, 2, 3, 4] [1, 2, [3, [4]]] [1, [2, [3, [4]]]] [1, 2] []
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E900: maxdepth must be non-negative number
+0
+"---
+
+1 -1 3 9223372036854775807 -9223372036854775807 0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+1 2 0 d 1 7 1
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+3
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+0 1 1 0 0 1
+"---
+
+1 0 1 0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+1 3 3 -1 0 -1 -1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+[0, 1, 2] [1, 0, 2] [1, 2, 0] [1, 0, 2] [5]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 9
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+[[0, 1], [1, 2]] [[0, 'a'], [1, 'é']] [['a', 1]] []
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+1-a-[2, 3]-{'k': 'v'}-1.5  a b 12
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+3 2 3 2 1 0 2
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+1 1 0 0 1 1 0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1210: Number required for argument 2
+0
+"---
+
+0
+"---
+
+0
+"---
+
+5 1 9 0 0 10
+Error in {file}:
+line    1:
+E805: Using a Float as a Number 0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+[0, 1, 2, 3] [2, 3, 4, 5] [5, 4, 3, 2] [] [1, 4, 7, 10] []
+Error in {file}:
+line    1:
+E727: Start past end 0 []
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+1 3 [2, 3] [1, 2, 3] 1
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+0
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: remove()
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+ababab    [1, 2, 1, 2] [] 1212 éé
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+[3, 2, 1] cba 日éa [] 
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+[3, 2, 1] [3, 2, 1]
+"---
+
+[1, 2, 3] ['C', 'a', 'b'] ['a', 'b', 'C'] ['a', 'b', 'C'] [1, 2, 3] ['10', '9', '1'] [1, 2, 3] [0.5, 1, 1.5]
+"---
+
+[[1], [2]] ['a', 1.5, 2, [1], {'k': 1}] [1, 2, 3] []
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: nosuchfunc
+E702: Sort compare function failed
+[3, 1]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 3
+[3, 1]
+"---
+
+[1, 2, 3] [1, 2, 3]
+"---
+
+[1, 2, 3, 1] ['a', 'A', 'a'] ['a'] [] [1]
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+['a', 'b', 'c'] ['a', 'b'] ['a', 'b'] ['a', '', 'b'] ['', 'a', '', 'b', ''] [] [''] ['abc'] ['a', 'c']
+"---
+
+['a', 'b'] ['a', '', 'b'] ['abc'] [] ['', '', '', '']
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+[]
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+[]
+"---
+
+1.5 -25.0 3.0 0.0 0.0 1.0 str2float('inf') str2float('nan') 16.0
+"---
+
+12 -12 0 16 16 5 5 15 15 5 0 0
+Error in {file}:
+line    1:
+E116: Invalid arguments for function str2nr
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+9223372036854775807
+"---
+
+3 1 0 3 1 6 0 2
+"---
+
+Error in {file}:
+line    1:
+E1023: Using a Number as a Bool: 2
+0
+"---
+
+1
+"---
+
+1 4 -1 0 -1 0 -1 1
+"---
+
+4 1 -1 3 -1 1 0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+-1
+"---
+
+cdef cd a ef   é日 
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+1 'a' 'it''s' [1, 'a'] {'a': 1} 1.5 v:null -0.0 []
+"---
+
+abc é ABC É ẞ i Ǆ 
+"---
+
+xyc hippo ae abc é
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: abc
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a
+
+"---
+
+a a axx xxa a   a a  c
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: 3
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+0 1 3 4 5 6 7 6
+"---
+
+f0o f00 foo -foo a[x]c
+"---
+
+b  b b  b  cd  cd
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+[1]  3.14|
+"---
+
+1 0
+"---
+
+    [''] [] 
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+   [] 
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+[3, 4] [1, 3] [] ['a']
+"---
+
+[2, 4, 6] [0, 1, 2] ['a0', 'b1'] []
+"---
+
+[2, 3] {'a': 5}
+"---
+
+[2, 3, 4]
+[2, 4]
+"---
+
+['a', 'c']
+10 30
+"---
+
+acd aabbcc
+Error in {file}:
+line    1:
+E928: String required 
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+[1]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+[1]
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+[1]
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+{'a': 'a1'}
+"---
+
+[2, 4, 6]
+"---
+
+1 [1, 1]
+"---
+
+0 0 1 0 1
+"---
+
+v:true v:false v:null 801 1 9223372036854775807 -9223372036854775808 64 2147483647 3 1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: v:val
+"---
+
+x
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:version"
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: v:nosuch
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:errmsg
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:count1"
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E740: Too many arguments for function printf
+"---
+
+Error in {file}:
+line    1:
+E740: Too many arguments for function abs
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: printf
+"---
+
+Error in {file}:
+line    2:
+E171: Missing :endif
+"---
+
+['b', 'A', 1, 2.5, 3, 10]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+['b', 'A', 2.5, 1, 3, 10]
+"---
+
+Error in {file}:
+line    1:
+E892: Using a String as a Float
+E892: Using a String as a Float
+E892: Using a String as a Float
+E892: Using a String as a Float
+E892: Using a String as a Float
+E892: Using a String as a Float
+['b', 'A', 1, 2.5, 3, 10]
+"---
+
+['A', 'b', 1, 10, 2.5, 3]
+"---
+
+['A', 'b', 1, 10, 2.5, 3]
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: NoSuchFunc
+E702: Sort compare function failed
+[3, 'b', 1, 'A', 2.5, 10]
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+[3, 'b', 1, 'A', 2.5, 10]
+"---
+
+['b', 'A', 1, 2.5, 3, 10]
+"---
+
+['A', 'b', 1, 10, 2.5, 3]
+"---
+
+['A', 'b', 1, 10, 2.5, 3]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+['b', 'A', 2.5, 1, 3, 10]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+[3, 'b', 1, 'A', 2.5, 10]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[3, 'b', 1, 'A', 2.5, 10]
+"---
+
+[1, 'a', 2]
+"---
+
+[1, 'a', 2]
+"---
+
+[1, 'a', 2]
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: NoSuchFunc
+E882: Uniq compare function failed
+[1, 1, 'a', 'A', 'a', 2, 2]
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+[1, 1, 'a', 'A', 'a', 2, 2]
+"---
+
+[1, 'a', 2]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+[1]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+[1]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "2"
+[1]
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+{'a': 1}
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuchvar
+[1]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "+"
+[]
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+1
+"---
+
+1
+0
+"---
+
+1
+0
+"---
+
+1
+1
+"---
+
+1
+1
+"---
+
+1
+0
+"---
+
+1
+Error in {file}:
+line    4:
+E121: Undefined variable: nosuchvar
+0
+"---
+
+1
+Error in {file}:
+line    4:
+E121: Undefined variable: nosuchvar
+0
+"---
+
+1
+Error in {file}:
+line    4:
+E15: Invalid expression: "1+"
+0
+"---
+
+1
+1
+"---
+
+1
+0
+"---
+
+1
+0
+"---
+
+1
+0
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+7
+"---
+
+7
+"---
+
+"---
+
+7
+"---
+
+8
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    4:
+E15: Invalid expression: ""
+0
+"---
+
+Error in {file}:
+line    4:
+E121: Undefined variable: F
+"---
+
+1
+"---
+
+Error in {file}:
+line    4:
+E461: Illegal variable name: [1]
+"---
+
+"---
+
+0
+"---
+
+Error in {file}:
+line    4:
+E117: Unknown function: {"F"}

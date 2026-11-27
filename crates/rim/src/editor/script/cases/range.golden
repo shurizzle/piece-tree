@@ -1,0 +1,638 @@
+NVIM v0.12.6
+
+3 9
+"---
+
+9 9
+"---
+
+1 9
+"---
+
+1 9
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range: 11d
+7 10
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range: 99d
+7 10
+"---
+
+3 fewer lines
+3 7
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: 5,3d
+7 10
+"---
+
+3 fewer lines
+3 7
+"---
+
+3 fewer lines
+3 7
+"---
+
+7 fewer lines
+3 3
+"---
+
+9 9
+"---
+
+9 9
+"---
+
+9 9
+"---
+
+6 9
+"---
+
+5 9
+"---
+
+8 9
+"---
+
+8 9
+"---
+
+8 9
+"---
+
+8 9
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range: .5d
+7 10
+"---
+
+5 9
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range: $ 1d
+7 10
+"---
+
+2 8
+"---
+
+3 fewer lines
+3 7
+"---
+
+5 fewer lines
+3 5
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: 3,,5d
+7 10
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: ,5d
+7 10
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: ;5d
+7 10
+"---
+
+3 9
+"---
+
+8 fewer lines
+2 2
+"---
+
+1 1
+"---
+
+1 1
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: %,2d
+7 10
+"---
+
+5 9
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: 'zd
+7 10
+"---
+
+3 9
+"---
+
+4 9
+"---
+
+2 9
+"---
+
+4 fewer lines
+3 6
+"---
+
+4 fewer lines
+3 6
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: /e/;?b?d
+5 10
+"---
+
+5 9
+"---
+
+3 9
+"---
+
+5 9
+"---
+
+7 10
+"---
+
+7 10
+"---
+
+Error in {file}:
+line    3:
+E33: No previous substitute regular expression
+7 10
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: x
+7 10
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: x
+7 10
+"---
+
+5 9
+"---
+
+2 9
+"---
+
+3 9
+"---
+
+1 9
+"---
+
+1 9
+"---
+
+1 9
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: *d
+7 10
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: '<,'>d
+7 10
+"---
+
+8 fewer lines
+1 2
+"---
+
+3 8
+"---
+
+3 fewer lines
+3 7
+"---
+
+2 8
+"---
+
+2 9
+"---
+
+9 9
+"---
+
+9 9
+"---
+
+Error in {file}:
+line    4:
+E35: No previous regular expression
+7 10
+"---
+
+2 8
+"---
+
+3 fewer lines
+2 7
+"---
+
+3 fewer lines
+2 7
+"---
+
+Error in {file}:
+line    4:
+E493: Backwards range given: 4;2d
+4 10
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 5.
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: 'z
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    3:
+E33: No previous substitute regular expression
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: x
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: x
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: *
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set: '<,'>
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E35: No previous regular expression
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+3 8
+"---
+
+3 lines >ed 1 time
+5 10
+"---
+
+3 lines yanked
+7 10
+"---
+
+3 lines moved
+3 10
+"---
+
+3 more lines
+13 13
+"---
+
+3 substitutions on 3 lines
+5 10
+"---
+
+5 10
+"---
+
+a
+b
+c
+3 10
+"---
+
+3 substitutions on 3 lines
+5 10
+"---
+
+2 10
+"---
+
+6 fewer lines
+4 4
+"---
+
+5 8
+"---
+
+6 9
+"---
+
+3 10
+"---
+
+7 10
+"---
+
+Error in {file}:
+line    4:
+E32: No file name
+7 10
+"---
+
+Error in {file}:
+line    4:
+E32: No file name
+7 10
+"---
+
+Error in {file}:
+line    4:
+E32: No file name
+7 10
+"---
+
+Error in {file}:
+line    4:
+E32: No file name
+7 10
+"---
+
+3 substitutions on 3 lines
+5 10
+"---
+
+7 12
+"---
+
+10 10
+"---
+
+9 12
+"---
+
+2 12
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range
+7 10
+"---
+
+Error in {file}:
+line    4:
+E134: Cannot move a range of lines into itself
+7 10
+"---
+
+3 10
+"---
+
+2 9
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range
+7 10
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range
+7 10
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range
+7 10
+"---
+
+7 12
+"---
+
+5 12
+"---
+
+10 12
+"---
+
+7 12
+"---
+
+Error in {file}:
+line    4:
+E20: Mark not set
+7 10
+"---
+
+9 10
+"---
+
+2 12
+"---
+
+12 12
+"---
+
+10 10
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: zz
+7 10
+"---
+
+Error in {file}:
+line    4:
+E16: Invalid range
+7 10
+"---
+
+5 12
+"---
+
+11 12
+"---
+
+Error in {file}:
+line    4:
+E35: No previous regular expression
+7 10
+"---
+
+3 10
+"---
+
+4 10
+"---
+
+3 10
+"---
+
+3 10

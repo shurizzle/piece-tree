@@ -40,6 +40,8 @@ pub(super) struct Window {
     pub fixed_h: Option<usize>,
     /// Same for the width (`winfixwidth`).
     pub fixed_w: Option<usize>,
+    /// `w:` variables.
+    pub vars: super::script::Vars,
 }
 
 impl Window {
@@ -63,6 +65,7 @@ impl Window {
             jump_idx: 0,
             fixed_h: None,
             fixed_w: None,
+            vars: Default::default(),
         }
     }
 

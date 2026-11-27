@@ -1,0 +1,872 @@
+NVIM v0.12.6
+
+abs
+"---
+
+function('abs', [1])
+"---
+
+function('abs', {'a': 1})
+"---
+
+abs function('abs', [1]) function('abs', {'a': 1})
+"---
+
+2
+"---
+
+2
+"---
+
+0
+"---
+
+0
+"---
+
+function('abs')
+"---
+
+function('abs', [1])
+"---
+
+function('abs', {'a': 1})
+"---
+
+[function('abs')]
+"---
+
+{'f': function('abs')}
+"---
+
+[function('abs', [1]), function('abs', {'a': 1})]
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    4:
+E694: Invalid operation for Funcrefs
+"---
+
+Error in {file}:
+line    4:
+E694: Invalid operation for Funcrefs
+"---
+
+Error in {file}:
+line    4:
+E694: Invalid operation for Funcrefs
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+Error in {file}:
+line    4:
+E729: Using a Funcref as a String
+"---
+
+Error in {file}:
+line    4:
+E729: Using a Funcref as a String
+"---
+
+Error in {file}:
+line    4:
+E729: Using a Funcref as a String
+"---
+
+Error in {file}:
+line    4:
+E701: Invalid type for len()
+0
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+"---
+
+abs
+"---
+
+function('abs', [1])
+"---
+
+function('abs', {'a': 1})
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: abs
+"---
+
+1
+"---
+
+3
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: abs
+"---
+
+3
+"---
+
+1
+"---
+
+4
+"---
+
+2
+"---
+
+Error in {file}:
+line    4:
+E117: Unknown function: nosuch
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    4:
+E1211: List required for argument 2
+0
+"---
+
+Error in {file}:
+line    4:
+E1206: Dictionary required for argument 3
+0
+"---
+
+1
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: call
+"---
+
+abs
+"---
+
+abs
+"---
+
+0
+"---
+
+[]
+"---
+
+abs
+"---
+
+[1]
+"---
+
+0
+"---
+
+{'a': 1}
+"---
+
+abs
+"---
+
+Error in {file}:
+line    4:
+E475: Invalid argument: nosuch
+0
+"---
+
+dflt
+"---
+
+{'optional': 0, 'required': 1, 'varargs': v:false}
+"---
+
+{'optional': 0, 'required': 0, 'varargs': v:false}
+"---
+
+{'optional': 0, 'required': 1, 'varargs': v:false}
+"---
+
+{'optional': 19, 'required': 1, 'varargs': v:false}
+"---
+
+Error in {file}:
+line    4:
+E729: Using a Funcref as a String
+0
+"---
+
+Error in {file}:
+line    4:
+E808: Number or Float required
+0
+"---
+
+[1, function('abs')]
+"---
+
+Error in {file}:
+line    4:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    4:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+[function('abs'), function('abs')]
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+0
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+0
+"---
+
+1
+"---
+
+function('strlen')
+"---
+
+3
+"---
+
+3
+"---
+
+a-b
+"---
+
+a-b
+"---
+
+abs
+"---
+
+Error in {file}:
+line    4:
+E703: Using a Funcref as a Number
+
+"---
+
+function('abs')
+"---
+
+1
+"---
+
+1
+"---
+
+abs
+"---
+
+function('abs', [1])
+"---
+
+abs
+"---
+
+[5]
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: abs
+[1, -2]
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: empty
+[1, 0, 2]
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: abs
+E702: Sort compare function failed
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: abs
+[-1, -2]
+"---
+
+Error in {file}:
+line    4:
+E897: List or Blob required
+[[1, 2], [3, 4]]
+"---
+
+{'a': 'a=1'}
+"---
+
+Error in {file}:
+line    4:
+E767: Too many arguments to printf()
+{'a': 1, 'b': 0}
+"---
+
+abs
+"---
+
+function('abs', [1])
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: abs
+0
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: nosuch
+0
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+E475: Invalid argument: 
+0
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+E475: Invalid argument: 1
+0
+"---
+
+Error in {file}:
+line    1:
+E923: Second argument of function() must be a list or a dict
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 3
+0
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: function
+"---
+
+function('abs', {})
+"---
+
+abs
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: Nosuch
+0
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: s:x
+0
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: <SID>x
+0
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: abs foo
+0
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+E475: Invalid argument:  abs
+0
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a.b
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+E129: Function name required
+E730: Using a List as a String
+E475: Invalid argument: 
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+E129: Function name required
+E731: Using a Dictionary as a String
+E475: Invalid argument: 
+0
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: function
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: abs
+0
+"---
+
+Error in {file}:
+line    1:
+E704: Funcref variable name must start with a capital: g
+"---
+
+abs
+"---
+
+abs abs abs abs abs
+"---
+
+abs abs abs abs
+"---
+
+Error in {file}:
+line    1:
+E704: Funcref variable name must start with a capital: g:g
+"---
+
+Error in {file}:
+line    1:
+E704: Funcref variable name must start with a capital: v:errmsg
+"---
+
+Error in {file}:
+line    3:
+E705: Variable name conflicts with existing function: Bar
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E700: Unknown function: Foo
+"---
+
+"---
+
+Error in {file}:
+line    2:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    2:
+E734: Wrong variable type for .=
+"---
+
+abs
+"---
+
+0
+"---
+
+Foo                   *function('abs', [1])()
+"---
+
+Foo                   *function('abs', {'a': 1})()
+"---
+
+3 4
+"---
+
+"---
+
+Error in {file}:
+line    2:
+E119: Not enough arguments for function: abs
+"---
+
+3
+"---
+
+3
+"---
+
+1 1
+"---
+
+3
+"---
+
+abs -3
+"---
+
+3
+"---
+
+3
+"---
+
+3
+"---
+
+3 1
+"---
+
+1 2
+"---
+
+abs -3
+"---
+
+[1] 2
+"---
+
+3 Add
+function('Add')
+"---
+
+11 function('Add', [10])
+Error in {file}:
+line    6:
+E118: Too many arguments for function: Add
+line    7:
+E119: Not enough arguments for function: Add
+"---
+
+15
+Error in {file}:
+line    5:
+E118: Too many arguments for function: Add
+"---
+
+3 function('Add', [1, 2])
+"---
+
+3 function('g:Add') function('g:Add')
+"---
+
+7 12
+"---
+
+Error in {file}:
+line    6:
+E1085: Not a callable type: Add
+"---
+
+Error in {file}:
+line    6:
+E933: Function was deleted: Add
+"---
+
+12
+"---
+
+6 <SNR>1_Loc
+8 function('<SNR>1_Loc')
+"---
+
+10
+"---
+
+14
+"---
+
+Foo
+1
+1
+"---
+
+1 0 1
+"---
+
+1
+"---
+
+[1, 2, 3, 4] [1, 2]
+"---
+
+[1, 2, []] [1, 3, [4]]
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: Foo
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: Foo
+"---
+
+Error in {file}:
+line    4:
+E725: Calling dict function without Dictionary: Foo
+"---
+
+{'a': 1}
+"---
+
+7
+"---
+
+8
+9
+"---
+
+noself noself
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E121: Undefined variable: self
+{}
+"---
+
+"---
+
+[1, 2, 3] [1, 2, 3]
+"---
+
+[3, 2, 1]
+"---
+
+[3, 2, 1]
+"---
+
+[3, 2, 1]
+"---
+
+[1, 2, 3]
+"---
+
+Error in {file}[4]..function Cmp:
+line    1:
+E121: Undefined variable: nosuch
+E121: Undefined variable: nosuch
+[3, 1, 2]
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: Cmp
+E702: Sort compare function failed
+[3, 1, 2]
+"---
+
+[2, 4, 6] {'a': 2}
+"---
+
+[1, 3] {'a': 1}
+"---
+
+[0, 1, 2] {'x': 'x'}
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: Wrong
+[5, 6, 7]
+"---
+
+[1, 2, 3]
+"---
+
+0 4
+1 5
+a 1
+"---
+
+a!b!c!
+"---
+
+1
+Error in {file}:
+line    5:
+E118: Too many arguments for function: Foo
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    5:
+E118: Too many arguments for function: Foo
+0
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E117: Unknown function: F2
+0
+"---
+
+3
+"---
+
+1-2
+"---
+
+4 3
+"---
+
+5
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+1 1 1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1 1
+"---
+
+1
+"---
+
+1 0
+"---
+
+abs
+"---
+
+[function('abs', [1], {'a': function('abs')})]
+"---
+
+function('abs', [[1], {'a': 1}])
+"---
+
+1
+Error in {file}:
+line    4:
+E724: unable to correctly dump variable with self-referencing container
+function('abs', [-1], {'f': function('abs', [-1], {E724@1})})
+"---
+
+function('abs', [[1, function('abs', [[...@2]])]])

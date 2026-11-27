@@ -1,0 +1,672 @@
+NVIM v0.12.6
+
+3
+"---
+
+0
+"---
+
+0
+"---
+
+[1, {'a': 2}]
+"---
+
+1.5
+"---
+
+1
+"---
+
+yes no
+"---
+
+4
+"---
+
+2
+"---
+
+120
+"---
+
+Error in {file}[4]..function Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec[1]..Rec:
+line    1:
+E132: Function call depth is higher than 'maxfuncdepth'
+"---
+
+[2, [2, 3], 1, 2]
+"---
+
+[0, []] [1, [1]]
+"---
+
+2
+"---
+
+Error in {file}[4]..function Va:
+line    1:
+E121: Undefined variable: a:1
+0
+"---
+
+[1, 2, 3] [1, 5, 6] [1, 5, 9]
+"---
+
+Error in {file}:
+line    4:
+E121: Undefined variable: nosuch
+Error in {file}[4]..function Def:
+line    1:
+E121: Undefined variable: a:b
+0
+"---
+
+Error in {file}:
+line    4:
+E121: Undefined variable: nosuch
+-1
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: Def
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: Add
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: Add
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: Add
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: One
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: Nope
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: Nope
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: Nope
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: g:Nope
+"---
+
+5 5
+"---
+
+Error in {file}[4]..function Mod:
+line    1:
+E46: Cannot change read-only variable "a:x"
+"---
+
+Error in {file}[4]..function Mod:
+line    1:
+E461: Illegal variable name: a:y
+"---
+
+Error in {file}[4]..function Mod:
+line    1:
+E46: Cannot change read-only variable "a:x"
+"---
+
+Error in {file}[4]..function Mod:
+line    1:
+E46: Cannot change read-only variable "a:000"
+"---
+
+Error in {file}[4]..function Mod:
+line    1:
+E795: Cannot delete variable a:x
+"---
+
+[5]
+"---
+
+[1, 1, 2, 2]
+"---
+
+Error in {file}[5]..function Iso:
+line    1:
+E121: Undefined variable: x
+0
+"---
+
+global
+"---
+
+global1 global
+"---
+
+7
+"---
+
+7 8 9
+"---
+
+Error in {file}[4]..function Undef:
+line    1:
+E121: Undefined variable: nosuch
+0
+"---
+
+Error in {file}[4]..function Undef:
+line    1:
+E121: Undefined variable: nosuch
+-1
+"---
+
+1
+Error in {file}[6]..function Undef:
+line    2:
+E121: Undefined variable: nosuch
+3
+after
+"---
+
+1
+Error in {file}[6]..function Undef:
+line    2:
+E121: Undefined variable: nosuch
+after
+"---
+
+1
+Error in {file}[6]..function Undef:
+line    2:
+E121: Undefined variable: nosuch
+4
+3
+"---
+
+1
+Error in {file}[6]..function Undef:
+line    2:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}[8]..function Outer[1]..Inner:
+line    1:
+E121: Undefined variable: nosuch
+after
+"---
+
+Error in {file}[8]..function Outer[1]..Inner:
+line    1:
+E121: Undefined variable: nosuch
+after
+"---
+
+Error in {file}[8]..function Outer[1]..Inner:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}[8]..function Outer[1]..Inner:
+line    1:
+E121: Undefined variable: nosuch
+after 0
+"---
+
+Error in {file}[8]..function Outer[1]..Inner:
+line    1:
+E121: Undefined variable: nosuch
+after -1
+"---
+
+1
+Error in {file}[6]..function Err2:
+line    3:
+E121: Undefined variable: nosuch
+"---
+
+1
+2
+Error in {file}[7]..function Err2:
+line    2:
+E15: Invalid expression: "\"
+line    3:
+E492: Not an editor command:     . nosuch
+4
+"---
+
+Error in {file}[6]..function Err3:
+line    2:
+E121: Undefined variable: nosuch
+"---
+
+1
+Error in {file}[5]..function Miss:
+line    2:
+E171: Missing :endif
+"---
+
+Error in {file}[5]..function Miss:
+line    2:
+E170: Missing :endwhile
+"---
+
+1
+Error in {file}[5]..function Miss:
+line    2:
+E170: Missing :endfor
+"---
+
+3
+"---
+
+Error in {file}[4]..function Extra:
+line    1:
+E580: :endif without :if:   endif
+"---
+
+Error in {file}[4]..function Fin:
+line    1:
+E168: :finish used outside of a sourced file
+"---
+
+1
+x
+"---
+
+Error in {file}:
+line    5:
+E16: Invalid range: 1,3call Rng()
+[1, 1]
+line    7:
+E16: Invalid range: 2call Rng()
+"---
+
+Error in {file}:
+line    5:
+E16: Invalid range: 1,3call NoRng()
+line    6:
+E16: Invalid range: 2call NoRng()
+"---
+
+[1, 1]
+"---
+
+Error in {file}:
+line    5:
+E16: Invalid range: 5call Rng()
+"---
+
+[1, 1]
+0
+"---
+
+Error in {file}:
+line    4:
+E725: Calling dict function without Dictionary: Dic
+"---
+
+Error in {file}:
+line    4:
+E725: Calling dict function without Dictionary: Dic
+"---
+
+4
+6
+"---
+
+1 1 0
+"---
+
+Error in {file}[4]..function <SNR>1_Loc:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: s:Nope
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: <SID>Nope
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: <SNR>1_Nope
+"---
+
+5
+"---
+
+1 1 1 1 0 0 0 1 1
+"---
+
+0
+Error in {file}:
+line    6:
+E117: Unknown function: Foo
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E131: Cannot delete function Foo: It is in use
+"---
+
+Error in {file}[5]..function Foo:
+line    2:
+E127: Cannot redefine function Foo: It is in use
+"---
+
+bar
+"---
+
+late
+"---
+
+1
+2
+"---
+
+2
+Error in {file}[7]..function Foo:
+line    3:
+E580: :endif without :if: endif
+3
+line    4:
+E171: Missing :endif
+"---
+
+['line']
+"---
+
+Error in {file}:
+line    9:
+E1145: Missing heredoc end marker: END
+"---
+
+1 2
+"---
+
+00
+"---
+
+[1, 0, 1, 1, 1, 0, 0]
+"---
+
+{'k': 2}
+"---
+
+3
+"---
+
+1 2
+3 4
+"---
+
+[0, 1, 2]
+"---
+
+10
+"---
+
+[1, 4]
+"---
+
+3
+"---
+
+2x
+"---
+
+xy
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: Foo
+"---
+
+Error in {file}:
+line    4:
+E118: Too many arguments for function: Foo
+"---
+
+1
+Error in {file}[6]..function Foo:
+line    2:
+E117: Unknown function: nosuch
+next
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E121: Undefined variable: nosuch
+ok
+"---
+
+quiet
+loud
+"---
+
+in
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E121: Undefined variable: nosuch
+after
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+boom
+next
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+boom
+next
+"---
+
+0
+"---
+
+1
+"---
+
+a
+2
+"---
+
+Error in {file}[5]..function Foo:
+line    1:
+E121: Undefined variable: nosuch
+0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E15: Invalid expression: "1 +"
+0
+"---
+
+Error in {file}:
+line    1:
+E133: :return not inside a function
+"---
+
+Error in {file}:
+line    1:
+E133: :return not inside a function
+"---
+
+Error in {file}:
+line    2:
+E133: :return not inside a function
+ok
+"---
+
+2
+"---
+
+1
+"---
+
+x
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E114: Missing quote: " no
+0
+"---
+
+0
+"---
+
+Error in {file}[4]..function Foo:
+line    1:
+E121: Undefined variable: a:nosuch
+"---
+
+Error in {file}:
+line    4:
+E121: Undefined variable: x
+E116: Invalid arguments for function Foo
+"---
+
+Error in {file}:
+line    4:
+E121: Undefined variable: nosuch
+E116: Invalid arguments for function Foo
+"---
+
+Error in {file}:
+line    4:
+E488: Trailing characters: (2)
+"---
+
+2
+"---
+
+2
+"---
+
+tr 
+"---
+
+1
+"---
+
+1
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E107: Missing parentheses: Foo
+"---
+
+Error in {file}:
+line    4:
+E116: Invalid arguments for function Foo
+"---
+
+"---
+
+Error in {file}:
+line    4:
+E116: Invalid arguments for function Foo
+"---
+
+Error in {file}:
+line    4:
+E116: Invalid arguments for function Foo
+"---
+
+1 2 3
+"---
+
+0 1 2
+0
+"---
+
+Error in {file}[11]..function A[1]..B[1]..C:
+line    1:
+E121: Undefined variable: nosuch
+c
+"---
+
+Error in {file}[10]..function A[1]..B[1]..C:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+1
+2
+Error in {file}[9]..function A[2]..B:
+line    2:
+E121: Undefined variable: nosuch
+1
+2
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}[5]..function A:
+line    1:
+E121: Undefined variable: nosuch
+line    2:
+E121: Undefined variable: nosuch2
+line    1:
+E121: Undefined variable: nosuch
+line    2:
+E121: Undefined variable: nosuch2
+"---
+
+Error in {file}[4]..function A:
+line    1:
+E121: Undefined variable: nosuch
+Error in {file}:
+line    5:
+E121: Undefined variable: nosuch2
+Error in {file}[6]..function A:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+l:x                   #1
+l:y                    two
+"---
+
+Error in {file}[5]..function Foo:
+line    2:
+E738: Can't list variables for a:
+"---
+
+x                     #1
+y                     #2
+"---
+
+l:x                   #1
+a:000                 []

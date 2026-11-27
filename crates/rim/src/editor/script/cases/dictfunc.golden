@@ -1,0 +1,287 @@
+NVIM v0.12.6
+
+5
+"---
+
+{'get': function('1'), 'n': 5}
+function('1', {'get': function('1'), 'n': 5})
+"---
+
+5
+"---
+
+5
+"---
+
+Error in {file}:
+line    7:
+E717: Dictionary entry already exists
+"---
+
+10
+"---
+
+5 function('1', {'get': function('1'), 'n': 5})
+"---
+
+9
+"---
+
+7 5
+"---
+
+6 5
+"---
+
+6 5
+"---
+
+other
+"---
+
+5
+"---
+
+3
+"---
+
+5
+"---
+
+bound
+"---
+
+6 8 8
+"---
+
+[1, 2]
+"---
+
+{'me': function('1'), 'n': 5} 1
+"---
+
+"---
+
+   function 1() dict
+1    return self.n
+   endfunction
+"---
+
+function! 1() dict
+  return self.n
+endfunction
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "get"
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "nokey"
+"---
+
+Error in {file}:
+line    2:
+E125: Illegal argument: 
+"---
+
+Error in {file}:
+line    2:
+E718: Funcref required
+E124: Missing '(': d.n()
+line    3:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    2:
+E718: Funcref required
+E124: Missing '(': d.n(x) abort range
+line    3:
+E193: :endfunction not inside a function
+line    4:
+E718: Funcref required
+"---
+
+{'n': 5}
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E718: Funcref required
+E718: Funcref required
+"---
+
+Error in {file}:
+line    2:
+E718: Funcref required
+"---
+
+Error in {file}:
+line    2:
+E718: Funcref required
+"---
+
+1
+"---
+
+g
+"---
+
+Error in {file}:
+line    1:
+E862: Cannot use g: here
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E128: Function name must start with a capital or "s:": g:f()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: Nodict
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: s.f()
+line    3:
+E193: :endfunction not inside a function
+"---
+
+"---
+
+nested
+"---
+
+1
+"---
+
+2
+"---
+
+2
+"---
+
+1
+5
+"---
+
+plain
+"---
+
+val function('WithSelf', {'f': function('WithSelf'), 'v': 'val'})
+Error in {file}:
+line    6:
+E725: Calling dict function without Dictionary: WithSelf
+"---
+
+{'f': function('WithSelf'), 'v': 'val'}
+{'f': function('WithSelf'), 'v': 'changed'}
+"---
+
+1 2
+"---
+
+explicit
+explicit
+"---
+
+[1, 'a']
+"---
+
+Error in {file}:
+line    5:
+E725: Calling dict function without Dictionary: WithSelf
+"---
+
+{'f': function('WithSelf'), 'v': 1} {'f': function('WithSelf'), 'v': 1} {'f': function('WithSelf'), 'v': 1}
+"---
+
+1
+2
+"---
+
+by name
+"---
+
+Error in {file}:
+line    4:
+E725: Calling dict function without Dictionary: WithSelf
+0
+"---
+
+Error in {file}:
+line    4:
+E725: Calling dict function without Dictionary: WithSelf
+"---
+
+Error in {file}[5]..function WithSelf:
+line    1:
+E716: Key not present in Dictionary: "v"
+"---
+
+ok
+"---
+
+[3, 2, 1]
+"---
+
+[3, 6]
+"---
+
+{'a': 3}
+"---
+
+[5, 7]
+"---
+
+3
+"---
+
+Error in {file}:
+line    2:
+E932: Closure function should not be at top level: 
+line    3:
+E193: :endfunction not inside a function
+"---
+
+closure
+"---
+
+captured!
+"---
+
+1 1
+"---
+
+Error in {file}[5]..function 1:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}[8]..function 1[1]..2:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+1 2
+2
+"---
+
+1 2
+function('1', {'f': function('1')}) function('2', {'f': function('2')})

@@ -1,0 +1,8522 @@
+NVIM v0.12.6
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+-1
+"---
+
+1.0e308
+"---
+
+0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+1
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-0.785398
+"---
+
+1.570796
+"---
+
+-1.570796
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.570796
+"---
+
+-0.0
+"---
+
+1.570796
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-0.785398
+"---
+
+1.570796
+"---
+
+-1.570796
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.570796
+"---
+
+-0.0
+"---
+
+1.570796
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.570796
+"---
+
+2.356194
+"---
+
+1.084202e-19
+"---
+
+3.141593
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e-308
+"---
+
+1.570796
+"---
+
+0.0
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+9.223372e18
+"---
+
+-9.223372e18
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+0
+"---
+
+48
+"---
+
+45
+"---
+
+57
+"---
+
+45
+"---
+
+233
+"---
+
+32
+"---
+
+97
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+49
+"---
+
+45
+"---
+
+105
+"---
+
+110
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+49
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1222: String or List required for argument 1
+0
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+[]
+"---
+
+{}
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0
+"---
+
+0.540302
+"---
+
+0.0118
+"---
+
+0.0118
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+-0.891309
+"---
+
+1.0
+"---
+
+str2float('nan')
+"---
+
+str2float('nan')
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E706: Argument of count() must be a List, String or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+[]
+"---
+
+{}
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+Error in {file}:
+line    1:
+E1212: Bool required for argument 2
+0
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+
+"---
+
+0
+"---
+
+-\1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  \12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+\1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+1
+"---
+
+1
+"---
+
+\1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+\1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+1
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+1
+"---
+
+\1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+0
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "é😀"
+E15: Invalid expression: "é😀"
+0
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "12abc"
+E15: Invalid expression: "12abc"
+0
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: a
+E15: Invalid expression: "a^@b"
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: inf
+E15: Invalid expression: "inf"
+0
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nan
+E15: Invalid expression: "nan"
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0
+"---
+
+0.367879
+"---
+
+str2float('inf')
+"---
+
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+str2float('inf')
+"---
+
+1.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of flatten() must be a List
+0
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+[]
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1.0e308
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+str2float('inf')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of filter() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+9223372036854775807
+"---
+
+0
+"---
+
+9223372036854775807
+"---
+
+0
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+[]
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1.0e308
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+str2float('inf')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of foreach() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+9.223372e18
+"---
+
+-9.223372e18
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+-9223372036854775808
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+é😀
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+  12abc
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+[]
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+{}
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+1.0e308
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+str2float('inf')
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of get() must be a List, Dictionary or Blob
+str2float('nan')
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+
+"---
+
+
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E897: List or Blob required
+-1
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E899: Argument of insert() must be a List or Blob
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+[[0, 'é'], [1, '😀']]
+"---
+
+[[0, ' '], [1, ' '], [2, '1'], [3, '2'], [4, 'a'], [5, 'b'], [6, 'c']]
+"---
+
+[[0, 'a'], [1, '
+'], [2, 'b']]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1225: List, Dictionary, Blob or String required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+19
+"---
+
+20
+"---
+
+6
+"---
+
+7
+"---
+
+3
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+-str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+43.668272
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+709.196209
+"---
+
+-str2float('inf')
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+-str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+18.96489
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+308.0
+"---
+
+-str2float('inf')
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+
+"---
+
+
+"---
+
+1
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+1
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+-1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+9223372036854775807
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+-9223372036854775808
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+[]
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1.0e308
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+str2float('inf')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of map() must be a List, String, Dictionary or Blob
+1
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+[]
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E1250: Argument of mapnew() must be a List, String, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of max() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of min() must be a List or Dictionary
+0
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E5070: Character number must not be less than zero
+0
+"---
+
+Error in {file}:
+line    1:
+E5071: Character number must not be greater than INT_MAX (2147483647)
+0
+"---
+
+Error in {file}:
+line    1:
+E5070: Character number must not be less than zero
+0
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+^A
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+9.223372e18
+"---
+
+-9.223372e18
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+1.0
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[0, 1, 2]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[1, 2, 3]
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+[1]
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 1
+0
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "1"
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+Error in {file}:
+line    1:
+E896: Argument of remove() must be a List, Dictionary or Blob
+0
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+3
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+111
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+😀é
+"---
+
+cba21  
+"---
+
+b
+a
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E1252: String, List or Blob required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+9.223372e18
+"---
+
+-9.223372e18
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-0.841471
+"---
+
+0.99993
+"---
+
+-0.99993
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.453396
+"---
+
+-0.0
+"---
+
+str2float('nan')
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of sort() must be a List
+0
+"---
+
+[]
+"---
+
+['0']
+"---
+
+['-1']
+"---
+
+['9223372036854775807']
+"---
+
+['-9223372036854775808']
+"---
+
+['é😀']
+"---
+
+['12abc']
+"---
+
+['a', 'b']
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+[]
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+[]
+"---
+
+['1.0e308']
+"---
+
+['-0.0']
+"---
+
+['inf']
+"---
+
+['nan']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+[]
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+[]
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+['1']
+"---
+
+[]
+"---
+
+[]
+"---
+
+['', '']
+"---
+
+['', '']
+"---
+
+['', '']
+"---
+
+[]
+"---
+
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+[]
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+str2float('nan')
+"---
+
+3.037e9
+"---
+
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+1.0e154
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+0.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+9.223372e18
+"---
+
+-9.223372e18
+"---
+
+0.0
+"---
+
+12.0
+"---
+
+0.0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0.0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0.0
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+0
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775807
+"---
+
+0
+"---
+
+12
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+19
+"---
+
+20
+"---
+
+2
+"---
+
+7
+"---
+
+3
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+7
+"---
+
+4
+"---
+
+3
+"---
+
+3
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+19
+"---
+
+20
+"---
+
+2
+"---
+
+7
+"---
+
+3
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+7
+"---
+
+4
+"---
+
+3
+"---
+
+3
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E1023: Using a Number as a Bool: -1
+0
+"---
+
+Error in {file}:
+line    1:
+E1023: Using a Number as a Bool: -1
+0
+"---
+
+Error in {file}:
+line    1:
+E1023: Using a Number as a Bool: 0
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+-1
+"---
+
+-1
+"---
+
+1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+2
+"---
+
+-1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+-1
+"---
+
+0
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+0
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+''
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+'é😀'
+"---
+
+'  12abc'
+"---
+
+'a
+b'
+"---
+
+[]
+"---
+
+{}
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+19
+"---
+
+20
+"---
+
+6
+"---
+
+7
+"---
+
+3
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+7
+"---
+
+4
+"---
+
+3
+"---
+
+3
+"---
+
+
+"---
+
+
+"---
+
+1
+"---
+
+223372036854775807
+"---
+
+9223372036854775808
+"---
+
+ 12abc
+"---
+
+
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+.0e308
+"---
+
+0.0
+"---
+
+nf
+"---
+
+an
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+-1
+"---
+
+-1
+"---
+
+1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+2
+"---
+
+-1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+-1
+"---
+
+0
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+-1
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+-1
+"---
+
+0
+"---
+
+-1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+-1
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+11
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+0.0
+"---
+
+-1.557408
+"---
+
+84.739313
+"---
+
+-84.739313
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0.0
+"---
+
+-0.508686
+"---
+
+-0.0
+"---
+
+str2float('nan')
+"---
+
+str2float('nan')
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+É😀
+"---
+
+  12ABC
+"---
+
+A
+B
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0E308
+"---
+
+-0.0
+"---
+
+INF
+"---
+
+NAN
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+  12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: 
+
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: -1
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: 9223372036854775807
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: -9223372036854775808
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: é😀
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument:   12abc
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a^@b
+
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: -0.0
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: inf
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: nan
+
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: 1
+
+"---
+
+0
+"---
+
+-
+"---
+
+9
+"---
+
+-
+"---
+
+é
+"---
+
+ 
+"---
+
+a
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1
+"---
+
+-
+"---
+
+i
+"---
+
+n
+"---
+
+
+"---
+
+0
+"---
+
+-1
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775808
+"---
+
+é😀
+"---
+
+12abc
+"---
+
+a
+b
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+
+"---
+
+1.0e308
+"---
+
+-0.0
+"---
+
+inf
+"---
+
+nan
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+1
+"---
+
+
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+Error in {file}:
+line    1:
+E1174: String required for argument 2
+
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+3
+"---
+
+4
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E686: Argument of uniq() must be a List
+0
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]

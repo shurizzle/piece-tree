@@ -223,6 +223,9 @@ impl Editor {
         Some(match key {
             'h' => ((line, col.saturating_sub(n)), Kind::Exclusive),
             'l' => ((line, (col + n).min(self.line_chars(line))), Kind::Exclusive),
+            // `cursor_down` and `cursor_up` fail on the last and the first line, so `dj` there changes nothing.
+            'j' if line >= last => return None,
+            'k' if line == 0 => return None,
             'j' => vertical(self, (line + n).min(last)),
             'k' => vertical(self, line.saturating_sub(n)),
             // Half a screen of rows, not lines, so wrapped lines count for what they show.
@@ -338,7 +341,11 @@ impl Editor {
                 };
                 self.find(k, ch, n, true)?
             }
-            '|' => ((line, (n - 1).min(self.line_chars(line))), Kind::Exclusive),
+            '|' => {
+                // `nv_pipe`: the column wanted is the one asked for, also when the line is shorter.
+                self.win.want_col = n - 1;
+                ((line, (n - 1).min(self.line_chars(line))), Kind::Exclusive)
+            }
             super::G_BYTE => (self.pos_of(self.byte_pos(n - 1)), Kind::Exclusive),
             '`' | '\'' => {
                 let m = match arg.expect("parse requires an argument") {
@@ -346,7 +353,7 @@ impl Editor {
                     m => m,
                 };
                 let Some(off) = self.mark(m) else {
-                    self.error("Mark not set");
+                    self.error("E20: Mark not set");
                     return None;
                 };
                 let p = self.pos_of(off);
@@ -374,7 +381,7 @@ impl Editor {
         self.win.line = to.0;
         let col = to.1.min(self.line_chars(to.0).saturating_sub(1));
         match key {
-            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP => self.win.col = col,
+            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP | '|' => self.win.col = col,
             '$' => {
                 self.win.col = col;
                 self.win.want_col = usize::MAX;
@@ -406,7 +413,7 @@ impl Editor {
         let mut found = None;
         for _ in 0..n {
             let Some((m, wrapped)) = self.find_match(&s.re, forward, cur) else {
-                self.error(format!("Pattern not found: {}", s.pat));
+                self.error(format!("E486: Pattern not found: {}", s.pat));
                 return None;
             };
             if wrapped {

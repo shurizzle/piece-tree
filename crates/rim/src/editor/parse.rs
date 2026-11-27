@@ -65,7 +65,7 @@ pub(super) enum Parse {
 }
 
 pub(super) fn valid_reg(c: char) -> bool {
-    c.is_ascii_alphanumeric() || matches!(c, '"' | '+' | '*' | '=')
+    c.is_ascii_alphanumeric() || matches!(c, '"' | '+' | '*' | '=' | '/')
 }
 
 /// Parses pending keys: `["x] [count] cmd [arg]` or `["x] [count] op [count] (motion [arg] | (i|a) obj | op)`.

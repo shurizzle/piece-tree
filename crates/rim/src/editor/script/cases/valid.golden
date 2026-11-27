@@ -1,0 +1,1487 @@
+NVIM v0.12.6
+
+hello world
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+['hello world']
+"---
+
+[]
+"---
+
+['hello world']
+"---
+
+hello world
+"---
+
+hello world
+"---
+
+['hello world']
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+11
+"---
+
+12
+"---
+
+3
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+hello\<CR>wörld\<CR>third
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+['hello\<CR>wörld\<CR>third']
+"---
+
+[]
+"---
+
+['hello\<CR>wörld\<CR>third']
+"---
+
+hello\<CR>wörld\<CR>third
+"---
+
+hello\<CR>wörld\<CR>third
+"---
+
+['hello\<CR>wörld\<CR>third']
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+26
+"---
+
+27
+"---
+
+3
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+"---
+
+3
+"---
+
+3.5
+"---
+
+4
+"---
+
+3.0
+"---
+
+-3.0
+"---
+
+0.0
+"---
+
+-1.0
+"---
+
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e20)"
+E116: Invalid arguments for function ceil
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e20)"
+E116: Invalid arguments for function float2nr
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e20)"
+E116: Invalid arguments for function float2nr
+"---
+
+Error in {file}:
+line    1:
+E808: Number or Float required
+0
+"---
+
+3
+"---
+
+-3
+"---
+
+str2float('nan')
+"---
+
+2.0
+"---
+
+1024.0
+"---
+
+0.5
+"---
+
+1.414214
+"---
+
+1.0
+"---
+
+str2float('nan')
+"---
+
+str2float('inf')
+"---
+
+4.940656e-324
+"---
+
+-str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+3.0
+"---
+
+-str2float('inf')
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e22)"
+E116: Invalid arguments for function sin
+"---
+
+1.0
+"---
+
+1.633124e16
+"---
+
+0.785398
+"---
+
+2.356194
+"---
+
+0.0
+"---
+
+-3.141593
+"---
+
+31
+"---
+
+3
+"---
+
+9
+"---
+
+-12
+"---
+
+5
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function str2nr
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+0
+"---
+
+9223372036854775807
+"---
+
+-9223372036854775807
+"---
+
+1500.0
+"---
+
+0.5
+"---
+
+1.0
+"---
+
+16.0
+"---
+
+3.0
+"---
+
+-str2float('inf')
+"---
+
+str2float('inf')
+"---
+
+str2float('nan')
+"---
+
+1.0
+"---
+
+233
+"---
+
+233
+"---
+
+0
+"---
+
+97
+"---
+
+128512
+"---
+
+é
+"---
+
+😀
+"---
+
+
+"---
+
+Error in {file}:
+line    1:
+E5070: Character number must not be less than zero
+0
+"---
+
+A
+"---
+
+A
+"---
+
+É ẞ Ǆ
+"---
+
+i é
+"---
+
+6
+"---
+
+9
+"---
+
+7
+"---
+
+7
+"---
+
+ell
+"---
+
+he
+"---
+
+llo
+"---
+
+
+"---
+
+
+"---
+
+él
+"---
+
+él
+"---
+
+2
+"---
+
+3
+"---
+
+2
+"---
+
+0
+"---
+
+-1
+"---
+
+0
+"---
+
+3
+"---
+
+2
+"---
+
+5
+"---
+
+2
+"---
+
+-1
+"---
+
+ababab
+"---
+
+
+"---
+
+
+"---
+
+éé
+"---
+
+[1, 2, 1, 2]
+"---
+
+[]
+"---
+
+111
+"---
+
+1.51.5
+"---
+
+a\.b\*c
+"---
+
+a\\\\b
+"---
+
+é
+"---
+
+abc
+"---
+
+hippo
+"---
+
+hello
+"---
+
+hello
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: abc
+
+"---
+
+
+"---
+
+ab
+"---
+
+ab  
+"---
+
+  ab
+"---
+
+ab
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: 3
+
+"---
+
+
+"---
+
+
+"---
+
+é
+"---
+
+a
+"---
+
+['a', 'b', '', 'c']
+"---
+
+['a', 'b', '', 'c']
+"---
+
+['a']
+"---
+
+['', 'a', '']
+"---
+
+['abc']
+"---
+
+['abc']
+"---
+
+[]
+"---
+
+['']
+"---
+
+['a', 'b', 'c']
+"---
+
+['a', 'b']
+"---
+
+['a1b2c']
+"---
+
+aXc
+"---
+
+bbb
+"---
+
+abc
+"---
+
+-a-b-c-
+"---
+
+-a-b-c-
+"---
+
+
+"---
+
+
+"---
+
+c
+"---
+
+abc
+"---
+
+abc
+"---
+
+
+"---
+
+b
+"---
+
+
+"---
+
+'a''b'
+"---
+
+'a
+b'
+"---
+
+1.0
+"---
+
+[1, 'a', [2]]
+"---
+
+{'a': {'b': 1}}
+"---
+
+v:true
+"---
+
+1.0e20
+"---
+
+1.5e-7
+"---
+
+-0.0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+
+"---
+
+[1]
+"---
+
+ 3.14|42   |00042|ff|FF|10|101|1.234568e+04|1.0e-4
+"---
+
+A
+"---
+
+%
+"---
+
+hé
+"---
+
+   é|é   |
+"---
+
+b a
+"---
+
+    3
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+Error in {file}:
+line    1:
+E766: Insufficient arguments for printf()
+
+"---
+
+Error in {file}:
+line    1:
+E767: Too many arguments to printf()
+
+"---
+
+1
+"---
+
+0
+"---
+
+2
+"---
+
+1.0e100
+"---
+
+0xff 010 0b101
+"---
+
++5  5
+"---
+
+é
+"---
+
+ 1.234e+03
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1e-10)"
+E116: Invalid arguments for function printf
+"---
+
+v:null
+"---
+
+1
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E807: Expected Float argument for printf()
+
+"---
+
+12
+"---
+
+05
+"---
+
+ffffffffffffffff
+"---
+
+18446744073709551615
+"---
+
+5
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+['A', 'a', 'b', 1, 1, 10, 2, 3]
+"---
+
+['A', 'a', 'b', 1, 1, 10, 2, 3]
+"---
+
+['b', 'A', 'a', 1, 1, 2, 3, 10]
+"---
+
+['b', 'A', 'a', 1, 1, 2, 3, 10]
+"---
+
+[1, 10, 'a', 2, 'A', 1, 'b', 3]
+"---
+
+['A', 'a', 'b', 1, 10, 2, 3]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+2
+"---
+
+1
+"---
+
+2
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: -9
+0
+"---
+
+2
+"---
+
+7
+"---
+
+7
+"---
+
+3
+"---
+
+3
+"---
+
+-1
+"---
+
+-1
+"---
+
+-1
+"---
+
+3
+"---
+
+1
+"---
+
+0
+"---
+
+d
+"---
+
+d
+"---
+
+3
+"---
+
+0
+"---
+
+10
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E805: Using a Float as a Number
+0
+"---
+
+0
+"---
+
+3 b 1 A 2 a 10 1
+"---
+
+3b1A2a101
+"---
+
+3, b, 1, A, 2, a, 10, 1
+"---
+
+[1, 2] 3
+"---
+
+{}
+"---
+
+1.5 v:true v:null
+"---
+
+[9, 3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+[3, 'b', 9, 1, 'A', 2, 'a', 10, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 9, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1, 9]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 9
+0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: -9
+0
+"---
+
+[1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1, [1]]
+"---
+
+3
+"---
+
+1
+"---
+
+['b', 1, 'A']
+"---
+
+Error in {file}:
+line    1:
+E16: Invalid range
+0
+"---
+
+['a', 10, 1]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 8
+0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 8
+0
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: -9
+0
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1, 9]
+"---
+
+[9, 3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+[3, 'b', 1, 9, 'A', 2, 'a', 10, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 9, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1, 9]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 9
+0
+"---
+
+Error in {file}:
+line    1:
+E712: Argument of extend() must be a List or Dictionary
+0
+"---
+
+[1, 2, 3, 4]
+"---
+
+[1, 2, [3, [4]]]
+"---
+
+[1, [2, [3, [4]]]]
+"---
+
+Error in {file}:
+line    1:
+E900: maxdepth must be non-negative number
+0
+"---
+
+[0, 1, 2, 3, 4]
+"---
+
+[2, 3, 4, 5]
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[5, 4, 3, 2]
+"---
+
+[0, 3, 6, 9]
+"---
+
+Error in {file}:
+line    1:
+E726: Stride is zero
+0
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[]
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    1:
+E727: Start past end
+0
+"---
+
+['30', 'b1', '12', 'A3', '24', 'a5', '106', '17']
+"---
+
+[0, 1, 2, 3, 4, 5, 6, 7]
+"---
+
+[3, 2, 10]
+"---
+
+[1, 1]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+{'a': 2, 'b': 4}
+"---
+
+{'a': 'a'}
+"---
+
+{'b': 2}
+"---
+
+aabbcc
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+ac
+"---
+
+['x']
+"---
+
+Error in {file}:
+line    1:
+E928: String required
+
+"---
+
+{'a': 2}
+"---
+
+[[1], {'a': [2]}]
+"---
+
+[3, 'b', 1, 'A', 2, 'a', 10, 1]
+"---
+
+{'a': [1]}
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+2
+"---
+
+3
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+2
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E701: Invalid type for len()
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+[[0, 1]]
+"---
+
+Error in {file}:
+line    1:
+E1206: Dictionary required for argument 1
+[]
+"---
+
+3
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+0
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 2
+1
+"---
+
+Error in {file}:
+line    1:
+E723: Missing end of Dictionary '}': 
+E15: Invalid expression: "{"
+0
+"---
+
+a\x
+"---
+
+v:true
+"---
+
+
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+2
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+['a', 'b']
+"---
+
+[1, 2]
+"---
+
+[['a', 1], ['b', 2]]
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: has
+"---
+
+0

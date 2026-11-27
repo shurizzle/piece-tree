@@ -1,0 +1,780 @@
+NVIM v0.12.6
+
+
+1
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1
+2'
+"---
+
+'
+1
+2'
+"---
+
+'
+1
+2'
+"---
+
+''
+"---
+
+''
+"---
+
+'1'
+"---
+
+'12'
+"---
+
+'
+ab
+c'
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: execute
+E116: Invalid arguments for function string
+"---
+
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+''
+"---
+
+'
+Error in {file}:
+line    1:
+x'
+"---
+
+''
+"---
+
+'
+x'
+"---
+
+'
+x'
+"---
+
+''
+"---
+
+''
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+0
+"---
+
+''
+"---
+
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: 1.5'
+"---
+
+'
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String'
+"---
+
+'
+Error in {file}:
+line    1:
+E729: Using a Funcref as a String'
+"---
+
+''
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+2'
+"---
+
+'
+0
+1
+2'
+"---
+
+'
+0
+1
+2'
+"---
+
+'
+1'
+"---
+
+'
+Error in {file}:
+line    1:
+E580: :endif without :if: endif'
+"---
+
+'
+caught'
+"---
+
+x
+"---
+
+Vim:E492: Not an editor command: foo
+"---
+
+''
+"---
+
+'
+
+1'
+"---
+
+'
+''
+1'''
+"---
+
+'
+1
+
+2
+3'
+"---
+
+'
+1
+2'
+"---
+
+'
+1''
+2'
+"---
+
+'
+1'
+"---
+
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: silent! foo'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1
+2'
+"---
+
+'
+1'
+"---
+
+'
+a
+b'
+"---
+
+'
+a
+b'
+"---
+
+'
+a
+b
+c'
+"---
+
+'
+[1, 2]'
+"---
+
+'
+{''a'': 1}'
+"---
+
+'
+1.5'
+"---
+
+'
+é😀'
+"---
+
+'
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+"---
+
+'
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+"---
+
+'
+1'
+"---
+
+'
+1'|
+"---
+
+1
+'
+2'
+3
+"---
+
+1
+'
+2'
+3
+"---
+1
+'
+2'3
+"---
+1
+'
+2'3
+"---
+1
+'2'3
+"---
+1
+'2'3
+"---
+
+a
+'2'
+"---
+
+a'2'
+"---
+
+a'
+2'
+"---
+
+a'
+2'
+"---
+
+1
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+1
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+1
+''
+"---
+
+1
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+1
+2'
+"---
+
+2
+"---
+
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: execute
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: execute
+"---
+
+
+1
+"---
+
+x 
+1 y
+"---
+
+
+1
+"---
+
+
+1
+2
+"---
+
+
+1
+"---
+
+
+1
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: execute
+"---
+
+'
+in F'
+"---
+
+'
+Error in {file}:
+line    1:
+E117: Unknown function: F'
+"---
+
+'
+Error in {file}:
+line    1:
+E117: Unknown function: F'
+"---
+
+'
+5'
+"---
+
+'
+1
+2'
+"---
+
+'
+Error in {file}:
+line    1:
+E123: Undefined function: H'
+"---
+
+''
+"---
+
+'
+x'
+done
+"---
+
+'
+1'
+"---
+
+'
+1'
+"---
+
+'
+Error in {file}:
+line    1:
+E492: Not an editor command: foo'
+"---
+
+'
+1
+2
+3'
+"---
+
+z
+"---
+
+z
+"---
+
+z
+y
+"---
+
+z
+"---
+
+z
+"---
+
+z
+"---
+
+z
+"---
+
+''
+boom
+"---
+
+'
+Error in {file}:
+line    1:
+boom'
+boom
+"---
+
+E492: Not an editor command: foo
+"---
+
+'
+1'
+"---
+
+'
+1
+2'
+"---
+
+'
+1
+Error in {file}:
+line    1:
+E492: Not an editor command: foo
+2'
+"---
+
+'
+1
+2
+3'
+['echo 1', 'echo 2', 'echo 3']
+"---
+
+'
+2
+3'
+[]
+"---
+
+'
+2
+9'
+['call add(g:l, "echo 9")', 'echo 2', 'echo 9']
+"---
+
+'
+2
+3'
+['echo 2', 'echo 3']
+"---
+
+''
+198
+"---
+
+'
+1
+2
+3'
+"---
+
+'
+zz'
+"---
+
+'
+[''a'', ''b'']'
+"---
+
+'
+Error in {file}:
+line    1:
+E991: Cannot use =<< here'
+"---
+
+'
+1'
+"---
+
+'
+1
+2'
+"---
+
+'
+1
+
+2
+3'
+"---
+
+'
+1x'
+"---
+
+''
+"---
+
+'
+  shortmess=ltToOCF'
+"---
+
+'
+ltToOCF'
+"---
+
+'
+éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé'
+"---
+
+'
+ab'
+"---
+
+'a
+b'
+"---
+
+'a'
+"---
+
+'ab'
+"---
+
+'
+a
+b'
+"---
+
+'
+ab'
+"---
+
+2
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+1
+"---
+
+0
+"---
+
+1
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E731: Using a Dictionary as a String'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E730: Using a List as a String'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E729: Using a Funcref as a String'
+"---
+ 
+"---
+                                      
+'
+aa                    #1
+bb                    #2'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E492: Not an editor command:  foo | echo 2'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E492: Not an editor command:  foo | echo 2'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E492: Not an editor command: foo
+2'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E492: Not an editor command: foo
+2'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E484: Can''t open file /nonexistent'
+"---
+ 
+'
+a
+ Error in {file}:
+line    1:
+E121: Undefined variable: echo'
+"---
+ 
+'
+1
+ Error in {file}:
+line    1:
+E492: Not an editor command: foo'

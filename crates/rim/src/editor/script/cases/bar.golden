@@ -1,0 +1,211 @@
+NVIM v0.12.6
+
+2
+"---
+
+a|b
+1
+"---
+
+a|b
+1
+"---
+
+1
+2
+"---
+
+1
+"---
+
+1
+Error in {file}:
+line    1:
+E114: Missing quote: " not a comment
+"---
+
+a b
+"---
+
+4
+"---
+
+8
+"---
+
+8
+"---
+
+1
+2
+"---
+
+x|y
+"---
+
+x
+"---
+
+yes
+"---
+
+no
+"---
+
+2
+"---
+
+3
+"---
+
+6
+"---
+
+14
+"---
+
+8
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E580: :endif without :if: endif
+"---
+
+Error in {file}:
+line    1:
+E581: :else without :if: else
+"---
+
+Error in {file}:
+line    1:
+E582: :elseif without :if: elseif 1
+"---
+
+Error in {file}:
+line    1:
+E588: :endwhile without :while: endwhile
+"---
+
+Error in {file}:
+line    1:
+E588: :endfor without :for: endfor
+"---
+
+Error in {file}:
+line    1:
+E587: :break without :while or :for: break
+"---
+
+Error in {file}:
+line    1:
+E586: :continue without :while or :for: continue
+"---
+
+"---
+
+open
+Error in {file}:
+line    3:
+E171: Missing :endif
+"---
+
+Error in {file}:
+line    3:
+E170: Missing :endwhile
+"---
+
+open
+Error in {file}:
+line    3:
+E170: Missing :endfor
+"---
+
+Error in {file}:
+line    1:
+E583: Multiple :else:  else 
+"---
+
+Error in {file}:
+line    1:
+E584: :elseif after :else:  elseif 1 | endif
+"---
+
+Error in {file}:
+line    1:
+E690: Missing "in" after :for
+line    2:
+E170: Missing :endfor
+"---
+
+Error in {file}:
+line    1:
+E1098: String, List or Blob required
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+2
+"---
+
+2
+"---
+
+after
+"---
+
+Error in {file}:
+line    2:
+E171: Missing :endif
+"---
+
+Error in {file}:
+line    2:
+E171: Missing :endif
+"---
+
+1
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E16: Invalid range: 3|
+"---
+
+[1, 2, 3]
+"---
+
+[1, 2]
+"---
+
+a
+b
+"---
+
+1
+2
+"---
+
+1
+x
+Error in {file}:
+line    3:
+E121: Undefined variable: foo
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: foo: endif foo
+"---
+
+1
+Error in {file}:
+line    3:
+E121: Undefined variable: y
+1

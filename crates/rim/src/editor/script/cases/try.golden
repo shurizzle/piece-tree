@@ -1,0 +1,428 @@
+NVIM v0.12.6
+
+caught boom
+"---
+
+caught boom
+"---
+
+Error in {file}[5]..{file}:
+line    2:
+E605: Exception not caught: boom
+"---
+
+second
+"---
+
+first
+"---
+
+in try
+after
+"---
+
+in try
+finally
+"---
+
+finally
+Error in {file}[5]..{file}:
+line    2:
+E605: Exception not caught: x
+"---
+
+catch
+finally
+after
+"---
+
+in try
+finally
+"---
+
+outer caught inner
+"---
+
+inner finally
+outer inner
+"---
+
+Error in {file}[5]..{file}:
+line    4:
+E605: Exception not caught: b
+"---
+
+b
+"---
+
+a
+b
+a
+"---
+
+ 
+x
+{file}, line 3
+ 
+"---
+
+inF
+{file}[5]..function F, line 1
+"---
+
+inF
+"---
+
+caught in F
+ret
+"---
+
+finally runs
+from try
+"---
+
+from finally
+"---
+
+finally wins
+"---
+
+fin
+from catch
+"---
+
+finally 1
+finally 2
+done
+"---
+
+body 1
+finally 1
+finally 2
+body 3
+finally 3
+"---
+
+fin 1
+fin 2
+out 2
+"---
+
+fin
+"---
+
+1
+Error in {file}:
+line    4:
+E603: :catch without :try: catch
+"---
+
+Error in {file}:
+line    1:
+E603: :catch without :try: catch
+"---
+
+Error in {file}:
+line    1:
+E606: :finally without :try: finally
+"---
+
+Error in {file}:
+line    1:
+E602: :endtry without :try: endtry
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: throw
+"---
+
+Error in {file}[1]..{file}:
+line    1:
+E605: Exception not caught: x
+"---
+
+Error in {file}[1]..{file}:
+line    1:
+E605: Exception not caught: 1
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+Error in {file}[1]..{file}:
+line    1:
+E605: Exception not caught: 
+"---
+
+Error in {file}:
+line    1:
+E608: Cannot :throw exceptions with 'Vim' prefix
+"---
+
+Error in {file}:
+line    1:
+E608: Cannot :throw exceptions with 'Vim' prefix
+"---
+
+Error in {file}[1]..{file}:
+line    1:
+E605: Exception not caught: Vimx
+"---
+
+Vim(throw):E608: Cannot :throw exceptions with 'Vim' prefix
+"---
+
+1
+Error in {file}[5]..{file}:
+line    3:
+E654: Missing delimiter after search pattern: [/
+"---
+
+Error in {file}[5]..{file}:
+line    3:
+E654: Missing delimiter after search pattern: [/
+"---
+
+Error in {file}[5]..{file}:
+line    3:
+E488: Trailing characters: / junk
+"---
+
+Error in {file}[5]..{file}:
+line    3:
+E654: Missing delimiter after search pattern: x
+"---
+
+same line
+"---
+
+same line
+"---
+
+c
+"---
+
+same line
+Error in {file}[4]..{file}:
+line    2:
+E605: Exception not caught: x
+"---
+
+one line
+"---
+
+Error in {file}[5]..{file}:
+line    4:
+E607: Multiple :finally: finally
+"---
+
+Error in {file}[5]..{file}:
+line    4:
+E604: :catch after :finally: catch
+"---
+
+a
+b
+Error in {file}[6]..{file}:
+line    5:
+E604: :catch after :finally: catch
+"---
+
+unclosed
+Error in {file}[3]..{file}:
+line    3:
+E600: Missing :endtry
+"---
+
+unclosed
+fin
+Error in {file}[5]..{file}:
+line    5:
+E600: Missing :endtry
+"---
+
+x
+Error in {file}[5]..{file}:
+line    4:
+E580: :endif without :if:   endif
+"---
+
+in if
+"---
+
+x
+Error in {file}[6]..{file}:
+line    4:
+E171: Missing :endif: catch
+"---
+
+in while
+"---
+
+in for
+"---
+
+ok
+"---
+
+skipped
+"---
+
+fine
+"---
+
+Vim(echo):E121: Undefined variable: nosuch
+{file}, line 2
+"---
+
+E121 caught
+"---
+
+Vim(call):E117: Unknown function: nosuch
+"---
+
+Vim(let):E684: List index out of range: 5
+"---
+
+Vim(let):E688: More targets than List items
+"---
+
+Vim:E492: Not an editor command:   nosuchcommand
+"---
+
+Vim(echo):E15: Invalid expression: "1 +"
+"---
+
+Vim(echoerr):custom
+"---
+
+Vim(echoerr):a b
+"---
+
+caught
+after
+"---
+
+Vim(let):E46: Cannot change read-only variable "v:count"
+"---
+
+Vim(unlet):E108: No such variable: "nosuch"
+"---
+
+Vim(call):E897: List or Blob required
+"---
+
+Vim(echo):E119: Not enough arguments for function: abs
+"---
+
+Vim(echo):E118: Too many arguments for function: abs
+"---
+
+Vim(echo):E730: Using a List as a String
+"---
+
+Vim(echo):E716: Key not present in Dictionary: "nokey"
+"---
+
+Vim(echo):E716: Key not present in Dictionary: "nokey"
+"---
+
+Vim(echo):E121: Undefined variable: nosuch
+"---
+
+Vim(echo):E121: Undefined variable: nosuch
+"---
+
+Error in {file}[5]..function F:
+line    1:
+E121: Undefined variable: nosuch
+reached when not in try
+after
+"---
+
+F caught Vim(echo):E121: Undefined variable: nosuch
+F continues
+"---
+
+Error in {file}:
+line    2:
+E121: Undefined variable: nosuch
+silent!
+"---
+
+caught
+"---
+
+caught Vim(echo):E121: Undefined variable: nosuch
+"---
+
+a
+Error in {file}:
+line    3:
+E121: Undefined variable: nosuch
+b
+"---
+
+from execute
+"---
+
+Vim(echo):E121: Undefined variable: nosuch
+"---
+
+2
+after execute
+"---
+
+Vim(call):E117: Unknown function: nosuchfunc
+"---
+
+Vim(let):E121: Undefined variable: nosuch
+"---
+
+in callback
+"---
+
+thrown
+"---
+
+thrown
+0
+"---
+
+thrown
+"---
+
+thrown
+"---
+
+thrown
+"---
+
+thrown
+"---
+
+from dict func
+"---
+
+lambda
+"---
+
+Vim(throw):E115: Missing quote: 'multi
+"---
+
+with	tab
+"---
+
+ab
+"---
+
+[1, 2]
+"---
+
+12 1
+"---
+
+retry
+retry
+done after 3

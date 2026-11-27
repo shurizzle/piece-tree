@@ -35,6 +35,36 @@ fn key(name: char) -> char {
 }
 
 impl Registers {
+    /// Appends `reg` to the register of the uppercase `name`; the register after it.
+    fn append(&mut self, name: char, reg: Reg) -> Reg {
+        let e = self.map.entry(key(name)).or_insert(Reg { text: String::new(), kind: reg.kind });
+        // Appending lines to characters makes the register linewise, like vim.
+        if reg.kind == RegKind::Line && e.kind != RegKind::Line && !e.text.is_empty() {
+            e.text.push('\n');
+        }
+        e.text.push_str(&reg.text);
+        if reg.kind == RegKind::Line {
+            e.kind = RegKind::Line;
+        }
+        e.clone()
+    }
+
+    /// `write_reg_contents`: the text goes to `name` and nowhere else; the unnamed register and the history stay,
+    /// as `finish_write_reg` restores `y_previous`.
+    pub fn write(&mut self, name: char, reg: Reg) {
+        match name {
+            'A'..='Z' => {
+                self.append(name, reg);
+            }
+            c => {
+                if matches!(c, '+' | '*') {
+                    self.clipboard = Some(reg.text.clone());
+                }
+                self.map.insert(key(c), reg);
+            }
+        }
+    }
+
     /// The value of the last expression (register `=`), apart from the unnamed register.
     pub fn set_expr(&mut self, text: String) {
         self.map.insert('=', Reg { text, kind: RegKind::Char });
@@ -48,16 +78,7 @@ impl Registers {
     pub fn store(&mut self, name: Option<char>, reg: Reg, yank: bool) {
         match name {
             Some(c @ 'A'..='Z') => {
-                let e = self.map.entry(key(c)).or_insert(Reg { text: String::new(), kind: reg.kind });
-                // Appending lines to characters makes the register linewise, like vim.
-                if reg.kind == RegKind::Line && e.kind != RegKind::Line && !e.text.is_empty() {
-                    e.text.push('\n');
-                }
-                e.text.push_str(&reg.text);
-                if reg.kind == RegKind::Line {
-                    e.kind = RegKind::Line;
-                }
-                let appended = e.clone();
+                let appended = self.append(c, reg);
                 self.map.insert('"', appended);
                 return;
             }

@@ -11,7 +11,7 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use piece_tree::{Document, Edit, LineEnding, Text};
 
-use super::{Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, search::{self, Search}, substitute};
+use super::{script::AddrType, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, script, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -39,7 +39,7 @@ pub(super) struct Addr {
 
 /// One or two addresses; with `semi` (`;`) the second one counts from the first.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct LineRange {
+pub(in crate::editor) struct LineRange {
     pub first: Addr,
     pub last: Option<Addr>,
     pub semi: bool,
@@ -142,16 +142,6 @@ fn addr(s: &mut &str) -> Result<Option<Addr>, String> {
     })
 }
 
-/// One address and nothing else (the destination of `:m` and `:t`).
-pub(super) fn parse_addr(s: &str) -> Result<Addr, String> {
-    let mut s = s.trim();
-    let a = addr(&mut s)?.ok_or("Invalid address")?;
-    if !s.is_empty() {
-        return Err(format!("Trailing characters: {s}"));
-    }
-    Ok(a)
-}
-
 pub(super) fn parse(cmd: &str) -> Result<ExCmd<'_>, String> {
     let mut s = cmd.trim_start_matches([' ', ':']);
     let range = if let Some(rest) = s.strip_prefix('%') {
@@ -205,10 +195,10 @@ const CMDWIN_REFUSES: &[(&str, &str)] = &[
 
 /// Ex command names, as `Tab` completes them (`Editor::command` takes their vim abbreviations).
 pub(super) const NAMES: &[&str] = &[
-    "bNext", "bdelete", "bnext", "bprevious", "buffer", "buffers", "close", "compact", "copy", "delete", "earlier", "edit",
-    "digraphs", "enew", "files", "global", "goto", "highlight", "join", "later", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit",
-    "quitall", "read", "redo", "retab", "saveas", "set", "sort", "split", "stats", "substitute", "syntax", "undo", "undolist",
-    "vglobal", "vnew", "vsplit", "wq", "wqall", "write", "xall", "xit", "yank",
+    "bNext", "bdelete", "bnext", "bprevious", "break", "buffer", "buffers", "call", "close", "compact", "continue", "copy", "defer", "delete", "digraphs", "earlier", "echo", "echoerr",
+    "echomsg", "echon", "edit", "else", "elseif", "endfor", "endif", "endwhile", "enew", "execute", "files", "finish", "for", "global", "goto", "highlight", "if", "join", "later",
+    "let", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit", "quitall", "read", "redo", "retab", "saveas", "set", "sort", "source", "split",
+    "stats", "substitute", "syntax", "undo", "undolist", "unlet", "vglobal", "vnew", "vsplit", "while", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
 
 /// Commands whose argument is a file name, as (shortest abbreviation, name).
@@ -233,7 +223,7 @@ fn count(s: &str) -> Result<Option<usize>, String> {
     match s {
         "" => Ok(None),
         s => match s.parse::<usize>() {
-            Ok(0) => Err("Positive count required".into()),
+            Ok(0) => Err("E939: Positive count required".into()),
             Ok(n) => Ok(Some(n)),
             Err(_) => Err(format!("Trailing characters: {s}")),
         },
@@ -382,8 +372,8 @@ impl LineMarks {
 }
 
 impl Editor {
-    /// Runs one command line; returns false to quit.
-    pub(super) fn command(&mut self, line: &str) -> bool {
+    /// Runs one command; returns false to quit. `Editor::command` splits a line first.
+    pub(in crate::editor) fn command_one(&mut self, line: &str) -> bool {
         let c = match parse(line) {
             Ok(c) => c,
             Err(e) => {
@@ -399,11 +389,12 @@ impl Editor {
             return true;
         }
         let (bang, arg) = match c.arg.strip_prefix('!') {
-            Some(a) => (true, a.trim_start()),
-            None => (false, c.arg.trim_start()),
+            Some(a) => (true, a.trim_start_matches([' ', '\t'])),
+            None => (false, c.arg.trim_start_matches([' ', '\t'])),
         };
         // Most arguments ignore trailing blanks; `:normal` keeps them.
-        let a = arg.trim_end();
+        // Only blanks and tabs: a carriage return is not white space to Neovim (`:let x = 1^M` is `E488`).
+        let a = arg.trim_end_matches([' ', '\t']);
         let (n, r) = (c.name, c.range.as_ref());
         if self.cmdwin.is_some() && CMDWIN_REFUSES.iter().any(|(short, long)| abbr(n, short, long)) {
             self.error(super::cmdwin::E11);
@@ -427,6 +418,23 @@ impl Editor {
                 self.only_window();
                 Ok(())
             }
+            "let" => self.let_cmd(a),
+            _ if abbr(n, "so", "source") => match self.source_cmd(r, bang, a) {
+                Ok(go) => return go,
+                Err(e) => Err(e),
+            },
+            _ if abbr(n, "unl", "unlet") => self.unlet_cmd(bang, a),
+            _ if abbr(n, "ec", "echo") => self.echo_cmd(script::Echo::Plain, a),
+            "echon" => self.echo_cmd(script::Echo::NoNewline, a),
+            _ if abbr(n, "echom", "echomsg") => self.echo_cmd(script::Echo::Msg, a),
+            _ if abbr(n, "echoe", "echoerr") => self.echo_cmd(script::Echo::Err, a),
+            _ if abbr(n, "exe", "execute") => match self.execute_cmd(a) {
+                Ok(go) => return go,
+                Err(e) => Err(e),
+            },
+            _ if abbr(n, "cal", "call") => self.call_cmd(r, a, false),
+            _ if abbr(n, "defe", "defer") => self.call_cmd(r, a, true),
+            _ if abbr(n, "redi", "redir") => self.redir_cmd(bang, a),
             _ if abbr(n, "dig", "digraphs") => self.digraphs_cmd(a),
             _ if abbr(n, "res", "resize") => self.resize_cmd(false, a),
             _ if abbr(n, "vert", "vertical") => self.vertical_cmd(a),
@@ -508,7 +516,10 @@ impl Editor {
             }
             _ => Err(format!("Not an editor command: {}", line.trim())),
         };
-        if let Err(e) = res {
+        // An empty message: the error was reported already (a search that found nothing).
+        if let Err(e) = res
+            && !e.is_empty()
+        {
             self.error(e);
         }
         !self.quit
@@ -522,13 +533,9 @@ impl Editor {
             Base::Current => cur,
             Base::Last => count,
             Base::Line(n) => *n,
-            Base::Mark(m) => self.pos_of(self.mark(*m).ok_or("Mark not set")?).0 + 1,
+            Base::Mark(m) => self.pos_of(self.mark(*m).ok_or("E20: Mark not set")?).0 + 1,
             Base::Search { pat, back } => self.address_search(pat, *back, cur)?,
-            Base::Again { back, sub } => {
-                let pat = if *sub { self.last_sub.as_ref().map(|s| s.pat.clone()) } else { self.last_search.as_ref().map(|s| s.pat.clone()) };
-                let pat = pat.ok_or("No previous regular expression")?;
-                self.address_search(&pat, *back, cur)?
-            }
+            Base::Again { back, sub } => self.address_again(*back, *sub, cur)?,
         };
         let l = base.checked_add_signed(a.offset).ok_or("Invalid range")?;
         if l <= count { Ok(l) } else if clamp { Ok(count) } else { Err("Invalid range".into()) }
@@ -538,7 +545,7 @@ impl Editor {
     /// search. It becomes the last search, as in vim.
     pub(super) fn ex_regex(&mut self, pat: &str) -> Result<Search, String> {
         let pat = if pat.is_empty() {
-            self.last_search.as_ref().map(|s| s.pat.clone()).ok_or("No previous regular expression")?
+            self.last_search.as_ref().map(|s| s.pat.clone()).ok_or("E35: No previous regular expression")?
         } else {
             pat.to_string()
         };
@@ -549,7 +556,15 @@ impl Editor {
     }
 
     /// `/pat/`: the next line (after 1-based `cur`) with a match, wrapping; `?pat?`: the previous.
-    fn address_search(&mut self, pat: &str, back: bool, cur: usize) -> Result<usize, String> {
+    /// `\/`, `\?` and `\&`: the line of the next (or previous) match of the last search (`sub`: the
+    /// last substitute) pattern after (before) line `cur`.
+    pub(super) fn address_again(&mut self, back: bool, sub: bool, cur: usize) -> Result<usize, String> {
+        let pat = if sub { self.last_sub.as_ref().map(|s| s.pat.clone()) } else { self.last_search.as_ref().map(|s| s.pat.clone()) };
+        let pat = pat.ok_or(if sub { "E33: No previous substitute regular expression" } else { "E35: No previous regular expression" })?;
+        self.address_search(&pat, back, cur)
+    }
+
+    pub(super) fn address_search(&mut self, pat: &str, back: bool, cur: usize) -> Result<usize, String> {
         let s = self.ex_regex(pat)?;
         let text = self.buf.doc.text();
         let found = if back {
@@ -558,7 +573,7 @@ impl Editor {
             let from = if cur < text.line_count() { text.line_to_offset(cur) } else { text.len() };
             search::find_forward(text, &s.re, from, from)
         };
-        let (m, _) = found.ok_or_else(|| format!("Pattern not found: {}", s.pat))?;
+        let (m, _) = found.ok_or_else(|| format!("E486: Pattern not found: {}", s.pat))?;
         Ok(text.offset_to_line(m.start) + 1)
     }
 
@@ -587,23 +602,29 @@ impl Editor {
     }
 
     /// `count` lines starting at the range's last line (`:d 3`), clipped to the text.
-    fn counted(&self, (a, b): (usize, usize), count: Option<usize>) -> (usize, usize) {
+    pub(super) fn counted(&self, (a, b): (usize, usize), count: Option<usize>) -> (usize, usize) {
         match count {
             None => (a, b),
             Some(n) => (b, (b + n - 1).min(self.line_count() - 1)),
         }
     }
 
-    fn first_line(&mut self, l: usize) {
+    /// `beginline(BL_SOL | BL_FIX)` with 'nostartofline' (Neovim's default): line `l`, the column the cursor wanted.
+    pub(in crate::editor) fn line_wanted_col(&mut self, l: usize) {
+        self.win.line = l;
+        self.win.col = self.win.want_col.min(self.line_chars(l).saturating_sub(1));
+    }
+
+    pub(in crate::editor) fn first_line(&mut self, l: usize) {
         self.win.line = l;
         self.set_col(self.first_non_blank(l));
     }
 
     /// `:N`, `:/pat/`, `:'a`: the cursor goes to the last address; past the end, the last line.
-    fn goto_line(&mut self, r: Option<&LineRange>) -> Result<(), String> {
+    pub(in crate::editor) fn goto_line(&mut self, r: Option<&LineRange>) -> Result<(), String> {
         let (_, b) = self.lines_clamped(r, (0, 0), true)?;
         self.set_jump();
-        self.first_line(b.max(1) - 1);
+        self.line_wanted_col(b.max(1) - 1);
         self.clamp_normal();
         Ok(())
     }
@@ -703,13 +724,19 @@ impl Editor {
             }
         }
         if !rest.is_empty() || arg.is_empty() {
-            let set = self.buf.opts.set(&rest.join(" "));
+            let (text, err) = self.buf.opts.set_all(&rest.join(" "));
             // Screen options hold for every buffer, not only the one shown.
             for b in &mut self.buffers {
                 self.buf.opts.copy_global(&mut b.opts);
             }
-            shown.push(set?);
+            shown.push(text);
             self.sync_cmdwin_height();
+            shown.retain(|s| !s.is_empty());
+            // What was shown before the error stays.
+            if !shown.is_empty() || err.is_none() {
+                self.info(shown.join("\n"));
+            }
+            return err.map_or(Ok(()), Err);
         }
         shown.retain(|s| !s.is_empty());
         self.info(shown.join("\n"));
@@ -736,7 +763,7 @@ impl Editor {
     }
 
     /// Inserts `block` (lines without a final line break) below 1-based line `after` (0: on top).
-    fn insert_lines(&mut self, after: usize, block: &str) {
+    pub(in crate::editor) fn insert_lines(&mut self, after: usize, block: &str) {
         if after == 0 {
             self.edit_insert(0, &format!("{block}\n"));
         } else {
@@ -746,7 +773,7 @@ impl Editor {
     }
 
     /// Removes lines `a..=b` with one line break (the one before, on the last line).
-    fn delete_lines(&mut self, a: usize, b: usize) {
+    pub(in crate::editor) fn delete_lines(&mut self, a: usize, b: usize) {
         let text = self.buf.doc.text();
         let range = if b + 1 < text.line_count() {
             text.line_to_offset(a)..text.line_to_offset(b + 1)
@@ -760,8 +787,13 @@ impl Editor {
 
     /// Destination of `:m`/`:t`: a 1-based line, 0 for the top.
     fn dest(&mut self, arg: &str) -> Result<usize, String> {
-        let a = parse_addr(arg)?;
-        self.resolve(&a, self.win.line + 1, false)
+        // `ex_copymove`: `get_address` on the argument; it must name a line of the text (or 0).
+        let cur = self.win.line as i64 + 1;
+        let (n, _) = self.get_address(arg, AddrType::Lines, false, cur)?;
+        match n {
+            Some(n) if n >= 0 && n <= self.line_count() as i64 => Ok(n as usize),
+            _ => Err("E16: Invalid range".into()),
+        }
     }
 
     /// `:m {address}`: the lines go below the address; the cursor ends on the last one.
@@ -770,7 +802,7 @@ impl Editor {
         let (a, b) = self.range0(r, false)?;
         let dest = self.dest(arg)?;
         if dest > a && dest <= b {
-            return Err("Cannot move a range of lines into itself".into());
+            return Err("E134: Cannot move a range of lines into itself".into());
         }
         let n = b - a + 1;
         let last = if dest == a || dest == b + 1 {
@@ -787,7 +819,11 @@ impl Editor {
                 dest + n - 1
             }
         };
-        self.first_line(last);
+        self.line_wanted_col(last);
+        // `do_move`: a message over 'report' lines (a `:global` stays quiet).
+        if n > self.buf.opts.report && !self.scripts.global_busy {
+            self.info(format!("{n} line{} moved", if n == 1 { "" } else { "s" }));
+        }
         Ok(())
     }
 
@@ -797,7 +833,8 @@ impl Editor {
         let dest = self.dest(arg)?;
         let block = self.lines_text(a, b);
         self.insert_lines(dest, &block);
-        self.first_line(dest + b - a);
+        self.line_wanted_col(dest + b - a);
+        self.msgmore((b - a + 1) as i64);
         Ok(())
     }
 
@@ -809,7 +846,15 @@ impl Editor {
         let (a, b) = self.range0(r, false)?;
         let (a, b) = self.counted((a, b), n);
         self.shift(a, b, right, extra + 1);
-        self.first_line(b);
+        // `op_shift`: the cursor stays on the last line, at the end of its new indent (`set_indent`).
+        self.win.line = b;
+        self.win.col = self.buf.doc.text().line(b).chars().take_while(|c| matches!(c, ' ' | '\t')).count();
+        let last_col = self.line_chars(b).saturating_sub(1);
+        if self.line_chars(b) == 0 {
+            self.win.col = 0;
+        } else {
+            self.win.col = self.win.col.min(last_col);
+        }
         Ok(())
     }
 
@@ -825,15 +870,28 @@ impl Editor {
         let b = b.min(self.line_count() - 1);
         self.win.line = a;
         self.join(b.saturating_sub(a), !bang);
+        // `ex_join`: `beginline(BL_WHITE | BL_FIX)`.
+        let l = self.win.line;
+        self.first_line(l);
         Ok(())
     }
 
     /// `:p`: the cursor goes to the last line, which is shown.
-    // shortcut: only the last line is shown (one message row), when a message pager exists
-    fn print(&mut self, r: Option<&LineRange>) -> Result<(), String> {
-        let (_, b) = self.range0(r, false)?;
-        self.first_line(b);
-        self.info(self.buf.doc.text().line(b).into_owned());
+    // shortcut: an empty buffer is one without text, Neovim's is one without lines (`ML_EMPTY`)
+    pub(in crate::editor) fn print(&mut self, r: Option<&LineRange>) -> Result<(), String> {
+        let (a, b) = self.range0(r, false)?;
+        // `ex_print`: an empty buffer is an error, else every line of the range is shown.
+        if self.buf.doc.text().is_empty() {
+            self.error("E749: Empty buffer");
+            return Ok(());
+        }
+        for l in a..=b {
+            // An empty line is shown as a blank, else the next message would overwrite it (`msg_prt_line`).
+            let text = self.buf.doc.text().line(l).into_owned();
+            self.info(if text.is_empty() { " ".to_string() } else { text });
+        }
+        self.set_jump();
+        self.line_wanted_col(b);
         Ok(())
     }
 
@@ -857,7 +915,7 @@ impl Editor {
     /// `:normal {keys}`: once at the cursor, or on each line of the range (column 0). One undo step.
     fn normal_cmd(&mut self, r: Option<&LineRange>, keys: &str) -> Result<(), String> {
         if keys.is_empty() {
-            return Err("Argument required".into());
+            return Err("E471: Argument required".into());
         }
         let keys = parse::text_keys(keys);
         if r.is_none() {
@@ -907,14 +965,27 @@ impl Editor {
             hit[text.offset_to_line(m.start) - a] = !invert;
         }
         if !hit.contains(&true) {
-            return Err(if invert { format!("Pattern found in every line: {}", search.pat) } else { format!("Pattern not found: {}", search.pat) });
+            return Err(if invert { format!("Pattern found in every line: {}", search.pat) } else { format!("E486: Pattern not found: {}", search.pat) });
         }
         self.set_jump();
+        // `global_exe`: the reports of what the commands do wait for the end.
+        (self.scripts.sub_nsubs, self.scripts.sub_nlines) = (0, 0);
+        self.scripts.global_busy = true;
+        self.scripts.global_error = false;
+        let old_lines = self.line_count() as i64;
         self.for_lines((a..=b).filter(|l| hit[l - a]), |e| {
+            if e.scripts.global_error {
+                return;
+            }
             if !e.command(cmd) {
                 e.quit = true;
             }
         });
+        self.scripts.global_busy = false;
+        // Substitutions are reported, else the lines that were added or taken away.
+        if !self.do_sub_msg(false) {
+            self.msgmore(self.line_count() as i64 - old_lines);
+        }
         Ok(())
     }
 
@@ -996,9 +1067,9 @@ impl Editor {
     /// a name. Line endings are converted like on load.
     // shortcut: the file is copied into the text (no structural sharing), when `Text::append_text` exists
     fn read(&mut self, r: Option<&LineRange>, file: &str) -> Result<(), String> {
-        let path = if file.is_empty() { self.buf.path.clone().ok_or("No file name")? } else { PathBuf::from(file) };
+        let path = if file.is_empty() { self.buf.path.clone().ok_or("E32: No file name")? } else { PathBuf::from(file) };
         let (_, after) = self.lines(r, (self.win.line + 1, self.win.line + 1))?;
-        let content = fs::read_to_string(&path).map_err(|e| format!("Can't open file {}: {e}", path.display()))?;
+        let content = fs::read_to_string(&path).map_err(|_e| format!("E484: Can't open file {}", path.display()))?;
         let doc = Document::from_string(content);
         let t = doc.text();
         let mut s = t.slice(0..t.len()).into_owned();
@@ -1047,7 +1118,7 @@ impl Editor {
             None => (false, arg),
         };
         if file.is_empty() && self.buf.path.is_none() {
-            return Err("No file name".into());
+            return Err("E32: No file name".into());
         }
         let path = if file.is_empty() { self.buf.path.clone().expect("checked above") } else { PathBuf::from(file) };
         // A buffer without a name takes the one it is written to, like vim.
@@ -1066,7 +1137,7 @@ impl Editor {
             return Ok(());
         }
         if r.is_some() && own && !append && !bang {
-            return Err("Use ! to write partial buffer".into());
+            return Err("E140: Use ! to write partial buffer".into());
         }
         if !own && !append && !bang && path.exists() {
             return Err("File exists (add ! to override)".into());
@@ -1086,7 +1157,7 @@ impl Editor {
     /// `:sav[!] file`: writes the buffer there and edits that file from now on.
     fn save_as(&mut self, bang: bool, file: &str) -> Result<(), String> {
         if file.is_empty() {
-            return Err("Argument required".into());
+            return Err("E471: Argument required".into());
         }
         let path = PathBuf::from(file);
         if !bang && self.buf.path.as_ref() != Some(&path) && path.exists() {
@@ -1168,9 +1239,6 @@ mod tests {
         assert_eq!(name_arg("&&"), Ok(("&", "&")));
         assert_eq!(name_arg("t."), Ok(("t", ".")));
         assert_eq!(name_arg("|"), Ok(("", "|")));
-        assert_eq!(parse_addr(" $-1 "), Ok(at(Base::Last, -1)));
-        assert_eq!(parse_addr(""), Err("Invalid address".into()));
-        assert_eq!(parse_addr("1x"), Err("Trailing characters: x".into()));
         assert!(abbr("del", "d", "delete") && !abbr("dx", "d", "delete") && !abbr("n", "norm", "normal"));
     }
 
@@ -1181,7 +1249,7 @@ mod tests {
         assert_eq!(reg_count("a 3"), Ok((Some('a'), Some(3))));
         assert_eq!(reg_count("12"), Ok((None, Some(12))));
         assert_eq!(reg_count("%"), Err("Invalid register: %".into()));
-        assert_eq!(reg_count("0"), Err("Positive count required".into()));
+        assert_eq!(reg_count("0"), Err("E939: Positive count required".into()));
         assert_eq!(reg_count("a b"), Err("Trailing characters: b".into()));
     }
 

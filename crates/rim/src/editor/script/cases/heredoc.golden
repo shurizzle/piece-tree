@@ -1,0 +1,363 @@
+NVIM v0.12.6
+
+['abc', '  def', '']
+"---
+
+[]
+"---
+
+Error in {file}:
+line    4:
+E990: Missing end marker 'END'
+"---
+
+Error in {file}:
+line    7:
+E990: Missing end marker 'END'
+"---
+
+['abc', '  def']
+"---
+
+['abc', '	def']
+"---
+
+['abc', 'def']
+"---
+
+['abc']
+"---
+
+['abc']
+"---
+
+['abc']
+"---
+
+Error in {file}:
+line    1:
+E172: Missing marker
+line    2:
+E492: Not an editor command: qqq
+line    3:
+E492: Not an editor command: END
+line    4:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E172: Missing marker
+line    2:
+E492: Not an editor command: qqq
+line    3:
+E492: Not an editor command: END
+line    4:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E221: Marker cannot start with lower case letter
+line    2:
+E492: Not an editor command: qqq
+line    3:
+E580: :endif without :if: end
+line    4:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters:  junk
+line    2:
+E492: Not an editor command: qqq
+line    3:
+E492: Not an editor command: END
+line    4:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters:  junk
+line    2:
+E492: Not an editor command: qqq
+line    3:
+E492: Not an editor command: END
+0
+"---
+
+Error in {file}:
+line    4:
+E990: Missing end marker 'END'
+"---
+
+Error in {file}:
+line    5:
+E990: Missing end marker 'END'
+"---
+
+['abc', ' END']
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters:  abcdef
+line    4:
+E492: Not an editor command: END
+line    5:
+E121: Undefined variable: x
+"---
+
+[]
+"---
+
+['abc'] ['def']
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    3:
+E688: More targets than List items
+x
+"---
+
+1 ['2', '3']
+"---
+
+[['q'], 2]
+"---
+
+{'k': ['q']}
+"---
+
+['q']
+"---
+
+Error in {file}:
+line    3:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    4:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    3:
+E730: Using a List as a String
+
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+line    4:
+E15: Invalid expression: "<< END"
+line    5:
+E492: Not an editor command: END
+"---
+
+['plain 3 and {braces}']
+"---
+
+Error in {file}:
+line    6:
+E990: Missing end marker 'END'
+"---
+
+['[1, 2]', '{''a'': 1}']
+"---
+
+Error in {file}:
+line    2:
+E1278: Stray '}' without a matching '{': stray }
+0
+"---
+
+Error in {file}:
+line    2:
+E1279: Missing '}': { here
+0
+"---
+
+Error in {file}:
+line    2:
+E1279: Missing '}': {
+0
+"---
+
+Error in {file}:
+line    2:
+E15: Invalid expression: "}"
+0
+"---
+
+Error in {file}:
+line    2:
+E121: Undefined variable: nosuchvar
+0
+"---
+
+Error in {file}:
+line    2:
+E1279: Missing '}': { 1 2 }
+0
+"---
+
+Error in {file}:
+line    3:
+E121: Undefined variable: nosuch
+0
+"---
+
+['v:true v:null 1.5 -0.0']
+"---
+
+['{1 + 2}']
+"---
+
+['line {i}']
+['line {i}']
+['line {i}']
+"---
+
+['line 0']
+['line 1']
+['line 2']
+"---
+
+['a', ' b']
+['a', ' b']
+"---
+
+Error in {file}:
+line    9:
+E990: Missing end marker 'END'
+line   10:
+E170: Missing :endwhile
+"---
+
+0
+"---
+
+ok
+"---
+
+Error in {file}:
+line    6:
+E990: Missing end marker 'END'
+line    7:
+E171: Missing :endif
+"---
+
+['abc']
+"---
+
+['l1', 'l2']
+"---
+
+Error in {file}:
+line    1:
+E990: Missing end marker 'END'
+['l1', 'l2', 'END | echo 1']
+"---
+
+next
+['l1', 'l2']
+"---
+
+Error in {file}:
+line    1:
+E990: Missing end marker 'END'
+"---
+
+Error in {file}:
+line    1:
+E990: Missing end marker 'END'
+['l1', 'l2', 'END']
+"---
+
+['1']
+"---
+
+['from file']
+"---
+
+Error in {file}:
+line    3:
+E990: Missing end marker 'END'
+"---
+
+same line
+['abc']
+"---
+
+['file line']
+['file line']
+"---
+
+['string line']
+['string line']
+"---
+
+[['l'], ['l']]
+"---
+
+['	abc', '']
+"---
+
+['abc']
+"---
+
+3 0
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters:  DEF
+line    2:
+E492: Not an editor command: END
+"---
+
+Error in {file}:
+line    5:
+E990: Missing end marker 'END'
+"---
+
+[]
+"---
+
+['abc']
+"---
+
+['abc']
+"---
+
+Error in {file}:
+line    5:
+E990: Missing end marker 'END'
+"---
+
+['', '']
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: ^M
+line    2:
+E121: Undefined variable: x
+"---
+
+a
+Error in {file}:
+line    1:
+E15: Invalid expression: "^M"
+b
+line    2:
+E15: Invalid expression: "^M"

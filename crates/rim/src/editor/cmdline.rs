@@ -88,6 +88,26 @@ impl Editor {
 
     /// Leaves the line without running it.
     fn line_leave(&mut self) {
+        if self.scripts.pending_here.is_some() && matches!(self.mode, Mode::Command(_)) {
+            // Esc in the lines of a here document: the end marker is missing.
+            self.mode = Mode::Normal;
+            self.heredoc_abort();
+            return;
+        }
+        if self.scripts.pending_append.is_some() && matches!(self.mode, Mode::Command(_)) {
+            // Esc in the lines of `:append`: the text ends there.
+            self.mode = Mode::Normal;
+            self.scripts.typed = true;
+            self.append_typed_line("", true);
+            self.scripts.typed = false;
+            return;
+        }
+        if self.scripts.pending_func.is_some() && matches!(self.mode, Mode::Command(_)) {
+            // Esc in the lines of a function: `:endfunction` is missing.
+            self.mode = Mode::Normal;
+            self.func_abort();
+            return;
+        }
         if matches!(self.mode, Mode::Expr(_)) {
             self.expr_restore(None);
         } else {
@@ -378,12 +398,52 @@ impl Editor {
         }
     }
 
+    /// While a here document waits for lines the command line is open again, without a `:` in front.
+    fn heredoc_prompt(&mut self) {
+        if (self.scripts.pending_here.is_some() || self.scripts.pending_func.is_some() || self.scripts.pending_append.is_some()) && self.mode == Mode::Normal {
+            // The lines of `:append` start with the autoindent.
+            let indent = self.append_prompt();
+            self.line_pos = indent.len();
+            self.mode = Mode::Command(indent);
+        }
+    }
+
     /// Runs the command line `cmd` and remembers it.
     pub(super) fn run_command(&mut self, cmd: &str) {
+        // The lines of a here document typed at the prompt (`getexline`): not commands, not kept in the history.
+        if self.scripts.pending_here.is_some() {
+            self.scripts.typed = true;
+            self.heredoc_typed_line(cmd, false);
+            self.scripts.typed = false;
+            self.heredoc_prompt();
+            return;
+        }
+        if self.scripts.pending_append.is_some() {
+            self.scripts.typed = true;
+            self.append_typed_line(cmd, false);
+            self.scripts.typed = false;
+            self.heredoc_prompt();
+            return;
+        }
+        if self.scripts.pending_func.is_some() {
+            self.scripts.typed = true;
+            self.func_typed_line(cmd, false);
+            // What follows `:endfunction | ...` runs now.
+            if let Some(next) = self.scripts.nextcmd.take() {
+                self.command(&next);
+            }
+            self.scripts.typed = false;
+            self.heredoc_prompt();
+            return;
+        }
         self.push_history(0, cmd);
+        self.msgs.start_col = 1 + super::graphemes::iter(cmd).map(|g| super::graphemes::width(g, 1)).sum::<usize>();
+        self.scripts.typed = true;
         if !self.command(cmd) {
             self.quit = true;
         }
+        self.scripts.typed = false;
+        self.heredoc_prompt();
         // `.` does not repeat `:` commands (vim); a confirm session ends the group itself.
         if self.mode != Mode::Confirm {
             self.rec_cmd = None;

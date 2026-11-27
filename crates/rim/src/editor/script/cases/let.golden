@@ -1,0 +1,1545 @@
+NVIM v0.12.6
+
+5
+"---
+
+3
+"---
+
+abc
+"---
+
+a 2 3 4
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: v:x
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:version"
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+a                     #1
+w:y                   #3
+t:z                   #4
+s:q                   #5
+"---
+
+x                     #1
+s                      str
+l                     [1, 2]
+d                     {'a': 1}
+f                      1.5
+"---
+
+1 2
+"---
+
+1 [2, 3]
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+"---
+
+Error in {file}:
+line    1:
+E687: Less targets than List items
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+"---
+
+[1, 2, 3]
+"---
+
+[9, 2, 8]
+"---
+
+[1, 7, 6]
+"---
+
+Error in {file}:
+line    1:
+E711: List value has not enough items
+"---
+
+Error in {file}:
+line    1:
+E710: List value has more items than target
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+"---
+
+[1, 2]
+"---
+
+{'a': 1, 'b': 2, 'c': 3}
+"---
+
+{'a': '11x'}
+"---
+
+{}
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "zz"
+"---
+
+"---
+
+[2]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 3
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "x"
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: unlet
+"---
+
+8 8 8
+"---
+
+1
+0
+"---
+
+9
+"---
+
+Error in {file}:
+line    1:
+E355: Unknown option: nosuch
+"---
+
+"---
+
+*.o *.a
+"---
+
+hi
+"---
+
+x
+y
+"---
+
+x 1
+"---
+
+xy
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: 1
+E488: Trailing characters: = 2
+"---
+
+{'me': {...@0}}
+"---
+
+[[...@0]]
+"---
+
+0 0 1 1 1 0 0
+"---
+
+1 1 0
+"---
+
+1
+abcd
+e
+"---
+
+m 2
+Error in {file}:
+line    2:
+bad
+"---
+
+x
+"---
+
+5
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E492: Not an editor command: nosuchcmd
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+
+"---
+
+a^@b t^Ix c^Hd r^Ms e^?
+"---
+
+a
+b t	x c^Hd rs e^? bell
+"---
+
+Error in {file}:
+line    1:
+a
+b t	x c^Hd rs
+"---
+a
+bt	xc^Hd
+"---
+
+x^@y
+x
+y
+"---
+
+t^Ix ^A
+t	x ^A
+"---
+
+ciao
+ciao
+ciao
+"---
+
+1
+234
+5
+"---
+
+a
+b
+Error in {file}:
+line    1:
+cd
+e
+"---
+12
+"---
+
+x
+"---
+
+1 2
+2 1
+"---
+
+Error in {file}:
+line    1:
+E687: Less targets than List items
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+"---
+
+1 [2, 3]
+1 []
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: ; b] = [1, 2]
+"---
+
+2
+"---
+
+abc
+"---
+
+1
+"---
+
+[1, 2]
+"---
+
+2.5
+5.0
+"---
+
+[5, 2, 7]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+"---
+
+[1, 8, 9]
+Error in {file}:
+line    4:
+E710: List value has more items than target
+[1, 8, 9]
+"---
+
+Error in {file}:
+line    2:
+E711: List value has not enough items
+[1, 9, 3]
+[0, 9, 3]
+"---
+
+Error in {file}:
+line    2:
+E709: [:] requires a List or Blob value
+"---
+
+Error in {file}:
+line    2:
+E711: List value has not enough items
+"---
+
+1 2 {'x': 3}
+"---
+
+{'a': 6}
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "b"
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: d.x = 1
+"---
+
+{'1': 'x'}
+"---
+
+Error in {file}:
+line    2:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: l.x = 1
+"---
+
+hello
+hello world
+
+"---
+
+text
+textmore
+"---
+
+pat
+"---
+
+3
+5
+6 6
+"---
+
+1
+0
+"---
+
+Error in {file}:
+line    1:
+E521: Number required: &ts = 'abc'
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+"---
+
+1 2 3 4 1
+"---
+
+5
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: l:x
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: a:x
+"---
+
+[1, 1]
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+"---
+
+g:a                   #1
+g:b                    two
+g:c                   [3]
+g:d                   {'k': 4}
+g:e                    5.5
+g:f                    v:true
+g:g                    v:null
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+d.a                   [1, 2]
+d['a']                [1, 2]
+d.a[1]                #2
+"---
+
+g:l[0]                #1
+Error in {file}:
+line    3:
+E684: List index out of range: 5
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: = 5
+"---
+
+Error in {file}:
+line    1:
+E697: Missing end of List ']': 
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 2
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "= 5"
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: := 5
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: 5x
+E488: Trailing characters: = 1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: a
+E488: Trailing characters: = 1
+"---
+
+1 2
+"---
+
+1
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "nosuch"
+"---
+
+after
+"---
+
+0 0
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "nosuch"
+"---
+
+0
+"---
+
+[2, 3, 4]
+[2]
+[]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+"---
+
+"---
+
+{'b': 2}
+{}
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "zz | echo 'x'"
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "zz d"
+1
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: unlet
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 5
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:count
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "g:nosuch"
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "x"
+"---
+
+0
+"---
+
+[[1], [3]]
+"---
+
+Error in {file}:
+line    2:
+E689: Can only index a List, Dictionary or Blob
+"---
+
+"---
+
+[9, 7, 8]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+"---
+
+[9, 2, 3]
+"---
+
+[7, 8, 9]
+"---
+
+[7, 8, 3]
+Error in {file}:
+line    3:
+E711: List value has not enough items
+"---
+
+Error in {file}:
+line    2:
+E711: List value has not enough items
+[1, 4, 3]
+"---
+
+Error in {file}:
+line    2:
+E710: List value has more items than target
+[4, 5, 3]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 0
+[1, 2, 3]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 1
+"---
+
+Error in {file}:
+line    2:
+E709: [:] requires a List or Blob value
+"---
+
+Error in {file}:
+line    2:
+E709: [:] requires a List or Blob value
+"---
+
+[5, 7, 3]
+"---
+
+[[1, 5], [3, 6]]
+"---
+
+['a', 'b', 'c'] 11 2 3
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "b"
+"---
+
+2 3
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "x.y = 2"
+"---
+
+n
+"---
+
+Error in {file}:
+line    2:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: d.a.b = 2
+"---
+
+Error in {file}:
+line    2:
+E689: Can only index a List, Dictionary or Blob
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: n.a = 1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: l.a = 1
+"---
+
+Error in {file}:
+line    2:
+E18: Unexpected characters in :let
+"---
+
+Error in {file}:
+line    2:
+E111: Missing ']'
+E488: Trailing characters: = 1
+"---
+
+Error in {file}:
+line    2:
+E111: Missing ']'
+"---
+
+Error in {file}:
+line    2:
+E719: Cannot slice a Dictionary
+"---
+
+[4, 5, 6]
+"---
+
+Error in {file}:
+line    2:
+E15: Invalid expression: ".1] = 1"
+"---
+
+Error in {file}:
+line    2:
+E488: Trailing characters: . = 1
+"---
+
+11 22
+"---
+
+Error in {file}:
+line    1:
+E687: Less targets than List items
+"---
+
+Error in {file}:
+line    1:
+E688: More targets than List items
+"---
+
+1 2 [3, 4]
+"---
+
+1 2 []
+"---
+
+Error in {file}:
+line    1:
+E452: Double ; in list of variables
+"---
+
+Error in {file}:
+line    1:
+E714: List required
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: = [1, 2]
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: b] = [1, 2]
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: ] = []
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: [b, c]] = [1, [2, 3]]
+"---
+
+[3, 4]
+"---
+
+5 6
+"---
+
+2 1
+"---
+
+1a 2b
+"---
+
+1
+"---
+
+0
+"---
+
+1x
+"---
+
+9223372036854775807
+0
+"---
+
+6.5
+Error in {file}:
+line    2:
+E734: Wrong variable type for %=
+"---
+
+2.5
+5.0
+Error in {file}:
+line    3:
+E734: Wrong variable type for .=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for %=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for -=
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for .=
+"---
+
+2
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: nosuch
+"---
+
+ab
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: $ = 1
+"---
+
+xy
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for +=
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "@ab = 'x'"
+E488: Trailing characters: @ab = 'x'
+"---
+
+x
+"---
+
+5
+"---
+
+Error in {file}:
+line    1:
+E734: Wrong variable type for .=
+"---
+
+Error in {file}:
+line    1:
+E355: Unknown option: nosuchopt
+"---
+
+5 q
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: b] = [1, 2]
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: 1x
+E488: Trailing characters: = 1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: :y = 1
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: a b
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: 1a
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: 0
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:['count']"
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: v:['nosuch'] = 1
+"---
+
+Error in {file}:
+line    1:
+E689: Can only index a List, Dictionary or Blob
+"---
+
+{'k': 1}
+"---
+
+[2]
+"---
+
+[1, 2]
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: a:x
+"---
+
+Error in {file}:
+line    1:
+E461: Illegal variable name: l:x
+line    2:
+E121: Undefined variable: l:x
+"---
+
+2
+"---
+
+x                     #1
+"---
+
+x                     {'a': 1}
+"---
+
+5
+"---
+
+2
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ""
+E475: Invalid argument: n{} = 5
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: n{1 = 5
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: n1
+"---
+
+[9]
+"---
+
+1
+"---
+
+[3, 2]
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "x +"
+"---
+
+1 2
+Error in {file}:
+line    1:
+E687: Less targets than List items
+"---
+
+{'a': [2, 5]}
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "a.b.c = 1"
+"---
+
+Error in {file}:
+line    1:
+E689: Can only index a List, Dictionary or Blob
+"---
+
+d.k                   #1
+Error in {file}:
+line    1:
+E15: Invalid expression: ".. = 1"
+E488: Trailing characters: .. = 1
+"---
+
+2z
+"---
+
+
+"---
+
+ y
+"---
+
+xz
+"---
+
+
+"---
+
+l
+
+"---
+
+l
+
+"---
+
+pat
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+"---
+
+x                     #1
+Error in {file}:
+line    1:
+E15: Invalid expression: "[0] = 1"
+E488: Trailing characters: [0] = 1
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "a"
+E488: Trailing characters: = 1
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: = 1
+"---
+
+x                     #1
+Error in {file}:
+line    2:
+E121: Undefined variable: y
+"---
+
+l[0]                  #1
+l[0]                  #1
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+"---
+
+l[0]                  #1
+Error in {file}:
+line    1:
+E121: Undefined variable: d
+E488: Trailing characters: .x
+"---
+
+d.k                   #1
+Error in {file}:
+line    1:
+E15: Invalid expression: ".."
+E488: Trailing characters: ..
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: ' '
+"---
+
+Error in {file}:
+line    1:
+E18: Unexpected characters in :let
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "&tabstop x = 1"
+E488: Trailing characters: &tabstop x = 1
+"---
+
+Error in {file}:
+line    1:
+E521: Number required: &tabstop = 'x'
+"---
+
+Error in {file}:
+line    1:
+E355: Unknown option: nosuch
+"---
+
+1 q
+"---
+
+1 2
+3 4
+"---
+
+1 2 [3]
+4 5 []
+"---
+
+Error in {file}:
+line    1:
+E687: Less targets than List items
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: l
+"---
+
+[2]
+"---
+
+{'x': 2}
+"---
+
+0 0
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "nosuch"
+1
+"---
+
+1
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "nosuch"
+1
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "nosuch"
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "y"
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: unlet
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: !
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "x"
+2
+"---
+
+[1, 4]
+[1]
+[]
+"---
+
+[1]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 5
+[1, 2, 3]
+"---
+
+[2, 3]
+"---
+
+Error in {file}:
+line    2:
+E684: List index out of range: 1
+"---
+
+[1, 2, 3]
+"---
+
+{'c': {}}
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "zz | echo 'next'"
+{'a': 1}
+"---
+
+{'a': 1}
+"---
+
+Error in {file}:
+line    2:
+E716: Key not present in Dictionary: "zz"
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: d.a.b
+"---
+
+Error in {file}:
+line    2:
+E689: Can only index a List, Dictionary or Blob
+"---
+
+Error in {file}:
+line    2:
+E1203: Dot can only be used on a dictionary: l.x
+"---
+
+[[1]]
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:count
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "v:nosuch"
+"---
+
+Error in {file}:
+line    1:
+E795: Cannot delete variable v:count
+1
+"---
+
+Error in {file}:
+line    1:
+E108: No such variable: "g:"
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: 1
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: $
+"---
+
+0
+"---
+
+1
+"---
+
+2
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E108: No such variable: "y"
+"---
+
+0
+"---
+
+1
+2
+3
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: call
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+Error in {file}:
+line    1:
+E107: Missing parentheses: abs
+"---
+
+ok
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: x
+"---
+
+next
+"---
+
+x
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: abs
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: abs
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function abs
+"---
+
+ok
+"---
+
+Error in {file}:
+line    1:
+E884: Function name cannot contain a colon: a:abs(-1)
+"---
+
+Error in {file}:
+line    1:
+E107: Missing parentheses: x:abs(-1)
+"---
+
+Error in {file}:
+line    1:
+E716: Key not present in Dictionary: "f"
+"---
+
+Error in {file}:
+line    1:
+E718: Funcref required
+"---
+
+Error in {file}:
+line    2:
+E16: Invalid range: 2,3call add(l, line('.'))
+[1, 2, 3]
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: 
+"---
+
+1
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+"---
+
+['1a', '2b', '3c'] 3
+"---
+
+Error in {file}:
+line    3:
+E16: Invalid range: 5call add(l, 1)
+[]
+"---
+
+Error in {file}:
+line    3:
+E493: Backwards range given: 2,1call add(l, 1)
+[]
+"---
+
+[2, 3]
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: l:
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: a:
+"---
+
+Error in {file}:
+line    1:
+E121: Undefined variable: x
+E488: Trailing characters: :
+"---
+
+a                     #1
+"---
+
+Error in {file}:
+line    1:
+E46: Cannot change read-only variable "v:count"
+v:count1              #1
+v:t_dict              #4
+"---
+
+s:q                   #5
+"---
+
+w:y                   #3

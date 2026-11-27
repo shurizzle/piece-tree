@@ -81,6 +81,10 @@ Suites: 40 seeds × 400 steps on small texts, 3 × 3000 medium, grow-only 1200, 
 
 **Performance note**: model checks are O(n) per step, so a grow-only run is quadratic. 4000 grow-only steps took 31 s; 1200 keep the whole suite at ~3 s. Increase sizes in `large_text`-style tests (sampled checks) instead of in the differential loop.
 
+### Vimscript against Neovim (rim)
+
+`crates/rim/src/editor/script/golden.rs` runs every script of `script/cases/*.vim` through `Editor` and compares what it prints with the output Neovim printed for it (`*.golden`, recorded by `python3 -I tools/vimscript_oracle.py`, which needs `nvim`; `cargo test` does not). `KNOWN` there lists the cases that still differ and only shrinks; `RIM_GOLDEN_SHOW=1` shows every difference. The corpora: `range`, `typed`, `cmd`, `bar`, `let`, `funcs`, `expr`, `args` (every builtin with one wrong-typed argument per position), `mixed` (two together), `triple` (three together), `extreme` (extreme valid values), `double` (two extreme values together) `try`/`try2` (exceptions: catch patterns, finally with pending break/continue/return/finish, errors converted to `Vim(cmd):E...`, `E605`, `abort` functions, `:silent!`) and `edge` (every builtin with wrong-typed arguments, literals, operators, `:let` targets, `:echo*`; written to find differences, all of which are fixed or documented). A case must not depend on rim's option defaults, on the print order of a Dict with several keys, or on a command that ends the oracle's Neovim (`:x`). See [../reference/vimscript.md](../reference/vimscript.md).
+
 ## Conventions
 
 - Panic tests match on the message fragments `out of bounds`, `invalid range`, `char boundary`, `larger than 4 GiB`, `invalid piece split`, `empty chunk`.

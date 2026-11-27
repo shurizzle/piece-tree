@@ -1,0 +1,673 @@
+NVIM v0.12.6
+
+   function Foo(a, b = 2, ...) abort range
+1    echo a:a
+2    if 1
+3      echo 'x'
+4    endif
+   endfunction
+"---
+
+function! Foo(a, b = 2, ...) abort range
+  echo a:a
+endfunction
+"---
+
+   function Bar()
+   endfunction
+"---
+
+function! Bar()
+endfunction
+"---
+
+function Bar()
+"---
+
+function Bar()
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E123: Undefined function: Nope
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: | echo 1
+line    2:
+E126: Missing :endfunction
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: | echo 1
+"---
+
+Error in {file}:
+line    4:
+E122: Function Foo already exists, add ! to replace it
+"---
+
+   function Foo()
+1    echo 2
+   endfunction
+"---
+
+Error in {file}:
+line    4:
+E123: Undefined function: Foo
+"---
+
+Error in {file}:
+line    1:
+E130: Unknown function: Nope
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E471: Argument required: delfunction
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters:  Bar
+"---
+
+after
+Error in {file}:
+line    4:
+E123: Undefined function: Foo
+"---
+
+Error in {file}:
+line    4:
+E130: Unknown function: Foo
+"---
+
+Error in {file}:
+line    1:
+E128: Function name must start with a capital or "s:": bad()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E853: Duplicate argument name: a
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E989: Non-default argument follows default argument
+"---
+
+Error in {file}:
+line    1:
+E125: Illegal argument: firstline)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E125: Illegal argument: lastline)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a b)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E1068: No white space allowed before ',':  ,b)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+   function F12(...)
+   endfunction
+"---
+
+   function F12(a, ...)
+   endfunction
+"---
+
+   function F12(...) abort
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E932: Closure function should not be at top level: F13
+line    2:
+E193: :endfunction not inside a function
+"---
+
+   function F13(a) abort range dict
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E488: Trailing characters: foo
+"---
+
+Error in {file}:
+line    1:
+E125: Illegal argument: 
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a
+"---
+
+Error in {file}:
+line    1:
+E123: Undefined function: F16
+"---
+
+   function F16(a)
+   endfunction
+"---
+
+   function F17(a, b = 1 + 2, c = [1, 2])
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ")"
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: ")"
+"---
+
+Error in {file}:
+line    1:
+E1068: No white space allowed before ',':   ,  b = 2  )
+line    2:
+E193: :endfunction not inside a function
+line    3:
+E123: Undefined function: F17
+"---
+
+   function F18()
+1    " comment
+2    let x = 1 " trailing
+3          echo x
+   endfunction
+"---
+
+function! F19()
+  echo 'a' |  echo 'b'
+endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+after
+"---
+
+   function F20()
+   endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+   function F20()
+   endfunction
+"---
+
+"---
+
+   function F21()
+1    function! Inner()
+2      echo 'in'
+3    endfunction
+   endfunction
+Error in {file}:
+line    7:
+E123: Undefined function: Inner
+"---
+
+   function F21()
+1    function! Inner()
+2    endfunction
+3    if 1
+4      function! Inner2()
+5      endfunction
+6    endif
+   endfunction
+"---
+
+   function F22()
+1    let x =<< END
+2  endfunction
+3  END
+4    echo x
+   endfunction
+"---
+
+Error in {file}:
+line    7:
+E1145: Missing heredoc end marker: END
+"---
+
+   function F22()
+1    let [a, b] =<< eval END
+2  endfunction
+3  END
+   endfunction
+"---
+
+   function F23()
+1    append
+2  endfunction
+3  .
+   endfunction
+"---
+
+   function F23()
+1    insert
+2  endfunction
+3  .
+   endfunction
+"---
+
+   function F23()
+1    3change!
+2  endfunction
+3  .
+   endfunction
+"---
+
+   function F23()
+1    appendix
+   endfunction
+"---
+
+   function F24()
+1    lua << EOF
+2  endfunction
+3  EOF
+   endfunction
+"---
+
+Error in {file}:
+line    7:
+E1145: Missing heredoc end marker: EOF
+"---
+
+   function F24()
+1    lua <<
+2  endfunction
+3  .
+   endfunction
+"---
+
+Error in {file}:
+line    3:
+E126: Missing :endfunction
+"---
+
+Error in {file}:
+line    4:
+E1145: Missing heredoc end marker: END
+"---
+
+Error in {file}:
+line    4:
+E1145: Missing heredoc end marker: .
+"---
+
+   function F26()
+1    echo 1 | echo 2
+   endfunction
+"---
+
+   function F26()
+1    echo 1 . 2
+3    echo 3
+   endfunction
+"---
+
+   function F26()
+1    echo 'a' . 'b'
+   endfunction
+"---
+
+   function <SNR>1_Loc(x)
+1    return a:x
+   endfunction
+   function <SNR>1_Loc2()
+   endfunction
+"---
+
+Error in {file}:
+line    4:
+E123: Undefined function: <SNR>1_Loc
+"---
+
+   function <SNR>5_Foo()
+   endfunction
+"---
+
+   function Glob()
+   endfunction
+   function Glob()
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E884: Function name cannot contain a colon: a:Bad()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E884: Function name cannot contain a colon: b:Bad()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    2:
+E746: Function name does not match script file name: Foo#Bar
+"---
+
+Error in {file}:
+line    1:
+E124: Missing '(': Foo:Bar()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+   function Foo()
+   endfunction
+"---
+
+   function Curly()
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E125: Illegal argument: 
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E124: Missing '(': F)()
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E129: Function name required
+line    2:
+E193: :endfunction not inside a function
+"---
+
+function! F()
+endfunction
+Error in {file}:
+line    4:
+E488: Trailing characters:  extra
+"---
+
+   function F()
+1    echo 1
+   endfunction
+next
+"---
+
+   function F()
+1    echo 1
+   endfunction
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    3:
+E121: Undefined variable: F
+"---
+
+Error in {file}:
+line    6:
+E123: Undefined function: Skipped
+"---
+
+Error in {file}:
+line    7:
+E123: Undefined function: In
+"---
+
+ok
+"---
+
+   function Taken()
+1      echo 1
+   endfunction
+"---
+
+   function Loop()
+1      echo 'loop'
+   endfunction
+"---
+
+   function L2()
+1      echo 1
+   endfunction
+"---
+
+   function E1()
+1    echo 1
+   endfunction
+"---
+
+next
+"---
+
+next
+"---
+
+Error in {file}:
+line    2:
+E126: Missing :endfunction
+"---
+
+   function E2()
+1    echo 2
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E193: :endfunction not inside a function
+"---
+
+"---
+
+   function T()
+1          echo 'tab'
+   endfunction
+"---
+
+   function W()
+1    echo 1   
+   endfunction
+"---
+
+   function Q()
+1    echo "a\"b"
+   endfunction
+"---
+
+   function Big()
+1    echo 1
+2    echo 2
+3    echo 3
+4    echo 4
+5    echo 5
+6    echo 6
+7    echo 7
+8    echo 8
+9    echo 9
+10   echo 10
+11   echo 11
+   endfunction
+"---
+
+   function Big()
+1    echo 1 . 2
+3    echo 3
+4    echo 4
+5    echo 5
+6    echo 6
+7    echo 7
+8    echo 8
+9    echo 9
+10   echo 10
+11   echo 11
+   endfunction
+"---
+
+   function Z()
+   endfunction
+function! Z()
+endfunction
+"---
+
+   function R(a) range
+   endfunction
+"---
+
+   function Dd(a) dict
+   endfunction
+"---
+
+   function Ab(a) abort
+   endfunction
+"---
+
+   function Ra(a) abort range
+   endfunction
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    1:
+E1068: No white space allowed before ',':  , b )
+line    2:
+E193: :endfunction not inside a function
+"---
+
+   function Sp(a, b, ...)
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a, ..., b)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: ..., a)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: ....)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+   function Sp(a, a1, _b, B2)
+   endfunction
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid argument: a-b)
+line    2:
+E193: :endfunction not inside a function
+"---
+
+Error in {file}:
+line    1:
+E125: Illegal argument: é)
+line    2:
+E193: :endfunction not inside a function

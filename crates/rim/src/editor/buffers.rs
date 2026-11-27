@@ -47,6 +47,8 @@ pub(super) struct Buffer {
     pub last_visual: Option<(super::VKind, usize, usize)>,
     /// Syntax tree of the filetype's grammar (`Editor::sync_syntax`).
     pub syntax: Option<super::syntax::Syntax>,
+    /// `b:` variables.
+    pub vars: super::script::Vars,
 }
 
 impl Buffer {
@@ -69,6 +71,7 @@ impl Buffer {
             change_idx: 0,
             last_visual: None,
             syntax: None,
+            vars: Default::default(),
         }
     }
 
@@ -301,7 +304,7 @@ impl Editor {
             return false;
         }
         let Some(path) = b.path.clone() else {
-            self.error("No file name");
+            self.error("E32: No file name");
             return false;
         };
         let (text, eol) = (b.doc.text().clone(), b.doc.eol());
@@ -310,7 +313,8 @@ impl Editor {
             let (path, text) = (path.clone(), text.clone());
             thread::spawn(move || ex::write_atomic(&path, &text, eol))
         };
-        self.info(writing_msg(&path));
+        // A write is a command of its own in Neovim (`msg_scroll`): its message is never cut.
+        self.info_whole(writing_msg(&path));
         let seq = self.msgs.seq;
         self.saves.push(Saving { buf: id, path, text, eol, handle, seq });
         if wait {
@@ -339,12 +343,15 @@ impl Editor {
         let mut ok = true;
         let (done, running) = mem::take(&mut self.saves).into_iter().partition(|s| pick(s));
         self.saves = running;
+        // The outcome of a write belongs to the command that started it, not to the one running now: it
+        // replaces the row instead of going below what that command shows.
+        let scroll = mem::take(&mut self.msgs.scroll);
         for s in done {
             match s.handle.join().expect("the save thread does not panic") {
                 Ok(()) => {
                     // Success does not cover what a later command reported; a failure does.
                     if self.msgs.seq == s.seq {
-                        self.info(format!("\"{}\" written ({})", s.path.display(), s.eol));
+                        self.info_whole(format!("\"{}\" written ({})", s.path.display(), s.eol));
                     }
                     if let Some(b) = self.buffer_mut(s.buf).filter(|b| b.path.as_ref() == Some(&s.path)) {
                         (b.saved, b.saved_eol) = (s.text, s.eol);
@@ -356,6 +363,7 @@ impl Editor {
                 }
             }
         }
+        self.msgs.scroll = scroll;
         ok
     }
 }

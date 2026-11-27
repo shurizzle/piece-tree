@@ -1,0 +1,352 @@
+NVIM v0.12.6
+
+body
+E ['d']
+"---
+
+body
+E [3]
+E [2]
+E [1]
+"---
+
+body 2
+E [1]
+"---
+
+E [[1, 2]]
+"---
+
+E []
+"---
+
+Error in {file}:
+line    4:
+E193: defer not inside a function
+"---
+
+Error in {file}:
+line    4:
+E193: defer not inside a function
+"---
+
+ok
+"---
+
+Error in {file}:
+line    5:
+E193: defer not inside a function
+ok
+"---
+
+f
+"---
+
+E [2]
+E [1]
+E [0]
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E117: Unknown function: Later
+"---
+
+later x
+"---
+
+defined x
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E117: Unknown function: nosuch
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E119: Not enough arguments for function: abs
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E118: Too many arguments for function: abs
+"---
+
+f
+"---
+
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E119: Not enough arguments for function: Two
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E118: Too many arguments for function: Two
+"---
+
+1 2
+"---
+
+[1, 2, 3]
+[]
+"---
+
+1 5
+"---
+
+E ['viavar']
+"---
+
+E ['p1', 'viapartial']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters: ('x')
+"---
+
+Error in {file}[8]..function F:
+line    2:
+E725: Calling dict function without Dictionary: Dm
+"---
+
+Error in {file}[8]..function F:
+line    5:
+E725: Calling dict function without Dictionary: 1
+"---
+
+Error in {file}[9]..function F:
+line    3:
+E1300: Cannot use a partial with dictionary for :defer
+"---
+
+E ['item']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E121: Undefined variable: x
+E475: Invalid argument: {x -> E(x)}('lam')
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters:  x
+E ['a']
+"---
+
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E107: Missing parentheses: E
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E471: Argument required:   defer
+"---
+
+E ['sp']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters:  | echo 'next'
+E ['a']
+"---
+
+Error in {file}[8]..function F:
+line    1:
+E121: Undefined variable: nosuchvar
+after
+"---
+
+ret
+"---
+
+E ['x']
+ret
+"---
+
+Error in {file}[9]..function F:
+line    2:
+E121: Undefined variable: nosuch
+E ['x']
+-1
+"---
+
+Error in {file}[9]..function F:
+line    2:
+E121: Undefined variable: nosuch
+reached
+E ['x']
+0
+"---
+
+E ['x']
+caught boom
+"---
+
+Error in {file}[8]..function F[2]..{file}[8]..function F:
+line    2:
+E605: Exception not caught: boom
+E ['x']
+next
+"---
+
+body
+Error in {file}[9]..function F[2]..Bad[1]..{file}[9]..function F[2]..Bad:
+line    1:
+E605: Exception not caught: inside
+"---
+
+body
+Error in {file}[8]..function F[2]..Bad:
+line    1:
+E121: Undefined variable: nosuch
+after
+"---
+
+body
+Error in {file}[8]..function F[2]..Bad:
+line    1:
+E121: Undefined variable: nosuch
+0
+"---
+
+c
+fin
+end
+E ['in try']
+"---
+
+in inner
+E ['inner']
+after inner
+E ['outer']
+"---
+
+E ['last']
+E ['inner']
+E ['first']
+"---
+
+f2
+f3
+"---
+
+E ['']
+"---
+
+Error in {file}:
+line    7:
+E118: Too many arguments for function: F
+"---
+
+Error in {file}[8]..function F:
+line    2:
+E46: Cannot change read-only variable "a:x"
+E [7]
+"---
+
+1
+"---
+
+E ['viacall']
+"---
+
+Error in {file}[4]..function F:
+line    1:
+E117: Unknown function: echo
+"---
+
+Error in {file}[9]..function F:
+line    3:
+E121: Undefined variable: nosuch
+E ['b']
+E ['a']
+"---
+
+rec 2
+rec 1
+rec 0
+"---
+
+f
+E ['viaexecute']
+"---
+
+E ['x']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters:  " comment
+E ['r']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters:  | defer E('s')
+E ['r']
+"---
+
+Error in {file}:
+line    4:
+E471: Argument required: defer
+"---
+
+Error in {file}[8]..function F:
+line    2:
+E168: :finish used outside of a sourced file
+E ['x']
+"---
+
+Error in {file}:
+line    7:
+E16: Invalid range: 2,3call R()
+"---
+
+E [1]
+E [1]
+"---
+
+next
+E ['a']
+"---
+
+E ['a']
+"---
+
+E ['b']
+E ['a']
+"---
+
+Error in {file}[8]..function F:
+line    2:
+E749: Empty buffer
+x
+E ['a']
+"---
+
+Error in {file}[7]..function F:
+line    1:
+E488: Trailing characters: ,
+E ['a']
+"---
+
+E [1]
+"---
+
+Error in {file}[8]..function F:
+line    2:
+E117: Unknown function: <SNR>1_E
+E ['g']
+"---
+
+2 1

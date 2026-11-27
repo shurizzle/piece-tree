@@ -8,7 +8,7 @@ mod builtin;
 mod cmdline;
 mod cmdwin;
 mod digraphs;
-mod expr;
+mod script;
 mod ex;
 mod filetype;
 mod graphemes;
@@ -189,6 +189,12 @@ struct Confirm {
     cur: Range<usize>,
 }
 
+/// A yes/no question (`ask_yesno`) that waits for a key: `y` runs `yes`, any other answer drops the command.
+struct Ask {
+    /// The command line to run on `y`, with what the question was about (a backwards range) already settled.
+    yes: String,
+}
+
 impl Confirm {
     /// Next match (and its replacement) in range; `next` past the text means none.
     fn find(&self, text: &Text) -> Option<(Range<usize>, String)> {
@@ -202,10 +208,23 @@ impl Confirm {
 /// Text version, pattern, lines and result of `Editor::matches_in`.
 type MatchCache = (Text, std::rc::Rc<piece_tree::Regex>, Range<usize>, std::rc::Rc<Vec<Vec<Range<usize>>>>);
 
+/// Neovim numbers window ids from 1000 (`win_getid()`, the window argument of `line()`/`col()`); the first window is 1000.
+const FIRST_WIN_ID: usize = 1000;
+
 pub struct Editor {
     /// The current buffer and window; the others are parked in `buffers` and `windows`.
     buf: Buffer,
     win: Window,
+    /// `g:` variables.
+    vars: script::Vars,
+    /// `t:`: the variables of the tab page (there is one).
+    tab_vars: script::Vars,
+    /// `l:` and `a:` outside a function: always empty.
+    func_vars: script::Vars,
+    /// `v:`.
+    vim_vars: script::Vars,
+    /// What the scripts keep: `s:` variables, the files being sourced.
+    scripts: script::State,
     buffers: Vec<Buffer>,
     windows: Vec<Window>,
     split: windows::Split,
@@ -218,6 +237,8 @@ pub struct Editor {
     saves: Vec<buffers::Saving>,
     /// Window area and cursor cell of the last frame, for `Ctrl+W hjkl`.
     screen: windows::Rect,
+    /// Columns of the terminal as the last frame had them (80 before the first): where a message is cut to fit the row.
+    cols: usize,
     cursor_cell: (usize, usize),
     msgs: messages::Messages,
     mode: Mode,
@@ -233,6 +254,8 @@ pub struct Editor {
     last_sub: Option<substitute::Sub>,
     /// `:s///c` in progress (mode `Confirm`).
     confirm: Option<Confirm>,
+    /// A question the editor waits to be answered (`Mode::Confirm` without a `:s///c` session).
+    ask: Option<Ask>,
     /// incsearch: the pattern being typed after `/`, when it compiles.
     inc_search: Option<Search>,
     /// hlsearch: matches of `last_search` are highlighted until `:noh`.
@@ -330,15 +353,21 @@ impl Editor {
     pub fn with_path(doc: Document, path: Option<PathBuf>) -> Self {
         let mut e = Self {
             buf: Buffer::new(1, doc, path, Options::default()),
-            win: Window::new(1, 1),
+            win: Window::new(FIRST_WIN_ID, 1),
+            vars: Default::default(),
+            tab_vars: Default::default(),
+            func_vars: Default::default(),
+            vim_vars: script::init_vim_vars(),
+            scripts: script::State::new(),
             buffers: Vec::new(),
             windows: Vec::new(),
-            split: windows::Split::Win(1),
+            split: windows::Split::Win(FIRST_WIN_ID),
             next_buf: 1,
-            next_win: 1,
+            next_win: FIRST_WIN_ID,
             alt: None,
             saves: Vec::new(),
             screen: windows::Rect { x: 0, y: 0, w: 1, h: 1 },
+            cols: 80,
             cursor_cell: (0, 0),
             msgs: messages::Messages::default(),
             mode: Mode::Normal,
@@ -349,6 +378,7 @@ impl Editor {
             last_search: None,
             last_sub: None,
             confirm: None,
+            ask: None,
             inc_search: None,
             hl: false,
             hl_groups: highlight::Highlights::default(),
@@ -445,6 +475,10 @@ impl Editor {
     /// Register `name` for reading: `+`/`*` ask the terminal (linewise when the text ends with a
     /// line break), with an error message when it does not answer.
     fn reg(&mut self, name: char) -> Option<Reg> {
+        // `/`: the last search pattern.
+        if name == '/' {
+            return self.last_search.as_ref().map(|s| Reg { text: s.pat.clone(), kind: RegKind::Char });
+        }
         if !matches!(name, '+' | '*') {
             return self.regs.get(name).cloned();
         }
@@ -460,35 +494,20 @@ impl Editor {
         }
     }
 
-    /// Reads the init file at `path` (missing: nothing): `:set` lines, `"` comments and blank lines.
-    /// Any other line, or an option error, is reported with its line number and skipped.
+    /// Sources the init file at `path` (missing: nothing): a script like any `:source`d one, whose
+    /// errors are reported with their lines while the other lines still run.
     pub fn load_init(&mut self, path: &Path) {
-        let text = match fs::read_to_string(path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == io::ErrorKind::NotFound => return,
-            Err(e) => return self.error(format!("{}: {e}", path.display())),
-        };
-        let mut errors = Vec::new();
-        for (i, line) in text.lines().enumerate() {
-            let line = line.trim();
-            let line = line.strip_prefix(':').unwrap_or(line).trim_start();
-            if line.is_empty() || line.starts_with('"') {
-                continue;
-            }
-            let (name, args) = line.split_once(char::is_whitespace).unwrap_or((line, ""));
-            let res = match name {
-                "se" | "set" => self.buf.opts.set(args).map(drop),
-                _ if ex::abbr(name, "syn", "syntax") => self.syntax_cmd(args),
-                _ if ex::abbr(name, "hi", "highlight") => self.highlight_cmd(args),
-                _ => Err("only :set, :syntax and :highlight are allowed".into()),
-            };
-            if let Err(e) = res {
-                errors.push(format!("line {}: {e}", i + 1));
-            }
+        match self.source_file(path) {
+            Ok(_) => {}
+            // No init file is no error.
+            Err(_) if !path.exists() => {}
+            Err(e) => self.error(e),
         }
-        if !errors.is_empty() {
-            self.error(format!("{}: {}", path.display(), errors.join("; ")));
-        }
+    }
+
+    /// The init file and the files of the command line are loaded: `has('vim_starting')` is false from now on.
+    pub fn finish_start(&mut self) {
+        self.scripts.started = true;
     }
 
     /// Where grammars and queries live; none without it (the text stays plain).
@@ -909,6 +928,8 @@ impl Editor {
         }
         if self.msgs.hit_enter && self.line_marks.is_empty() {
             self.msgs.clear();
+            // `wait_return`: the next error names its file and line again.
+            self.scripts.reset_last_sourcing();
             if self.msgs.prompt && [KeyCode::Enter, KeyCode::Char(' '), KeyCode::Esc].iter().any(|&c| key == c.into()) {
                 return true;
             }
@@ -1027,15 +1048,15 @@ impl Editor {
         if let (Some(op), 'i' | 'a') = (op, key) {
             self.sync_syntax();
             match self.text_object(key == 'a', arg(), n) {
-                Some(Obj::Chars(r)) => self.operate(op, self.pos_of(r.start), self.pos_of(r.end), Kind::Exclusive),
-                Some(Obj::Lines(a, b)) => self.operate(op, (a, 0), (b, 0), Kind::Linewise),
+                Some(Obj::Chars(r)) => self.operate_pending(op, self.pos_of(r.start), self.pos_of(r.end), Kind::Exclusive),
+                Some(Obj::Lines(a, b)) => self.operate_pending(op, (a, 0), (b, 0), Kind::Linewise),
                 None => {}
             }
             return;
         }
         if op == Some(key) {
             let last = (self.win.line + n - 1).min(self.line_count() - 1);
-            return self.operate(key, (self.win.line, 0), (last, 0), Kind::Linewise);
+            return self.operate_pending(key, (self.win.line, 0), (last, 0), Kind::Linewise);
         }
         if matches!(key, G_NEXT | G_PREV) {
             return self.select_match(op, key == G_NEXT);
@@ -1043,7 +1064,7 @@ impl Editor {
         if parse::is_motion(key) {
             let Some((to, kind)) = self.motion(&cmd) else { return };
             match op {
-                Some(op) => self.operate(op, (self.win.line, self.win.col), to, kind),
+                Some(op) => self.operate_pending(op, (self.win.line, self.win.col), to, kind),
                 None => self.move_to(key, to),
             }
             return;
@@ -1149,7 +1170,7 @@ impl Editor {
             // `&` is `:s`, `g&` is `:%s//~/&` (last substitute on the whole text, same flags).
             '&' => self.substitute(substitute::Sub::again(false)),
             G_SUBST => self.substitute(substitute::Sub::again(true)),
-            G_COUNTS => self.info(self.counts()),
+            G_COUNTS => self.info_whole(self.counts()),
             G_ASCII | G_UTF8 => {
                 let c = self.char_at((self.win.line, self.win.col));
                 self.info(match (key, c) {
@@ -1266,11 +1287,25 @@ impl Editor {
         }
     }
 
+    /// `do_pending_operator`: an operator typed in Normal mode. With 'nostartofline' (Neovim's default) a linewise `d`,
+    /// `<` or `>` goes back to the column the cursor wanted before it ran (`:d` and `:>` do not).
+    // shortcut: `end_adjusted` (a charwise motion made linewise, as `d}` from the first column) is not known here, the column is restored then too
+    fn operate_pending(&mut self, op: char, from: Pos, to: Pos, kind: Kind) {
+        let old_col = self.win.want_col;
+        self.operate(op, from, to, kind);
+        if kind == Kind::Linewise && matches!(op, 'd' | '<' | '>') {
+            self.win.col = old_col.min(self.line_chars(self.win.line).saturating_sub(1));
+            // `w_set_curswant` is still set: the next command takes the column where the cursor is now.
+            self.win.want_col = self.win.col;
+        }
+    }
+
     fn operate(&mut self, op: char, from: Pos, to: Pos, kind: Kind) {
         let (a, b) = sorted(from, to);
         if matches!(op, '<' | '>') {
             return self.shift(a.0, b.0, op == '>', 1);
         }
+        let (old_lines, regname) = (self.line_count() as i64, self.cur_reg);
         let range = self.range(a, b, kind);
         if let Some(f) = case_fn(op) {
             let s = f(&self.buf.doc.text().slice(range.clone()));
@@ -1315,6 +1350,24 @@ impl Editor {
                 }
             }
         }
+        if op == 'y' {
+            // `op_yank`: a message when more than 'report' lines were yanked (a charwise one in one line counts none).
+            let lines = if kind != Kind::Linewise && a.0 == b.0 { 0 } else { b.0 - a.0 + 1 };
+            if lines > self.buf.opts.report {
+                let into = regname.map_or_else(String::new, |c| format!(" into \"{c}"));
+                self.info(format!("{lines} line{} yanked{into}", if lines == 1 { "" } else { "s" }));
+            }
+        } else {
+            // `op_delete` ends with the report of the lines it took away. Taking them all leaves
+            // "--No lines in buffer--" to be shown at the next redraw, which keeps the report back
+            // (`keep_msg`): it is no message of the command, a `:redir` does not get it.
+            if self.buf.doc.text().is_empty() && old_lines > 1 {
+                let keep = self.buf.opts.msg_history;
+                self.msgs.show_with(messages::Level::Info, "--No lines in buffer--".into(), keep, false);
+            } else {
+                self.msgmore(self.line_count() as i64 - old_lines);
+            }
+        }
     }
 
     /// `>`/`<`: moves the indent of lines by `times` × `shiftwidth` columns (a tab counts `tabstop`),
@@ -1335,6 +1388,12 @@ impl Editor {
         }
         self.win.line = first;
         self.set_col(self.first_non_blank(first));
+        // `op_shift`: a message when more than 'report' lines were shifted.
+        let count = last - first + 1;
+        if count > self.buf.opts.report {
+            let (op, t) = (if right { '>' } else { '<' }, if times == 1 { "" } else { "s" });
+            self.info(format!("{count} line{} {op}ed {times} time{t}", if count == 1 { "" } else { "s" }));
+        }
     }
 
     /// Joins `times` lines below the cursor line to it; `spaces`: drop their leading blanks and
@@ -1395,6 +1454,7 @@ impl Editor {
                 };
                 self.win.line = line;
                 self.set_col(self.first_non_blank(line));
+                self.msgmore(s.matches('\n').count() as i64 + i64::from(!s.ends_with('\n')));
                 Some(at + s.len())
             }
             RegKind::Char => {
@@ -1406,6 +1466,7 @@ impl Editor {
                 self.edit_insert(off, &s);
                 (self.win.line, self.win.col) = self.pos_of(off + s.len() - 1);
                 self.win.want_col = self.win.col;
+                self.msgmore(s.matches('\n').count() as i64);
                 Some(off + s.len())
             }
             RegKind::Block => {
@@ -1626,7 +1687,13 @@ impl Editor {
             }
             // `visual_key` has set marks `<` and `>` for the range.
             ':' => self.enter_line(Mode::Command("'<,'>".into())),
-            '<' | '>' => self.shift(a.0, b.0, c == '>', n),
+            '<' | '>' => {
+                let old_col = self.win.want_col;
+                self.shift(a.0, b.0, c == '>', n);
+                // The same 'nostartofline' rule as `operate_pending`.
+                self.win.col = old_col.min(self.line_chars(self.win.line).saturating_sub(1));
+                self.win.want_col = self.win.col;
+            }
             _ if kind == VKind::Block => self.block_op(c),
             'I' => {
                 self.win.line = a.0;
@@ -1647,7 +1714,7 @@ impl Editor {
                     'U' => OP_UPPER,
                     op => op,
                 };
-                self.operate(op, from, to, k);
+                self.operate_pending(op, from, to, k);
                 if case_fn(op).is_some() {
                     self.set_col(from.1);
                 }
@@ -1998,7 +2065,8 @@ impl Editor {
 
     /// A search for typed `pat`, with `ignorecase`/`smartcase` applied (`pat` is kept as typed).
     fn new_search(&self, pat: &str) -> Result<Search, String> {
-        let mut s = Search::new(&self.buf.opts.case_pattern(pat))?;
+        // `(?m)`: `^` and `$` are the start and the end of a line, as in vim.
+        let mut s = Search::new(&format!("(?m){}", self.buf.opts.case_pattern(pat)))?;
         s.pat = pat.into();
         Ok(s)
     }
@@ -2032,8 +2100,12 @@ impl Editor {
         }
     }
 
-    /// `Ctrl+G`: name, modified flag, line count and position in percent.
+    /// `Ctrl+G`: name, modified flag, line count and position in percent, cut at the start when it does not fit (`msg_trunc`).
     fn file_info(&self) -> String {
+        self.msg_may_trunc(self.file_info_whole())
+    }
+
+    fn file_info_whole(&self) -> String {
         let lines = self.line_count();
         format!(
             "\"{}\"{} {lines} line{} --{}%--",
@@ -2088,7 +2160,7 @@ impl Editor {
     /// `:[range]s/pat/rep/[flags]`: one undo step through `Document::replace_matching`.
     fn substitute(&mut self, mut s: substitute::Sub) {
         let (first, last) = match self.range0(s.range.take().as_ref(), false) {
-            Ok(r) => r,
+            Ok(r) => self.counted(r, s.lines),
             Err(e) => return self.error(e),
         };
         if s.confirm && !s.count && !self.line_marks.is_empty() {
@@ -2096,7 +2168,7 @@ impl Editor {
             return self.error("The c flag cannot be used here");
         }
         if s.repeat || s.keep {
-            let Some(last) = &self.last_sub else { return self.error("No previous substitute") };
+            let Some(last) = &self.last_sub else { return self.error("E33: No previous substitute regular expression") };
             if s.repeat {
                 (s.pat, s.rep) = (last.pat.clone(), last.rep.clone());
             }
@@ -2108,31 +2180,30 @@ impl Editor {
         let pat = if s.pat.is_empty() {
             match &self.last_search {
                 Some(l) => l.pat.clone(),
-                None => return self.error("No previous regular expression"),
+                None => return self.error("E35: No previous regular expression"),
             }
         } else {
             s.pat
         };
-        self.last_sub = Some(substitute::Sub { range: None, pat: pat.clone(), rep: s.rep.clone(), all: s.all, ignore_case: s.ignore_case, confirm: false, count: false, repeat: false, keep: false });
+        self.last_sub = Some(substitute::Sub { range: None, pat: pat.clone(), rep: s.rep.clone(), all: s.all, ignore_case: s.ignore_case, confirm: false, count: false, repeat: false, keep: false, lines: None });
         let pattern = match s.ignore_case {
             Some(true) => format!("(?i){pat}"),
             Some(false) => format!("(?-i){pat}"),
             None => self.buf.opts.case_pattern(&pat),
         };
-        let search = match Search::new(&pattern) {
+        let search = match Search::new(&format!("(?m){pattern}")) {
             Ok(r) => r,
             Err(e) => return self.error(e),
         };
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
-        let plural = |k: usize| if k == 1 { "" } else { "s" };
         if s.confirm && !s.count {
             self.last_search = Some(search.clone());
             self.hl = true;
             self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None, cur: 0..0 });
             self.mode = Mode::Confirm;
             if !self.confirm_prompt() {
-                self.error(format!("Pattern not found: {pat}"));
+                self.error(format!("E486: Pattern not found: {pat}"));
             }
             return;
         }
@@ -2156,9 +2227,9 @@ impl Editor {
             self.last_search = Some(search);
             self.hl = true;
             if n == 0 {
-                self.error(format!("Pattern not found: {pat}"));
+                self.error(format!("E486: Pattern not found: {pat}"));
             } else {
-                self.info(                format!("{n} match{} on {} line{}", if n == 1 { "" } else { "es" }, lines.len(), plural(lines.len())));
+                self.sub_report(n, lines.len(), true);
             }
             return;
         }
@@ -2166,7 +2237,7 @@ impl Editor {
         self.last_search = Some(search);
         self.hl = true;
         if n == 0 {
-            return self.error(format!("Pattern not found: {pat}"));
+            return self.error(format!("E486: Pattern not found: {pat}"));
         }
         // The line where the last replacement ends (the edits are in order, each in the text
         // left by the previous ones, so the last one is already in final coordinates).
@@ -2176,7 +2247,7 @@ impl Editor {
         self.win.line = l;
         self.set_col(self.first_non_blank(l));
         self.clamp_normal();
-        self.info(format!("{n} substitution{} on {} line{}", plural(n), lines.len(), plural(lines.len())));
+        self.sub_report(n, lines.len(), false);
         // `.` does not repeat `:` commands (vim), so this undo group is not the last change.
         self.rec_cmd = None;
         self.end_command();
@@ -2196,7 +2267,7 @@ impl Editor {
             !w && m.end > cur && !(visual && if forward { m.end <= after } else { m.start >= cur })
         });
         let found = here.or_else(|| if forward { search::find_forward(&text, &s.re, cur, after) } else { search::find_backward(&text, &s.re, cur) });
-        let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.error(format!("Pattern not found: {}", s.pat)) };
+        let Some((m, _)) = found.filter(|(m, _)| !m.is_empty()) else { return self.error(format!("E486: Pattern not found: {}", s.pat)) };
         let (a, b) = (self.pos_of(m.start), self.pos_of(m.end));
         match op {
             Some(op) => self.operate(op, a, b, Kind::Exclusive),
@@ -2238,14 +2309,19 @@ impl Editor {
             self.set_col(self.first_non_blank(l));
         }
         self.clamp_normal();
-        let plural = |k: usize| if k == 1 { "" } else { "s" };
-        self.info(format!("{} substitution{} on {} line{}", c.n, plural(c.n), c.lines, plural(c.lines)));
+        // Without a report the prompt is cleared (`msg("")`).
+        if !self.sub_report(c.n, c.lines, false) {
+            self.msgs.clear();
+        }
         self.rec_cmd = None;
     }
 
     /// `y` replaces, `n` skips, `a` replaces this and all the rest, `l` replaces this and stops,
     /// `q`/Esc stop.
     fn confirm_key(&mut self, key: KeyEvent) {
+        if self.ask.is_some() {
+            return self.ask_key(key);
+        }
         let k = if key.code == KeyCode::Esc { 'q' } else { normal_char(key).unwrap_or(' ') };
         if !matches!(k, 'y' | 'n' | 'a' | 'l' | 'q') {
             self.confirm_prompt();
@@ -2297,9 +2373,43 @@ impl Editor {
         }
     }
 
+    /// `ask_yesno`: shows `question` with `(y/n)?` and waits. `yes` is the command line to run when the answer is `y`.
+    pub(super) fn ask_yesno(&mut self, question: &str, yes: String) {
+        self.info(format!("{question} (y/n)?"));
+        self.ask = Some(Ask { yes });
+        self.mode = Mode::Confirm;
+    }
+
+    /// `y` answers yes; `n`, Esc and `Ctrl+C` answer no; any other key leaves the question open.
+    fn ask_key(&mut self, key: KeyEvent) {
+        let answer = match key.code {
+            KeyCode::Esc => 'n',
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => 'n',
+            _ => normal_char(key).unwrap_or(' '),
+        };
+        if !matches!(answer, 'y' | 'n') {
+            return;
+        }
+        let Some(ask) = self.ask.take() else { return };
+        self.mode = Mode::Normal;
+        self.msgs.clear();
+        if answer == 'y' {
+            // The command goes on as the typed line would have: the rest of the line is part of it.
+            self.scripts.typed = true;
+            if !self.command(&ask.yes) {
+                self.quit = true;
+            }
+            self.scripts.typed = false;
+        }
+        if self.mode != Mode::Confirm {
+            self.rec_cmd = None;
+            self.end_command();
+        }
+    }
+
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.
     fn reload(&mut self) {
-        let Some(path) = self.buf.path.clone() else { return self.error("No file name") };
+        let Some(path) = self.buf.path.clone() else { return self.error("E32: No file name") };
         match read_doc(&path) {
             Ok(doc) => {
                 (self.buf.saved, self.buf.saved_eol) = (doc.text().clone(), doc.eol());
@@ -2368,4 +2478,4 @@ impl Editor {
 }
 
 #[cfg(test)]
-mod tests;
+pub(crate) mod tests;

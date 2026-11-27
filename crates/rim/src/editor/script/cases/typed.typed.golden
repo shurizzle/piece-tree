@@ -1,0 +1,163 @@
+NVIM v0.12.6
+
+E121: Undefined variable: nosuch
+1
+"---
+
+E492: Not an editor command: foo
+"---
+
+1
+E580: :endif without :if
+"---
+
+E580: :endif without :if
+"---
+
+E488: Trailing characters: foo
+"---
+
+E518: Unknown option: | 
+"---
+
+a
+"---
+
+1
+2
+"---
+
+E121: Undefined variable: nosuch
+3
+"---
+
+E121: Undefined variable: nosuch
+1
+"---
+
+E121: Undefined variable: nosuch
+4
+"---
+
+x
+"---
+
+"---
+
+1
+2
+"---
+
+1
+"---
+
+1
+2
+"---
+
+x
+"---
+
+e1
+after
+"---
+
+1
+E114: Missing quote: " c
+"---
+
+a
+E121: Undefined variable: nosuch
+c
+"---
+
+1
+"---
+
+1
+"---
+
+2
+"---
+
+3
+"---
+
+4
+"---
+
+5
+"---
+
+6
+"---
+
+7
+"---
+
+8
+"---
+
+1
+2
+"---
+
+1
+E121: Undefined variable: nosuch
+"---
+
+E481: No range allowed
+"---
+
+"---
+
+"---
+
+1
+"---
+
+ciao
+ciao
+ciao
+"---
+
+1
+234
+5
+"---
+
+a
+b
+cd
+e
+"---
+
+x
+"---
+
+1
+2
+"---
+
+a
+b
+"---
+                  12
+"---
+        12
+"---
+
+12
+"---
+                                 x
+yz
+"---
+             a
+b
+"---
+
+E16: Invalid range
+['a', 'b']
+"---
+
+['']

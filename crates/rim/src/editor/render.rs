@@ -385,6 +385,7 @@ impl Editor {
         let w = w.max(1);
         let area = Rect { x: 0, y: 0, w, h: h.saturating_sub(1).max(1) };
         self.screen = area;
+        self.cols = w;
         self.screen_drawn = true;
         let mut rects = Vec::new();
         self.split.rects(area, &|id| self.fixed_size(id), self.win_mins(), &mut rects);
@@ -441,6 +442,8 @@ impl Editor {
             })
             .collect();
         let input = match &self.mode {
+            // The lines of a here document have no `:` (`getexline` with no first character).
+            Mode::Command(s) if self.scripts.pending_here.is_some() || self.scripts.pending_func.is_some() || self.scripts.pending_append.is_some() => Some((s.clone(), self.line_pos)),
             Mode::Command(s) => Some((format!(":{s}"), 1 + self.line_pos)),
             Mode::Search(s) => Some((format!("{}{s}", if self.search_back { '?' } else { '/' }), 1 + self.line_pos)),
             Mode::Expr(s) => Some((format!("={s}"), 1 + self.line_pos)),
@@ -466,14 +469,16 @@ impl Editor {
         let (mut cursor, mut bar) = (cursor, bar);
         // A message of several rows (or one wider than the screen) covers the bottom of the screen
         // and waits for a key, like vim's hit-enter prompt.
-        let lines = if self.msgs.text().is_empty() { Vec::new() } else { wrap(self.msgs.text(), w) };
+        let lines: Vec<(String, Style)> = if self.msgs.text().is_empty() {
+            Vec::new()
+        } else {
+            self.msgs.text().split('\n').enumerate().flat_map(|(i, part)| {
+                let style = msg_style(self.msgs.line_level(i));
+                wrap(&msg_cells(part), w).into_iter().map(move |l| (l, style))
+            }).collect()
+        };
         if lines.len() > 1 && !self.msgs.hint && !matches!(self.mode, Mode::Command(_) | Mode::Search(_) | Mode::Expr(_) | Mode::Confirm) {
             (self.msgs.hit_enter, self.msgs.prompt) = (true, self.buf.opts.msg_hit_enter);
-            let style = match self.msgs.level() {
-                Level::Info => Style::Plain,
-                Level::Warning => Style::WarningMsg,
-                Level::Error => Style::ErrorMsg,
-            };
             let total = rows.len();
             if self.buf.opts.more && lines.len() + 1 > total {
                 // Taller than the screen: a pager shows a page at a time (keys in `Editor::pager_key`).
@@ -481,7 +486,7 @@ impl Editor {
                 let top = self.msgs.pager.unwrap_or(0).min(lines.len() - page);
                 (self.msgs.pager, self.msgs.page, self.msgs.total, self.msgs.prompt) = (Some(top), page, lines.len(), true);
                 rows.clear();
-                rows.extend(lines[top..top + page].iter().map(|l| vec![Span { style, text: l.clone() }]));
+                rows.extend(lines[top..top + page].iter().map(|(l, style)| vec![Span { style: *style, text: l.clone() }]));
                 let prompt = if top + page >= lines.len() { "Press ENTER or type command to continue" } else { "-- More --" };
                 rows.push(vec![Span { style: Style::MoreMsg, text: fit(prompt, w) }]);
                 (cursor, bar) = ((str_width(prompt).min(w - 1), rows.len() - 1), false);
@@ -492,7 +497,7 @@ impl Editor {
                 let prompt = usize::from(self.msgs.prompt);
                 let keep = (rows.len() + 1 - prompt).min(lines.len());
                 rows.truncate((rows.len() + 1).saturating_sub(keep + prompt));
-                rows.extend(lines[lines.len() - keep..].iter().map(|l| vec![Span { style, text: l.clone() }]));
+                rows.extend(lines[lines.len() - keep..].iter().map(|(l, style)| vec![Span { style: *style, text: l.clone() }]));
                 if !self.msgs.prompt {
                     let wait = self.buf.opts.msg_wait.unwrap_or(0);
                     self.msgs.deadline.get_or_insert_with(|| Instant::now() + Duration::from_millis(wait as u64));
@@ -530,12 +535,7 @@ impl Editor {
             let rec = self.recording.map_or_else(String::new, |r| format!("recording @{r}"));
             (Style::ModeMsg, if o.showmode { format!("{mode}{rec}") } else { String::new() })
         } else {
-            let style = match self.msgs.level() {
-                Level::Info => Style::Plain,
-                Level::Warning => Style::WarningMsg,
-                Level::Error => Style::ErrorMsg,
-            };
-            (style, self.msgs.text().to_string())
+            (msg_style(self.msgs.level()), msg_cells(self.msgs.text()))
         };
         let ruler = if has_status { String::new() } else { format!("Ln {}, Col {}", self.win.line + 1, self.win.col + 1) };
         let keys = if o.showcmd { self.pending.as_str() } else { "" };
@@ -894,6 +894,47 @@ fn wrap_cursor(s: &str, w: usize) -> (usize, usize) {
         x += cw;
     }
     if x >= w { (row + 1, 0) } else { (row, x) }
+}
+
+/// A line of a message as the screen shows it (`msg_puts_display`): a tab goes to the next multiple of 8
+/// columns, a carriage return back to column 0, where the next text overwrites.
+fn msg_cells(line: &str) -> String {
+    if !line.contains(['\t', '\r']) {
+        return line.to_string();
+    }
+    let mut cells: Vec<char> = Vec::new();
+    let mut col = 0;
+    for c in line.chars() {
+        match c {
+            '\t' => {
+                let to = (col / 8 + 1) * 8;
+                while col < to {
+                    if col >= cells.len() {
+                        cells.push(' ');
+                    }
+                    col += 1;
+                }
+            }
+            '\r' => col = 0,
+            c => {
+                if col < cells.len() {
+                    cells[col] = c;
+                } else {
+                    cells.push(c);
+                }
+                col += 1;
+            }
+        }
+    }
+    cells.into_iter().collect()
+}
+
+fn msg_style(level: Level) -> Style {
+    match level {
+        Level::Info => Style::Plain,
+        Level::Warning => Style::WarningMsg,
+        Level::Error => Style::ErrorMsg,
+    }
 }
 
 /// `s` cut into rows of at most `w` columns: at every newline and when a row is full.

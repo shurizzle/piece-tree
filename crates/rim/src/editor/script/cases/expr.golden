@@ -1,0 +1,354 @@
+NVIM v0.12.6
+
+7
+"---
+
+3
+-3
+9223372036854775807
+-9223372036854775807
+-9223372036854775808
+0
+1
+-1
+"---
+
+2.5
+2.5
+0.333333
+6.0
+1000.0
+1.5e10
+1.0e-5
+100000.0
+1000000.0
+1.234568e8
+0.3
+-0.0
+str2float('inf')
+-str2float('inf')
+str2float('nan')
+"---
+
+Error in {file}:
+line    1:
+E804: Cannot use '%' with Float
+"---
+
+ab
+a1
+ab
+it's
+a	b
+A€A
+"---
+
+13
+1
+31
+-5
+1
+0
+3
+8
+"---
+
+b
+cd
+bc
+ab
+
+
+bc
+é
+"---
+
+1
+0
+1
+1
+1
+1
+1
+1
+0
+0
+1
+1
+1
+1
+"---
+
+0
+1
+1
+0
+-3
+y
+3
+1
+1
+"---
+
+5
+3
+x
+a
+"---
+
+[1, 2, 3]
+[1, 2, 3]
+2
+3
+[2, 3]
+[1, 2]
+[]
+[]
+[]
+[2]
+"---
+
+Error in {file}:
+line    1:
+E684: List index out of range: 5
+"---
+
+Error in {file}:
+line    1:
+E15: Invalid expression: "1 +"
+"---
+
+Error in {file}:
+line    1:
+E110: Missing ')'
+"---
+
+1 2
+"---
+
+Error in {file}:
+line    1:
+E115: Missing quote: 'abc
+"---
+
+Error in {file}:
+line    1:
+E114: Missing quote: "abc
+"---
+
+Error in {file}:
+line    1:
+E696: Missing comma in List: 
+"---
+
+Error in {file}:
+line    1:
+E697: Missing end of List ']': 
+"---
+
+Error in {file}:
+line    1:
+E720: Missing colon in Dictionary: 1}
+"---
+
+Error in {file}:
+line    1:
+E722: Missing comma in Dictionary: 
+"---
+
+Error in {file}:
+line    1:
+E109: Missing ':' after '?'
+"---
+
+Error in {file}:
+line    1:
+E111: Missing ']'
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function len
+"---
+
+Error in {file}:
+line    1:
+E117: Unknown function: foo
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: abs
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: abs
+"---
+
+Error in {file}:
+line    1:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+"---
+
+Error in {file}:
+line    1:
+E113: Unknown option: nosuch
+"---
+
+Error in {file}:
+line    1:
+E691: Can only compare List with List
+"---
+
+Error in {file}:
+line    1:
+E692: Invalid operation for List
+"---
+
+v:true
+v:false
+v:null
+Error in {file}:
+line    4:
+E121: Undefined variable: v:none
+"---
+
+v:true
+v:null
+2
+1
+"---
+
+1
+0
+1
+0
+1
+"---
+
+1
+2
+Error in {file}:
+line    4:
+E716: Key not present in Dictionary: "zz"
+"---
+
+{'3': 4, 'x': 1, 'y-z': 'q'}
+"---
+
+Error in {file}:
+line    1:
+E736: Invalid operation for Dictionary
+"---
+
+Error in {file}:
+line    1:
+E735: Can only compare Dictionary with Dictionary
+"---
+
+Error in {file}:
+line    1:
+E728: Using a Dictionary as a Number
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+"---
+
+1 1 1 5 1 1 1 1
+"---
+
+1 1 1 1 1 1
+"---
+
+1 A A 1 1 1 | \
+"---
+
+a<Foo>b < <> <C-> x<y 5 B
+"---
+
+Error in {file}:
+line    1:
+E474: Invalid argument
+E474: Invalid argument
+<Char-x> after
+"---
+
+1 1 1 1 1 1
+"---
+
+Error in {file}:
+line    1:
+E892: Using a String as a Float
+0
+"---
+
+Error in {file}:
+line    1:
+E892: Using a String as a Float
+0
+"---
+
+Error in {file}:
+line    1:
+E892: Using a String as a Float
+0
+"---
+
+Error in {file}:
+line    1:
+E691: Can only compare List with List
+"---
+
+Error in {file}:
+line    1:
+E735: Can only compare Dictionary with Dictionary
+"---
+
+Error in {file}:
+line    1:
+E362: Using a boolean value as a Float
+0
+"---
+
+Error in {file}:
+line    1:
+E907: Using a special value as a Float
+0
+"---
+
+1 1 1
+"---
+
+0
+"---
+
+0
+"---
+
+1
+"---
+
+a0
+"---
+
+a6
+"---
+
+15
+"---
+
+abc
+"---
+
+16
+"---
+
+a30
