@@ -34,13 +34,14 @@ tree-sitter-css = { version = "0.25", optional = true }
 nucleo-matcher = "0.3.1"
 dumpster = { version = "2.1.0", features = ["derive"] }
 stacker = "0.1.25"
+tree-sitter-vim = { version = "0.4", optional = true }
 
 [features]
 default = ["grammars"]
 # Grammars linked into the binary, the fallback when none is installed (see docs/reference/syntax.md).
 grammars = [
     "lang-rust", "lang-python", "lang-javascript", "lang-typescript", "lang-tsx", "lang-c", "lang-cpp",
-    "lang-markdown", "lang-toml", "lang-html", "lang-css", "lang-json", "lang-bash", "lang-lua",
+    "lang-markdown", "lang-toml", "lang-html", "lang-css", "lang-json", "lang-bash", "lang-lua", "lang-vim",
 ]
 lang-rust = ["dep:tree-sitter-rust"]
 lang-python = ["dep:tree-sitter-python"]
@@ -56,6 +57,7 @@ lang-css = ["dep:tree-sitter-css"]
 lang-json = ["dep:tree-sitter-json"]
 lang-bash = ["dep:tree-sitter-bash"]
 lang-lua = ["dep:tree-sitter-lua"]
+lang-vim = ["dep:tree-sitter-vim"]
 
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1", features = ["event"] }

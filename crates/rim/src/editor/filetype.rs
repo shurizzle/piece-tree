@@ -4,7 +4,7 @@ use std::path::Path;
 
 /// The filetypes `detect` gives (for completion).
 pub(super) const ALL: &[&str] = &[
-    "rust", "c", "cpp", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "go", "java", "ruby", "php", "lua", "sh", "zsh", "fish", "html", "css",
+    "rust", "c", "cpp", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "go", "java", "ruby", "php", "lua", "vim", "sh", "zsh", "fish", "html", "css",
     "scss", "json", "toml", "yaml", "xml", "markdown", "sql", "make", "dockerfile", "text",
 ];
 
@@ -48,6 +48,7 @@ pub(super) fn detect(path: &Path) -> &'static str {
         "rb" => "ruby",
         "php" => "php",
         "lua" => "lua",
+        "vim" => "vim",
         "sh" | "bash" => "sh",
         "zsh" => "zsh",
         "fish" => "fish",
@@ -87,7 +88,7 @@ mod tests {
         // Every extension arm resolves.
         for ext in [
             "rs", "c", "h", "cc", "cpp", "cxx", "hpp", "hh", "hxx", "py", "pyi", "js", "mjs", "cjs", "jsx", "ts", "mts", "cts", "tsx", "go", "java",
-            "rb", "php", "lua", "sh", "bash", "zsh", "fish", "html", "htm", "css", "scss", "json", "toml", "yaml", "yml", "xml", "md", "markdown",
+            "rb", "php", "lua", "vim", "sh", "bash", "zsh", "fish", "html", "htm", "css", "scss", "json", "toml", "yaml", "yml", "xml", "md", "markdown",
             "sql", "mk", "txt",
         ] {
             assert!(!detect(Path::new(&format!("f.{ext}"))).is_empty(), "{ext}");

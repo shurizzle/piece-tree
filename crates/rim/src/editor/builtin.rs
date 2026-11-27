@@ -72,6 +72,8 @@ pub(super) fn lang(name: &str) -> Option<Result<Lang, String>> {
         "bash" => (tree_sitter_bash::LANGUAGE.into(), tree_sitter_bash::HIGHLIGHT_QUERY.into(), String::new(), String::new()),
         #[cfg(feature = "lang-lua")]
         "lua" => (tree_sitter_lua::LANGUAGE.into(), tree_sitter_lua::HIGHLIGHTS_QUERY.into(), tree_sitter_lua::LOCALS_QUERY.into(), tree_sitter_lua::INJECTIONS_QUERY.into()),
+        #[cfg(feature = "lang-vim")]
+        "vim" => (tree_sitter_vim::language(), tree_sitter_vim::HIGHLIGHTS_QUERY.into(), String::new(), tree_sitter_vim::INJECTIONS_QUERY.into()),
         _ => return None,
     };
     Some(Lang::new(name, language, &Queries { highlights: &highlights, locals: &locals, injections: &injections, objects: &objects(name) }))
@@ -96,6 +98,7 @@ pub(super) fn names() -> Vec<&'static str> {
         ("lang-json", "json"),
         ("lang-bash", "bash"),
         ("lang-lua", "lua"),
+        ("lang-vim", "vim"),
     ];
     all.into_iter().filter(|(_, name)| lang(name).is_some()).map(|(_, name)| name).collect()
 }
