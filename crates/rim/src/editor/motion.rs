@@ -365,7 +365,7 @@ impl Editor {
 
     /// `scrolloff` as it applies to the window: at most half the screen.
     pub(super) fn scrolloff(&self) -> usize {
-        self.buf.opts.scrolloff.min(self.win.rows.saturating_sub(1) / 2)
+        self.win.opts.scrolloff.unwrap_or(self.global_opts.scrolloff).min(self.win.rows.saturating_sub(1) / 2)
     }
 
     /// Char boundary at or before byte `b`, clamped to the text (`go`, `:goto`).

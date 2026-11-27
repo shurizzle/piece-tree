@@ -913,6 +913,7 @@ impl Editor {
             return Err(format!("E112: Option name missing: {}", &s[*p..]).into());
         }
         let name = &s[from..q];
+        self.opts_in();
         let v = if ev { self.buf.opts.lookup(name).ok_or_else(|| format!("E113: Unknown option: {name}"))? } else { Value::None };
         *p = q;
         Ok(v)

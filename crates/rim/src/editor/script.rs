@@ -27,7 +27,7 @@ use super::{
     Editor,
     messages::{Level, trans},
 };
-pub(super) use docmd::State;
+pub(super) use docmd::{Frame, State};
 
 /// The `v:` dictionary at start.
 pub(in crate::editor) fn init_vim_vars() -> Vars {
@@ -265,6 +265,7 @@ impl Editor {
             Some('$') => i64::from(std::env::var_os(&spec[1..]).is_some() || expand_env_exists(spec)),
             Some('&' | '+') => {
                 let opt = spec[1..].trim_start_matches("l:").trim_start_matches("g:");
+                self.opts_in();
                 i64::from(self.buf.opts.lookup(opt).is_some())
             }
             Some('*') => i64::from(self.user_function_exists(&spec[1..]).unwrap_or_else(|| funcs::known(&spec[1..]))),
@@ -451,6 +452,8 @@ impl Editor {
     /// (the name was taken, as `arg_end = p` does).
     pub(super) fn let_option(&mut self, name: &str, op: char, rhs: &Value) -> Res<Option<String>> {
         use super::options::OptKind;
+        self.opts_in();
+        let scrolloff = super::options::long(name) == Some("scrolloff");
         let Some(kind) = self.buf.opts.kind(name) else { return Err(format!("E355: Unknown option: {name}")) };
         let op = (op != '=').then_some(op);
         if op.is_some() && ((kind != OptKind::Text && op == Some('.')) || (kind == OptKind::Text && op != Some('.'))) {
@@ -478,9 +481,16 @@ impl Editor {
                 }
                 if kind == OptKind::Flag {
                     self.buf.opts.set_flag(name, n != 0);
+                    self.win_out(false, scrolloff);
+                    self.on_global(|g| g.set_flag(name, n != 0));
+                    self.share_global();
                     Ok(None)
                 } else {
-                    Ok(self.buf.opts.set_number(name, n).err().map(String::from))
+                    self.on_global(|g| { let _ = g.set_number(name, n); });
+                    let r = self.buf.opts.set_number(name, n).err().map(String::from);
+                    self.win_out(false, scrolloff);
+                    self.share_global();
+                    Ok(r)
                 }
             }
             OptKind::Text => {
@@ -491,7 +501,11 @@ impl Editor {
                 if op.is_some() {
                     s = format!("{}{s}", cur.text());
                 }
-                Ok(self.buf.opts.set_text(name, &s).err().map(String::from))
+                let r = self.buf.opts.set_text(name, &s).err().map(String::from);
+                self.on_global(|g| { let _ = g.set_text(name, &s); });
+                self.share_global();
+                self.ff_out();
+                Ok(r)
             }
         }
     }

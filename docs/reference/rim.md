@@ -346,7 +346,7 @@ Every `:` command line is `[range] name[!] [arg]` (`ex::parse`); names take vim'
 | `:[range]w[!] file` `:w >> file` | write (or append) the lines to another file, in the buffer's line ending; an existing file needs `!`; `:[range]w!` without a name writes the lines to the buffer's file (`Use ! to write partial buffer` without `!`) |
 | `:sav[eas][!] file` | write the buffer to `file` and edit it from now on |
 | `:[range]ret[ab][!] [N]` | redo each run of blanks holding a tab for tab stop N, then set `tabstop=N`: as spaces with `expandtab`, else tabs then spaces, and then `!` also turns runs of spaces into tabs; columns are screen cells (a wide char counts 2) |
-| `:set ff=unix\|dos\|mac` `:set ff?` | the buffer's line ending (written on the next save; the buffer becomes modified) |
+| `:set ff=unix\|dos\|mac` `:set ff?` | the buffer's line ending (written on the next save; the buffer becomes modified); an ordinary string option as in Neovim (`ff&`, `ff:dos`, `&ff`, `:let &ff`; `ff+=` and the like are `E474`): `Options::fileformat` is synced with the `Document` by `Editor::ff_in`/`ff_out` around every read or write of an option |
 
 Each command line is one undo step (`:g` and `:normal` included) and `.` does not repeat it.
 
@@ -367,6 +367,11 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 - Result: `N substitution(s) on M line(s)` or `E486: Pattern not found: pat`; the pattern becomes the last search (`n`, highlights); the cursor goes to the first non-blank of the line where the last substitution ends.
 
 ### Options (`:set`)
+
+Where an option lives follows Neovim's scopes (`scope` in `options.lua`), each checked against recorded `nvim` output:
+- **Window** options (`number`, `relativenumber`, `cursorline`, `wrap`, `list`) are in `Window::opts` (what the window shows) and `Window::all_opts` (what a buffer never shown in it gets). `:set` writes both, a modeline the first one; a split or the command-line window copies both. A window that leaves a buffer saves its values in `Buffer::wininfo` (`buflist_setfpos`); entering one picks the window's saved values, else the window that shows it, else the first saved ones, else `all_opts` (`get_winopts`, `find_wininfo`); closing a window frees its entries (`win_free`). `Options` has fields of the same names only as scratch for the `:set` parser: `Editor::win_in`/`win_out` copy them from and to the window around every read or write of an option (`opts_in` also does `fileformat`).
+- **Global** options (`copy_global`: `ignorecase`, `hlsearch`, `report`, the screen's, …) are one value for every buffer, a modeline sets them too (`share_global`). **Global-local** `scrolloff`: the global value is `Editor::global_opts.scrolloff`; a modeline gives the window its own (`WinOpts::scrolloff`), `:set scrolloff` sets the global one and clears the window's.
+- **Buffer** options (`tabstop`, `expandtab`, `shiftwidth`, `modeline`, …) are in `Buffer::opts`; a new buffer starts from `Editor::global_opts`, which `:set` and `:let &` also write (`filetype` and `buftype` never), a modeline does not.
 
 `:set name`, `:set noname`, `:set invname` / `name!` (toggle), `:set name=value`, `:set name?`; several per command; `:set` alone lists all. Errors: `Unknown option: <arg>`, `Invalid argument: <arg>`.
 
@@ -397,6 +402,7 @@ Each command line is one undo step (`:g` and `:normal` included) and `.` does no
 | `wildoptions` | `wop` | `pum,tagfile` | `pum` popup menu, `fuzzy` matching |
 | `wildignore` | `wig` | | comma separated globs (`*.o,target/**`) that file completion leaves out |
 | `wildignorecase` | `wic` | off | file completion ignores case |
+| `modeline` `modelines` | `ml` `mls` | on, 5 | a file's first and last `modelines` lines with `vim: set ts=2 sw=2 et:` (buffer-local, but the options of global scope are shared by every buffer as in Neovim; `scrolloff` set by a modeline stays in its buffer) (or `vi:`, `ex:`, `vim>800:` …, `Vim:` needs `set`) set options, buffer-local; read once when the file is first shown (after the init file) and again by `:e!`; port of `do_modelines`/`chk_modeline` (`editor/modeline.rs`), verified by `modelines_match_neovim` against recorded Neovim output; every option of rim may be set (none is `secure` in Neovim); an error shows `Error in modelines: line N:` and ends the scan |
 | `wildchar` | `wc` | `<Tab>` | key that completes (`<Tab>`, `<S-Tab>`, `<C-x>`, `<Esc>`, `<CR>`, `<Space>` or a number) |
 | `wildcharm` | `wcm` | | a key that completes also in macros |
 | `pumheight` | `ph` | 0 | rows of the popup menu at most (0: as many as fit) |
@@ -456,4 +462,4 @@ Default groups: dark — cursor line bg 236, `LineNr` 243, `CursorLineNr` 214 (b
 
 ## Limits
 
-See [limitations.md](limitations.md): vim subset only, blocks take a tab cut by an edge whole, `"+p` needs a terminal answering OSC 52 reads, tag scan O(n), save breaks hard links, buffer-local options, the last buffer cannot be deleted.
+See [limitations.md](limitations.md): vim subset only, blocks take a tab cut by an edge whole, `"+p` needs a terminal answering OSC 52 reads, tag scan O(n), save breaks hard links, the last buffer cannot be deleted.

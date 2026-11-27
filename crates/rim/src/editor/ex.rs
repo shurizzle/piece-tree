@@ -11,7 +11,7 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use piece_tree::{Document, Edit, LineEnding, Text};
 
-use super::{script::AddrType, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, script, search::{self, Search}, substitute};
+use super::{options::WinOpts, script::AddrType, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, script, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -230,6 +230,65 @@ fn count(s: &str) -> Result<Option<usize>, String> {
     }
 }
 
+
+impl Editor {
+    /// Runs `f` on the global options, which `filetype` and `buftype` never reach (`noglob` in Neovim).
+    pub(super) fn on_global(&mut self, f: impl FnOnce(&mut super::options::Options)) {
+        let (ft, nofile) = (self.global_opts.filetype.clone(), self.global_opts.nofile);
+        f(&mut self.global_opts);
+        (self.global_opts.filetype, self.global_opts.nofile) = (ft, nofile);
+    }
+
+    /// The options of global scope are one value for every buffer, and for the buffers to come (`copy_global`).
+    pub(super) fn share_global(&mut self) {
+        self.buf.opts.copy_global(&mut self.global_opts);
+        for b in &mut self.buffers {
+            self.buf.opts.copy_global(&mut b.opts);
+        }
+    }
+
+    /// Before an option is read or set: the scratch fields of `buf.opts` that stand for the document and window.
+    pub(super) fn opts_in(&mut self) {
+        self.ff_in();
+        self.win_in();
+    }
+
+    /// The window-local options of the window are in `buf.opts` (`scrolloff`: the local value, else the global one).
+    pub(super) fn win_in(&mut self) {
+        self.win.opts.store(&mut self.buf.opts, self.global_opts.scrolloff);
+    }
+
+    /// After an option was set: the window takes the scratch fields back. `:set` (not `local`, a modeline) writes the
+    /// window's global values too, and a `scrolloff` it names clears the local one (the global value is set by
+    /// `on_global`); a modeline gives the window its own `scrolloff` and leaves the global one.
+    pub(super) fn win_out(&mut self, local: bool, scrolloff: bool) {
+        let mut new = WinOpts::load(&self.buf.opts, self.win.opts.scrolloff);
+        if scrolloff {
+            new.scrolloff = local.then_some(self.buf.opts.scrolloff);
+        }
+        if !local {
+            self.win.all_opts = WinOpts { scrolloff: None, ..new.clone() };
+        }
+        self.win.opts = new;
+    }
+
+    /// Before an option is read or set: `opts.fileformat` takes the line ending of the document.
+    pub(super) fn ff_in(&mut self) {
+        self.buf.opts.fileformat = ff_name(self.buf.doc.eol()).into();
+    }
+
+    /// After an option was set: the document takes `opts.fileformat` (`did_set_fileformat`).
+    pub(super) fn ff_out(&mut self) {
+        let eol = match self.buf.opts.fileformat.as_str() {
+            "dos" => LineEnding::CrLf,
+            "mac" => LineEnding::Cr,
+            _ => LineEnding::Lf,
+        };
+        if eol != self.buf.doc.eol() {
+            self.buf.doc.set_eol(eol);
+        }
+    }
+}
 
 fn ff_name(eol: LineEnding) -> &'static str {
     match eol {
@@ -710,28 +769,33 @@ impl Editor {
         }
     }
 
-    /// `:set`, with `ff`/`fileformat` (the document's line ending) handled here.
-    fn set_cmd(&mut self, arg: &str) -> Result<(), String> {
+    /// `:set`: the options of the buffer and the global values new buffers start from.
+    pub(super) fn set_cmd(&mut self, arg: &str) -> Result<(), String> {
+        self.set_cmd_in(arg, false)
+    }
+
+    /// `do_set` with `OPT_LOCAL` when `local` (a modeline): only the buffer's value changes, except for the options
+    /// of global scope (`share_global`).
+    pub(super) fn set_cmd_in(&mut self, arg: &str, local: bool) -> Result<(), String> {
         let (mut shown, mut rest) = (Vec::new(), Vec::new());
         for tok in arg.split_whitespace() {
-            match tok.split_once('=') {
-                Some(("ff" | "fileformat", v)) => self.buf.doc.set_eol(match v {
-                    "unix" => LineEnding::Lf,
-                    "dos" => LineEnding::CrLf,
-                    "mac" => LineEnding::Cr,
-                    _ => return Err(format!("Invalid argument: {tok}")),
-                }),
-                None if matches!(tok.trim_end_matches('?'), "ff" | "fileformat") => shown.push(format!("fileformat={}", ff_name(self.buf.doc.eol()))),
-                _ if let Some(s) = self.window_option(tok) => shown.push(s),
-                _ => rest.push(tok),
+            match self.window_option(tok) {
+                Some(s) => shown.push(s),
+                None => rest.push(tok),
             }
         }
         if !rest.is_empty() || arg.is_empty() {
-            let (text, err) = self.buf.opts.set_all(&rest.join(" "));
-            // Screen options hold for every buffer, not only the one shown.
-            for b in &mut self.buffers {
-                self.buf.opts.copy_global(&mut b.opts);
+            self.opts_in();
+            let args = rest.join(" ");
+            let (text, err) = self.buf.opts.set_all(&args);
+            self.ff_out();
+            self.win_out(local, super::options::Options::names_scrolloff(&args));
+            if !local {
+                self.on_global(|g| {
+                    let _ = g.set_all(&args);
+                });
             }
+            self.share_global();
             shown.push(text);
             self.sync_cmdwin_height();
             shown.retain(|s| !s.is_empty());

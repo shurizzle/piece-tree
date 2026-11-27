@@ -74,11 +74,11 @@ impl Editor {
     /// The line and cluster at `x` cells from the left of the current window and `row` rows from
     /// its top.
     fn pos_at(&self, x: usize, row: usize) -> Pos {
-        let gutter = if self.buf.opts.number || self.buf.opts.relativenumber { gutter_width(self.line_count()) } else { 0 };
+        let gutter = if self.win.opts.number || self.win.opts.relativenumber { gutter_width(self.line_count()) } else { 0 };
         let cell = x.saturating_sub(gutter);
         let ts = self.buf.opts.tabstop;
         let (line, k) = self.step_rows(self.win.top, self.win.top_sub, true, row);
-        if self.buf.opts.wrap {
+        if self.win.opts.wrap {
             let col = self.with_rows(line, |text, rows| {
                 let (start, seg) = rows.row(text, k);
                 start + col_at_cell(seg, cell, ts)
@@ -258,7 +258,7 @@ impl Editor {
         self.with_window(id, |e| match kind {
             MouseEventKind::ScrollUp => e.scroll(false, ver, false),
             MouseEventKind::ScrollDown => e.scroll(true, ver, false),
-            _ if e.buf.opts.wrap => {}
+            _ if e.win.opts.wrap => {}
             k => {
                 let left = if k == MouseEventKind::ScrollLeft { e.win.left.saturating_sub(hor) } else { e.win.left + hor };
                 e.win.left = left;

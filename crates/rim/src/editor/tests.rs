@@ -899,11 +899,12 @@ fn init_file_sets_options() {
     e.msgs.redir = Some(String::new());
     e.load_init(&path);
     assert_eq!(e.msgs.redir.take().unwrap(), format!("\nError in {}:\nline    2:\nE492: Not an editor command: map x y\nline    3:\nE518: Unknown option: foo", path.display()));
-    assert!(!e.buf.opts.relativenumber);
-    // A buffer opened later copies the options.
+    assert!(!e.win.opts.relativenumber);
+    // A buffer opened later shows with the window's options.
     let other = dir.join("b.txt");
     e.open_more(other).unwrap();
-    assert!(e.buffers.len() == 1 && [&e.buf].into_iter().chain(&e.buffers).all(|b| !b.opts.relativenumber));
+    feed(&mut e, ":b2\n");
+    assert!(e.buffers.len() == 1 && !e.win.opts.relativenumber);
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -2387,12 +2388,12 @@ fn ex_retab_and_fileformat() {
     feed(&mut e, ":set ff=dos\n");
     assert_eq!((e.buf.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
     feed(&mut e, ":set ff?\n");
-    assert_eq!(e.msg(), "fileformat=dos");
+    assert_eq!(e.msg(), "  fileformat=dos");
     feed(&mut e, ":set ff=mac nu\n");
-    assert_eq!((e.buf.doc.eol(), e.buf.opts.number), (LineEnding::Cr, true));
+    assert_eq!((e.buf.doc.eol(), e.win.opts.number), (LineEnding::Cr, true));
     feed(&mut e, ":set ff=unix fileformat\n");
-    assert_eq!((e.msg(), e.is_dirty()), ("fileformat=unix", false));
-    assert_eq!(run("a", ":set ff=xx\n").msg(), "Invalid argument: ff=xx");
+    assert_eq!((e.msg(), e.is_dirty()), ("  fileformat=unix", false));
+    assert_eq!(run("a", ":set ff=xx\n").msg(), "E474: Invalid argument: ff=xx");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2869,9 +2870,9 @@ fn screen_options_hold_for_every_buffer() {
     feed(&mut e, &format!(":set ls=2\n:e {}\n:set ls=0 nosmd mopt=wait:7,history:9\n:b1\n", b.display()));
     let o = &e.buf.opts;
     assert_eq!((e.buf.id, o.laststatus, o.showmode, o.msg_wait, o.msg_history), (1, 0, false, Some(7), 9));
-    // A buffer's own options stay its own.
+    // The buffer keeps what the window had in it when it left (`window_options_follow_the_window` has the new-buffer case).
     feed(&mut e, ":set nonu\n:b2\n");
-    assert!(e.buf.opts.number);
+    assert!(e.win.opts.number);
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -3255,9 +3256,9 @@ fn command_line_window_runs_the_edited_line_and_keeps_the_history() {
     assert_eq!(e.history[0], ["s/a/b/", "s/a/b/g"], "the edit did not change the entry");
     // Insert mode too, on the typed line.
     feed(&mut e, ":\x06iset nu\n");
-    assert_eq!((e.cmdwin.is_none(), e.mode == Mode::Normal, e.buf.opts.number), (true, true, true));
+    assert_eq!((e.cmdwin.is_none(), e.mode == Mode::Normal, e.win.opts.number), (true, true, true));
     feed(&mut e, ":\x06iset nonu\n");
-    assert!(!e.buf.opts.number);
+    assert!(!e.win.opts.number);
     assert_eq!(e.history[0].last().map(String::as_str), Some("set nonu"));
 }
 
@@ -4987,4 +4988,256 @@ fn a_typed_function_reads_its_body_from_the_prompt() {
     assert_eq!(e.mode, Mode::Normal);
     assert!(e.msgs.redir.take().unwrap().contains("E126: Missing :endfunction"));
     assert!(!e.scripts.funcs.contains_key("Bar"));
+}
+
+/// Every case was recorded in `nvim --headless -u NONE` (v0.12.6) with `&ts &sw &et &ml &mls` read after loading the file
+/// (Neovim's defaults ts=8 sw=8 noet are set first), and the error shown by `:messages`.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn modelines_match_neovim() {
+    #[rustfmt::skip]
+    type Case = (&'static str, (usize, usize, u8, u8, usize), Option<&'static str>);
+    let cases: &[Case] = &[
+        ("# vim: set ts=3 sw=5 et:", (3, 5, 1, 1, 5), None),
+        ("// vim: ts=3 sw=5", (3, 5, 0, 1, 5), None),
+        ("x vim:ts=3:sw=5:", (3, 5, 0, 1, 5), None),
+        ("ex: ts=3", (8, 8, 0, 1, 5), None),
+        (" ex: ts=3", (3, 8, 0, 1, 5), None),
+        ("vi: ts=3", (3, 8, 0, 1, 5), None),
+        ("Vim: ts=3", (8, 8, 0, 1, 5), None),
+        ("Vim: set ts=3:", (3, 8, 0, 1, 5), None),
+        ("vim>800: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim>801: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim>900: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim801: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim802: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim<802: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim<801: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim=801: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim=802: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim: set ts=3 sw=5", (8, 8, 0, 1, 5), None),
+        ("vim: set ts=3 sw=5 : sw=9", (3, 5, 0, 1, 5), None),
+        ("vim: ts=3:sw=5", (3, 5, 0, 1, 5), None),
+        ("vim: ts=3\\:sw=5", (8, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE521: Number required after =: ts=3:sw=5")),
+        ("vim: set foo=1:", (8, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE518: Unknown option: foo=1")),
+        ("vim: ts=3 foo=1 sw=5", (3, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE518: Unknown option: foo=1 ")),
+        ("vim: ts=3 sw=x sw=5", (3, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE521: Number required after =: sw=x ")),
+        ("vim: set noml: ", (8, 8, 0, 0, 5), None),
+        ("foo\nvim: ts=3\nbar", (3, 8, 0, 1, 5), None),
+        ("vim: ts=3 noet sw=5 et", (3, 5, 1, 1, 5), None),
+        ("vim: all", (8, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE518: Unknown option: all")),
+        ("vim: ts?", (8, 8, 0, 1, 5), None),
+        ("vim: set ts=3 sw=5:: et:", (3, 5, 0, 1, 5), None),
+        ("vim: ::ts=3", (3, 8, 0, 1, 5), None),
+        ("avim: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim:ts=3", (3, 8, 0, 1, 5), None),
+        ("vim: ml=0 ts=3", (8, 8, 0, 1, 5), Some("Error in modelines:\nline    1:\nE474: Invalid argument: ml=0 ")),
+        ("vim: mls=1\nvim: ts=3", (3, 8, 0, 1, 1), None),
+        ("vim: ts=3\n\n\n\n\n\n\n\nvim: sw=5", (3, 5, 0, 1, 5), None),
+        ("a\nb\nc\nd\ne\nf\ng\nvim: sw=5", (8, 5, 0, 1, 5), None),
+        ("vim: ts=3\nvim: noml\nvim: sw=5", (3, 8, 0, 0, 5), None),
+        ("vim: noml\nvim: sw=5", (8, 8, 0, 0, 5), None),
+        ("vim: ts=3 ml sw=5", (3, 5, 0, 1, 5), None),
+        ("vim: sw=5\nvim: foo\nvim: ts=3", (8, 5, 0, 1, 5), Some("Error in modelines:\nline    2:\nE518: Unknown option: foo")),
+        ("vim-1: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim+800: ts=3", (8, 8, 0, 1, 5), None),
+        ("vim>+800: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim> 800: ts=3", (3, 8, 0, 1, 5), None),
+        ("vim99999999999999999999: ts=3", (8, 8, 0, 1, 5), None),
+    ];
+    for &(text, want, err) in cases {
+        let mut e = ed(text);
+        (e.buf.opts.tabstop, e.buf.opts.shiftwidth, e.buf.opts.expandtab) = (8, 8, false);
+        e.finish_start();
+        let o = &e.buf.opts;
+        let got = (o.tabstop, o.shiftwidth, u8::from(o.expandtab), u8::from(o.modeline), o.modelines);
+        assert_eq!(got, want, "{text:?}");
+        if let Some(err) = err {
+            assert_eq!(e.msg(), err, "{text:?}");
+        }
+    }
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn modelines_of_a_buffer_are_read_when_it_is_first_shown() {
+    let dir = temp_dir("modeline");
+    let (a, b) = (dir.join("a.txt"), dir.join("b.txt"));
+    fs::write(&a, "a").unwrap();
+    fs::write(&b, "vim: ts=3\n").unwrap();
+    let mut e = Editor::open(a).unwrap();
+    e.open_more(b.clone()).unwrap();
+    e.finish_start();
+    assert_ne!(e.buf.opts.tabstop, 3);
+    feed(&mut e, &format!(":e {}\n", b.display()));
+    assert_eq!(e.buf.opts.tabstop, 3);
+    // `:e!` reads the modelines again.
+    feed(&mut e, ":set ts=6\n:e!\n");
+    assert_eq!(e.buf.opts.tabstop, 3);
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Recorded in `nvim --headless -u NONE` (v0.12.6): `fileformat` is an ordinary string option.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn fileformat_is_an_option() {
+    for (cmd, want) in [
+        (":set noff\n", "E474: Invalid argument: noff"),
+        (":set ff=foo\n", "E474: Invalid argument: ff=foo"),
+        (":set ff+=dos\n", "E474: Invalid argument: ff+=dos"),
+        (":set ff=dos\n:set ff-=dos\n", "E474: Invalid argument: ff-=dos"),
+        (":set ff=dos\n:set ff^=mac\n", "E474: Invalid argument: ff^=mac"),
+        (":set invff\n", "E474: Invalid argument: invff"),
+        (":set ff=dos\n:set ff&\n:set ff?\n", "  fileformat=unix"),
+        (":set ff:dos\n:set ff?\n", "  fileformat=dos"),
+        (":set fileformat=dos fileformat?\n", "  fileformat=dos"),
+        (":set ff=dos ts=3\n:set ff? ts?\n", "  fileformat=dos\n  tabstop=3"),
+        (":set ff=dos\n:echo &ff\n", "dos"),
+        (":let &ff = 'mac'\n:set ff?\n", "  fileformat=mac"),
+        (":echo exists('&ff') exists('+ff') &fileformat\n", "1 1 unix"),
+    ] {
+        let mut e = ed("a");
+        feed(&mut e, cmd);
+        assert_eq!(e.msg(), want, "{cmd:?}");
+    }
+    let mut e = ed("a");
+    feed(&mut e, ":let &ff = 'dos'\n");
+    assert_eq!(e.buf.doc.eol(), LineEnding::CrLf);
+    feed(&mut e, ":let &ff .= 'x'\n");
+    assert_eq!(e.msg(), "E474: Invalid argument");
+}
+
+/// Recorded in `nvim --headless -u NONE` (v0.12.6) for `ts` and the buffers: A has `vim: ts=3 ft=foo`, B and C are plain
+/// (the file types are rim's detection by name).
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn modelines_stay_in_their_buffer() {
+    let dir = temp_dir("modeline-local");
+    let (a, b, c) = (dir.join("A.txt"), dir.join("B.txt"), dir.join("C.txt"));
+    fs::write(&a, "vim: ts=3 ft=foo\n").unwrap();
+    fs::write(&b, "b\n").unwrap();
+    fs::write(&c, "c\n").unwrap();
+    let mut e = Editor::open(a).unwrap();
+    e.buf.opts.tabstop = 8;
+    e.global_opts.tabstop = 8;
+    e.finish_start();
+    assert_eq!((e.buf.opts.tabstop, e.buf.opts.filetype.as_str()), (3, "foo"));
+    feed(&mut e, &format!(":e {}\n", b.display()));
+    assert_eq!((e.buf.opts.tabstop, e.buf.opts.filetype.as_str()), (8, "text"));
+    // `:set` changes the global value too: the next new buffer gets it, the other ones keep theirs.
+    feed(&mut e, &format!(":set ts=5\n:e {}\n", c.display()));
+    assert_eq!(e.buf.opts.tabstop, 5);
+    feed(&mut e, ":b2\n");
+    assert_eq!(e.buf.opts.tabstop, 5);
+    feed(&mut e, ":b1\n");
+    assert_eq!((e.buf.opts.tabstop, e.buf.opts.filetype.as_str()), (3, "foo"));
+    // `buftype` and `filetype` never become global.
+    feed(&mut e, &format!(":set bt=nofile ft=bar\n:e {}\n", dir.join("D.txt").display()));
+    assert_eq!((e.buf.opts.nofile, e.buf.opts.filetype.as_str()), (false, "text"));
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Recorded in `nvim --headless -u NONE` (v0.12.6): options of global scope are shared by every buffer, even when a
+/// modeline sets them.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn options_of_global_scope_are_shared() {
+    let dir = temp_dir("modeline-global");
+    let (a, b) = (dir.join("A.txt"), dir.join("B.txt"));
+    fs::write(&a, "vim: ic\n").unwrap();
+    fs::write(&b, "b\n").unwrap();
+    let mut e = Editor::open(a).unwrap();
+    e.finish_start();
+    assert!(e.buf.opts.ignorecase);
+    feed(&mut e, &format!(":e {}\n", b.display()));
+    assert!(e.buf.opts.ignorecase);
+    feed(&mut e, ":set noic\n:b1\n");
+    assert!(!e.buf.opts.ignorecase);
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// The window-local options a window has now: `(number, scrolloff)`, the second as `&scrolloff` gives it.
+fn win_nu_so(e: &Editor) -> (bool, usize) {
+    (e.win.opts.number, e.win.opts.scrolloff.unwrap_or(e.global_opts.scrolloff))
+}
+
+/// Every expected value was recorded in `nvim --headless --cmd 'set nu' -u NONE`: A is `a`, B `vim: nonu`, S
+/// `vim: nonu so=7`; C and D are plain.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn window_options_follow_the_window() {
+    let dir = temp_dir("winopts");
+    let f = |n: &str, t: &str| {
+        let p = dir.join(n);
+        fs::write(&p, t).unwrap();
+        p
+    };
+    let (a, b, c, d, s) = (f("A.txt", "a\n"), f("B.txt", "vim: nonu\n"), f("C.txt", "c\n"), f("D.txt", "d\n"), f("S.txt", "vim: nonu so=7\n"));
+    let open = |p: &PathBuf| {
+        let mut e = Editor::open(p.clone()).unwrap();
+        e.finish_start();
+        e
+    };
+    let nu = |e: &Editor| e.win.opts.number;
+    // `:set` in one window leaves the other one alone.
+    let mut e = open(&a);
+    feed(&mut e, ":sp\n:set nonu\n");
+    assert!(!nu(&e));
+    feed(&mut e, "\x17w");
+    assert!(nu(&e));
+    // The buffer a window leaves keeps the options it had there, a new one gets the window's global values.
+    let mut e = open(&a);
+    feed(&mut e, &format!(":e {}\n:set nonu\n", c.display()));
+    assert!(!nu(&e));
+    feed(&mut e, ":b1\n");
+    assert!(nu(&e));
+    feed(&mut e, ":b2\n");
+    assert!(!nu(&e));
+    feed(&mut e, &format!(":e {}\n", d.display()));
+    assert!(!nu(&e));
+    // A closed window leaves its options to the buffer; a global value `:set` wrote later is not used for it.
+    let mut e = open(&a);
+    feed(&mut e, &format!(":sp {}\n", b.display()));
+    assert!(!nu(&e));
+    feed(&mut e, ":q\n:b2\n");
+    assert!(!nu(&e));
+    feed(&mut e, &format!(":e {}\n", c.display()));
+    assert!(nu(&e));
+    // A buffer that another window shows is entered with that window's values.
+    let mut e = open(&a);
+    feed(&mut e, &format!(":sp {}\n\x17w:b2\n", b.display()));
+    assert!(!nu(&e));
+    feed(&mut e, &format!(":e {}\n:b2\n", c.display()));
+    assert!(!nu(&e));
+    let mut e = open(&a);
+    feed(&mut e, &format!(":sp {}\n:set nu\n\x17w:b2\n", b.display()));
+    assert!(nu(&e));
+    // A modeline sets the window's own `scrolloff`; `:set scrolloff` sets the global one and clears the window's.
+    let mut e = open(&s);
+    assert_eq!(win_nu_so(&e), (false, 7));
+    feed(&mut e, ":sp\n");
+    assert_eq!(win_nu_so(&e), (false, 7));
+    feed(&mut e, ":set so=2\n");
+    assert_eq!(win_nu_so(&e).1, 2);
+    feed(&mut e, "\x17w");
+    assert_eq!(win_nu_so(&e).1, 7);
+    feed(&mut e, ":set nu\n");
+    assert!(nu(&e));
+    feed(&mut e, &format!(":e {}\n", a.display()));
+    assert_eq!(win_nu_so(&e), (true, 2));
+    feed(&mut e, ":b1\n");
+    assert_eq!(win_nu_so(&e), (true, 7));
+    let mut e = open(&s);
+    feed(&mut e, &format!(":sp {}\n", c.display()));
+    assert_eq!(win_nu_so(&e), (true, 0));
+    feed(&mut e, "\x17w");
+    assert_eq!(win_nu_so(&e), (false, 7));
+    feed(&mut e, ":b2\n");
+    assert_eq!(win_nu_so(&e), (true, 0));
+    feed(&mut e, ":b1\n");
+    assert_eq!(win_nu_so(&e), (false, 7));
+    // `&number` and `&scrolloff` read the window's values.
+    feed(&mut e, ":echo &nu &so\n");
+    assert_eq!(e.msg(), "0 7");
+    fs::remove_dir_all(&dir).unwrap();
 }

@@ -34,6 +34,11 @@ impl Frame {
         Frame { kind: FrameKind::Except, name, lnum, cookie: SourceCookie::new("") }
     }
 
+    /// A modeline on line `lnum` being applied (`estack_push(ETYPE_MODELINE, "modelines", lnum)`).
+    pub(in crate::editor) fn modeline(lnum: usize) -> Self {
+        Frame { kind: FrameKind::Modeline, name: "modelines".into(), lnum, cookie: SourceCookie::new("") }
+    }
+
     /// A call of the function `name` (`estack_push_ufunc` with line 1).
     pub(super) fn new_func(name: Rc<str>) -> Self {
         Frame { kind: FrameKind::Func, name, lnum: 1, cookie: SourceCookie::new("") }
@@ -144,14 +149,16 @@ pub(super) enum ReaderBase {
 /// One entry of the execution stack (`estack_T`): a script being sourced.
 /// What an entry of the execution stack is (`etype_T`).
 #[derive(Clone, Copy, PartialEq)]
-pub(super) enum FrameKind {
+pub(in crate::editor) enum FrameKind {
     Script,
     Func,
     /// An uncaught exception being reported (`ETYPE_EXCEPT`): named by where it was thrown.
     Except,
+    /// The modeline being applied (`ETYPE_MODELINE`).
+    Modeline,
 }
 
-pub(super) struct Frame {
+pub(in crate::editor) struct Frame {
     pub(super) kind: FrameKind,
     pub(super) name: Rc<str>,
     /// The line being executed (`SOURCING_LNUM`); of an entry below the top, the line that sourced
@@ -169,7 +176,7 @@ pub(in crate::editor) struct State {
     ids: HashMap<PathBuf, usize>,
     /// The script `s:` means now.
     pub cur: usize,
-    pub(super) stack: Vec<Frame>,
+    pub(in crate::editor) stack: Vec<Frame>,
     /// `did_emsg`: an error was reported since the last line was read (or since the start of the
     /// innermost `do_cmdline`).
     pub did_emsg: bool,
@@ -308,7 +315,7 @@ impl State {
                 t = match f.kind {
                     FrameKind::Script => "script ",
                     FrameKind::Func => "function ",
-                    FrameKind::Except => "",
+                    FrameKind::Except | FrameKind::Modeline => "",
                 }
                 .to_string();
                 last = f.kind;

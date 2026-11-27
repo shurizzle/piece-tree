@@ -55,6 +55,7 @@ impl Editor {
         self.next_win += 1;
         let win = self.next_win;
         let mut w = Window::new(win, buf);
+        (w.opts, w.all_opts) = (self.win.opts.clone(), self.win.all_opts.clone());
         // The status row is part of the height, when windows have one.
         // shortcut: the height stays what it was at opening, when windows can be resized
         w.fixed_h = Some(self.buf.opts.cmdwinheight + usize::from(self.buf.opts.laststatus != 0));
@@ -77,6 +78,7 @@ impl Editor {
         }
         self.split = c.split;
         self.windows.retain(|w| w.id != c.win);
+        self.free_window(c.win);
         self.buffers.retain(|b| b.id != c.buf);
     }
 

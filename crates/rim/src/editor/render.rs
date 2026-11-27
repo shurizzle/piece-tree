@@ -141,7 +141,7 @@ impl Editor {
 
     /// Wrap width of the last frame, `usize::MAX` without `wrap` (a line is then one row).
     fn wrap_w(&self) -> usize {
-        if self.buf.opts.wrap { self.win.text_w } else { usize::MAX }
+        if self.win.opts.wrap { self.win.text_w } else { usize::MAX }
     }
 
     /// Runs `f` on line `n` and its rows. The rows of the cursor line and of huge lines are kept between
@@ -248,8 +248,8 @@ impl Editor {
         let ts = self.buf.opts.tabstop;
 
         let text = self.buf.doc.text().clone();
-        let wrap = self.buf.opts.wrap;
-        let (nu, rnu) = (self.buf.opts.number, self.buf.opts.relativenumber);
+        let wrap = self.win.opts.wrap;
+        let (nu, rnu) = (self.win.opts.number, self.win.opts.relativenumber);
         let gutter = if nu || rnu { gutter_width(self.line_count()) } else { 0 };
         let text_w = w.saturating_sub(gutter).max(1);
         self.win.text_w = text_w;
@@ -348,8 +348,8 @@ impl Editor {
                         }
                     }
                     let last = r.done() && k + 1 == r.len();
-                    spans.extend(row_spans(seg, |i| style_at(start + i), self.win.left, text_w, ts, last, self.buf.opts.list));
-                    if active && n == self.win.line && self.buf.opts.cursorline {
+                    spans.extend(row_spans(seg, |i| style_at(start + i), self.win.left, text_w, ts, last, self.win.opts.list));
+                    if active && n == self.win.line && self.win.opts.cursorline {
                         // Explicit padding: erasing with a background color is not portable (no BCE everywhere).
                         let used: usize = spans.iter().map(|s| str_width(&s.text)).sum();
                         if used < w {
@@ -512,7 +512,7 @@ impl Editor {
             rows,
             cursor,
             bar,
-            cursor_line: self.buf.opts.cursorline.then_some(cursor_rows),
+            cursor_line: self.win.opts.cursorline.then_some(cursor_rows),
             cursor_cols,
             ui: hl::Ui::new(&self.hl_groups, self.buf.opts.env()),
             clipboard: self.regs.clipboard.take(),

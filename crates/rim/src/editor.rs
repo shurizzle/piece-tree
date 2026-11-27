@@ -16,6 +16,7 @@ mod highlight;
 mod layout;
 mod literal;
 mod messages;
+mod modeline;
 mod motion;
 mod mouse;
 mod objects;
@@ -342,6 +343,9 @@ pub struct Editor {
     langs: HashMap<String, Option<Rc<syntax::Lang>>>,
     /// `:syntax on|off`: while off nothing is parsed or colored and the `f`/`c`/`a` objects do nothing.
     syntax_on: bool,
+    /// The global values of the options, which a new buffer starts from (`:set` and `:let &` change them with the buffer's
+    /// own; a modeline only the buffer's, but for the options of global scope).
+    global_opts: Options,
 }
 
 impl Editor {
@@ -352,7 +356,8 @@ impl Editor {
     /// An editor on `doc`, without a file (`[No Name]`) when `path` is none.
     pub fn with_path(doc: Document, path: Option<PathBuf>) -> Self {
         let mut e = Self {
-            buf: Buffer::new(1, doc, path, Options::default()),
+            buf: Buffer::new(1, doc, path, Options::default()).for_window(FIRST_WIN_ID),
+            global_opts: Options::default(),
             win: Window::new(FIRST_WIN_ID, 1),
             vars: Default::default(),
             tab_vars: Default::default(),
@@ -508,6 +513,8 @@ impl Editor {
     /// The init file and the files of the command line are loaded: `has('vim_starting')` is false from now on.
     pub fn finish_start(&mut self) {
         self.scripts.started = true;
+        // After the init file, which may set `nomodeline`.
+        self.check_modelines();
     }
 
     /// Where grammars and queries live; none without it (the text stays plain).
@@ -517,6 +524,7 @@ impl Editor {
 
     pub fn set_background(&mut self, bg: Background) {
         self.buf.opts.background = bg;
+        self.global_opts.background = bg;
     }
 
     /// Work for when no key came for a while (`main`): compacts the text once its piece count
@@ -2417,6 +2425,7 @@ impl Editor {
                 (self.grouping, self.changed) = (false, false);
                 self.clamp();
                 self.info(format!("Reloaded ({})", self.buf.doc.eol()));
+                self.do_modelines();
             }
             Err(e) => self.error(format!("Reload failed: {e}")),
         }

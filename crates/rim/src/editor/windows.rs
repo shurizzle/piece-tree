@@ -2,7 +2,7 @@
 
 use std::{cell::RefCell, mem};
 
-use super::{Editor, MatchCache, Mode, Pos, layout};
+use super::{Editor, MatchCache, Mode, Pos, layout, options::WinOpts};
 
 /// One view of a buffer: cursor and scroll state.
 pub(super) struct Window {
@@ -36,6 +36,10 @@ pub(super) struct Window {
     /// (`jumps.len()` when not moving through the list).
     pub jumps: Vec<(usize, usize)>,
     pub jump_idx: usize,
+    /// Window-local options (`w_onebuf_opt`): what the window shows now, and (`all_opts`, `w_allbuf_opt`) the values a buffer
+    /// that was never in this window gets. `:set` writes both, a modeline the first one only.
+    pub opts: WinOpts,
+    pub all_opts: WinOpts,
     /// Height in rows, status row included, the window keeps when its split is laid out (`winfixheight`).
     pub fixed_h: Option<usize>,
     /// Same for the width (`winfixwidth`).
@@ -63,6 +67,8 @@ impl Window {
             off: 0,
             jumps: Vec::new(),
             jump_idx: 0,
+            opts: WinOpts::default(),
+            all_opts: WinOpts::default(),
             fixed_h: None,
             fixed_w: None,
             vars: Default::default(),
@@ -448,6 +454,8 @@ impl Editor {
     pub(super) fn split_window(&mut self, row: bool) {
         self.next_win += 1;
         let mut w = Window::new(self.next_win, self.buf.id);
+        // `win_copy_options`
+        (w.opts, w.all_opts) = (self.win.opts.clone(), self.win.all_opts.clone());
         (w.line, w.col, w.want_col, w.top, w.off) = (self.win.line, self.win.col, self.win.want_col, self.win.top, self.offset());
         let before = self.win_rects();
         assert!(self.split.insert(self.win.id, w.id, row), "the current window is in the layout");
@@ -474,6 +482,8 @@ impl Editor {
         let at = ids.iter().position(|&id| id == self.win.id).expect("listed");
         let next = if at + 1 < ids.len() { ids[at + 1] } else { ids[at - 1] };
         let gone = self.win.id;
+        // `close_buffer`: the options of the window are kept for the buffer it showed.
+        self.save_winopts(self.buf.id, gone, self.win.opts.clone());
         self.park_and_take(next);
         let rects = self.win_rects();
         if self.buf.opts.equalalways || !self.screen_drawn {
@@ -483,6 +493,7 @@ impl Editor {
             self.split.remove(gone, Some(&rects));
         }
         self.windows.retain(|w| w.id != gone);
+        self.free_window(gone);
         Ok(())
     }
 
@@ -571,7 +582,10 @@ impl Editor {
 
     /// `Ctrl+W o`.
     pub(super) fn only_window(&mut self) {
-        self.windows.clear();
+        for w in std::mem::take(&mut self.windows) {
+            self.save_winopts(w.buf, w.id, w.opts.clone());
+            self.free_window(w.id);
+        }
         self.split = Split::Win(self.win.id);
     }
 

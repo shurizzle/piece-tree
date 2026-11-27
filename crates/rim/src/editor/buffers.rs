@@ -10,7 +10,7 @@ use std::{
 
 use piece_tree::{Document, LineEnding, Text};
 
-use super::{Editor, ex, graphemes::LineIndex, filetype, options::Options, read_doc};
+use super::{Editor, ex, graphemes::LineIndex, filetype, options::{Options, WinOpts}, read_doc};
 
 /// Long lines whose cluster index a buffer keeps.
 pub(super) const INDEXES: usize = 4;
@@ -35,7 +35,6 @@ pub(super) struct Buffer {
     pub marks: HashMap<char, usize>,
     /// Cluster indexes of recently used long lines, the most recent last (`Editor::with_index`).
     pub cols: RefCell<Vec<LineIndex>>,
-    // shortcut: every option is buffer-local (window-local wrap/number are not split out), when a window-local option is needed
     pub opts: Options,
     /// Cursor byte offset when the buffer last left a window, where `:b` puts it back.
     pub last: usize,
@@ -49,11 +48,22 @@ pub(super) struct Buffer {
     pub syntax: Option<super::syntax::Syntax>,
     /// `b:` variables.
     pub vars: super::script::Vars,
+    /// What each window last had of this buffer, most recent first (`b_wininfo`).
+    pub wininfo: Vec<WinInfo>,
+    /// Read from a file whose modelines have not been looked at yet (`Editor::check_modelines`).
+    pub modelines_pending: bool,
+}
+
+/// `WinInfo`: the window-local options a window had when it left the buffer. `win` is none once the window is gone.
+pub struct WinInfo {
+    pub win: Option<usize>,
+    pub opts: Option<WinOpts>,
 }
 
 impl Buffer {
     pub fn new(id: usize, doc: Document, path: Option<PathBuf>, mut opts: Options) -> Self {
         opts.filetype = path.as_deref().map_or("", filetype::detect).into();
+        let modelines_pending = path.is_some();
         Self {
             id,
             saved: doc.text().clone(),
@@ -72,7 +82,15 @@ impl Buffer {
             last_visual: None,
             syntax: None,
             vars: Default::default(),
+            wininfo: Vec::new(),
+            modelines_pending,
         }
+    }
+
+    /// `buflist_new`: the buffer is created for window `win`, which has no options for it yet.
+    pub fn for_window(mut self, win: usize) -> Self {
+        self.wininfo.push(WinInfo { win: Some(win), opts: None });
+        self
     }
 
     /// A `buftype=nofile` buffer is never modified.
@@ -129,9 +147,8 @@ impl Editor {
     /// A new empty buffer without a file, not shown yet; returns its id.
     pub(super) fn new_scratch(&mut self) -> usize {
         self.next_buf += 1;
-        let mut opts = self.buf.opts.clone();
-        opts.nofile = false;
-        self.buffers.push(Buffer::new(self.next_buf, Document::new(""), None, opts));
+        let opts = self.global_opts.clone();
+        self.buffers.push(Buffer::new(self.next_buf, Document::new(""), None, opts).for_window(self.win.id));
         self.next_buf
     }
 
@@ -161,9 +178,69 @@ impl Editor {
         mem::swap(&mut self.buf, &mut self.buffers[i]);
         self.alt = Some(self.buffers[i].id);
         self.win.buf = id;
+        // `close_buffer` of the buffer left and `get_winopts` of the one entered.
+        self.save_winopts(self.buffers[i].id, self.win.id, self.win.opts.clone());
+        self.win.opts = self.get_winopts(self.win.id, id);
         self.win.reset_view();
         (self.win.line, self.win.col) = self.pos_of(self.buf.doc.text().floor_char_boundary(self.buf.last));
         self.clamp_normal();
+        self.check_modelines();
+    }
+
+    /// `buflist_setfpos` with `copy_options`: window `win` leaves buffer `buf` and its options are kept for it.
+    pub(super) fn save_winopts(&mut self, buf: usize, win: usize, opts: WinOpts) {
+        let Some(b) = self.buffer_mut(buf) else { return };
+        let mut wip = match b.wininfo.iter().position(|w| w.win == Some(win)) {
+            Some(i) => b.wininfo.remove(i),
+            None => WinInfo { win: Some(win), opts: None },
+        };
+        wip.opts = Some(opts);
+        b.wininfo.insert(0, wip);
+    }
+
+    /// The window `id`, wherever it is parked.
+    fn window_by_id(&self, id: usize) -> Option<&super::windows::Window> {
+        if self.win.id == id { Some(&self.win) } else { self.windows.iter().find(|w| w.id == id) }
+    }
+
+    /// `get_winopts`: the window-local options window `win` gets for `buf`, which it enters: those it had there last
+    /// time or, if it never was in it, those of the window that has it now or had it last, else its own global ones.
+    pub(super) fn get_winopts(&self, win: usize, buf: usize) -> WinOpts {
+        let all = self.window_by_id(win).map(|w| w.all_opts.clone()).unwrap_or_default();
+        let Some(b) = self.buffer(buf) else { return all };
+        let shows = |w: Option<usize>| w.and_then(|w| self.window_by_id(w)).is_some_and(|w| w.buf == buf);
+        // `find_wininfo`: this window's entry with options, else the first one with options or whose window shows the buffer.
+        let wip = b
+            .wininfo
+            .iter()
+            .find(|w| w.win == Some(win) && w.opts.is_some())
+            .or_else(|| b.wininfo.iter().find(|w| w.opts.is_some() || shows(w.win)));
+        match wip {
+            Some(w) if w.win != Some(win) && shows(w.win) => self.window_by_id(w.win.expect("shows a window")).map(|w| w.opts.clone()).unwrap_or(all),
+            Some(WinInfo { opts: Some(o), .. }) => o.clone(),
+            _ => all,
+        }
+    }
+
+    /// `win_free`: no buffer remembers window `id` any more; of the entries without a window only the first is kept.
+    pub(super) fn free_window(&mut self, id: usize) {
+        for b in self.buffers.iter_mut().chain([&mut self.buf]) {
+            let pos_wip = b.wininfo.iter().rposition(|w| w.win == Some(id));
+            let pos_null = b.wininfo.iter().rposition(|w| w.win.is_none());
+            if let Some(p) = pos_wip {
+                b.wininfo[p].win = None;
+                if let Some(n) = pos_null {
+                    b.wininfo.remove(n.max(p));
+                }
+            }
+        }
+    }
+
+    /// The modelines of the current buffer, once, when a file is first shown (Neovim reads a file when it enters it).
+    pub(super) fn check_modelines(&mut self) {
+        if std::mem::take(&mut self.buf.modelines_pending) {
+            self.do_modelines();
+        }
     }
 
     /// `:e file`: switches to the buffer of `file`, or loads it into a new one.
@@ -176,12 +253,15 @@ impl Editor {
         let doc = read_doc(&path).map_err(|e| format!("\"{file}\": {e}"))?;
         // The empty buffer of a start without a file is reused, like vim does.
         if self.buf.path.is_none() && !self.buf.is_dirty() && self.buf.doc.text().is_empty() && self.buf.listed {
-            self.buf = Buffer::new(self.buf.id, doc, Some(path), self.buf.opts.clone());
+            self.buf = Buffer::new(self.buf.id, doc, Some(path), self.global_opts.clone()).for_window(self.win.id);
+            // `get_winopts` of the file now in the window: it was never there.
+            self.win.opts = self.get_winopts(self.win.id, self.buf.id);
             self.win.reset_view();
             (self.win.line, self.win.col) = (0, 0);
+            self.check_modelines();
         } else {
             self.next_buf += 1;
-            self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.buf.opts.clone()));
+            self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id));
             self.switch_buffer(self.next_buf);
         }
         self.info(self.file_info());
@@ -195,7 +275,7 @@ impl Editor {
         }
         let doc = read_doc(&path)?;
         self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.buf.opts.clone()));
+        self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id));
         Ok(())
     }
 
@@ -279,8 +359,11 @@ impl Editor {
             self.switch_buffer(other);
         }
         let last = self.buffer(other).expect("listed").last;
-        for w in self.windows.iter_mut().filter(|w| w.buf == id) {
-            (w.buf, w.off) = (other, last);
+        let shown: Vec<usize> = self.windows.iter().filter(|w| w.buf == id).map(|w| w.id).collect();
+        for win in shown {
+            let opts = self.get_winopts(win, other);
+            let w = self.windows.iter_mut().find(|w| w.id == win).expect("listed above");
+            (w.buf, w.off, w.opts) = (other, last, opts);
             w.reset_view();
         }
         self.buffers.retain(|b| b.id != id);

@@ -85,6 +85,12 @@ pub(super) struct Options {
     pub winminheight: usize,
     pub winwidth: usize,
     pub winminwidth: usize,
+    /// Modelines (`vim: set ts=2:`) of a file are obeyed, in its first and last `modelines` lines.
+    pub modeline: bool,
+    pub modelines: usize,
+    /// `fileformat`: `unix`, `dos` or `mac`. The line ending itself lives in the `Document`; this holds the
+    /// value between `Editor::ff_in` and `Editor::ff_out`, which keep the two the same around every use of an option.
+    pub fileformat: String,
 }
 
 impl Default for Options {
@@ -135,6 +141,9 @@ impl Default for Options {
             winminheight: 1,
             winwidth: 20,
             winminwidth: 1,
+            modeline: true,
+            modelines: 5,
+            fileformat: "unix".into(),
         }
     }
 }
@@ -184,6 +193,9 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("winminheight", Some("wmh"), false),
     ("winwidth", Some("wiw"), false),
     ("winminwidth", Some("wmw"), false),
+    ("modeline", Some("ml"), true),
+    ("modelines", Some("mls"), false),
+    ("fileformat", Some("ff"), false),
 ];
 
 /// Every flag of `'shortmess'` (`SHM_ALL`).
@@ -206,8 +218,18 @@ pub(super) fn long(name: &str) -> Option<&'static str> {
 }
 
 impl Options {
-    /// Copies the options that are global in vim (the screen's, not a buffer's) to `to`.
+    /// Whether `args` of `:set` name `scrolloff`.
+    pub fn names_scrolloff(args: &str) -> bool {
+        args.split_whitespace().any(|a| {
+            let a = a.strip_prefix("no").or_else(|| a.strip_prefix("inv")).unwrap_or(a);
+            long(&a[..a.find(|c: char| !c.is_ascii_alphabetic()).unwrap_or(a.len())]) == Some("scrolloff")
+        })
+    }
+
+    /// Copies the options of global scope in Neovim (`scope = { 'global' }` in `options.lua`) to `to`.
     pub fn copy_global(&self, to: &mut Options) {
+        (to.background, to.termguicolors, to.report, to.modelines) = (self.background, self.termguicolors, self.report, self.modelines);
+        (to.hlsearch, to.incsearch, to.ignorecase, to.smartcase) = (self.hlsearch, self.incsearch, self.ignorecase, self.smartcase);
         (to.laststatus, to.showmode, to.showcmd) = (self.laststatus, self.showmode, self.showcmd);
         (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
         to.shortmess = self.shortmess.clone();
@@ -332,6 +354,7 @@ impl Options {
             "wildmenu" => Some(&mut self.wildmenu),
             "equalalways" => Some(&mut self.equalalways),
             "wildignorecase" => Some(&mut self.wildignorecase),
+            "modeline" => Some(&mut self.modeline),
             _ => None,
         }
     }
@@ -363,6 +386,9 @@ impl Options {
             "winwidth" => format!("winwidth={}", self.winwidth),
             "winminwidth" => format!("winminwidth={}", self.winminwidth),
             "wildignorecase" => on(self.wildignorecase, name),
+            "modeline" => on(self.modeline, name),
+            "modelines" => format!("modelines={}", self.modelines),
+            "fileformat" => format!("fileformat={}", self.fileformat),
             "wildmode" => format!("wildmode={}", self.wildmode),
             "wildoptions" => format!("wildoptions={}", self.wildoptions),
             "shortmess" => format!("shortmess={}", self.shortmess),
@@ -439,6 +465,9 @@ impl Options {
             "winwidth" => self.winwidth = value.parse().map_err(|_| invalid())?,
             "winminheight" => self.winminheight = value.parse().map_err(|_| invalid())?,
             "winminwidth" => self.winminwidth = value.parse().map_err(|_| invalid())?,
+            "modelines" => self.modelines = value.parse().map_err(|_| invalid())?,
+            // `opt_ff_values`
+            "fileformat" => self.fileformat = matches!(value, "unix" | "dos" | "mac").then(|| value.to_string()).ok_or_else(invalid)?,
             "pumheight" => self.pumheight = value.parse().map_err(|_| invalid())?,
             "pumwidth" => self.pumwidth = value.parse().map_err(|_| invalid())?,
             "cmdwinheight" => self.cmdwinheight = value.parse().map_err(|_| invalid())?,
@@ -632,6 +661,39 @@ impl Options {
             rest = next;
         }
         (shown.join("\n"), None)
+    }
+}
+
+/// The window-local options (`scope = { 'win' }` in `options.lua`) of a window, and its local `scrolloff` (global-local:
+/// `None` follows the global value, `-1` in Neovim). `Options` keeps the fields of the same names only as a scratch area
+/// for `set_one`, `show` and `lookup`: `Editor::win_in` fills them from the window, `Editor::win_out` takes them back.
+#[derive(Clone, PartialEq, Debug)]
+pub struct WinOpts {
+    pub number: bool,
+    pub relativenumber: bool,
+    pub cursorline: bool,
+    pub wrap: bool,
+    pub list: bool,
+    pub scrolloff: Option<usize>,
+}
+
+impl Default for WinOpts {
+    fn default() -> Self {
+        let o = Options::default();
+        Self { number: o.number, relativenumber: o.relativenumber, cursorline: o.cursorline, wrap: o.wrap, list: o.list, scrolloff: None }
+    }
+}
+
+impl WinOpts {
+    /// The scratch fields of `o` as window values; `scrolloff` is not read (see `Editor::win_out`).
+    pub fn load(o: &Options, scrolloff: Option<usize>) -> Self {
+        Self { number: o.number, relativenumber: o.relativenumber, cursorline: o.cursorline, wrap: o.wrap, list: o.list, scrolloff }
+    }
+
+    /// Fills the scratch fields of `o`; `scrolloff` is the local value or else `global`.
+    pub fn store(&self, o: &mut Options, global: usize) {
+        (o.number, o.relativenumber, o.cursorline, o.wrap, o.list) = (self.number, self.relativenumber, self.cursorline, self.wrap, self.list);
+        o.scrolloff = self.scrolloff.unwrap_or(global);
     }
 }
 
