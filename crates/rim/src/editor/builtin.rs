@@ -74,6 +74,27 @@ pub(super) fn lang(name: &str) -> Option<Result<Lang, String>> {
         "lua" => (tree_sitter_lua::LANGUAGE.into(), tree_sitter_lua::HIGHLIGHTS_QUERY.into(), tree_sitter_lua::LOCALS_QUERY.into(), tree_sitter_lua::INJECTIONS_QUERY.into()),
         #[cfg(feature = "lang-vim")]
         "vim" => (tree_sitter_vim::language(), tree_sitter_vim::HIGHLIGHTS_QUERY.into(), String::new(), tree_sitter_vim::INJECTIONS_QUERY.into()),
+        #[cfg(feature = "lang-gitignore")]
+        "gitignore" => (
+            konomanoasa_tree_sitter_gitignore::LANGUAGE.into(),
+            konomanoasa_tree_sitter_gitignore::HIGHLIGHTS_QUERY.into(),
+            String::new(),
+            String::new(),
+        ),
+        #[cfg(feature = "lang-gitattributes")]
+        "gitattributes" => (
+            konomanoasa_tree_sitter_gitattributes::LANGUAGE.into(),
+            konomanoasa_tree_sitter_gitattributes::HIGHLIGHTS_QUERY.into(),
+            String::new(),
+            String::new(),
+        ),
+        #[cfg(feature = "lang-gitconfig")]
+        "gitconfig" => (
+            konomanoasa_tree_sitter_gitconfig::LANGUAGE.into(),
+            konomanoasa_tree_sitter_gitconfig::HIGHLIGHTS_QUERY.into(),
+            String::new(),
+            String::new(),
+        ),
         _ => return None,
     };
     Some(Lang::new(name, language, &Queries { highlights: &highlights, locals: &locals, injections: &injections, objects: &objects(name) }))
@@ -99,6 +120,9 @@ pub(super) fn names() -> Vec<&'static str> {
         ("lang-bash", "bash"),
         ("lang-lua", "lua"),
         ("lang-vim", "vim"),
+        ("lang-gitignore", "gitignore"),
+        ("lang-gitattributes", "gitattributes"),
+        ("lang-gitconfig", "gitconfig"),
     ];
     all.into_iter().filter(|(_, name)| lang(name).is_some()).map(|(_, name)| name).collect()
 }

@@ -5,7 +5,7 @@ use std::path::Path;
 /// The filetypes `detect` gives (for completion).
 pub(super) const ALL: &[&str] = &[
     "rust", "c", "cpp", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "go", "java", "ruby", "php", "lua", "vim", "sh", "zsh", "fish", "html", "css",
-    "scss", "json", "toml", "yaml", "xml", "markdown", "sql", "make", "dockerfile", "text",
+    "scss", "json", "toml", "yaml", "xml", "markdown", "sql", "make", "dockerfile", "gitignore", "gitattributes", "gitconfig", "text",
 ];
 
 /// Name of the tree-sitter grammar for filetype `ft` (empty: none); also the common names of fenced code blocks.
@@ -31,6 +31,11 @@ pub(super) fn detect(path: &Path) -> &'static str {
         "Makefile" | "makefile" | "GNUmakefile" => return "make",
         "Dockerfile" => return "dockerfile",
         "Cargo.lock" => return "toml",
+        ".gitignore" | ".dockerignore" => return "gitignore",
+        ".gitattributes" => return "gitattributes",
+        ".gitconfig" | ".gitmodules" | "gitconfig" => return "gitconfig",
+        // `.git/config` and `~/.config/git/config`: the bare name is too common to match alone.
+        "config" if matches!(path.parent().and_then(Path::file_name).and_then(|n| n.to_str()), Some(".git" | "git")) => return "gitconfig",
         _ => {}
     }
     let Some(ext) = path.extension().and_then(|e| e.to_str()) else { return "" };
@@ -79,6 +84,14 @@ mod tests {
             ("X.PY", "python"),
             ("Makefile", "make"),
             ("Cargo.lock", "toml"),
+            ("a/.gitignore", "gitignore"),
+            (".gitattributes", "gitattributes"),
+            ("x/.gitmodules", "gitconfig"),
+            ("r/.git/config", "gitconfig"),
+            ("/h/.config/git/config", "gitconfig"),
+            ("gitconfig", "gitconfig"),
+            ("other/config", ""),
+            ("config", ""),
             ("a.tar.gz", ""),
             ("README", ""),
             ("", ""),

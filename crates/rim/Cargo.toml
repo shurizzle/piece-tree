@@ -37,6 +37,9 @@ dumpster = { version = "2.1.0", features = ["derive"] }
 stacker = "0.1.25"
 libc = "0.2"
 tree-sitter-vim = { version = "0.4", optional = true }
+konomanoasa-tree-sitter-gitignore = { version = "0.7", optional = true }
+konomanoasa-tree-sitter-gitattributes = { version = "0.8", optional = true }
+konomanoasa-tree-sitter-gitconfig = { version = "0.7", optional = true }
 
 [features]
 default = ["grammars"]
@@ -44,6 +47,7 @@ default = ["grammars"]
 grammars = [
     "lang-rust", "lang-python", "lang-javascript", "lang-typescript", "lang-tsx", "lang-c", "lang-cpp",
     "lang-markdown", "lang-toml", "lang-html", "lang-css", "lang-json", "lang-bash", "lang-lua", "lang-vim",
+    "lang-git"
 ]
 lang-rust = ["dep:tree-sitter-rust"]
 lang-python = ["dep:tree-sitter-python"]
@@ -60,6 +64,10 @@ lang-json = ["dep:tree-sitter-json"]
 lang-bash = ["dep:tree-sitter-bash"]
 lang-lua = ["dep:tree-sitter-lua"]
 lang-vim = ["dep:tree-sitter-vim"]
+lang-git = ["lang-gitignore", "lang-gitattributes", "lang-gitconfig"]
+lang-gitignore = ["dep:konomanoasa-tree-sitter-gitignore"]
+lang-gitattributes = ["dep:konomanoasa-tree-sitter-gitattributes"]
+lang-gitconfig = ["dep:konomanoasa-tree-sitter-gitconfig"]
 
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1", features = ["event"] }

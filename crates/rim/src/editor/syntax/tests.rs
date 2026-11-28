@@ -172,6 +172,9 @@ fn every_builtin_grammar_compiles_and_parses() {
         ("bash", "f() { echo \"$1\"; }\n"),
         ("lua", "local function f(x) return x end\n"),
         ("vim", "function! F(x)\n  return a:x\nendfunction\n"),
+        ("gitignore", "# c\n*.o\n!keep/\n"),
+        ("gitattributes", "*.rs text eol=lf\n"),
+        ("gitconfig", "[user]\n\tname = a\n"),
     ];
     assert_eq!(samples.map(|s| s.0).to_vec(), builtin::names());
     for (name, src) in samples {

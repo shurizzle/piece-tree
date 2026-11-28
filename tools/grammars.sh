@@ -29,6 +29,9 @@ json        tree-sitter/tree-sitter-json                  .                     
 bash        tree-sitter/tree-sitter-bash                  .                          master  -
 lua         tree-sitter-grammars/tree-sitter-lua          .                          main  -
 vim         tree-sitter-grammars/tree-sitter-vim          .                          master  -
+gitignore   shunsambongi/tree-sitter-gitignore            .                          main    git-ignore
+gitattributes ObserverOfTime/tree-sitter-gitattributes    .                          master  git-attributes
+gitconfig   the-mikedavis/tree-sitter-git-config       .                          main    git-config
 "
 # helix query directories each grammar inherits from (`; inherits:`), copied along.
 SHARED="ecma _javascript _typescript"
