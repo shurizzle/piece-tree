@@ -6,6 +6,7 @@ description = "Persistent piece tree text buffer (join-based AVL) with cached li
 license = "MIT"
 
 [dependencies]
+arrayvec = "0.7"
 memchr = "2.8.3"
 regex-cursor = { version = "0.1.5", default-features = false, features = ["perf-inline"] }
 str_indices = "0.4.4"

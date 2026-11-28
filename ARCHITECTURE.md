@@ -66,7 +66,7 @@ rim (TUI)  ──uses──▶  Document  ──owns──▶  undo tree of Text
 
 1. Text inside the tree contains **no `\r`**: all input passes through `eol::normalize`.
 2. Every piece is **non-empty**.
-3. AVL balance: `|height(left) - height(right)| <= 1` at every node.
+3. AVL balance: `|height(left) - height(right)| <= 1` at every node. So the height is below `tree::MAX_HEIGHT` (64) for any text that fits in memory; `ChunksIn` relies on it (its inline path panics, never reads out of bounds, if a tree were taller).
 4. Node `len` and `lf` are **totals of the whole subtree** (not left-only as in VS Code); pieces cache their own `lf`. Chars are not cached: char conversions scan (see D15).
 5. Public offsets are **bytes** and must be on UTF-8 char boundaries (asserted).
 6. **No version is ever observable as changed.** `Text::insert` and friends return a new `Text`. The in-place paths (`Text::insert_mut`, `Text::delete_mut`) only change a node that `Arc::get_mut` / `Arc::make_mut` shows has a single owner and clone a shared one before touching it, so a clone, an undo state or a snapshot keeps its content (D19, D20).

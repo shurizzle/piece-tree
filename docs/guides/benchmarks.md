@@ -844,3 +844,16 @@ byte below A0) and U+200B-U+200F, U+202A-U+202E, U+2060-U+206F "not simple", so 
 Kept: ASCII, Latin and CJK are the same within noise. Text with U+00A0-U+00BF pays 1.2 ns per char because C2 can no longer be in the "never
 complex" lead set of tier 1 (its second byte decides), so a block holding one goes to tier 2. Rejected: nothing else was tried; narrowing
 tier 1 to `C2 80-9F` needs the second byte and loses the single compare.
+
+## `chunks_in` / `lines_in`: path kept inline (2026-11-28)
+Standalone copy of the previous version (`ChunksIn` with a `Vec<(&Node, usize)>` allocated per call) against the working tree, same bench file (`cargo bench -p piece-tree`, new cases on the fragmented text of "random edits 1k+1k on 10MB", min of 7 runs, binaries run alternately, two rounds). ns per operation.
+
+| scenario | previous | `SmallVec<[&Node; 32]>` | `ArrayVec<&Node, 64>` |
+|---|---|---|---|
+| `chunks_in` 1 line (random) | 232.6 / 232.0 | 212.6 / 211.6 | 242.5 / 220.1 (previous in that run: 273.5 / 263.9) |
+| `lines_in` 50-line windows | 15.5 / 15.4 | 16.3 / 15.1 | 16.9 / 15.9 (previous: 17.1 / 16.2) |
+| `chunks_in` 256 KB range | 740.8 / 715.8 | 1090.4 / 1050.0 | 631.7 / 584.6 (previous: 734.6 / 726.2) |
+
+- **Kept: `ArrayVec<&Node, 64>`, nodes only.** No allocation per call, and the offset per entry is gone (a part starts where the previous one ended: one `pos`). 11-17% faster on one line, 14-20% faster on a long range, the windows within noise. `MAX_HEIGHT` is safe: a strict AVL tree of 64 levels needs ~2.7e13 nodes.
+- **Rejected: `SmallVec<[&Node; 32]>`.** Equal to `ArrayVec` on one line (-9%) but 45% slower on the long range: every push and pop checks whether the vector spilled to the heap, which a part costs more than the saved allocation.
+- `Chunks` (`chunks()`) is unchanged, so the comparison tables are not rerun (`chunks_in` is not in the cross-library harness).

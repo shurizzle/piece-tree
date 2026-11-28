@@ -9,7 +9,7 @@ use std::{
     rc::Rc,
 };
 
-use piece_tree::Text;
+use piece_tree::{ChunksIn, Text};
 use tree_sitter::{Node, QueryCursor, StreamingIterator, TextProvider, Tree};
 
 use super::lang::{Lang, LocalKind};
@@ -21,11 +21,12 @@ const MAX_LOCALS: usize = 1 << 20;
 /// Text of nodes for query predicates (`#eq?`, `#match?`).
 pub(super) struct Nodes<'a>(pub(super) &'a Text);
 
-impl TextProvider<Vec<u8>> for Nodes<'_> {
-    type I = iter::Once<Vec<u8>>;
+impl<'a> TextProvider<&'a [u8]> for Nodes<'a> {
+    // The node's text is read in place, piece by piece: no copy for a node that spans pieces.
+    type I = iter::Map<ChunksIn<'a>, fn(&'a str) -> &'a [u8]>;
 
     fn text(&mut self, node: Node) -> Self::I {
-        iter::once(self.0.slice(node.byte_range()).into_owned().into_bytes())
+        self.0.chunks_in(node.byte_range()).map(str::as_bytes as fn(&'a str) -> &'a [u8])
     }
 }
 

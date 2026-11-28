@@ -1250,7 +1250,8 @@ impl Editor {
             None => format!(":source buffer={}", self.buf.id),
         };
         let text = self.buf.doc.text();
-        let lines: Vec<String> = (a.max(1)..=b).map(|l| text.line(l - 1).into_owned()).collect();
+        let (lo, hi) = (a.max(1) - 1, b);
+        let lines: Vec<String> = if lo < hi { text.lines_in(text.line_to_offset(lo)..text.line_end(hi - 1)).map(std::borrow::Cow::into_owned).collect() } else { Vec::new() };
         self.source_text(name, SourceCookie::from_lines(lines, a.max(1) - 1))
     }
 

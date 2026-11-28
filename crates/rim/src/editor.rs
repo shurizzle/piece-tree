@@ -139,6 +139,18 @@ struct LastChange {
 }
 
 
+/// Line breaks in bytes `r` of `t`: two line lookups, no copy of the range.
+pub(super) fn newlines_in(t: &Text, r: std::ops::Range<usize>) -> usize {
+    t.offset_to_line(r.end) - t.offset_to_line(r.start)
+}
+
+/// Lines `a..=b` of `t` with their numbers, read in place; none when `a > b`. Take it from a clone of the
+/// text to edit those lines meanwhile, as long as the edits keep the line count.
+pub(super) fn lines_between(t: &Text, a: usize, b: usize) -> impl Iterator<Item = (usize, std::borrow::Cow<'_, str>)> {
+    let lines = (a <= b).then(|| t.lines_in(t.line_to_offset(a)..t.line_end(b)));
+    (a..=b).zip(lines.into_iter().flatten())
+}
+
 fn sorted(a: Pos, b: Pos) -> (Pos, Pos) {
     if a <= b { (a, b) } else { (b, a) }
 }
@@ -2040,8 +2052,8 @@ impl Editor {
         // `op_shift`.
         let tick = self.buf.changedtick;
         self.u_save_lines(first, last);
-        for l in first..=last {
-            let line = self.buf.doc.text().line(l);
+        let snap = self.buf.doc.text().clone();
+        for (l, line) in lines_between(&snap, first, last) {
             if line.is_empty() {
                 col = 0;
                 continue;
@@ -3239,8 +3251,8 @@ impl Editor {
             for e in plan.edits() {
                 let old = (e.start as isize - delta) as usize;
                 let line = text.offset_to_line(old);
-                let takes = text.slice(old..old + e.old_len).matches('\n').count();
-                let crs = plan.text().slice(e.start..e.start + e.new_len).matches('\n').count();
+                let takes = newlines_in(&text, old..old + e.old_len);
+                let crs = newlines_in(plan.text(), e.start..e.start + e.new_len);
                 if half.as_ref().is_some_and(|h| h.0 != line) {
                     half = None;
                 }
@@ -3393,7 +3405,7 @@ impl Editor {
                     c.lines += 1;
                 }
                 c.last_line = Some(l);
-                let item = undo::SubItem { line: l, takes: text.slice(m.clone()).matches('\n').count(), crs: rep.matches('\n').count(), half: None };
+                let item = undo::SubItem { line: l, takes: newlines_in(&text, m.clone()), crs: rep.matches('\n').count(), half: None };
                 let mut did_save = c.did_save;
                 self.sub_undo(&[item], &text, &mut did_save);
                 if let Some(c) = self.confirm.as_mut() {

@@ -246,8 +246,8 @@ impl Editor {
     /// The register text of the block (`op_yank_reg`): every line with the blanks that make the columns straight.
     fn block_text(&self, op: &BlockOp) -> (String, usize) {
         let mut parts = Vec::new();
-        for l in op.start.0..=op.end.0 {
-            let s = self.buf.doc.text().line(l);
+        let t = self.buf.doc.text();
+        for s in t.lines_in(t.line_to_offset(op.start.0)..t.line_end(op.end.0)) {
             let bd = self.prep(&s, op, false);
             let text = s.get(bd.textcol..bd.textcol + bd.textlen).unwrap_or("");
             parts.push(format!("{}{text}{}", " ".repeat(bd.startspaces.max(0) as usize), " ".repeat(bd.endspaces.max(0) as usize)));
@@ -309,8 +309,8 @@ impl Editor {
         self.store_reg(text, RegKind::Block(width), false);
         let start_b = self.line_byte(op.start.0, op.start.1);
         let mut cursor_b = None;
-        for l in op.start.0..=op.end.0 {
-            let s = self.buf.doc.text().line(l).into_owned();
+        let snap = self.buf.doc.text().clone();
+        for (l, s) in super::lines_between(&snap, op.start.0, op.end.0) {
             let bd = self.prep(&s, &op, true);
             if bd.textlen == 0 {
                 continue;
@@ -404,8 +404,8 @@ impl Editor {
         self.u_save_lines(op.start.0, op.end.0);
         let f = super::case_fn(kind).expect("case operator");
         let mut changed = false;
-        for l in op.start.0..=op.end.0 {
-            let s = self.buf.doc.text().line(l).into_owned();
+        let snap = self.buf.doc.text().clone();
+        for (l, s) in super::lines_between(&snap, op.start.0, op.end.0) {
             let bd = self.prep(&s, &op, false);
             let Some(part) = s.get(bd.textcol..bd.textcol + bd.textlen) else { continue };
             let new = f(part);
@@ -523,8 +523,8 @@ impl Editor {
         if ins_len > 0
             && let Some(ins) = first.get(textcol..textcol + ins_len as usize)
         {
-            for l in op.start.0 + 1..=op.end.0 {
-                let s = self.buf.doc.text().line(l).into_owned();
+            let snap = self.buf.doc.text().clone();
+            for (l, s) in super::lines_between(&snap, op.start.0 + 1, op.end.0) {
                 let bd = self.prep(&s, &op, true);
                 if !bd.is_short {
                     self.put_line(l, &format!("{}{ins}{}", &s[..bd.textcol], &s[bd.textcol..]));
@@ -641,8 +641,8 @@ impl Editor {
         // These two live across the lines, as in C: a `$` append on a short line reuses the last one.
         let (mut spaces, mut count) = (0isize, 0isize);
         let mut op_end = None;
-        for l in op.start.0 + 1..=op.end.0 {
-            let old = self.buf.doc.text().line(l).into_owned();
+        let snap = self.buf.doc.text().clone();
+        for (l, old) in super::lines_between(&snap, op.start.0 + 1, op.end.0) {
             *bd = self.prep(&old, op, true);
             if bd.is_short && b_insert {
                 continue;
@@ -713,8 +713,8 @@ impl Editor {
         // `op_shift`.
         self.u_save_lines(op.start.0, op.end.0);
         let block_b = self.line_byte(op.start.0, op.start.1);
-        for l in op.start.0..=op.end.0 {
-            let s = self.buf.doc.text().line(l).into_owned();
+        let snap = self.buf.doc.text().clone();
+        for (l, s) in super::lines_between(&snap, op.start.0, op.end.0) {
             // An empty line has nothing to shift.
             if !s.is_empty()
                 && let Some(new) = self.shift_block_line(&s, &op, amount, !right)

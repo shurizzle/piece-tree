@@ -122,7 +122,7 @@ n = pieces, k = bytes touched or returned, s = inserted bytes, f = newlines in o
 | `line(i)` | one descent + borrowed slice when the line is inside one piece; otherwise O(log n + pieces in line) with a concat |
 | `slice(range)` | O(log n + pieces in range); zero-copy if inside one piece |
 | `chunks()` full iteration | O(n), O(height) stack |
-| `chunks_in(range)` / `lines_in(range)` | O(log n) to start, then O(1) per part (`lines_in`: plus the bytes of the lines that span pieces) |
+| `chunks_in(range)` / `lines_in(range)` | no allocation (inline path of `MAX_HEIGHT` nodes); O(log n) to start, then O(1) per part (`lines_in`: plus the bytes of the lines that span pieces) |
 | `Document::undo`/`redo` | O(edits of the version) |
 | `Document::goto`/`earlier`/`later` | O(versions on the path + their edits) |
 | `Document::earlier_time`/`later_time` | O(versions) scan, then `goto` |

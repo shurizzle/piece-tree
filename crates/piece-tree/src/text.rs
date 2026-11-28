@@ -7,6 +7,7 @@ use std::{
     ops::{ControlFlow, Range},
 };
 
+use arrayvec::ArrayVec;
 use triomphe::Arc;
 
 use crate::chunk::{Chunk, MAX_ADD_BYTES, count_lf};
@@ -700,6 +701,7 @@ impl Text {
     }
 
     pub fn chunks(&self) -> Chunks<'_> {
+        // shortcut: the stack is a `Vec` allocated per call, `ChunksIn` keeps it inline; convert when a benchmark of short `chunks()` walks shows it.
         // The stack never holds more than one node per level.
         let mut c = Chunks { stack: Vec::with_capacity(tree::height(&self.root).into()) };
         c.push_left(&self.root);
@@ -710,11 +712,10 @@ impl Text {
     /// but starting with one O(height) descent and cut at both ends of `range`.
     pub fn chunks_in(&self, range: Range<usize>) -> ChunksIn<'_> {
         self.check_range(&range);
-        let mut c = ChunksIn { stack: Vec::new(), start: range.start, end: range.end };
+        let mut c = ChunksIn { stack: ArrayVec::new(), pos: range.start, skip: 0, end: range.end };
         if range.is_empty() {
             return c;
         }
-        c.stack.reserve(tree::height(&self.root).into());
         // Descend to the piece holding `start`; a piece ending at or before it is skipped with its
         // left subtree.
         let (mut t, mut base) = (&self.root, 0);
@@ -722,10 +723,11 @@ impl Text {
             let n = t.as_ref().expect("start < len is inside a piece");
             let ps = base + tree::len(&n.left);
             if range.start < ps {
-                c.stack.push((n, ps));
+                c.stack.push(n);
                 t = &n.left;
             } else if range.start < ps + n.piece.len() {
-                c.stack.push((n, ps));
+                c.stack.push(n);
+                c.skip = range.start - ps;
                 break;
             } else {
                 base = ps + n.piece.len();
@@ -876,9 +878,13 @@ impl<'a> Iterator for Chunks<'a> {
 
 /// In-order iterator over the parts of the pieces inside a range, see [`Text::chunks_in`].
 pub struct ChunksIn<'a> {
-    /// Pieces still to yield, next on top, each with its start offset in the text.
-    stack: Vec<(&'a Node, usize)>,
-    start: usize,
+    /// Pieces still to yield, next on top: one node per level, inline (no allocation per call), see
+    /// `tree::MAX_HEIGHT`.
+    stack: ArrayVec<&'a Node, { tree::MAX_HEIGHT }>,
+    /// Start of the next part in the text: a piece yielded starts where the previous part ended.
+    pos: usize,
+    /// Bytes of the first piece before the range, dropped by the first part.
+    skip: usize,
     end: usize,
 }
 
@@ -886,20 +892,24 @@ impl<'a> Iterator for ChunksIn<'a> {
     type Item = &'a str;
 
     fn next(&mut self) -> Option<&'a str> {
-        let (n, ps) = self.stack.pop()?;
-        if ps >= self.end {
-            self.stack.clear();
+        if self.pos >= self.end {
             return None;
         }
-        let pe = ps + n.piece.len();
-        // Only the left spine of the right child: everything there starts after `start`.
-        let mut t = &n.right;
-        while let Some(r) = t {
-            let rs = pe + tree::len(&r.left);
-            self.stack.push((r, rs));
-            t = &r.left;
+        let n = self.stack.pop().expect("a range inside the text has a piece left");
+        let text = n.piece.text();
+        let take = (text.len() - self.skip).min(self.end - self.pos);
+        let part = &text[self.skip..self.skip + take];
+        self.skip = 0;
+        self.pos += take;
+        // Only the left spine of the right child, and only if the range goes on: all of it follows `pos`.
+        if self.pos < self.end {
+            let mut t = &n.right;
+            while let Some(r) = t {
+                self.stack.push(r);
+                t = &r.left;
+            }
         }
-        Some(&n.piece.text()[self.start.max(ps) - ps..self.end.min(pe) - ps])
+        Some(part)
     }
 }
 

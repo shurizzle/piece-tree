@@ -268,12 +268,12 @@ impl Editor {
                 continue;
             }
             prev_end = ed.start + ed.new_len;
-            let removed = before.slice(bs..bs + ed.old_len);
-            let inserted = after.slice(ed.start..ed.start + ed.new_len);
-            let (r, i) = (removed.matches('\n').count(), inserted.matches('\n').count());
+            let (r, i) = (super::newlines_in(before, bs..bs + ed.old_len), super::newlines_in(&after, ed.start..ed.start + ed.new_len));
             if r == 0 && i == 0 {
                 continue;
             }
+            let removed = before.slice(bs..bs + ed.old_len);
+            let inserted = after.slice(ed.start..ed.start + ed.new_len);
             let sl = after.offset_to_line(ed.start);
             let sc = ed.start - after.line_to_offset(sl);
             let ri = r as isize;

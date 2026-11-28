@@ -1764,8 +1764,7 @@ impl Editor {
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(a), self.line_end_offset(b));
-        let body = text.slice(start..end).into_owned();
-        let lines: Vec<&str> = body.split('\n').collect();
+        let lines: Vec<std::borrow::Cow<str>> = text.lines_in(start..end).collect();
         let re = match &pat {
             Some(p) => Some(Search::new(&format!("(?m){}", self.buf.opts.case_pattern(p)))?),
             None => None,
@@ -1821,14 +1820,16 @@ impl Editor {
         // `!` takes them from the end; `u` drops a line equal as text to the one put before.
         let mut out: Vec<&str> = Vec::with_capacity(lines.len());
         for i in 0..order.len() {
-            let l = lines[order[if reverse { order.len() - i - 1 } else { i }]];
+            let l: &str = &lines[order[if reverse { order.len() - i - 1 } else { i }]];
             if !uniq || out.last().is_none_or(|prev| str_cmp(l, prev).is_ne()) {
                 out.push(l);
             }
         }
-        let new = out.join("\n");
         let deleted = lines.len() - out.len();
-        if new != body {
+        // Lines hold no `\n`, so equal line lists are equal texts.
+        let same = deleted == 0 && out.iter().zip(&lines).all(|(o, l)| *o == &**l);
+        if !same {
+            let new = out.join("\n");
             // `do_sort` replaces the lines one by one: a mark stays on its line and column; `mark_adjust` only deletes the marks of
             // the lines `u` takes (the last ones of the range) and moves the lines below them.
             self.marks_manual = true;
@@ -1838,7 +1839,7 @@ impl Editor {
                 self.mark_adjust(b - deleted, deleted + 1, None, -(deleted as isize));
             }
         }
-        if new != body || deleted > 0 {
+        if !same {
             // `changed_lines(line1, 0, line2 + 1, -deleted)`: `'.` is the first line sorted.
             let off = self.mark_off(a, 0);
             self.set_dot(off);
@@ -2052,7 +2053,7 @@ impl Editor {
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text();
         // The lines of the range without their last break: `write_atomic` ends the file with one.
-        let part = Text::from(&*text.slice(text.line_to_offset(a)..text.line_end(b)));
+        let part = text.delete(text.line_end(b)..text.len()).delete(0..text.line_to_offset(a));
         let eol = self.buf.doc.eol();
         let o = &self.buf.opts;
         // The last line of the buffer keeps its break on `'endofline'` alone (`bufwrite.c`).
@@ -2105,8 +2106,8 @@ impl Editor {
         let new_vts = if given.is_empty() { old_vts.clone() } else { given.clone() };
         let (old, new) = (Tabs { ts, vts: &old_vts }, Tabs { ts, vts: &new_vts });
         let mut first = None;
-        for l in a..=b {
-            let line = self.buf.doc.text().line(l).into_owned();
+        let snap = self.buf.doc.text().clone();
+        for (l, line) in super::lines_between(&snap, a, b) {
             let (s, touched) = retab_line(&line, old, new, all, self.buf.opts.expandtab, indent_only);
             if s != line {
                 let start = self.buf.doc.text().line_to_offset(l);

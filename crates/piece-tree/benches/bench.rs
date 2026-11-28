@@ -141,6 +141,33 @@ fn main() {
     });
     println!("{:<30} {:>10}", "pieces after random edits", edited.chunks().count());
     read_all_lines("line() all, after edits", &edited);
+    // Range iterators: one line (the short ranges rim reads), 50-line windows, and long ranges.
+    bench("chunks_in 1 line, edited", 100_000, |rng| {
+        (0..100_000)
+            .map(|_| {
+                let l = rng.below(edited.line_count());
+                edited.chunks_in(edited.line_to_offset(l)..edited.line_end(l)).map(str::len).sum::<usize>()
+            })
+            .sum::<usize>()
+    });
+    bench("lines_in 50-line windows", 50_000, |rng| {
+        let mut sum = 0;
+        for _ in 0..1_000 {
+            let start = rng.below(edited.line_count() - 50);
+            let r = edited.line_to_offset(start)..edited.line_end(start + 49);
+            sum += edited.lines_in(r).map(|l| l.len()).sum::<usize>();
+        }
+        sum
+    });
+    bench("chunks_in 256KB x100", 100, |rng| {
+        (0..100)
+            .map(|_| {
+                let start = edited.floor_char_boundary(rng.below(edited.len() - (256 << 10)));
+                let end = edited.floor_char_boundary(start + (256 << 10));
+                edited.chunks_in(start..end).map(str::len).sum::<usize>()
+            })
+            .sum::<usize>()
+    });
     // Compacting the fragmented text into 64 KiB chunks (the editor's `:compact`): its cost per
     // piece, then the same reads and searches on the result.
     let compacted = bench("compact edited (per piece)", edited.piece_count(), |_| edited.compact(64 << 10));

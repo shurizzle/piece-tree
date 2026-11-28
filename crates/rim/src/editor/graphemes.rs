@@ -672,7 +672,7 @@ impl LineIndex {
                 return false;
             }
         } else if at >= s && at + old <= end {
-            let has_nl = |t: &Text, r: Range<usize>| memchr::memchr(b'\n', t.slice(r).as_bytes()).is_some();
+            let has_nl = |t: &Text, r: Range<usize>| super::newlines_in(t, r) > 0;
             if has_nl(&self.text, at..at + old) || has_nl(new, at..at + new_len) {
                 return false;
             }

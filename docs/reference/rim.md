@@ -5,7 +5,7 @@ Minimal vim-like terminal editor in `crates/rim/`. Purpose: exercise the library
 | File | Holds |
 |---|---|
 | `src/main.rs` | CLI, theme detection, init file, OSC 52 clipboard query, `TerminalGuard`, event loop (polls background saves) |
-| `src/editor.rs` | `Editor` state, mode handlers, edits and undo groups, operators, paste, Visual and block ops, `:s`, save/reload |
+| `src/editor.rs` | `Editor` state, mode handlers, edits and undo groups, operators, paste, Visual and block ops, `:s`, save/reload; range readers over `Text` that copy nothing: `newlines_in` (line breaks in a byte range, two `offset_to_line` lookups) and `lines_between` (lines `a..=b` with their numbers from `Text::lines_in`, taken from a clone of the text by the loops that edit those lines, `:sort`, `:retab`, `>`/`<` and the Visual block operators); the tree-sitter `TextProvider` of `editor/syntax/query.rs` reads a node through `Text::chunks_in` |
 | `src/editor/buffers.rs` | `Buffer` (document and its loaded/saved versions, `ML_EMPTY`, optional file, marks, options), `:e file` (reads the file again when the buffer holds it, `E79` for an unknown `~user`), `:enew`, `:b` and the other buffer commands (`do_buffer_goto`), `:ls`, `'hidden'`/`'bufhidden'` (`buf_hide`, `unload_if_unused`, `Buffer::unload`/`load`), `Ctrl+^`, `read_doc`/`doc_without_final_eol` (the last line break is not a line), background `:w` (`Saving`) |
 | `src/editor/cmdline.rs` | the `:`/`/`/`?` line: cursor editing, history, completion, `Ctrl+R`/`Ctrl+V`, running a command or a search |
 | `src/editor/cmdwin.rs` | the command-line window (`Ctrl+F`, `q:`, `q/`, `q?`) |

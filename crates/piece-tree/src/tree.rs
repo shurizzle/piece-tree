@@ -162,6 +162,10 @@ pub(crate) struct Node {
     lf: usize,
 }
 
+/// Bound on the height of any tree: a strict AVL tree of height h has at least Fib(h + 2) - 1 nodes, so 64
+/// levels need ~2.7e13 nodes (petabytes). Iterators keep their path in an inline array of this size.
+pub(crate) const MAX_HEIGHT: usize = 64;
+
 pub(crate) fn height(t: &Tree) -> u8 {
     t.as_ref().map_or(0, |n| n.height)
 }

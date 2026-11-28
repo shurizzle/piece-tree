@@ -278,8 +278,8 @@ impl Editor {
         }
         // The paragraph as clusters (their first chars), line breaks included, with each one's position.
         let (mut chars, mut pos) = (Vec::new(), Vec::new());
-        for l in first..=last {
-            let line = self.buf.doc.text().line(l);
+        let t = self.buf.doc.text();
+        for (l, line) in (first..=last).zip(t.lines_in(t.line_to_offset(first)..t.line_end(last))) {
             for (c, ch) in graphemes::iter(&line).filter_map(|g| g.chars().next()).chain((l < last).then_some('\n')).enumerate() {
                 chars.push(ch);
                 pos.push((l, c));
