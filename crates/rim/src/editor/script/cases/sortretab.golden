@@ -1,0 +1,1400 @@
+NVIM v0.12.6
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['x', 'cherry -3', 'cherry -3', 'banana 10', 'b 0b101 bin', 'apple 2', 'Date 9', 'Apple 2', '0x1F hex', ' c 1.5e3 float', ''] 2 11 1
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+1 1 ['', 'x', '0x1F hex', 'b 0b101 bin', 'banana 10', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'cherry -3', 'cherry -3', 'Date 9'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['x', 'cherry -3', 'cherry -3', 'banana 10', 'b 0b101 bin', 'apple 2', 'Date 9', 'Apple 2', '0x1F hex', ' c 1.5e3 float', ''] 2 11 1
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+1 1 ['', 'x', '0x1F hex', 'b 0b101 bin', 'banana 10', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'cherry -3', 'cherry -3', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', '', 'cherry -3', 'Apple 2', 'apple 2', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', 'cherry -3', 'apple 2', 'Apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort n
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort i
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort u
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort!
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort x
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E493: Backwards range given: 5,2sort /[0-9]/r
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort n
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort i
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort u
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort!
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort x
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 1,100sort /[0-9]/r
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+3 1 ['banana 10', 'Apple 2', '', '0x1F hex', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', '', 'cherry -3', '0x1F hex', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', '', '0x1F hex', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', '', '0x1F hex', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '0x1F hex', '', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', '', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+3 1 ['banana 10', 'Apple 2', '', '0x1F hex', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 3
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['x', 'cherry -3', 'cherry -3', 'banana 10', 'b 0b101 bin', 'apple 2', 'Date 9', 'Apple 2', '0x1F hex', ' c 1.5e3 float', ''] 2 11 1
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', 'Date 9', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', 'Date 9', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', '0x1F hex', ' c 1.5e3 float', 'banana 10', 'b 0b101 bin'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', '0x1F hex', ' c 1.5e3 float', 'banana 10', 'b 0b101 bin'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['', 'banana 10', 'Apple 2', 'cherry -3', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x', '0x1F hex'] 2 11 1
+"---
+
+1 1 ['', 'banana 10', 'Apple 2', 'cherry -3', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x', '0x1F hex'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'cherry -3', 'apple 2', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 line less
+1 1 ['', 'x', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 line less
+1 1 ['', 'x', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2 fewer lines
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 fewer lines
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 line less
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+1 1 ['', 'x', 'Apple 2', 'apple 2', 'b 0b101 bin', 'cherry -3', ' c 1.5e3 float', 'cherry -3', '0x1F hex', 'banana 10', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', '', '0x1F hex', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', '', '0x1F hex', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', ' c 1.5e3 float', 'banana 10', 'b 0b101 bin', '0x1F hex'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', ' c 1.5e3 float', 'banana 10', 'b 0b101 bin', '0x1F hex'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', 'banana 10', '0x1F hex', ' c 1.5e3 float', 'b 0b101 bin'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', 'apple 2', '', 'Date 9', 'cherry -3', 'x', 'banana 10', '0x1F hex', ' c 1.5e3 float', 'b 0b101 bin'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E35: No previous regular expression
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E35: No previous regular expression
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E35: No previous regular expression
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: a
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: a
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: a
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', '', '0x1F hex', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 line less
+1 1 ['banana 10', '', 'b 0b101 bin', 'x', 'Apple 2', 'apple 2', 'Date 9', ' c 1.5e3 float', 'cherry -3', '0x1F hex'] 2 11 1
+"---
+
+1 line less
+1 1 ['banana 10', '', 'b 0b101 bin', 'x', 'Apple 2', 'apple 2', 'Date 9', ' c 1.5e3 float', 'cherry -3', '0x1F hex'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'Apple 2', 'apple 2', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+2 fewer lines
+1 1 ['', 'x', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 fewer lines
+1 1 ['', 'x', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 line less
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E475: Invalid argument: z
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E475: Invalid argument: z
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E475: Invalid argument: z
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E474: Invalid argument
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'banana 10', 'b 0b101 bin', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'banana 10', 'b 0b101 bin', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'apple 2', 'Apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'apple 2', 'Apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 line less
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'apple 2', 'Apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'apple 2', 'Apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'cherry -3', 'Date 9', 'x'] 2 11 1
+"---
+
+2 1 ['banana 10', '', '0x1F hex', 'apple 2', 'Apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+Error in {file}:
+line   16:
+E654: Missing delimiter after search pattern: 
+3 2 ['banana 10', 'Apple 2', 'cherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 11
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+1 1 ['Apple 2', 'cherry -3', '', '0x1F hex', 'b 0b101 bin', 'cherry -3', 'x', 'banana 10', 'apple 2', ' c 1.5e3 float', 'Date 9'] 2 11 1
+"---
+
+2 1 ['banana 10', 'Apple 2', 'cherry -3', '', '0x1F hex', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+1 line less
+1
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1 line less
+1
+1 1 ['', ' c 1.5e3 float', '0x1F hex', 'Apple 2', 'Date 9', 'apple 2', 'b 0b101 bin', 'banana 10', 'cherry -3', 'x'] 2 11 1
+"---
+
+1
+2 1 ['banana 10', '', '0x1F hex', 'Apple 2', 'apple 2', 'cherry -3', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+2
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2
+1 1 ['', 'x', 'cherry -3', 'cherry -3', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Apple 2', 'apple 2', 'Date 9', 'banana 10'] 2 11 1
+"---
+
+2
+2 1 ['banana 10', '', 'cherry -3', '0x1F hex', 'Apple 2', 'apple 2', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 2 11 2
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 1
+"---
+
+3 15 ['				banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 1
+"---
+
+3 15 ['				banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E492: Not an editor command: retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 1
+"---
+
+3 10 ['		banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 1
+"---
+
+3 7 ['	banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 1
+"---
+
+3 15 ['				banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 1
+"---
+
+3 15 ['				banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 1 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E492: Not an editor command: %retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: %retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: %retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: %retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 1
+"---
+
+3 7 ['        banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 1
+"---
+
+3 10 ['        banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 1
+"---
+
+3 10 ['        banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 1
+"---
+
+3 10 ['        banana 10', '		  Apple 2', '				 x		 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 4 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 1
+"---
+
+3 7 ['        banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 1
+"---
+
+3 7 ['        banana 10', '	  Apple 2', '		 x	 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 2 1
+"---
+
+3 15 ['        banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 2 1
+"---
+
+3 15 ['        banana 10', '					Apple 2', '								 x			 ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 2 2 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E492: Not an editor command: 2,4retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: 2,4retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: 2,4retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E492: Not an editor command: 2,4retabx
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E475: Invalid argument: 4 x
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0
+"---
+
+Error in {file}:
+line   18:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 8 0
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 1
+"---
+
+Error in {file}:
+line   19:
+E487: Argument must be positive
+3 26 ['        banana 10', '          Apple 2', '                 x       ycherry -3', 'apple 2', '', '0x1F hex', 'b 0b101 bin', ' c 1.5e3 float', 'Date 9', 'cherry -3', 'x'] 3 3 3 4 0

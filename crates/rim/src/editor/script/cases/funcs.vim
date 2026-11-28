@@ -898,3 +898,435 @@ function F()
   return 7
 endfunction
 echo function('{"F"}')()
+"---
+echo getregtype('a')
+"---
+echo getregtype()
+"---
+echo getregtype('')
+"---
+echo getregtype('_') getregtype('/') getregtype(':') getregtype('%') getregtype('.') getregtype('=')
+"---
+echo getregtype('!') getregtype('[') getregtype('ab')
+"---
+echo getregtype([]) getregtype({}) getregtype(1.5)
+"---
+0put =['abc']
+normal! gg0
+normal! yy
+echo getregtype('"') getregtype('0') getregtype()
+"---
+0put =['abc']
+normal! gg0
+normal! yiw
+echo getregtype('"') getregtype('0') getregtype('1')
+"---
+0put =['abc', 'def', 'ghi']
+normal! gg0
+execute "normal! \<C-v>jly"
+echo getregtype('"') getregtype('0') getregtype('-')
+"---
+0put =['abc', 'def', 'ghi']
+normal! gg0
+execute "normal! \<C-v>jj$\"ay"
+echo getregtype('a') getregtype('"') string(getreg('a', 1, 1))
+"---
+0put =['abc', 'def', 'ghi']
+normal! gg0
+execute "normal! l\<C-v>jjd"
+echo getregtype('"') getregtype('1') getregtype('-')
+"---
+let @a = 'x'
+echo getregtype('a') getregtype('A')
+"---
+0put =['a', 'b']
+normal! gg0
+execute "normal! \<C-v>jy"
+echo getregtype('"') getregtype('0')
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2, 3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2, 3]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2, 3, 0, 5, 6]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 0, 0, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 9, 20, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2, 0, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [-1, 2, 3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, -2, 3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, 2, -3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [99, 2, 3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [7, 2, 3, 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", "x")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", {})
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, "2", "3", 0]) getpos("'a")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'a", [0, [], 3, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'A", [0, 3, 1, 0]) getpos("'A")[1:]
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'1", [0, 3, 1, 0]) getpos("'1")[1:]
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'[", [0, 3, 1, 0]) getpos("'[")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("']", [0, 3, 2, 0]) getpos("']")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'<", [0, 2, 3, 0]) getpos("'<") getpos("'>")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'>", [0, 4, 3, 0]) getpos("'<") getpos("'>")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'\"", [0, 2, 3, 0]) getpos("'\"")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("''", [0, 3, 2, 0]) getpos("''")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'`", [0, 3, 2, 0]) getpos("''")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'^", [0, 3, 2, 0]) getpos("'^")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'.", [0, 3, 2, 0]) getpos("'.")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'(", [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'", [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("'ab", [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("x", [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos("", [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(1, [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos([], [0, 3, 2, 0])
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 4, 3, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 9, 3, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 0, 3, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 2, 99, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 4, 0, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 4, 3, 0, 8]) line(".") col(".") getcurpos()
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 4, 3, 0, 20]) line(".") col(".") getcurpos()
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [5, 4, 3, 0]) line(".") col(".")
+"---
+set report=0 expandtab shiftwidth=2 tabstop=8 nonumber norelativenumber
+append
+alpha beta
+gamma
+
+delta epsilon zeta
+.
+echo setpos(".", [0, 4, 3, 0]) setpos("'a", getpos(".")) getpos("'a")

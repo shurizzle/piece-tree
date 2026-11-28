@@ -1,0 +1,416 @@
+NVIM v0.12.6
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E745: Using a List as a Number
+E745: Using a List as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E728: Using a Dictionary as a Number
+E728: Using a Dictionary as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E703: Using a Funcref as a Number
+E703: Using a Funcref as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E745: Using a List as a Number
+E745: Using a List as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E728: Using a Dictionary as a Number
+E728: Using a Dictionary as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E703: Using a Funcref as a Number
+E703: Using a Funcref as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E745: Using a List as a Number
+E745: Using a List as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E728: Using a Dictionary as a Number
+E728: Using a Dictionary as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E703: Using a Funcref as a Number
+E703: Using a Funcref as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E805: Using a Float as a Number
+E805: Using a Float as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E745: Using a List as a Number
+E745: Using a List as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E728: Using a Dictionary as a Number
+E728: Using a Dictionary as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+Error in {file}:
+line    9:
+E703: Using a Funcref as a Number
+E703: Using a Funcref as a Number
+[0, 0, 0, 0, 0]
+"---
+
+3 more lines
+[0, 2, 4, 0, 4]
+"---
+
+3 more lines
+[0, 4, 1, 0, 2147483647]
+"---
+
+3 more lines
+[0, 1, 1, 0, 1]

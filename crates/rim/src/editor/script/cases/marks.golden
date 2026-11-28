@@ -1,0 +1,2223 @@
+NVIM v0.12.6
+
+1 line less
+1 1 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 fewer lines
+1 1 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['(two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 [' (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 fewer lines
+1 1 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 1 [''] 1 1 1 1 1 1
+"---
+
+1 line less
+1 1 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['ne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 [' (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 40 6 1
+"---
+
+2 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 6 1
+"---
+
+2 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+1 line yanked
+1 more line
+2 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 39 2 1
+"---
+
+1 line yanked
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 5 ['oone ne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 2 1 5 1 2
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+1 2 ['noe (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 2 1 2 1 2
+"---
+
+1 line less
+1 more line
+2 1 ['  four {five} six', 'one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 39 2 1
+"---
+
+1 line less
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', 'abc', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 4 2 1
+"---
+
+1 3 ['abc', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 1 1
+"---
+
+1 1 ['xone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 2 1 1
+"---
+
+1 2 ['xyone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 1
+"---
+
+1 41 ['one (two) three. four five.  Six seven!ab', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 42 1 40
+"---
+
+1 2 ['abone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 1
+"---
+
+1 3 ['foo (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 1 1
+"---
+
+1 1 ['x', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 2 1 1
+"---
+
+1 1 ['', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['x', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 2 1 1
+"---
+
+1 1 ['ne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 2 ['abne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 1
+"---
+
+1 1 ['Xne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 3 ['XXX (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 3
+"---
+
+1 2 ['One (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 4 ['ONE (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 1
+"---
+
+1 line changed
+1 1 ['ONE (TWO) THREE. FOUR FIVE.  sIX SEVEN!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 1 ['one (two) three. four five.  six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 1 ['ONE (TWO) THREE. FOUR FIVE.  SIX SEVEN!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 1 ['ONE (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 1 1
+"---
+
+1 line changed
+1 1 ['ONE (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 1 1
+"---
+
+1 40 ['one (two) three. four five.  Six seven! four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 56 2 1
+"---
+
+1 56 ['one (two) three. four five.  Six seven! four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 69 2 1
+"---
+
+1 40 ['one (two) three. four five.  Six seven!  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 57 2 1
+"---
+
+1 line >ed 1 time
+1 1 ['  one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 41 1 1
+"---
+
+1 line <ed 1 time
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+3 lines >ed 1 time
+1 1 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 17 1 1
+"---
+
+2 lines >ed 1 time
+1 1 ['  one (two) three. four five.  Six seven!', '    four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 19 1 1
+"---
+
+2 lines <ed 1 time
+1 1 ['one (two) three. four five.  Six seven!', 'four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 15 1 1
+"---
+
+6 lines >ed 1 time
+1 1 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', '  nine ten. eleven', '  last line here'] 1 1 6 16 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 3 ['xxyyone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 2 1 4 1 2
+"---
+
+1 line less
+1 line less
+1 1 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['e (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 1 ['one (two) three. four five.  Six seven!', '', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+2 14 ['one (two) three. four five.  Six seven!', 'stuff\<CR>more', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 15 2 1
+"---
+
+1 9 ['xx\<CR>yyone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 10 1 1
+"---
+
+1 2 ['obne (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 2 1 3 1 2
+"---
+
+1 2 ['abe (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 2
+"---
+
+1 1 ['x seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 [' seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 17 6 1
+"---
+
+3 lines >ed 1 time
+1 1 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 17 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 16 6 1
+"---
+
+4 fewer lines
+1 1 ['nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 1 ['four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 17 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+3 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 16 6 1
+"---
+
+1 1 ['four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 fewer lines
+1 1 ['', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line less
+1 8 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 1
+"---
+
+2 fewer lines
+1 8 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 1
+"---
+
+1 8 ['one (tw) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (twthree. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (tw three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 7 ['one (tw', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 7 ['one (tw', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+2 fewer lines
+1 8 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 1 [''] 1 8 1 8 1 1
+"---
+
+1 line less
+1 8 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 1
+"---
+
+1 8 ['one (tw) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (twthree. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 line yanked
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 40 6 1
+"---
+
+2 lines yanked
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 6 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 39 6 1
+"---
+
+2 lines yanked
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 6 1
+"---
+
+1 line yanked
+1 more line
+2 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 39 2 1
+"---
+
+1 line yanked
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 9 ['one (twoo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 9 1 9 1 9
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 6 1
+"---
+
+1 9 ['one (tw)o three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 9 1 9 1 9
+"---
+
+1 line less
+1 more line
+2 1 ['  four {five} six', 'one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 39 2 1
+"---
+
+1 line less
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', 'abc', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 4 2 1
+"---
+
+1 3 ['abc', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 4 1 1
+"---
+
+1 8 ['one (twxo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 9 1 8
+"---
+
+1 9 ['one (twxyo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 10 1 8
+"---
+
+1 41 ['one (two) three. four five.  Six seven!ab', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 42 1 40
+"---
+
+1 2 ['abone (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 3 1 1
+"---
+
+1 10 ['one (twfoo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 11 1 8
+"---
+
+1 1 ['x', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 2 1 1
+"---
+
+1 7 ['one (tw', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 1 ['x', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 2 1 1
+"---
+
+1 7 ['one (tw) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 9 ['one (twab) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 10 1 8
+"---
+
+1 8 ['one (twX) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 10 ['one (twXXXthree. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 10 1 10
+"---
+
+1 9 ['one (twO) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 11 ['one (twO) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 10 1 8
+"---
+
+1 line changed
+1 1 ['ONE (TWO) THREE. FOUR FIVE.  sIX SEVEN!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 1 ['one (two) three. four five.  six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 1 ['ONE (TWO) THREE. FOUR FIVE.  SIX SEVEN!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 39 1 1
+"---
+
+1 line changed
+1 8 ['one (twO) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 line changed
+1 8 ['one (twO) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 40 ['one (two) three. four five.  Six seven! four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 56 2 1
+"---
+
+1 56 ['one (two) three. four five.  Six seven! four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 69 2 1
+"---
+
+1 40 ['one (two) three. four five.  Six seven!  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 57 2 1
+"---
+
+1 line >ed 1 time
+1 8 ['  one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 41 1 1
+"---
+
+1 line <ed 1 time
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 39 1 1
+"---
+
+3 lines >ed 1 time
+1 8 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 3 17 1 1
+"---
+
+2 lines >ed 1 time
+1 8 ['  one (two) three. four five.  Six seven!', '    four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 2 19 1 1
+"---
+
+2 lines <ed 1 time
+1 8 ['one (two) three. four five.  Six seven!', 'four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 2 15 1 1
+"---
+
+6 lines >ed 1 time
+1 8 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', '  nine ten. eleven', '  last line here'] 1 8 6 16 1 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 10 ['one (twxxyyo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 9 1 11 1 9
+"---
+
+1 line less
+1 line less
+1 8 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 1
+"---
+
+1 8 ['one (tw three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+2 1 ['one (two) three. four five.  Six seven!', '', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+2 14 ['one (two) three. four five.  Six seven!', 'stuff\<CR>more', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 15 2 1
+"---
+
+1 16 ['one (twxx\<CR>yyo) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 17 1 8
+"---
+
+1 9 ['one (twob) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 9 1 10 1 9
+"---
+
+1 9 ['one (twab three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 10 1 9
+"---
+
+1 8 ['one (twx seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (tw seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (twfour five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 17 6 1
+"---
+
+3 lines >ed 1 time
+1 8 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 17 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 16 6 1
+"---
+
+4 fewer lines
+1 8 ['nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 fewer lines
+1 7 ['one (tw', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 2 1
+"---
+
+1 1 ['o) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 8 ['one (twfour five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+1 1 ['o) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 17 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 7 6 1
+"---
+
+3 lines yanked
+1 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 3 15 6 1
+"---
+
+1 7 ['one (twfour five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 1 8
+"---
+
+2 fewer lines
+1 7 ['one (tw', '', 'nine ten. eleven', 'last line here'] 1 8 1 8 2 1
+"---
+
+1 line less
+2 3 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+2 fewer lines
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '   {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 2 ['one (two) three. four five.  Six seven!', '  ', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 2 ['one (two) three. four five.  Six seven!', '  ', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 fewer lines
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+2 fewer lines
+1 3 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 3 1 3 1 1
+"---
+
+5 fewer lines
+1 3 ['one (two) three. four five.  Six seven!'] 2 3 2 3 2 1
+"---
+
+2 fewer lines
+1 3 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 3 1 3 1 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  our {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  r {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+1 line yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 18 6 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 16 6 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 7 6 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 17 6 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 16 6 1
+"---
+
+2 lines yanked
+1 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+1 line yanked
+1 more line
+3 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 17 3 1
+"---
+
+1 line yanked
+1 more line
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 17 2 1
+"---
+
+2 8 ['one (two) three. four five.  Six seven!', '  ffour our {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 4 2 8 2 4
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  ofur {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 4 2 4 2 4
+"---
+
+1 line less
+1 more line
+3 3 ['one (two) three. four five.  Six seven!', '   seven  eight', '  four {five} six', '', 'nine ten. eleven', 'last line here'] 3 1 3 17 3 1
+"---
+
+1 line less
+1 more line
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 17 2 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '  abc', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 6 3 3
+"---
+
+2 5 ['one (two) three. four five.  Six seven!', '  abc', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 6 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  xfour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 4 2 3
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  xyfour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 3
+"---
+
+2 19 ['one (two) three. four five.  Six seven!', '  four {five} sixab', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 18 2 20 2 18
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  abfour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 3
+"---
+
+2 5 ['one (two) three. four five.  Six seven!', '  foo {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 6 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  x', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 4 2 3
+"---
+
+2 2 ['one (two) three. four five.  Six seven!', '  ', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  x', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 4 2 3
+"---
+
+2 2 ['one (two) three. four five.  Six seven!', '  our {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  abour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 3
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  Xour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 5 ['one (two) three. four five.  Six seven!', '  XXXr {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 5
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  Four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 6 ['one (two) three. four five.  Six seven!', '  FOUr {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 3
+"---
+
+1 line changed
+2 3 ['one (two) three. four five.  Six seven!', '  FOUR {FIVE} SIX', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 17 2 1
+"---
+
+1 line changed
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 17 6 1
+"---
+
+1 line changed
+2 3 ['one (two) three. four five.  Six seven!', '  FOUR {FIVE} SIX', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 17 2 1
+"---
+
+1 line changed
+2 3 ['one (two) three. four five.  Six seven!', '  FOUR {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 7 2 3
+"---
+
+1 line changed
+2 3 ['one (two) three. four five.  Six seven!', '  FOUR {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 7 2 3
+"---
+
+2 18 ['one (two) three. four five.  Six seven!', '  four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 2 18 2 31 3 1
+"---
+
+2 30 ['one (two) three. four five.  Six seven!', '  four {five} six seven  eight', 'nine ten. eleven', 'last line here'] 2 18 2 31 3 1
+"---
+
+2 18 ['one (two) three. four five.  Six seven!', '  four {five} six   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 18 2 33 3 1
+"---
+
+1 line >ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', '    four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 19 2 1
+"---
+
+1 line <ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', 'four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 15 2 1
+"---
+
+3 lines >ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 4 1 2 1
+"---
+
+2 lines >ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 3 17 2 1
+"---
+
+2 lines <ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', 'four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 3 13 2 1
+"---
+
+5 lines >ed 1 time
+2 3 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', '  nine ten. eleven', '  last line here'] 2 3 6 16 2 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 5 ['one (two) three. four five.  Six seven!', '  xxyyfour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 4 2 6 2 4
+"---
+
+1 line less
+1 line less
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  ur {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+3 16 ['one (two) three. four five.  Six seven!', '  four {five} six', '  stuff\<CR>more', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 17 3 3
+"---
+
+2 11 ['one (two) three. four five.  Six seven!', '  xx\<CR>yyfour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 12 2 3
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  fbour {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 4 2 5 2 4
+"---
+
+2 4 ['one (two) three. four five.  Six seven!', '  abur {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 5 2 4
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  x', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+2 2 ['one (two) three. four five.  Six seven!', '  ', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 3
+"---
+
+1 line less
+1 18 ['one (two) three. four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 18 1 18 2 1
+"---
+
+2 lines yanked
+1 18 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 18 2 2 6 1
+"---
+
+3 lines >ed 1 time
+1 3 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 17 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 16 6 1
+"---
+
+4 fewer lines
+1 3 ['nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 fewer lines
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+1 line less
+1 1 ['four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 2 1
+"---
+
+2 fewer lines
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+1 line less
+1 30 ['one (two) three. four five.  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 30 1 30 2 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 16 6 1
+"---
+
+2 lines yanked
+1 30 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 30 2 2 6 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 16 6 1
+"---
+
+1 line less
+2 1 ['one (two) three. four five.  Six seven!', '', '', 'nine ten. eleven', 'last line here'] 2 3 2 1 2 1
+"---
+
+1 line less
+2 1 ['one (two) three. four five.  Six seven!', '', '', 'nine ten. eleven', 'last line here'] 2 3 2 1 2 1
+"---
+
+1 line less
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 1
+"---
+
+2 fewer lines
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+2 fewer lines
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 1
+"---
+
+2 fewer lines
+2 1 ['one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 5 2 5 2 1
+"---
+
+4 fewer lines
+2 5 ['one (two) three. four five.  Six seven!', '  four {five} six'] 3 5 3 5 3 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 5 1 5 1 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sn  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+1 line yanked
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 16 6 1
+"---
+
+2 lines yanked
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 4 1 6 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 10 6 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 15 6 1
+"---
+
+2 lines yanked
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 4 1 6 1
+"---
+
+2 lines yanked
+2 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 16 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 6 1
+"---
+
+1 line yanked
+1 more line
+4 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 4 1 4 15 4 1
+"---
+
+1 line yanked
+1 more line
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 15 3 1
+"---
+
+3 11 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seeven  ven  eight', '', 'nine ten. eleven', 'last line here'] 3 6 3 11 3 6
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 6 1
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sveen  eight', '', 'nine ten. eleven', 'last line here'] 3 6 3 6 3 6
+"---
+
+1 line less
+1 more line
+4 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '', '   seven  eight', 'nine ten. eleven', 'last line here'] 4 1 4 15 4 1
+"---
+
+1 line less
+1 more line
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 15 3 1
+"---
+
+4 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '   abc', '', 'nine ten. eleven', 'last line here'] 4 1 4 7 4 4
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   abc', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 7 3 4
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sxeven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 6 3 5
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sxyeven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 7 3 5
+"---
+
+3 17 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eightab', '', 'nine ten. eleven', 'last line here'] 3 16 3 18 3 16
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   abseven  eight', '', 'nine ten. eleven', 'last line here'] 3 4 3 6 3 4
+"---
+
+3 7 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sfoo  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 8 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   x', '', 'nine ten. eleven', 'last line here'] 3 4 3 5 3 4
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   x', '', 'nine ten. eleven', 'last line here'] 3 4 3 5 3 4
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sabven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 7 3 5
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sXven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 7 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sXXXn  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 7 3 7
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sEven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 8 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sEVEn  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 7 3 5
+"---
+
+1 line changed
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   SEVEN  EIGHT', '', 'nine ten. eleven', 'last line here'] 3 1 3 15 3 1
+"---
+
+1 line changed
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 15 6 1
+"---
+
+1 line changed
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   SEVEN  EIGHT', '', 'nine ten. eleven', 'last line here'] 3 1 3 15 3 1
+"---
+
+1 line changed
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sEVEN  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 10 3 5
+"---
+
+1 line changed
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sEVEN  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 10 3 5
+"---
+
+3 15 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'nine ten. eleven', 'last line here'] 3 16 3 16 4 1
+"---
+
+3 16 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight nine ten. eleven', 'last line here'] 3 16 3 33 4 1
+"---
+
+3 15 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'nine ten. eleven', 'last line here'] 3 16 3 16 4 1
+"---
+
+1 line >ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 17 3 1
+"---
+
+1 line <ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 13 3 1
+"---
+
+3 lines >ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '     seven  eight', '', '  nine ten. eleven', 'last line here'] 3 5 5 18 3 1
+"---
+
+2 lines >ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 4 1 3 1
+"---
+
+2 lines <ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 4 1 3 1
+"---
+
+4 lines >ed 1 time
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '     seven  eight', '', '  nine ten. eleven', '  last line here'] 3 5 6 16 3 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+3 7 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sxxyyeven  eight', '', 'nine ten. eleven', 'last line here'] 3 6 3 8 3 6
+"---
+
+1 line less
+1 line less
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sen  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', '', 'nine ten. eleven', 'last line here'] 4 1 4 1 4 1
+"---
+
+4 17 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '   stuff\<CR>more', '', 'nine ten. eleven', 'last line here'] 4 1 4 18 4 4
+"---
+
+3 13 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sxx\<CR>yyeven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 14 3 5
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   sebven  eight', '', 'nine ten. eleven', 'last line here'] 3 6 3 7 3 6
+"---
+
+3 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   saben  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 7 3 6
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 fewer lines
+1 18 ['one (two) three. even  eight', '', 'nine ten. eleven', 'last line here'] 1 18 1 18 2 1
+"---
+
+3 lines yanked
+1 18 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 18 3 4 6 1
+"---
+
+3 lines >ed 1 time
+1 5 ['  one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 17 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 3 16 6 1
+"---
+
+4 fewer lines
+1 5 ['nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+2 fewer lines
+1 1 ['even  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 2 1
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+1 line less
+2 3 ['one (two) three. four five.  Six seven!', '  even  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 3 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 15 6 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 3 4 6 1
+"---
+
+3 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 5 3 15 6 1
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+3 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   s', '', 'nine ten. eleven', 'last line here'] 3 5 3 5 3 5
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ' line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven'] 6 1 6 1 6 1
+"---
+
+1 1 [''] 1 1 1 1 1 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ast line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 't line here'] 6 1 6 1 6 1
+"---
+
+1 line yanked
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 15 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 5 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 lines yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 6 15 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+1 line yanked
+1 more line
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'last line here'] 7 1 7 14 7 1
+"---
+
+1 line yanked
+1 more line
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'llast ast line here'] 6 2 6 6 6 2
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'alst line here'] 6 2 6 2 6 2
+"---
+
+1 line less
+1 more line
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+1 line less
+1 more line
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'last line here', 'nine ten. eleven'] 5 1 5 14 5 1
+"---
+
+7 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'abc'] 7 1 7 4 7 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abc', 'last line here'] 6 1 6 4 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xlast line here'] 6 1 6 2 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xylast line here'] 6 1 6 3 6 1
+"---
+
+6 16 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line hereab'] 6 15 6 17 6 15
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ablast line here'] 6 1 6 3 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'foo line here'] 6 1 6 4 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'x'] 6 1 6 2 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'x'] 6 1 6 2 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ast line here'] 6 1 6 1 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abast line here'] 6 1 6 3 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'Xast line here'] 6 1 6 1 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'XXXt line here'] 6 1 6 3 6 3
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'Last line here'] 6 1 6 1 6 1
+"---
+
+6 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LASt line here'] 6 1 6 3 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST LINE HERE'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST LINE HERE'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST line here'] 6 1 6 5 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST line here'] 6 1 6 5 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 15 6 15 6 15
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 line >ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', '  last line here'] 6 1 6 16 6 1
+"---
+
+1 line <ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 line >ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', '  last line here'] 6 1 6 16 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xxyylast line here'] 6 2 6 4 6 2
+"---
+
+1 line less
+1 line less
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'st line here'] 6 1 6 1 6 1
+"---
+
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', ''] 7 1 7 1 7 1
+"---
+
+7 14 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'stuff\<CR>more'] 7 1 7 15 7 1
+"---
+
+6 9 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xx\<CR>yylast line here'] 6 1 6 10 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'lbast line here'] 6 2 6 3 6 2
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abst line here'] 6 1 6 3 6 2
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+4 fewer lines
+1 17 ['one (two) three. ', 'last line here'] 1 18 1 18 2 1
+"---
+
+5 lines yanked
+1 18 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 18 5 16 6 1
+"---
+
+2 lines >ed 1 time
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', '  nine ten. eleven', '  last line here'] 5 1 6 16 5 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+2 lines yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 6 15 6 1
+"---
+
+3 fewer lines
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight'] 4 1 4 1 4 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'last line here'] 4 1 4 1 4 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+5 10 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. ', 'last line here'] 5 11 5 11 5 11
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+5 11 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 11 5 16 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ' line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven'] 6 1 6 1 6 1
+"---
+
+1 1 [''] 1 1 1 1 1 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ast line here'] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 't line here'] 6 1 6 1 6 1
+"---
+
+1 line yanked
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 15 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 5 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+2 lines yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 6 15 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+1 line yanked
+1 more line
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'last line here'] 7 1 7 14 7 1
+"---
+
+1 line yanked
+1 more line
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 6 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'llast ast line here'] 6 2 6 6 6 2
+"---
+
+Error in {file}:
+line   11:
+E353: Nothing in register "
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 1 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'alst line here'] 6 2 6 2 6 2
+"---
+
+1 line less
+1 more line
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+1 line less
+1 more line
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'last line here', 'nine ten. eleven'] 5 1 5 14 5 1
+"---
+
+7 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'abc'] 7 1 7 4 7 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abc', 'last line here'] 6 1 6 4 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xlast line here'] 6 1 6 2 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xylast line here'] 6 1 6 3 6 1
+"---
+
+6 16 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line hereab'] 6 15 6 17 6 15
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ablast line here'] 6 1 6 3 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'foo line here'] 6 1 6 4 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'x'] 6 1 6 2 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'x'] 6 1 6 2 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'ast line here'] 6 1 6 1 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abast line here'] 6 1 6 3 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'Xast line here'] 6 1 6 1 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'XXXt line here'] 6 1 6 3 6 3
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'Last line here'] 6 1 6 1 6 1
+"---
+
+6 4 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LASt line here'] 6 1 6 3 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST LINE HERE'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST LINE HERE'] 6 1 6 14 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST line here'] 6 1 6 5 6 1
+"---
+
+1 line changed
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'LAST line here'] 6 1 6 5 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 15 6 15 6 15
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 line >ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', '  last line here'] 6 1 6 16 6 1
+"---
+
+1 line <ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+1 line >ed 1 time
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', '  last line here'] 6 1 6 16 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xxyylast line here'] 6 2 6 4 6 2
+"---
+
+1 line less
+1 line less
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'st line here'] 6 1 6 1 6 1
+"---
+
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', ''] 7 1 7 1 7 1
+"---
+
+7 14 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'stuff\<CR>more'] 7 1 7 15 7 1
+"---
+
+6 9 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'xx\<CR>yylast line here'] 6 1 6 10 6 1
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'lbast line here'] 6 2 6 3 6 2
+"---
+
+6 2 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'abst line here'] 6 1 6 3 6 2
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 6 1 6 1
+"---
+
+4 fewer lines
+1 17 ['one (two) three. ', 'last line here'] 1 18 1 18 2 1
+"---
+
+5 lines yanked
+1 18 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 18 5 16 6 1
+"---
+
+2 lines >ed 1 time
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', '  nine ten. eleven', '  last line here'] 5 1 6 16 5 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', ''] 5 1 5 1 5 1
+"---
+
+2 lines yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 6 15 6 1
+"---
+
+3 fewer lines
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight'] 4 1 4 1 4 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+2 fewer lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'last line here'] 4 1 4 1 4 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+5 10 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. ', 'last line here'] 5 11 5 11 5 11
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+5 11 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 11 5 16 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 6 1 6 14 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', ''] 6 1 6 1 6 1
+"---
+
+1 line less
+1 3 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line less
+2 4 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+2 fewer lines
+1 4 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 40 6 1
+"---
+
+2 lines yanked
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+2 lines moved
+2 1 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+1 line moved
+6 1 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here', '  four {five} six'] 6 1 6 1 2 1
+"---
+
+2 more lines
+3 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 1 2 1
+"---
+
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 lines >ed 1 time
+3 6 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 17 2 1
+"---
+
+2 lines <ed 1 time
+3 2 ['one (two) three. four five.  Six seven!', 'four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 13 2 1
+"---
+
+1 line >ed 2 times
+1 5 ['    one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 43 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven! four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 56 2 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven! four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 69 2 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 57 2 1
+"---
+
+1 substitution on 1 line
+1 1 ['onX (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+18 substitutions on 5 lines
+6 1 ['onX (two) thrXX. four fivX.  Six sXvXn!', '  four {fivX} six', '   sXvXn  Xight', '', 'ninX tXn. XlXvXn', 'last linX hXrX'] 1 1 6 1 1 1
+"---
+
+2 substitutions on 2 lines
+2 3 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+5 fewer lines
+1 1 [''] 2 1 2 1 2 1
+"---
+
+5 substitutions on 5 lines
+6 1 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   sXven  eight', '', 'ninX ten. eleven', 'last linX here'] 6 1 6 1 6 1
+"---
+
+1 1 ['  four {five} six', 'one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line less
+1 1 ['  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+3 1 ['one (two) three. four five.  Six seven!', ' four {five} six', '  seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+1 more line
+2 1 ['one (two) three. four five.  Six seven!', 'o', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 more line
+1 1 ['o', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 more line
+1 1 ['o', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 more line
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'o'] 7 1 7 1 7 1
+"---
+
+2 more lines
+3 1 ['one (two) three. four five.  Six seven!', 'x', 'y', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 1 2 1
+"---
+
+1 more line
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'o', '', 'nine ten. eleven', 'last line here'] 4 1 4 1 4 1
+"---
+
+6
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+one (two) three. four five.  Six seven!
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+2 fewer lines
+1 line less
+2 1 ['   seven  eight', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 1 ['', '   seven  eight', '  four {five} six', 'last line here', 'nine ten. eleven', 'one (two) three. four five.  Six seven!'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', 'nine ten. eleven', 'last line here', '  four {five} six', '   seven  eight', ''] 1 1 1 1 1 1
+"---
+
+1 4 ['   seven  eight', '  four {five} six', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 6 1
+"---
+
+2 more lines
+3 1 ['one (two) three. four five.  Six seven!', '   seven  eight', '', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 1 2 1
+"---
+
+2 more lines
+2 1 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+1 line less
+2 4 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 line less
+2 4 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+2 fewer lines
+1 4 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 18 6 1
+"---
+
+2 lines yanked
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+2 lines moved
+2 3 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+1 line moved
+6 3 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here', '  four {five} six'] 6 1 6 1 2 1
+"---
+
+2 more lines
+4 3 ['one (two) three. four five.  Six seven!', '  four {five} six', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 4 1 3 1
+"---
+
+1 more line
+1 3 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 lines >ed 1 time
+3 6 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 17 2 1
+"---
+
+2 lines <ed 1 time
+3 2 ['one (two) three. four five.  Six seven!', 'four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 13 2 1
+"---
+
+1 line >ed 2 times
+2 7 ['one (two) three. four five.  Six seven!', '      four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 21 2 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 2 18 2 31 3 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven! four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 69 2 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 18 2 33 3 1
+"---
+
+1 substitution on 1 line
+2 3 ['one (two) three. four five.  Six seven!', '  four {fivX} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+18 substitutions on 5 lines
+6 1 ['onX (two) thrXX. four fivX.  Six sXvXn!', '  four {fivX} six', '   sXvXn  Xight', '', 'ninX tXn. XlXvXn', 'last linX hXrX'] 1 1 6 1 1 1
+"---
+
+2 substitutions on 2 lines
+2 3 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+5 fewer lines
+1 1 [''] 2 1 2 1 2 1
+"---
+
+5 substitutions on 5 lines
+6 1 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   sXven  eight', '', 'ninX ten. eleven', 'last linX here'] 6 1 6 1 6 1
+"---
+
+1 3 ['  four {five} six', 'one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line less
+2 3 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 2 1
+"---
+
+3 1 ['one (two) three. four five.  Six seven!', ' four {five} six', '  seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+1 more line
+3 1 ['one (two) three. four five.  Six seven!', '  four {five} six', 'f', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+1 more line
+2 1 ['one (two) three. four five.  Six seven!', 'f', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 more line
+1 1 ['f', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 more line
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'f'] 7 1 7 1 7 1
+"---
+
+2 more lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', 'x', 'y', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 4 1 3 1
+"---
+
+1 more line
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'f', '', 'nine ten. eleven', 'last line here'] 4 1 4 1 4 1
+"---
+
+6
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+  four {five} six
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+2 fewer lines
+1 line less
+2 1 ['   seven  eight', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 1 ['', '   seven  eight', '  four {five} six', 'last line here', 'nine ten. eleven', 'one (two) three. four five.  Six seven!'] 2 3 2 3 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', 'nine ten. eleven', 'last line here', '  four {five} six', '   seven  eight', ''] 2 3 2 3 1 1
+"---
+
+1 4 ['   seven  eight', '  four {five} six', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 1 1
+"---
+
+2 3 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 3 2 3 6 1
+"---
+
+2 more lines
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 4 1 3 1
+"---
+
+2 more lines
+2 3 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'last line here'] 5 1 5 1 5 1
+"---
+
+1 line less
+2 4 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+2 fewer lines
+1 4 ['   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 5 17 6 1
+"---
+
+2 lines yanked
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 18 6 1
+"---
+
+2 lines moved
+2 1 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+1 line moved
+6 1 ['one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here', '  four {five} six'] 6 1 6 1 2 1
+"---
+
+2 more lines
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'one (two) three. four five.  Six seven!', '  four {five} six', 'last line here'] 6 1 7 1 6 1
+"---
+
+1 more line
+1 1 ['one (two) three. four five.  Six seven!', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+2 lines >ed 1 time
+3 6 ['one (two) three. four five.  Six seven!', '    four {five} six', '     seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 17 2 1
+"---
+
+2 lines <ed 1 time
+3 2 ['one (two) three. four five.  Six seven!', 'four {five} six', ' seven  eight', '', 'nine ten. eleven', 'last line here'] 2 1 3 13 2 1
+"---
+
+1 line >ed 2 times
+5 5 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', '    nine ten. eleven', 'last line here'] 5 1 5 20 5 1
+"---
+
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven last line here'] 5 17 5 32 6 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven! four {five} six seven  eight', '', 'nine ten. eleven', 'last line here'] 1 40 1 69 2 1
+"---
+
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. elevenlast line here'] 5 17 5 31 6 1
+"---
+
+1 substitution on 1 line
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'ninX ten. eleven', 'last line here'] 5 1 5 1 5 1
+"---
+
+18 substitutions on 5 lines
+6 1 ['onX (two) thrXX. four fivX.  Six sXvXn!', '  four {fivX} six', '   sXvXn  Xight', '', 'ninX tXn. XlXvXn', 'last linX hXrX'] 1 1 6 1 1 1
+"---
+
+2 substitutions on 2 lines
+2 3 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1
+"---
+
+5 fewer lines
+1 1 [''] 2 1 2 1 2 1
+"---
+
+5 substitutions on 5 lines
+6 1 ['onX (two) three. four five.  Six seven!', '  four {fivX} six', '   sXven  eight', '', 'ninX ten. eleven', 'last linX here'] 6 1 6 1 6 1
+"---
+
+1 1 ['  four {five} six', 'one (two) three. four five.  Six seven!', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 line less
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'last line here'] 5 1 5 1 5 1
+"---
+
+3 1 ['one (two) three. four five.  Six seven!', ' four {five} six', '  seven  eight', '', 'nine ten. eleven', 'last line here'] 3 1 3 1 3 1
+"---
+
+1 more line
+6 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'n', 'last line here'] 6 1 6 1 6 1
+"---
+
+1 more line
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'n', 'nine ten. eleven', 'last line here'] 5 1 5 1 5 1
+"---
+
+1 more line
+1 1 ['n', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 1 1 1 1
+"---
+
+1 more line
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here', 'n'] 7 1 7 1 7 1
+"---
+
+2 more lines
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'x', 'y', 'last line here'] 6 1 7 1 6 1
+"---
+
+1 more line
+4 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', 'n', '', 'nine ten. eleven', 'last line here'] 4 1 4 1 4 1
+"---
+
+6
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 5 1 6 1
+"---
+
+nine ten. eleven
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 5 1 6 1
+"---
+
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 5 1 6 1
+"---
+
+2 fewer lines
+1 line less
+2 1 ['   seven  eight', 'nine ten. eleven', 'last line here'] 2 1 2 1 2 1
+"---
+
+1 1 ['', '   seven  eight', '  four {five} six', 'last line here', 'nine ten. eleven', 'one (two) three. four five.  Six seven!'] 5 1 5 1 1 1
+"---
+
+1 1 ['one (two) three. four five.  Six seven!', 'nine ten. eleven', 'last line here', '  four {five} six', '   seven  eight', ''] 5 1 5 1 1 1
+"---
+
+1 4 ['   seven  eight', '  four {five} six', 'one (two) three. four five.  Six seven!', '', 'nine ten. eleven', 'last line here'] 5 1 5 1 1 1
+"---
+
+5 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 5 1 5 1 6 1
+"---
+
+2 more lines
+7 1 ['one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', '   seven  eight', '', 'last line here'] 6 1 7 1 6 1
+"---
+
+2 more lines
+2 1 ['  four {five} six', '   seven  eight', 'one (two) three. four five.  Six seven!', '  four {five} six', '   seven  eight', '', 'nine ten. eleven', 'last line here'] 1 1 2 1 1 1

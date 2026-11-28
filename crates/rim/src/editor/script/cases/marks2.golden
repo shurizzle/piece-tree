@@ -1,0 +1,2442 @@
+NVIM v0.12.6
+
+6 more lines
+1 line less
+1 1 ['lpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['ha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 1 ['delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [3, 10], [0, 0], [4, 10], [2, 1], [3, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 1 ['delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [3, 10], [0, 0], [4, 10], [2, 1], [3, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 17 ['alpha beta gamma delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 21], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [1, 17], [1, 23], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 22 ['alpha beta gamma delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 21], [2, 10], [1, 16], [3, 10], [1, 23], [2, 17], [1, 17], [1, 23], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 17 ['alpha beta gammadelta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 20], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [1, 17], [1, 22], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', '', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 1], [2, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [1, 1]]
+"---
+
+6 more lines
+1 line less
+2 3 ['alpha beta gamma', 'foo', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 4], [2, 1], [2, 4]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'x', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [1, 17], [2, 2], [2, 1], [2, 2]]
+"---
+
+6 more lines
+1 line less
+2 1 ['', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [1, 1], [2, 1], [1, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+1 3 ['fooalpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 4], [1, 1], [1, 4]]
+"---
+
+6 more lines
+1 line less
+2 3 ['foo', 'baralpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [1, 1], [2, 4], [2, 1], [2, 4]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [1, 1]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [1, 1]]
+"---
+
+6 more lines
+1 line less
+1 1 ['x', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 2], [1, 1], [1, 2]]
+"---
+
+6 more lines
+1 line less
+1 1 ['X beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 2], [1, 1], [1, 2]]
+"---
+
+6 more lines
+1 line less
+2 1 ['', 'lpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [1, 1], [2, 1], [1, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+1 1 ['xlpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 2 ['Alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+1 1 ['  alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 18], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line <ed 1 time
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 16], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+2 1 ['alpha beta gamma', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 16], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+1 1 ['alpha beta gamma', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 16], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+2 1 ['delta', 'alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [4, 10], [0, 0], [5, 10], [3, 1], [4, 17], [2, 1], [2, 16], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [0, 0], [5, 10], [3, 1], [4, 17], [1, 1], [1, 16], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 2 ['lapha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 2], [1, 2], [1, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 6 ['alpha alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 6], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+2 1 ['alpha beta gamma', 'alpha beta gamma', 'delta', '', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[5, 4], [7, 10], [1, 16], [8, 10], [6, 1], [7, 17], [2, 1], [4, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+1 1 ['alpha beta gamma', 'delta', '', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[5, 4], [7, 10], [4, 16], [8, 10], [6, 1], [7, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [1, 2147483647], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 1 ['elta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [3, 10], [1, 16], [4, 10], [1, 1], [1, 1], [1, 1], [1, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [1, 1], [2, 2147483647], [1, 1], [2, 2147483647], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+1 1 ['  alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [1, 1], [2, 2147483647], [1, 1], [2, 7], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [1, 1], [2, 1], [1, 1], [2, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+Already at newest change
+1 1 ['delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [3, 10], [0, 0], [4, 10], [2, 1], [3, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 17 ['alpha beta gamma delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 21], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [1, 17], [1, 23], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 16], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 1 ['x', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [1, 1], [1, 2], [1, 1], [1, 2]]
+"---
+
+6 more lines
+1 line less
+1 1 ['x', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 2], [1, 1], [1, 2]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'x', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 2], [2, 1], [2, 2]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 1 ['delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [3, 10], [0, 0], [4, 10], [2, 1], [3, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 1 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+6 1 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'delta'] [[6, 4], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [6, 1], [6, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines moved
+6 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[6, 4], [2, 10], [5, 16], [3, 10], [1, 1], [2, 17], [5, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+2 1 ['alpha beta gamma', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['delta', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 substitution on 1 line
+1 1 ['blpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 substitutions on 4 lines
+5 1 ['alpha bEta gamma', 'dElta', '', 'Epsilon zeta eta', 'thEta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+Error in {file}:
+line   11:
+E486: Pattern not found: a\nb
+1 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 substitutions on 1 line
+1 48 ['alpha beta gammadeltaepsilon zeta etatheta iotakappa'] [[1, 20], [1, 31], [1, 16], [1, 47], [1, 22], [1, 38], [1, 17], [1, 53], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['', 'kappa'] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 11 ['alpha beta gammax', 'deltax', '', 'epsilon zeta etax', 'theta iotax', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [5, 11], [5, 12], [5, 11], [5, 12]]
+"---
+
+6 more lines
+1 line less
+1 1 ['alpha beta gamma delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 21], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [1, 17], [1, 23], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+1 3 ['  alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 18], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+3 1 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 more lines
+8 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [8, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['xalpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 2], [1, 1], [1, 2]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'new'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 3], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['new', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'new', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 more lines
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [7, 10], [3, 1], [4, 17], [5, 1], [6, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['theta iota', 'kappa', 'epsilon zeta eta', 'delta', 'alpha beta gamma', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 line less
+3 1 ['alpha beta gamma', '', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [3, 10], [2, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 3 ['alpha beta gamma', 'deta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 2 ['alpha beta gamma', 'de', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 2 ['alpha beta gamma', 'de', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 2 ['alpha beta gamma', 'de', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 2 ['alpha beta gamma', 'de', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+2 1 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 3 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+2 3 ['alpha beta gamma', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [2, 10], [2, 1], [2, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 3 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 3], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 fewer lines
+1 3 ['alpha beta gamma'] [[0, 0], [0, 0], [1, 16], [0, 0], [2, 1], [2, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 3], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 5 ['alpha beta gamma', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [3, 10], [1, 16], [4, 10], [2, 6], [3, 17], [2, 6], [2, 6], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 6 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 5 ['alpha beta gamma', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [3, 10], [1, 16], [4, 10], [2, 6], [3, 17], [2, 6], [2, 6], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 1 ['alpha beta gamma', 'delta', '', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 1], [3, 1], [3, 1]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', '', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 1], [2, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+3 3 ['alpha beta gamma', 'delta', 'foo', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 4], [3, 1], [3, 4]]
+"---
+
+6 more lines
+1 line less
+3 1 ['alpha beta gamma', 'delta', 'x', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 6], [3, 2], [3, 1], [3, 2]]
+"---
+
+6 more lines
+1 line less
+3 1 ['alpha beta gamma', 'de', 'lta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 3], [3, 1], [2, 3], [3, 1]]
+"---
+
+6 more lines
+1 line less
+2 5 ['alpha beta gamma', 'defoolta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 6], [2, 3], [2, 6]]
+"---
+
+6 more lines
+1 line less
+3 3 ['alpha beta gamma', 'foo', 'bardelta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [3, 4], [3, 1], [3, 4]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', '', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 1], [2, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', '', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 1], [2, 1], [2, 1]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'x', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 2], [2, 1], [2, 2]]
+"---
+
+6 more lines
+1 line less
+2 3 ['alpha beta gamma', 'deX', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 4], [2, 3], [2, 4]]
+"---
+
+6 more lines
+1 line less
+3 1 ['alpha beta gamma', 'de', 'ta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 3], [3, 1], [2, 3], [3, 1]]
+"---
+
+6 more lines
+1 line less
+2 3 ['alpha beta gamma', 'dexta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 4 ['alpha beta gamma', 'deLta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+2 3 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 7], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line <ed 1 time
+2 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 5], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 5], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+2 1 ['alpha beta gamma', 'delta', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 5], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+3 1 ['alpha beta gamma', '', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [4, 10], [1, 16], [5, 10], [2, 1], [4, 17], [3, 1], [3, 5], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+2 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 5], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 4 ['alpha beta gamma', 'detla', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 4], [2, 4], [2, 4], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 5 ['alpha beta gamma', 'deltalta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 5], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+3 1 ['alpha beta gamma', 'delta', 'delta', '', 'epsilon zeta eta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [7, 10], [1, 16], [8, 10], [6, 1], [7, 17], [3, 1], [5, 16], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+2 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[5, 4], [7, 10], [1, 16], [8, 10], [6, 1], [7, 17], [2, 1], [4, 16], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 3 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 2147483647], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 3 ['alpha beta gamma', 'deepsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 12], [1, 16], [3, 10], [2, 3], [2, 3], [2, 3], [2, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [2, 1], [3, 2147483647], [2, 1], [3, 2147483647], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+2 3 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [2, 1], [3, 2147483647], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+2 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [2, 3], [3, 1], [2, 3], [3, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+Already at newest change
+2 1 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [2, 3], [2, 3], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['alpha beta gamma', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 5 ['alpha beta gamma', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [3, 10], [1, 16], [4, 10], [2, 6], [3, 17], [2, 6], [2, 6], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+1 3 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 2 ['alpha beta gamma', 'de', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 3], [2, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+1 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [0, 0], [3, 10], [1, 1], [2, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+4 1 ['alpha beta gamma', 'delta', '', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 5], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+2 1 ['alpha beta gamma', 'x', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [3, 10], [1, 16], [4, 10], [3, 1], [3, 17], [2, 1], [2, 2], [2, 1], [2, 2]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'x', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [2, 1], [2, 2], [2, 1], [2, 2]]
+"---
+
+6 more lines
+1 line less
+3 1 ['alpha beta gamma', 'delta', 'x', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 2], [3, 1], [3, 2]]
+"---
+
+6 more lines
+1 line less
+1 line less
+2 1 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 1 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+1 3 ['delta', 'alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[1, 4], [4, 10], [2, 16], [5, 10], [3, 1], [4, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+6 3 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'delta'] [[6, 4], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [6, 1], [6, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines moved
+6 3 ['', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[6, 4], [2, 10], [5, 16], [3, 10], [1, 1], [2, 17], [5, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 3 ['alpha beta gamma', 'delta', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 3 ['delta', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 substitution on 1 line
+2 1 ['alpha beta gamma', 'deltb', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 substitutions on 4 lines
+5 1 ['alpha bEta gamma', 'dElta', '', 'Epsilon zeta eta', 'thEta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+Error in {file}:
+line   11:
+E486: Pattern not found: a\nb
+2 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 substitutions on 1 line
+1 48 ['alpha beta gammadeltaepsilon zeta etatheta iotakappa'] [[1, 20], [1, 31], [1, 16], [1, 47], [1, 22], [1, 38], [1, 17], [1, 53], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['', 'kappa'] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 11 ['alpha beta gammax', 'deltax', '', 'epsilon zeta etax', 'theta iotax', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [5, 11], [5, 12], [5, 11], [5, 12]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [3, 10], [1, 16], [4, 10], [2, 6], [3, 17], [2, 6], [2, 6], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+2 3 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [2, 7], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+3 1 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 more lines
+8 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [8, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 3 ['alpha beta gamma', 'dexlta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 3], [2, 4], [2, 3], [2, 4]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'new'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 3], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['new', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'new', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 more lines
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [7, 10], [3, 1], [4, 17], [5, 1], [6, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['theta iota', 'kappa', 'epsilon zeta eta', 'delta', 'alpha beta gamma', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 line less
+3 1 ['alpha beta gamma', '', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [3, 10], [2, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'esilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'elon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'ezeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'e', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'e', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 2 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 2 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+3 2 ['alpha beta gamma', 'delta', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [3, 10], [3, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+1 2 ['theta iota', 'kappa'] [[0, 0], [0, 0], [0, 0], [1, 10], [1, 1], [1, 17], [1, 2], [1, 2], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 28 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 34], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta etatheta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 26], [3, 1], [4, 17], [4, 17], [4, 27], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 1], [5, 1], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+5 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'foo', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 4], [5, 1], [5, 4]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 17], [5, 2], [5, 1], [5, 2]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'e', 'psilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 2], [5, 1], [4, 2], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 4 ['alpha beta gamma', 'delta', '', 'efoopsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 5], [4, 2], [4, 5]]
+"---
+
+6 more lines
+1 line less
+5 3 ['alpha beta gamma', 'delta', '', 'foo', 'barepsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 1], [5, 4], [5, 1], [5, 4]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'eX zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 3], [4, 2], [4, 3]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'e', 'silon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 2], [5, 1], [4, 2], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'exsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 3 ['alpha beta gamma', 'delta', '', 'ePsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+4 2 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 18], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line <ed 1 time
+4 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+5 1 ['alpha beta gamma', 'delta', '', 'theta iota', 'epsilon zeta eta', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [5, 1], [5, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [5, 10], [3, 1], [5, 17], [4, 1], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 3 ['alpha beta gamma', 'delta', '', 'espilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 3], [4, 3], [4, 3], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 8 ['alpha beta gamma', 'delta', '', 'epsilon psilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 8], [4, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [8, 10], [3, 1], [4, 17], [5, 1], [7, 5], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [7, 10], [1, 16], [8, 10], [3, 1], [7, 17], [4, 1], [6, 5], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 2 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [4, 1], [4, 2147483647], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'eeta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 11], [4, 2], [4, 3], [4, 2], [4, 2], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 1], [5, 2147483647], [4, 1], [5, 2147483647], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+4 2 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', '  theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 1], [5, 2147483647], [4, 1], [5, 12], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+4 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 2], [5, 2], [4, 2], [5, 2], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+Already at newest change
+4 2 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 2], [4, 2], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [1, 1], [4, 17], [1, 1], [3, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 2 ['alpha beta gamma', 'delta'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 1 ['alpha beta gamma', 'delta', '', 'e'] [[2, 4], [4, 10], [1, 16], [0, 0], [3, 1], [4, 17], [4, 2], [4, 2], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'epsilon zeta eta', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 16], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'kappa'] [[2, 4], [4, 10], [1, 16], [0, 0], [3, 1], [4, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 2], [5, 1], [5, 2]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 1 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+1 2 ['epsilon zeta eta', 'alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[3, 4], [1, 10], [2, 16], [5, 10], [1, 17], [4, 1], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+6 2 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'delta'] [[6, 4], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [6, 1], [6, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines moved
+6 2 ['', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[6, 4], [2, 10], [5, 16], [3, 10], [1, 1], [2, 17], [5, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+5 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 2 ['delta', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 substitution on 1 line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zetb eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 substitutions on 4 lines
+5 1 ['alpha bEta gamma', 'dElta', '', 'Epsilon zeta eta', 'thEta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+Error in {file}:
+line   11:
+E486: Pattern not found: a\nb
+4 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 substitutions on 1 line
+1 48 ['alpha beta gammadeltaepsilon zeta etatheta iotakappa'] [[1, 20], [1, 31], [1, 16], [1, 47], [1, 22], [1, 38], [1, 17], [1, 53], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['', 'kappa'] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 11 ['alpha beta gammax', 'deltax', '', 'epsilon zeta etax', 'theta iotax', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [5, 11], [5, 12], [5, 11], [5, 12]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+4 3 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 18], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+3 1 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 more lines
+8 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [8, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 2 ['alpha beta gamma', 'delta', '', 'expsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 2], [4, 3], [4, 2], [4, 3]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'new'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 3], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['new', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'new', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 more lines
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [7, 10], [3, 1], [4, 17], [5, 1], [6, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['theta iota', 'kappa', 'epsilon zeta eta', 'delta', 'alpha beta gamma', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 line less
+3 1 ['alpha beta gamma', '', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [3, 10], [2, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'appa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'pa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta'] [[2, 4], [4, 10], [1, 16], [0, 0], [3, 1], [4, 17], [5, 1], [5, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 6], [6, 6], [6, 6], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [7, 1]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', '', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [6, 1]]
+"---
+
+6 more lines
+1 line less
+7 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'foo'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 4], [7, 1], [7, 4]]
+"---
+
+6 more lines
+1 line less
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'x'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 6], [7, 2], [7, 1], [7, 2]]
+"---
+
+6 more lines
+1 line less
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', '', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [7, 1], [6, 1], [7, 1]]
+"---
+
+6 more lines
+1 line less
+6 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'fookappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 4], [6, 1], [6, 4]]
+"---
+
+6 more lines
+1 line less
+7 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'foo', 'barkappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [7, 4], [7, 1], [7, 4]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [6, 1]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [6, 1]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'x'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 2], [6, 1], [6, 2]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'X'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 2], [6, 1], [6, 2]]
+"---
+
+6 more lines
+1 line less
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', '', 'appa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [7, 1], [6, 1], [7, 1]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'xappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'Kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', '  kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 7], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line <ed 1 time
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 5], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 5], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 5], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 5], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 5], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 2 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'akppa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 2], [6, 2], [6, 2], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 5 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappakappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 5], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+Already at newest change
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['alpha beta gamma', 'delta'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 2147483647], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'x', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 2], [6, 1], [6, 2]]
+"---
+
+6 more lines
+1 line less
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'x'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 2], [7, 1], [7, 2]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 1 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+1 1 ['kappa', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+6 1 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'delta'] [[6, 4], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [6, 1], [6, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines moved
+6 1 ['', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[6, 4], [2, 10], [5, 16], [3, 10], [1, 1], [2, 17], [5, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['delta', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 substitution on 1 line
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kbppa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 1], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 substitutions on 4 lines
+5 1 ['alpha bEta gamma', 'dElta', '', 'Epsilon zeta eta', 'thEta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+Error in {file}:
+line   11:
+E486: Pattern not found: a\nb
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 substitutions on 1 line
+1 48 ['alpha beta gammadeltaepsilon zeta etatheta iotakappa'] [[1, 20], [1, 31], [1, 16], [1, 47], [1, 22], [1, 38], [1, 17], [1, 53], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['', 'kappa'] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 11 ['alpha beta gammax', 'deltax', '', 'epsilon zeta etax', 'theta iotax', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [5, 11], [5, 12], [5, 11], [5, 12]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+6 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', '  kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 7], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+3 1 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 more lines
+8 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [8, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'xkappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 2], [6, 1], [6, 2]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'new'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 3], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['new', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'new', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 more lines
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [7, 10], [3, 1], [4, 17], [5, 1], [6, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['theta iota', 'kappa', 'epsilon zeta eta', 'delta', 'alpha beta gamma', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 line less
+3 1 ['alpha beta gamma', '', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [3, 10], [2, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 10 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 5 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 5 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+3 10 ['alpha beta gamma', 'delta', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [3, 10], [3, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+1 10 ['theta iota', 'kappa'] [[0, 0], [0, 0], [0, 0], [1, 10], [1, 1], [1, 17], [1, 16], [1, 16], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 28 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 34], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta etatheta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 26], [3, 1], [4, 17], [4, 17], [4, 27], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 1], [5, 1], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+5 3 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'foo', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 4], [5, 1], [5, 4]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 17], [5, 2], [5, 1], [5, 2]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', 'a', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 16], [5, 1], [4, 16], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 18 ['alpha beta gamma', 'delta', '', 'epsilon zeta etfooa', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 19], [4, 16], [4, 19]]
+"---
+
+6 more lines
+1 line less
+5 3 ['alpha beta gamma', 'delta', '', 'foo', 'barepsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 1], [5, 4], [5, 1], [5, 4]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [4, 1]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etX', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 17], [4, 16], [4, 17]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta et', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [4, 16], [5, 1], [4, 16], [5, 1]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etx', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etA', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 15], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+4 18 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 18], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line <ed 1 time
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+5 1 ['alpha beta gamma', 'delta', '', 'theta iota', 'epsilon zeta eta', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [5, 1], [5, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 more line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [5, 10], [3, 1], [5, 17], [4, 1], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etaa', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 16], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [8, 10], [3, 1], [4, 17], [5, 1], [7, 5], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+3 more lines
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [7, 10], [1, 16], [8, 10], [3, 1], [7, 17], [4, 1], [6, 5], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 5 ['alpha beta gamma', 'delta', '', 'kappa'] [[2, 4], [0, 0], [1, 16], [0, 0], [4, 1], [4, 2147483647], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etkappa'] [[2, 4], [4, 10], [1, 16], [0, 0], [4, 16], [4, 26], [4, 16], [4, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 1], [5, 2147483647], [4, 1], [5, 2147483647], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+4 18 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', '  theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 1], [5, 2147483647], [4, 1], [5, 12], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 lines yanked
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [4, 16], [5, 11], [4, 16], [5, 10], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+5 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+Already at newest change
+4 10 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 16], [4, 16], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [1, 1], [4, 17], [1, 1], [3, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 17 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 5 ['alpha beta gamma', 'delta'] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+4 15 ['alpha beta gamma', 'delta', '', 'epsilon zeta et'] [[2, 4], [4, 10], [1, 16], [0, 0], [3, 1], [4, 17], [4, 16], [4, 16], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 1 ['alpha beta gamma', 'delta', ''] [[2, 4], [0, 0], [1, 16], [0, 0], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line yanked
+1 more line
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'epsilon zeta eta', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [6, 1], [6, 16], [6, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'kappa'] [[2, 4], [4, 10], [1, 16], [0, 0], [3, 1], [4, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'x', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [3, 1], [5, 17], [4, 1], [4, 2], [4, 1], [4, 2]]
+"---
+
+6 more lines
+1 line less
+5 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'x', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 2], [5, 1], [5, 2]]
+"---
+
+6 more lines
+1 line less
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [0, 0], [1, 16], [4, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 fewer lines
+2 1 ['alpha beta gamma', 'epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [2, 10], [1, 16], [3, 10], [2, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+1 16 ['epsilon zeta eta', 'alpha beta gamma', 'delta', '', 'theta iota', 'kappa'] [[3, 4], [1, 10], [2, 16], [5, 10], [1, 17], [4, 1], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line moved
+6 5 ['alpha beta gamma', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'delta'] [[6, 4], [3, 10], [1, 16], [4, 10], [2, 1], [3, 17], [6, 1], [6, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines moved
+6 5 ['', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[6, 4], [2, 10], [5, 16], [3, 10], [1, 1], [2, 17], [5, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+5 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [6, 10], [3, 1], [4, 17], [5, 1], [5, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 5 ['delta', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 substitution on 1 line
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zetb eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 1], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 substitutions on 4 lines
+5 1 ['alpha bEta gamma', 'dElta', '', 'Epsilon zeta eta', 'thEta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [1, 1], [6, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+Error in {file}:
+line   11:
+E486: Pattern not found: a\nb
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 substitutions on 1 line
+1 48 ['alpha beta gammadeltaepsilon zeta etatheta iotakappa'] [[1, 20], [1, 31], [1, 16], [1, 47], [1, 22], [1, 38], [1, 17], [1, 53], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 fewer lines
+2 1 ['', 'kappa'] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [2, 17], [2, 1], [2, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+5 11 ['alpha beta gammax', 'deltax', '', 'epsilon zeta etax', 'theta iotax', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [5, 11], [5, 12], [5, 11], [5, 12]]
+"---
+
+6 more lines
+1 line less
+4 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [4, 27], [3, 1], [4, 17], [4, 17], [4, 28], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 1 ['alpha beta gamma', 'delta epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [2, 16], [1, 16], [3, 10], [2, 6], [2, 23], [2, 6], [2, 23], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line >ed 1 time
+4 3 ['alpha beta gamma', 'delta', '', '  epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 1], [4, 18], [4, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines >ed 1 time
+3 1 ['alpha beta gamma', '  delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [2, 1], [3, 1], [2, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 more lines
+8 5 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'alpha beta gamma', 'delta'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [8, 1], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+4 16 ['alpha beta gamma', 'delta', '', 'epsilon zeta etxa', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [4, 16], [4, 17], [4, 16], [4, 17]]
+"---
+
+6 more lines
+1 line less
+1 more line
+7 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa', 'new'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 3], [7, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+1 1 ['new', 'alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[3, 4], [5, 10], [2, 16], [6, 10], [4, 1], [5, 17], [1, 1], [1, 3], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 more line
+3 1 ['alpha beta gamma', 'delta', 'new', '', 'epsilon zeta eta', 'theta iota', 'kappa'] [[2, 4], [5, 10], [1, 16], [6, 10], [4, 1], [5, 17], [3, 1], [3, 3], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+2 lines yanked
+2 more lines
+6 1 ['alpha beta gamma', 'delta', '', 'epsilon zeta eta', 'delta', '', 'theta iota', 'kappa'] [[2, 4], [4, 10], [1, 16], [7, 10], [3, 1], [4, 17], [5, 1], [6, 1], [5, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['', 'alpha beta gamma', 'delta', 'epsilon zeta eta', 'kappa', 'theta iota'] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 1 ['theta iota', 'kappa', 'epsilon zeta eta', 'delta', 'alpha beta gamma', ''] [[2, 4], [4, 10], [1, 16], [5, 10], [3, 1], [4, 17], [7, 1], [7, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+1 line less
+1 line less
+3 1 ['alpha beta gamma', '', 'theta iota', 'kappa'] [[0, 0], [0, 0], [1, 16], [3, 10], [2, 1], [3, 17], [3, 1], [3, 1], [3, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+6 fewer lines; before #1  0 seconds ago
+1 1 [''] [[0, 0], [0, 0], [0, 0], [0, 0], [1, 1], [1, 17], [1, 1], [1, 1], [1, 1], [0, 0]]
+"---
+
+6 more lines
+1 line less
+3 fewer lines
+3 fewer lines; before #1  0 seconds ago
+3 more lines; after #1  0 seconds ago
+1 1 ['epsilon zeta eta', 'theta iota', 'kappa'] [[0, 0], [1, 10], [0, 0], [2, 10], [1, 1], [1, 17], [1, 1], [3, 1], [1, 1], [0, 0]]

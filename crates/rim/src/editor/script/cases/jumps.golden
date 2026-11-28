@@ -1,0 +1,228 @@
+NVIM v0.12.6
+
+1 line less
+J [[5, 9], [6, 9], [4, 1], [7, 3], [1, 2], [1, 2]]
+C [[2, 1], [6, 9], [4, 1]] ['alpha beta gamma', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line less
+J [[5, 9], [6, 9], [4, 1], [2, 14], [7, 3], [1, 2]]
+C [[3, 1], [6, 9], [4, 1]] ['alpha beta gamma', 'delta epsilon!', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+2 fewer lines
+J [[4, 9], [5, 9], [3, 1], [6, 3], [1, 2], [1, 2]]
+C [[2, 1], [5, 9], [3, 1]] ['alpha beta gamma', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]
+C [[1, 1], [1, 1], [1, 1]] ['']
+"---
+
+1 line less
+J [[5, 9], [6, 9], [4, 1], [7, 3], [2, 4], [2, 4]]
+C [[1, 1], [6, 9], [4, 1]] ['delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line less
+Error in {file}:
+line   26:
+E19: Mark has invalid line number
+"---
+
+1 line less
+J [[5, 9], [6, 9], [2, 14], [7, 3], [1, 2], [3, 4]]
+C [[4, 1], [6, 9], [4, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 substitution on 1 line
+J [[6, 9], [7, 9], [5, 1], [2, 14], [8, 3], [1, 2]]
+C [[3, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'xxzeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 substitution on 1 line
+J [[6, 9], [7, 9], [5, 1], [2, 14], [8, 3], [1, 2]]
+C [[3, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zetayy', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 substitution on 1 line
+J [[6, 9], [7, 9], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[5, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xE theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 more line
+J [[8, 9], [6, 1], [2, 14], [9, 3], [1, 2], [7, 2]]
+C [[4, 1], [8, 9], [6, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', 'n', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 more line
+J [[8, 9], [6, 1], [3, 14], [9, 3], [2, 2], [7, 2]]
+C [[1, 1], [8, 9], [6, 1]] ['n', 'alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 more line
+J [[7, 9], [5, 1], [2, 14], [8, 3], [1, 2], [6, 2]]
+C [[9, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi', 'n']
+"---
+
+1 line moved
+J [[7, 9], [6, 1], [3, 14], [8, 3], [2, 2], [4, 4]]
+C [[1, 1], [7, 9], [6, 1]] ['kappa lambda', 'alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line moved
+J [[6, 9], [4, 1], [7, 3], [1, 2], [5, 2], [2, 4]]
+C [[2, 1], [6, 9], [4, 1]] ['alpha beta gamma', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi', 'delta epsilon!']
+"---
+
+2 lines moved
+J [[5, 9], [3, 1], [6, 3], [7, 2], [4, 2], [1, 4]]
+C [[1, 1], [5, 9], [3, 1]] ['zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi', 'alpha beta gamma', 'delta epsilon!']
+"---
+
+2 lines moved
+J [[7, 9], [4, 14], [8, 3], [3, 2], [6, 2], [5, 4]]
+C [[1, 1], [7, 9], [2, 1]] ['', 'xeta theta iota', 'alpha beta gamma', 'delta epsilon!', 'zeta', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[6, 9], [4, 1], [7, 3], [1, 2], [5, 2], [5, 2]]
+C [[3, 1], [6, 9], [4, 1]] ['alpha beta gamma', 'delta epsilon! zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[5, 9], [3, 1], [6, 3], [4, 2], [4, 2], [4, 2]]
+C [[2, 1], [5, 9], [3, 1]] ['alpha beta gamma delta epsilon! zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+2 lines >ed 1 time
+J [[6, 9], [7, 9], [5, 1], [2, 14], [8, 3], [1, 2]]
+C [[3, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', '  zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 change; before #3  0 seconds ago
+J [[6, 9], [5, 1], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[7, 1], [5, 1], [2, 14]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 fewer lines
+5 more lines; before #4  0 seconds ago
+5 fewer lines; after #4  0 seconds ago
+J [[3, 3], [1, 2], [1, 2], [1, 2], [1, 2], [1, 2]]
+C [[2, 1], [2, 1], [2, 1]] ['alpha beta gamma', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [8, 9], [6, 1], [2, 14], [9, 3], [1, 2]]
+C [[3, 1], [8, 9], [6, 1]] ['alpha beta gamma', 'delta epsilon!', 'x', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [8, 9], [6, 1], [2, 14], [9, 3], [1, 2]]
+C [[3, 1], [8, 9], [6, 1]] ['alpha beta gamma', 'delta epsilon!', '', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line less
+J [[6, 9], [2, 14], [7, 3], [1, 2], [3, 4], [3, 4]]
+C [[5, 1], [6, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+2 fewer lines
+J [[4, 9], [5, 9], [2, 14], [6, 3], [1, 2], [1, 2]]
+C [[3, 1], [5, 9], [3, 1]] ['alpha beta gamma', 'delta epsilon!', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[5, 1], [2, 14], [7, 3], [1, 2], [3, 4], [3, 4]]
+C [[7, 1], [6, 13], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [8, 9], [6, 1], [3, 14], [9, 3], [2, 2]]
+C [[1, 1], [8, 9], [6, 1]] ['new', 'alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[6, 9], [7, 9], [5, 1], [2, 14], [8, 3], [1, 2]]
+C [[9, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi', 'new']
+"---
+
+J [[7, 9], [5, 1], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[6, 9], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa labda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[6, 9], [7, 9], [5, 1], [8, 3], [1, 2], [3, 4]]
+C [[2, 9], [7, 9], [5, 1]] ['alpha beta gamma', 'delta ep!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line less
+1 more line
+J [[5, 9], [7, 9], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[6, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'kappa lambda', 'xeta theta iota', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line yanked
+1 more line
+J [[6, 9], [8, 9], [5, 1], [2, 14], [9, 3], [1, 2]]
+C [[7, 1], [8, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+2 fewer lines
+J [[4, 9], [5, 9], [2, 14], [6, 3], [1, 2], [1, 2]]
+C [[4, 1], [5, 9], [3, 4]] ['alpha beta gamma', 'delta epsilon!', 'zetxeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+2 fewer lines
+J [[4, 9], [5, 9], [3, 1], [6, 3], [1, 2], [1, 2]]
+C [[2, 1], [5, 9], [3, 1]] ['alpha beta gamma', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[6, 9], [7, 9], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[5, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', '', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[6, 9], [7, 9], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[5, 1], [7, 9], [5, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'x', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [8, 9], [6, 1], [2, 14], [9, 3], [1, 2]]
+C [[5, 1], [8, 9], [6, 1]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'x', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1 line less
+1 line less
+1 line less
+J [[3, 1], [2, 4], [5, 3], [1, 2], [1, 2], [1, 2]]
+C [[4, 1], [4, 9], [3, 1]] ['alpha beta gamma', 'zeta', 'xeta theta iota', 'mu nu xiz', 'omicron pi']
+"---
+
+5 fewer lines
+J [[1, 1], [3, 3], [3, 3], [3, 3], [3, 3], [3, 3]]
+C [[2, 1], [2, 9], [2, 1]] ['', 'mu nu xiz', 'omicron pi']
+"---
+
+4 substitutions on 4 lines
+J [[6, 9], [7, 9], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[5, 1], [7, 9], [5, 1]] ['alpha bEta gamma', 'dElta epsilon!', 'zEta', '', 'xEta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [5, 1], [2, 14], [8, 3], [6, 2], [3, 4]]
+C [[1, 1], [7, 9], [5, 1]] ['', 'alpha beta gamma', 'delta epsilon!', 'kappa lambda', 'mu nu xiz', 'omicron pi', 'xeta theta iota', 'zeta']
+"---
+
+J [[7, 9], [5, 1], [2, 14], [8, 1], [6, 2], [3, 4]]
+C [[1, 1], [7, 9], [5, 1]] ['zeta', 'xeta theta iota', 'omicron pi', 'mu nu xiz', 'kappa lambda', 'delta epsilon!', 'alpha beta gamma', '']
+"---
+
+7 substitutions on 1 line
+J [[1, 71], [1, 71], [1, 71], [1, 71], [1, 71], [1, 71]]
+Error in {file}:
+line   26:
+E19: Mark has invalid line number
+"---
+
+2 substitutions on 1 line
+J [[4, 9], [5, 9], [3, 1], [6, 3], [1, 2], [1, 2]]
+C [[2, 1], [5, 9], [3, 1]] ['alpha beta gamma', 'delta epsilon!-zeta-', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+J [[7, 9], [5, 1], [2, 14], [8, 3], [6, 2], [3, 4]]
+C [[7, 9], [5, 1], [2, 14]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']
+"---
+
+1
+J [[7, 9], [5, 1], [2, 14], [8, 3], [1, 2], [3, 4]]
+C [[7, 9], [5, 1], [2, 14]] ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'xeta theta iota', 'kappa lambda', 'mu nu xiz', 'omicron pi']

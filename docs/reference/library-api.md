@@ -59,6 +59,9 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `last_edits() -> &[Edit]` | edits made by the last call (an edit, or a history move's path); empty after a no-op, including group calls |
 | `replace_all(&Regex, &str) -> usize` | regex replace as one undo step ([search.md](search.md)) |
 | `replace_matching(&Regex, &str, keep) -> usize` | same, only the matches `keep(range)` accepts; `last_edits` has one edit per replaced match |
+| `plan_replace(&Regex, &str, keep) -> Replacement` / `apply_replacement(Replacement) -> usize` | `replace_matching` in two steps, for a caller that must prepare before the text changes (rim saves undo lines first): `Replacement::edits()`/`text()` show the result, planning changes nothing; applying a plan made for another text panics |
+| `reopen_group() -> bool` | opens a group on the current version when it is the newest one (an editor's `:undojoin`): the next edits grow it instead of making a version |
+| `new_version()` | a version equal to the current text with no edits (an editor's undo step is made before the text is known to differ); inside a group the group owns it |
 | `compact(max)` | the current version's text becomes `Text::compact(max)` (same content; `last_edits` empty); history kept, other versions keep their own pieces |
 | `drop_history_before(seq) -> bool` | forgets every version that is neither `seq` nor made from it, freeing their texts and the chunks only they use; `seq` becomes version 0, the rest renumbered in creation order; false (no change) when `seq` does not exist or the current version is not in its subtree; closes open groups |
 | `write_to(impl Write) -> io::Result<()>` | `Text::write_to` with `eol()`; propagates writer errors |

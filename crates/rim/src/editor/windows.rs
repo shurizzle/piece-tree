@@ -2,7 +2,7 @@
 
 use std::{cell::RefCell, mem};
 
-use super::{Editor, MatchCache, Mode, Pos, layout, options::WinOpts};
+use super::{Editor, MatchCache, Mode, buffers::Mark, layout, options::WinOpts};
 
 /// One view of a buffer: cursor and scroll state.
 pub(super) struct Window {
@@ -12,8 +12,11 @@ pub(super) struct Window {
     /// Cursor line and column, in chars.
     pub line: usize,
     pub col: usize,
-    /// Column kept across vertical moves; `usize::MAX` after `$`.
+    /// `w_curswant`: the virtual column (screen cells) kept across vertical moves; `usize::MAX` after `$`. Only
+    /// meaningful while `want_set` is false.
     pub want_col: usize,
+    /// `w_set_curswant`: the cursor moved, so `want_col` is taken from it before the next command (`Editor::update_curswant`).
+    pub want_set: bool,
     pub top: usize,
     /// Screen rows of line `top` scrolled off the top (a cursor line taller than the screen).
     pub top_sub: usize,
@@ -22,19 +25,17 @@ pub(super) struct Window {
     /// Text width of the last frame: the wrap width of `gj`/`gk`, `Ctrl-D`/`Ctrl-U`, `H`/`M`/`L`
     /// (`usize::MAX` before the first frame).
     pub text_w: usize,
-    /// Screen column kept by consecutive `gj`/`gk`, valid while the cursor stays at the position stored.
-    pub want_x: Option<(usize, Pos)>,
     /// Rows of the cursor line and of recent huge lines, kept between frames (`wrap`).
     pub layout: RefCell<layout::Layouts>,
     /// Highlight matches of the last frame: text version, pattern, lines, result.
     pub match_cache: RefCell<Option<MatchCache>>,
     /// Cursor byte offset while the window is parked, shifted by the edits made in other windows;
     /// `line`/`col` are recomputed from it when the window comes back.
-    pub off: usize,
+    pub off: Mark,
     /// Jump list (`Ctrl+O`/`Ctrl+I`): buffer id and byte offset of each position jumped from,
     /// oldest first, shifted by edits; `jump_idx` is the entry the next `Ctrl+O` goes back from
     /// (`jumps.len()` when not moving through the list).
-    pub jumps: Vec<(usize, usize)>,
+    pub jumps: Vec<(usize, Mark)>,
     pub jump_idx: usize,
     /// Window-local options (`w_onebuf_opt`): what the window shows now, and (`all_opts`, `w_allbuf_opt`) the values a buffer
     /// that was never in this window gets. `:set` writes both, a modeline the first one only.
@@ -56,15 +57,15 @@ impl Window {
             line: 0,
             col: 0,
             want_col: 0,
+            want_set: true,
             top: 0,
             top_sub: 0,
             left: 0,
             rows: 1,
             text_w: usize::MAX,
-            want_x: None,
             layout: RefCell::default(),
             match_cache: RefCell::default(),
-            off: 0,
+            off: Mark { line: 0, col: 0 },
             jumps: Vec::new(),
             jump_idx: 0,
             opts: WinOpts::default(),
@@ -77,7 +78,7 @@ impl Window {
 
     /// Scroll and column memory, dropped when the window shows another buffer.
     pub fn reset_view(&mut self) {
-        (self.top, self.top_sub, self.left, self.want_col, self.want_x) = (0, 0, 0, 0, None);
+        (self.top, self.top_sub, self.left, self.want_col, self.want_set) = (0, 0, 0, 0, true);
     }
 }
 
@@ -420,7 +421,7 @@ impl Editor {
 
     /// Parks the current window and brings back `id`, with its buffer.
     pub(super) fn park_and_take(&mut self, id: usize) {
-        self.win.off = self.offset();
+        self.win.off = self.mark_at(self.offset());
         let i = self.windows.iter().position(|w| w.id == id).expect("a known window");
         mem::swap(&mut self.win, &mut self.windows[i]);
         if self.win.buf != self.buf.id {
@@ -430,7 +431,7 @@ impl Editor {
             mem::swap(&mut self.buf, &mut self.buffers[j]);
         }
         // `:e!` replaces the text without edits to map `off` through: clamp it to a char boundary.
-        (self.win.line, self.win.col) = self.pos_of(self.buf.doc.text().floor_char_boundary(self.win.off));
+        (self.win.line, self.win.col) = self.pos_of(self.mark_offset(self.win.off));
         self.win.top = self.win.top.min(self.line_count() - 1);
         // Insert mode keeps a cursor past the line end (drawing the other windows swaps back).
         if self.mode != Mode::Insert {
@@ -456,7 +457,7 @@ impl Editor {
         let mut w = Window::new(self.next_win, self.buf.id);
         // `win_copy_options`
         (w.opts, w.all_opts) = (self.win.opts.clone(), self.win.all_opts.clone());
-        (w.line, w.col, w.want_col, w.top, w.off) = (self.win.line, self.win.col, self.win.want_col, self.win.top, self.offset());
+        (w.line, w.col, w.want_col, w.want_set, w.top, w.off) = (self.win.line, self.win.col, self.win.want_col, self.win.want_set, self.win.top, self.mark_at(self.offset()));
         let before = self.win_rects();
         assert!(self.split.insert(self.win.id, w.id, row), "the current window is in the layout");
         if self.buf.opts.equalalways || !self.screen_drawn {

@@ -1,0 +1,1522 @@
+NVIM v0.12.6
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['bc defq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['Abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['xxxxxefq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def xyzq', '', 'last', ''] 1 12
+"---
+
+4 more lines
+Already at newest change
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['xyzq', '', 'last', ''] 1 4
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['q'] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['bc defq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+[' defq', 'xyz', '', 'last', ''] 1 5
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['ABC DEFq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['bc defq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['bc defq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E748: No previously used register
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E33: No previous substitute regular expression
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+E476: Invalid command
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E486: Pattern not found: zzz
+['abc def', 'xyz', '', 'last', ''] 1 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc deq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc dfq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc deFq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def xyzq', '', 'last', ''] 1 12
+"---
+
+4 more lines
+Already at newest change
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['xyzq', '', 'last', ''] 1 4
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['q'] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc dfq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc deq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc deq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abcfq', 'xyz', '', 'last', ''] 1 5
+"---
+
+4 more lines
+['abc deFq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc deq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc deq', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E748: No previously used register
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E33: No previous substitute regular expression
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+E476: Invalid command
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E486: Pattern not found: zzz
+['abc def', 'xyz', '', 'last', ''] 1 7
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Already at newest change
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq'] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['q'] 1 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E748: No previously used register
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E33: No previous substitute regular expression
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+E476: Invalid command
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E486: Pattern not found: zzz
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyzq', '', 'last', ''] 2 4
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'lastq', ''] 3 5
+"---
+
+4 more lines
+Already at newest change
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', 'q'] 5 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'lastq', ''] 3 5
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+3 fewer lines
+['abc def', 'xyzq'] 2 4
+"---
+
+4 more lines
+3 fewer lines
+['lastq', ''] 1 5
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E20: Mark not set
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', 'q', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc defq', 'xyz', '', 'last', ''] 1 8
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'lastq', ''] 4 5
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E353: Nothing in register "
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E748: No previously used register
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E33: No previous substitute regular expression
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E35: No previous regular expression
+E476: Invalid command
+['abc def', 'xyz', '', 'last', ''] 3 1
+"---
+
+4 more lines
+Error in {file}:
+line    5:
+E486: Pattern not found: zzz
+['abc def', 'xyz', '', 'last', ''] 3 1

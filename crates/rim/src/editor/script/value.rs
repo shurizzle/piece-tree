@@ -5,6 +5,8 @@ use std::{cell::RefCell, collections::HashMap, rc::Rc};
 pub(in crate::editor) use dumpster::unsync::Gc;
 use dumpster::Trace;
 
+use crate::string_builder::StringBuilder;
+
 
 /// Lists and Dictionaries are shared by reference, like vim's: `let b = a` makes two names of one
 /// list. The cycle-collecting `Gc` frees the ones that point to themselves.
@@ -280,8 +282,14 @@ impl std::fmt::Debug for Value {
 // ---- text of numbers --------------------------------------------------------------------------
 
 /// `%g` of `vim_vsnprintf` (see `printf::format_float`), as `string()` and string concatenation use it.
+pub(super) fn fmt_g_in<B: StringBuilder>(out: &mut B, f: f64, prec: Option<usize>, upper: bool) {
+    super::printf::format_float_in(out, f, if upper { 'G' } else { 'g' }, prec, false, true);
+}
+
 pub(super) fn fmt_g(f: f64, prec: Option<usize>, upper: bool) -> String {
-    super::printf::format_float(f, if upper { 'G' } else { 'g' }, prec, false, true).0
+    let mut s = String::new();
+    fmt_g_in(&mut s, f, prec, upper);
+    s
 }
 
 /// A float as `echo` and `string()` show it (`encode.c`): `%g`, and `str2float()` for inf and nan.
@@ -319,8 +327,14 @@ impl Value {
     }
 
     /// `string()`: a literal that reads back as the value (`encode_tv2string`).
+    pub fn literal_in<B: StringBuilder>(&self, out: &mut B) {
+        self.encode_in(Enc::String, &mut Vec::new(), &mut false, out);
+    }
+
     pub fn literal(&self) -> String {
-        self.encode(Enc::String).0
+        let mut s = String::new();
+        self.literal_in(&mut s);
+        s
     }
 
     /// `encode_tv2string` or `encode_tv2echo` of the value, and whether a container held itself
@@ -333,7 +347,7 @@ impl Value {
 
     /// `typval_encode.c.h`: `stack` holds the containers being written (`mpstack`), a container met again is
     /// written as its place in it: `{E724@0}` for `string()`, `[...@0]` and `{...@0}` for `:echo`.
-    fn encode_in(&self, enc: Enc, stack: &mut Vec<Value>, recursed: &mut bool, out: &mut String) {
+    fn encode_in<B: StringBuilder>(&self, enc: Enc, stack: &mut Vec<Value>, recursed: &mut bool, out: &mut B) {
         match self {
             Value::Int(n) => out.push_str(&n.to_string()),
             Value::Float(f) => out.push_str(&fmt_float(*f)),
@@ -421,22 +435,28 @@ impl Value {
 
     /// What the value is when inserted as text: a list one item per line.
     pub fn text(&self) -> String {
-        self.text_in(&mut Vec::new())
+        let mut s = String::new();
+        self.text_in(&mut s, &mut Vec::new());
+        s
     }
 
     /// `seen` holds the Lists being joined: one met again is `[...]`.
-    fn text_in(&self, seen: &mut Vec<Value>) -> String {
+    fn text_in<B: StringBuilder>(&self, out: &mut B, seen: &mut Vec<Value>) {
         match self {
-            Value::Str(s) => s.to_string(),
-            Value::List(_) if seen.iter().any(|s| s.same_container(self)) => "[...]".into(),
+            Value::Str(s) => out.push_str(s),
+            Value::List(_) if seen.iter().any(|s| s.same_container(self)) => out.push_str("[...]"),
             Value::List(v) => {
                 seen.push(self.clone());
-                let text = v.borrow().iter().map(|x| x.text_in(seen)).collect::<Vec<_>>().join("\n");
+                for x in v.borrow().iter() {
+                    if !out.is_empty() {
+                        out.push('\n');
+                    }
+                    x.text_in(out, seen);
+                }
                 seen.pop();
-                text
             }
-            Value::Float(f) => fmt_g(*f, None, false),
-            v => v.literal(),
+            Value::Float(f) => fmt_g_in(out, *f, None, false),
+            v => v.literal_in(out),
         }
     }
 
@@ -451,12 +471,18 @@ impl Value {
 
     /// What `:echo` shows (`encode_tv2echo`): a string as it is, anything else as `string()` but for the marks of a
     /// container that holds itself.
-    pub fn echo(&self) -> String {
+    pub fn echo_in<B: StringBuilder>(&self, out: &mut B) {
         match self {
-            Value::Str(s) => s.to_string(),
-            Value::Func(s) => s.to_string(),
-            v => v.encode(Enc::Echo).0,
+            Value::Str(s) => out.push_str(s),
+            Value::Func(s) => { let _ = write!(out, "{}", s); }
+            v => v.encode_in(Enc::Echo, &mut Vec::new(), &mut false, out),
         }
+    }
+
+    pub fn echo(&self) -> String {
+        let mut s = String::new();
+        self.echo_in(&mut s);
+        s
     }
 }
 

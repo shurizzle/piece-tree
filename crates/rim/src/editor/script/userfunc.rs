@@ -793,8 +793,12 @@ impl Editor {
     /// An autoload function `a#b#c` belongs in the script `autoload/a/b.vim`: the file being sourced must end so.
     fn autoload_name_matches(&self, name: &str) -> bool {
         let Some(top) = self.scripts.stack.last() else { return false };
-        let parts: Vec<&str> = name.split('#').collect();
-        let path = format!("/{}.vim", parts[..parts.len() - 1].join("/"));
+        let mut path = String::with_capacity(name.len() + 5);
+        for part in name.split('#') {
+            path.push('/');
+            path.push_str(part);
+        }
+        path.push_str(".vim");
         // "autoload/" comes first in the name `autoload_name` makes; the comparison starts at its first `/`.
         top.name.len() > path.len() && top.name.ends_with(&path)
     }
@@ -828,6 +832,11 @@ impl Editor {
     /// `list_func_head`.
     fn func_head(f: &UFunc, indent: bool, force: bool) -> String {
         let mut s = String::new();
+        Self::func_head_into(&mut s, f, indent, force);
+        s
+    }
+
+    fn func_head_into(s: &mut String, f: &UFunc, indent: bool, force: bool) {
         if indent {
             s.push_str("   ");
         }
@@ -858,14 +867,13 @@ impl Editor {
                 s.push_str(word);
             }
         }
-        s
     }
 
     /// `list_functions`: all of them, or the ones whose name matches `pat`.
     fn list_functions(&mut self, pat: Option<&str>) {
         let mut names: Vec<Rc<str>> = self.scripts.funcs.keys().cloned().collect();
         names.sort();
-        let mut lines = Vec::new();
+        let mut lines = String::new();
         for n in names {
             let listed = match pat {
                 None => !func_name_refcount(&n),
@@ -884,11 +892,14 @@ impl Editor {
                 }
             };
             if listed {
-                lines.push(Self::func_head(&self.scripts.funcs[&*n], false, false));
+                if !lines.is_empty() {
+                    lines.push('\n');
+                }
+                Self::func_head_into(&mut lines, &self.scripts.funcs[&*n], false, false);
             }
         }
         if !lines.is_empty() {
-            self.info(lines.join("\n"));
+            self.info(lines);
         }
     }
 
@@ -908,35 +919,37 @@ impl Editor {
             self.emsg_funcname("E123: Undefined function: %s", name);
             return;
         };
-        let mut out = vec![Self::func_head(&f, !forceit, forceit)];
+        let mut out = Self::func_head(&f, !forceit, forceit);
         for (j, line) in f.lines.iter().enumerate() {
             let Some(line) = line else { continue };
             // `msg_prt_line`: a tab is spaces up to the next tab stop of the line, other control characters are shown as `^X`.
             let line = self.prt_line(line);
+            out.push('\n');
             if forceit {
-                out.push(line);
+                out.push_str(&line);
             } else {
-                out.push(format!("{}{}{}", j + 1, if j < 9 { "  " } else if j < 99 { " " } else { "" }, line));
+                use std::fmt::Write as _;
+                let _ = write!(&mut out, "{}{}{}", j + 1, if j < 9 { "  " } else if j < 99 { " " } else { "" }, line);
             }
         }
-        out.push((if forceit { "endfunction" } else { "   endfunction" }).to_string());
-        self.info(out.join("\n"));
+        out.push_str(if forceit { "\nendfunction" } else { "\n   endfunction" });
+        self.info(out);
     }
 
     /// `msg_prt_line` with 'list' off: tabs become spaces to the next multiple of 'tabstop', counted in the line.
     fn prt_line(&self, line: &str) -> String {
-        let ts = self.buf.opts.tabstop.max(1);
+        let tabs = self.buf.opts.tabs();
         let mut out = String::new();
         let mut col = 0;
         for c in line.chars() {
             if c == '\t' {
-                let n = ts - col % ts;
+                let n = tabs.pad(col);
                 out.extend(std::iter::repeat_n(' ', n));
                 col += n;
             } else {
-                let t = crate::editor::messages::trans(&c.to_string(), false);
-                col += crate::editor::graphemes::width(&t, col);
-                out.push_str(&t);
+                let old_len = out.len();
+                crate::editor::messages::trans_in(&mut out, [c], false);
+                col += crate::editor::graphemes::width(&out[old_len..], 1);
             }
         }
         out

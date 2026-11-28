@@ -798,3 +798,21 @@ Steps, kept and **rejected**:
 - `simple` as a byte predicate (`complex(c0, c1, c2)`, no decode) and `run_end` testing 32 positions at once: a `match` version did not vectorize (count 5–6 ms on CJK); written with `&`/`|` only it did, but checking every block exactly cost 0.27 ns/byte everywhere (ideographs 0.8 → 1.6 ms). Three tiers per block (lead byte alone, then E2/E3 exactly, then the full check): ideographs 0.8 ms, kana 2 ms, ASCII 0.3 ms per 2–6 MB. Kept; cold CJK 9 → 5 ms.
 - Layout of a run from its lead bytes (`lead_cell`: ASCII 1 cell, U+4000–U+9FFF but the hexagrams and U+B000–U+CFFF 2 cells, checked against `cell_width` for every char) and `run_end` directly instead of the counted spans: layout to column 500000 equal to HEAD (~2.7 ms both). A version that sent kana through `graphemes::next` + `width` per char: 27 ms. **Rejected**: a char inside a run is decoded once instead.
 - The block tiers moved into `maybe_lead`/`maybe_char` so a test can check them against `complex` exhaustively: the same machine code but one `vpcmpeqb` fewer (a duplicated `\r` test), A/B of two standalone copies pinned to one core (`taskset`), 10–20 alternating rounds: cold jump CJK −3%, kana +0.4%, accent +3% (noise); ASCII looked +10% inlined, but with `run_end` kept out of line both sides measure the same (min 263 against 255 µs), so it is code placement. Kept.
+
+## rim: the Tab model, block operators and Insert mode against the last commit (2026-11-27)
+
+A copy of `HEAD` (9775ae4) and the working tree, both `cargo test --release -p rim` with the same harness (an ignored test: 20000 lines of `line N<Tab>some text here and there M`, min of 7 runs, `ed_new` (190 us) taken off the operations; frames of 120x40 at line 10000; nothing else running; Apple M1 Pro). The working tree holds what is not committed: the Tab model in cells (`Cells`, `Tabs`, `curswant` in cells), the Visual block operators of Neovim (`editor/block.rs`), the cell-wise block highlight, the Insert-mode arrow keys. The harness is not kept in the tree.
+
+| scenario | HEAD | tree, first | tree, now |
+|---|---|---|---|
+| frame, Normal, 200 frames | 8.8 ms | 13.2 ms | 13.2 ms |
+| frame, Visual block, 200 frames | 13.6 ms | 14.4 ms | 14.4 ms |
+| typing 3000 chars in one line | 3.3 ms | 25.2 ms | 4.6 ms |
+| block `d`, 5000 lines | 6.6 ms | 5.4 ms | 5.3 ms |
+| block `I`, 2000 lines | 1.6 ms | 1.6 ms | 1.5 ms |
+| block `y` + `p`, 2000 lines | 1.2 ms | 1.0 ms | 0.9 ms |
+| block `>`, 2000 lines | 1.0 ms | 1.7 ms | 1.6 ms |
+
+- **Kept: `curswant` taken when used in Insert mode.** `update_curswant` read the line up to the cursor at every key (`cell_range`, `byte_of`: O(column)), so typing in a long line was quadratic: 25 ms for 3000 chars. In Insert mode it is now taken only by `move_vertical` (Neovim sets `w_set_curswant` and takes the value when a command uses it). 25.2 to 4.6 ms.
+- **Still slower than HEAD, not fixed:** the Normal frame (+50%: `Cells` and `row_spans` lay out every char of a line with a Tab, where HEAD had the plain ASCII path), typing in a long line (+40%: what else a key does per char, not profiled) and the block shift (`shift_block` builds the new line with `String`s). The block operators are otherwise as fast as HEAD's or faster. Profile with samply before changing any of them.
+

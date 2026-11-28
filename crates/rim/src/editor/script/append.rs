@@ -8,6 +8,10 @@ impl Editor {
     /// `ex_change`: the lines of the range go, then `:insert` takes their place.
     pub(super) fn ex_change(&mut self, line1: usize, line2: usize, forceit: bool, arg: &str, next: &mut Option<String>) {
         // `append_indent` of the first line comes from the first line of the range, before it goes (autoindent is on, `!` switches it off).
+        // The lines that go are saved first (`u_save` fails when they are past the end: nothing is done then).
+        if line2 >= line1 && line2 <= self.line_count() {
+            self.u_save(line1 - 1, line2 + 1);
+        }
         let first_indent = (!forceit && line1 >= 1 && line1 <= self.line_count()).then(|| self.indent_cols(line1));
         if !self.buffer_is_empty() {
             // `ml_delete` until the range is gone or the buffer is empty.
@@ -27,16 +31,9 @@ impl Editor {
 
     /// The indent of 1-based line `lnum` in columns (`get_indent_lnum`).
     fn indent_cols(&self, lnum: usize) -> usize {
-        let ts = self.buf.opts.tabstop.max(1);
-        let mut col = 0;
-        for c in self.buf.doc.text().line(lnum - 1).chars() {
-            match c {
-                ' ' => col += 1,
-                '\t' => col += ts - col % ts,
-                _ => break,
-            }
-        }
-        col
+        let line = self.buf.doc.text().line(lnum - 1);
+        let blanks = line.len() - line.trim_start_matches([' ', '\t']).len();
+        self.buf.opts.indent_width(&line[..blanks])
     }
 
     /// `ex_append`: `long` is `append` (after `line2`), `insert` or `change` (before it). A text after `|` is the first
@@ -105,6 +102,7 @@ impl Editor {
             indent: 0,
             // The column the cursor wants is not touched by the lines going in.
             want_col: self.win.want_col,
+            did_undo: false,
         }
     }
 
@@ -140,6 +138,10 @@ impl Editor {
         }
         // Don't use autoindent if nothing was typed after it.
         let theline = if theline.chars().nth(skipped).is_none() { "" } else { theline };
+        if !st.did_undo {
+            self.u_save(st.lnum, st.lnum + 1 + usize::from(st.empty));
+            st.did_undo = true;
+        }
         self.insert_lines(st.lnum, theline);
         st.lnum += 1;
         if st.empty {
@@ -164,13 +166,18 @@ impl Editor {
         for (mark, l) in [('[', start), (']', end)] {
             let l = l.clamp(1, count) - 1;
             let off = self.buf.doc.text().line_to_offset(l);
-            self.buf.marks.insert(mark, off);
+            self.put_off(mark, off);
+        }
+        // `appended_lines_mark` for the last line: `'.` is its start.
+        if line2 < lnum {
+            let off = self.mark_off(end.clamp(1, count) - 1, 0);
+            self.set_dot(off);
         }
         // `beginline(BL_SOL | BL_FIX)` with 'nostartofline': the column stays where the cursor wanted it.
         let l = lnum.clamp(1, count) - 1;
         self.win.line = l;
         self.win.want_col = st.want_col;
-        self.win.col = st.want_col.min(self.line_chars(l).saturating_sub(1));
+        self.win.col = self.col_wanted(l);
         self.clamp_normal();
     }
 
@@ -201,4 +208,6 @@ pub(in crate::editor) struct AppendState {
     append_indent: Option<usize>,
     indent: usize,
     want_col: usize,
+    /// `did_undo`: the lines were saved for undo.
+    did_undo: bool,
 }

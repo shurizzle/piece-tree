@@ -119,22 +119,17 @@ impl Editor {
         self.bracket_object(around, open, close, n)
     }
 
-    /// Byte range of clusters `cols` in `line`.
-    pub(super) fn cols_range(&self, line: usize, cols: Range<usize>) -> Range<usize> {
-        self.offset_of((line, cols.start))..self.offset_of((line, cols.end))
-    }
-
     /// `iw`: `n` runs of one word class (blanks are a run too); `aw`: words with their trailing
     /// blanks, or the leading ones when there are none. Stays in the cursor line.
     fn word_object(&self, around: bool, big: bool, n: usize) -> Option<Obj> {
         let line = self.buf.doc.text().line(self.win.line);
-        let cls = |c: char| if big { u8::from(!c.is_whitespace()) } else { class(c) };
+        let cls = |c: char| if big { u32::from(!c.is_whitespace()) } else { class(c) };
         // Everything works on byte positions in the line, moving only as far as the object extends.
         // Clusters are classed by their first char.
         let col = self.win.col.min(self.line_chars(self.win.line).checked_sub(1)?);
         let at = |b: usize| line[b..].chars().next();
         // Start of the cluster before `b` if it is of class `c`.
-        let before = |b: usize, c: u8| (b > 0).then(|| graphemes::prev(&line, b)).filter(|&p| at(p).is_some_and(|ch| cls(ch) == c));
+        let before = |b: usize, c: u32| (b > 0).then(|| graphemes::prev(&line, b)).filter(|&p| at(p).is_some_and(|ch| cls(ch) == c));
         let blank = |b: usize| at(b).is_some_and(|c| cls(c) == 0);
         // End (exclusive) of the run starting at `b`.
         let run = |b: usize| {
@@ -337,7 +332,7 @@ impl Editor {
             Obj::Chars(r) if !r.is_empty() => {
                 self.anchor = self.pos_of(r.start);
                 (self.win.line, self.win.col) = self.pos_of(r.end - 1);
-                self.win.want_col = self.win.col;
+                self.win.want_set = true;
                 self.mode = super::Mode::Visual(super::VKind::Char);
             }
             Obj::Chars(_) => {}
@@ -353,7 +348,8 @@ impl Editor {
         let mut n = n;
         self.sync_syntax();
         loop {
-            let Some(o) = self.text_object(around, obj, n) else { return };
+            // `nv_object`: no such object is `clearopbeep`.
+            let Some(o) = self.text_object(around, obj, n) else { return self.beep_flush() };
             if let Obj::Chars(r) = &o
                 && grows
                 && sel.start <= r.start

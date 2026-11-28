@@ -810,7 +810,7 @@ normal 7G
 3,5normal Ax
 echo line('.') line('$')
 "---
-execute "normal ia\rb\rc\rd\re\rf\rg\rh\ri\rj\e"
+set nonumber | execute "normal ia\rb\rc\rd\re\rf\rg\rh\ri\rj\e"
 normal 5Gma
 normal 7G
 1,3 print

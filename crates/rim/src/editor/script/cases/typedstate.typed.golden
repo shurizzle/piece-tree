@@ -1,0 +1,56 @@
+NVIM v0.12.6
+
+3 more lines
+L1C1 ['a b c', 'd e f', 'g h i'] [0, 1, 1, 0, 1]
+"---
+
+3 more lines
+L1C5 ['a b c', 'd e f', 'g h i'] [0, 1, 5, 0, 2147483647]
+"---
+
+4 more lines
+L1C3 ['xxx', 'abc abc abc'] [0, 1, 3, 0, 3]
+"---
+
+4 more lines
+L2C1 ['y!', 'y!', '', 'abc abc abc'] [0, 2, 1, 0, 1]
+"---
+
+4 more lines
+L4C9 ['', 'abcdef12', '', 'abc abc abc'] [0, 4, 9, 0, 9]
+"---
+
+4 more lines
+L1C9 ['abc abc abc', '', 'abcdef12', ''] [0, 1, 9, 0, 9]
+"---
+
+4 more lines
+L3C9 ['', 'abcdef12', 'abc abc abc', '', 'abc abc abc'] [0, 3, 9, 0, 9]
+"---
+
+1 change; before #3  0 seconds ago
+1 change; before #4  0 seconds ago
+L1C1 [' B C', 'd e f'] [0, 1, 1, 0, 1]
+"---
+
+L1C1 ['A B C', 'd e f'] [0, 1, 1, 0, 1]
+"---
+
+L1C1 ['A B C', 'D E F'] [0, 1, 1, 0, 1]
+"---
+
+3 more lines
+L3C1 ['one two three', 'four five six', 'four five six'] [0, 3, 1, 0, 1]
+"---
+
+3 more lines
+L3C10 ['one two three', 'four five six', 'four five six'] [0, 3, 10, 0, 10]
+"---
+
+L2C1 ['a b c', 'd e f'] [0, 2, 1, 0, 1]
+"---
+
+L2C2 ['a b c', ' de f'] [0, 2, 2, 0, 2]
+"---
+
+L1C6 ['a b c d e f'] [0, 1, 6, 0, 6]

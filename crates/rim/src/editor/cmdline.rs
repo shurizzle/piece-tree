@@ -61,6 +61,8 @@ fn big_after(s: &str, pos: usize) -> usize {
 impl Editor {
     /// Starts typing a command or search line: the cursor is at the end of `mode`'s text.
     pub(super) fn enter_line(&mut self, mode: Mode) {
+        // The command line starts with `msg_start`, which forgets `keep_msg`.
+        self.keep_msg = None;
         self.line_pos = match &mode {
             Mode::Command(s) | Mode::Search(s) | Mode::Expr(s) => s.len(),
             _ => 0,
@@ -107,6 +109,9 @@ impl Editor {
             self.mode = Mode::Normal;
             self.func_abort();
             return;
+        }
+        if matches!(self.mode, Mode::Search(_)) {
+            self.search_op = None;
         }
         if matches!(self.mode, Mode::Expr(_)) {
             self.expr_restore(None);
@@ -410,6 +415,7 @@ impl Editor {
 
     /// Runs the command line `cmd` and remembers it.
     pub(super) fn run_command(&mut self, cmd: &str) {
+        self.keep_msg = None;
         // The lines of a here document typed at the prompt (`getexline`): not commands, not kept in the history.
         if self.scripts.pending_here.is_some() {
             self.scripts.typed = true;
@@ -453,6 +459,7 @@ impl Editor {
 
     /// Runs the search `typed` (pattern and offset) from `search_origin`, in the direction of `search_back`.
     pub(super) fn run_search(&mut self, typed: &str) {
+        let search_op = self.search_op.take();
         self.push_history(1, typed);
         (self.win.line, self.win.col) = self.search_origin;
         self.inc_search = None;
@@ -479,7 +486,19 @@ impl Editor {
             (s.back, s.offset) = (self.search_back, offset);
         }
         self.search_landing = None;
-        if let Some((to, _)) = self.search_motion(!self.search_back, 1, None) {
+        if let Some((op, reg, from, n)) = search_op {
+            // `d/pat`: from where the operator started to the match.
+            (self.win.line, self.win.col) = from;
+            if let Some((to, kind)) = self.search_motion(!self.search_back, n, None) {
+                let (from, to, kind) = self.exclusive_rule(from, to, kind);
+                let kind = self.delete_rule(op, from, to, kind);
+                self.cur_reg = reg;
+                self.operate_pending(op, from, to, kind);
+                self.end_command();
+            } else if self.last_search.is_none() {
+                self.error("No previous search pattern");
+            }
+        } else if let Some((to, _)) = self.search_motion(!self.search_back, 1, None) {
             self.move_to('n', to);
         } else if self.last_search.is_none() {
             self.error("No previous search pattern");

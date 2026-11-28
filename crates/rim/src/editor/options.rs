@@ -17,6 +17,22 @@ pub(super) struct Options {
     pub wrap: bool,
     /// Tab display width, and the width Tab inserts.
     pub tabstop: usize,
+    /// `'vartabstop'` as it was set (`b_p_vts`: `0` stays `0`), and the stops it holds (`b_p_vts_array`: its last value
+    /// repeats; empty: every `tabstop`).
+    pub vartabstop: String,
+    pub vts_array: Vec<usize>,
+    /// `'smarttab'` (global): Tab and Backspace in an indent work by `shiftwidth`.
+    pub smarttab: bool,
+    /// `'softtabstop'`: Tab and Backspace in Insert mode move by this many columns (0: off, negative: `shiftwidth`).
+    pub softtabstop: i64,
+    /// `'undolevels'`: how many undo steps are kept (-1: none).
+    pub undolevels: i64,
+    /// `'varsofttabstop'` as it was set, and its stops (as `vartabstop`).
+    pub varsofttabstop: String,
+    pub vsts_array: Vec<usize>,
+    /// The first of the two messages a bad value of an option gives (`tabstop_set` says what is wrong, then `:set` names the
+    /// argument): the caller shows it before the error that is returned.
+    pub first_error: Option<String>,
     /// Tab and `>`/`<` insert spaces rather than tabs; `:retab` writes spaces.
     pub expandtab: bool,
     /// Width of one `>`/`<` shift; 0 means `tabstop`.
@@ -91,6 +107,15 @@ pub(super) struct Options {
     /// `fileformat`: `unix`, `dos` or `mac`. The line ending itself lives in the `Document`; this holds the
     /// value between `Editor::ff_in` and `Editor::ff_out`, which keep the two the same around every use of an option.
     pub fileformat: String,
+    /// `'endofline'`: the file read ended with a line break, and a write gives one back.
+    pub endofline: bool,
+    /// `'fixendofline'`: a write adds the last line break even when `'endofline'` is off.
+    pub fixendofline: bool,
+    /// `'binary'`: no last line break unless `'endofline'` is on; `'expandtab'` and `'modeline'` off.
+    pub binary: bool,
+    /// The `'nobin'` copies of `'expandtab'` and `'modeline'` (`set_options_bin`).
+    nobin_expandtab: bool,
+    nobin_modeline: bool,
 }
 
 impl Default for Options {
@@ -101,6 +126,14 @@ impl Default for Options {
             cursorline: true,
             wrap: true,
             tabstop: 4,
+            vartabstop: String::new(),
+            vts_array: Vec::new(),
+            first_error: None,
+            smarttab: true,
+            softtabstop: 0,
+            undolevels: 1000,
+            varsofttabstop: String::new(),
+            vsts_array: Vec::new(),
             expandtab: true,
             shiftwidth: 0,
             list: false,
@@ -144,8 +177,62 @@ impl Default for Options {
             modeline: true,
             modelines: 5,
             fileformat: "unix".into(),
+            endofline: true,
+            fixendofline: true,
+            binary: false,
+            nobin_expandtab: true,
+            nobin_modeline: true,
         }
     }
+}
+
+/// `tabstop_set`: the stops in `arg` (`4`, `4,8`); none for an empty one or `0`.
+pub(super) fn tabstop_set(arg: &str) -> Result<Vec<usize>, String> {
+    if arg.is_empty() || arg == "0" {
+        return Ok(Vec::new());
+    }
+    let b = arg.as_bytes();
+    let mut count = 1;
+    for (i, &c) in b.iter().enumerate() {
+        if i == 0 || b[i - 1] == b',' {
+            let digits = arg[i..].trim_start_matches(['+', '-']).bytes().take_while(u8::is_ascii_digit).count();
+            let sign_len = arg[i..].len() - arg[i..].trim_start_matches(['+', '-']).len();
+            let v: i64 = arg[i..i + sign_len + digits].parse().unwrap_or(if arg[i..].starts_with('-') { -1 } else { 0 });
+            if v <= 0 {
+                return Err(if digits > 0 { "E487: Argument must be positive".into() } else { format!("E475: Invalid argument: {}", &arg[i..]) });
+            }
+        }
+        if c.is_ascii_digit() {
+            continue;
+        }
+        if c == b',' && i > 0 && b[i - 1] != b',' && i + 1 < b.len() {
+            count += 1;
+            continue;
+        }
+        return Err(format!("E475: Invalid argument: {arg}"));
+    }
+    let _ = count;
+    arg.split(',')
+        .map(|n| n.parse::<usize>().ok().filter(|&n| (1..=9999).contains(&n)).ok_or_else(|| format!("E475: Invalid argument: {n}")))
+        .collect()
+}
+
+/// `find_dup_item` and `stropt_remove_val` for a comma list: the first place where `value` is whole items is cut out, with
+/// the comma after it (before it when it is not the first).
+fn comma_remove(old: &str, value: &str) -> String {
+    let ob = old.as_bytes();
+    let at = (0..old.len()).find(|&s| {
+        (s == 0 || ob[s - 1] == b',') && old[s..].starts_with(value) && ob.get(s + value.len()).is_none_or(|&c| c == b',')
+    });
+    let Some(s) = at else { return old.to_string() };
+    let (mut start, mut len) = (s, value.len());
+    if s == 0 {
+        len += usize::from(old[len..].starts_with(','));
+    } else {
+        start -= 1;
+        len += 1;
+    }
+    format!("{}{}", &old[..start], &old[start + len..])
 }
 
 /// Every option: long name, short name, and whether it is a flag (`:set nox`, `:set invx`).
@@ -155,6 +242,11 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("cursorline", Some("cul"), true),
     ("wrap", None, true),
     ("tabstop", Some("ts"), false),
+    ("vartabstop", Some("vts"), false),
+    ("smarttab", Some("sta"), true),
+    ("softtabstop", Some("sts"), false),
+    ("undolevels", Some("ul"), false),
+    ("varsofttabstop", Some("vsts"), false),
     ("expandtab", Some("et"), true),
     ("shiftwidth", Some("sw"), false),
     ("list", None, true),
@@ -194,6 +286,9 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("winwidth", Some("wiw"), false),
     ("winminwidth", Some("wmw"), false),
     ("modeline", Some("ml"), true),
+    ("endofline", Some("eol"), true),
+    ("fixendofline", Some("fixeol"), true),
+    ("binary", Some("bin"), true),
     ("modelines", Some("mls"), false),
     ("fileformat", Some("ff"), false),
 ];
@@ -233,6 +328,7 @@ impl Options {
         (to.laststatus, to.showmode, to.showcmd) = (self.laststatus, self.showmode, self.showcmd);
         (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
         to.shortmess = self.shortmess.clone();
+        to.smarttab = self.smarttab;
         to.cmdwinheight = self.cmdwinheight;
         to.more = self.more;
         (to.wildmenu, to.wildmode, to.wildoptions) = (self.wildmenu, self.wildmode.clone(), self.wildoptions.clone());
@@ -249,9 +345,15 @@ impl Options {
         use super::script::Value;
         let shown = self.show(long(name)?);
         Some(match shown.split_once('=') {
+            Some((_, v)) if matches!(long(name), Some("vartabstop" | "varsofttabstop")) => Value::Str(v.into()),
             Some((_, v)) => v.parse().map_or_else(|_| Value::Str(v.into()), Value::Int),
             None => Value::Int(i64::from(!shown.starts_with("no"))),
         })
+    }
+
+    /// Whether `name` is a Number option (a String option can hold digits only: `'vartabstop'` set to `5`).
+    fn is_number(&self, name: &str) -> bool {
+        !matches!(name, "vartabstop" | "varsofttabstop") && self.show(name).split_once('=').is_some_and(|(_, v)| v.parse::<i64>().is_ok())
     }
 
     /// `:let &name`: the kind of the option, None when there is none.
@@ -259,7 +361,7 @@ impl Options {
         let name = long(name)?;
         Some(if self.flag(name).is_some() {
             OptKind::Flag
-        } else if self.show(name).split_once('=').is_some_and(|(_, v)| v.parse::<i64>().is_ok()) {
+        } else if self.is_number(name) {
             OptKind::Number
         } else {
             OptKind::Text
@@ -279,9 +381,29 @@ impl Options {
         self.set_value(name, s, name).map_err(|m| shm_err(m, "E474: Invalid argument"))
     }
 
+    /// `set_options_bin`: `'binary'` on saves `'expandtab'` and `'modeline'` and turns them off (rim has
+    /// no `'textwidth'`/`'wrapmargin'`); off gives them back.
+    fn set_bin(&mut self, on: bool) {
+        if on == self.binary {
+            return;
+        }
+        if on {
+            (self.nobin_expandtab, self.nobin_modeline) = (self.expandtab, self.modeline);
+            (self.expandtab, self.modeline) = (false, false);
+        } else {
+            (self.expandtab, self.modeline) = (self.nobin_expandtab, self.nobin_modeline);
+        }
+        self.binary = on;
+    }
+
     /// `set_option` for a flag.
     pub fn set_flag(&mut self, name: &str, on: bool) {
-        if let Some(f) = long(name).and_then(|n| self.flag(n)) {
+        let Some(name) = long(name) else { return };
+        if name == "binary" {
+            self.set_bin(on);
+            return;
+        }
+        if let Some(f) = self.flag(name) {
             *f = on;
         }
     }
@@ -289,6 +411,63 @@ impl Options {
     /// `shortmess()`: the flag `c` is in `'shortmess'`, or `a` stands for it (`SHM_ALL_ABBREVIATIONS`).
     pub fn shortmess(&self, c: char) -> bool {
         self.shortmess.contains(c) || (self.shortmess.contains('a') && "rmlw".contains(c))
+    }
+
+    /// `get_sw_value`: the size of a shift: 'shiftwidth', else 'tabstop' (the first stop of 'vartabstop').
+    pub fn sw_value(&self) -> usize {
+        if self.shiftwidth != 0 { self.shiftwidth } else { self.tabs().at(0, false) }
+    }
+
+    /// `get_sts_value`: 'softtabstop', or the shift size when it is negative.
+    pub fn sts_value(&self) -> usize {
+        if self.softtabstop < 0 { self.sw_value() } else { self.softtabstop as usize }
+    }
+
+    /// The stops 'softtabstop' and 'varsofttabstop' make.
+    pub fn sts_tabs(&self) -> super::graphemes::Tabs<'_> {
+        super::graphemes::Tabs { ts: self.sts_value(), vts: &self.vsts_array }
+    }
+
+    /// The tab stops of the buffer.
+    pub fn tabs(&self) -> super::graphemes::Tabs<'_> {
+        super::graphemes::Tabs { ts: self.tabstop, vts: &self.vts_array }
+    }
+
+    /// `indent_size_ts`: the cells of `blanks` (spaces and Tabs) from the start of a line.
+    pub fn indent_width(&self, blanks: &str) -> usize {
+        let tabs = self.tabs();
+        blanks.bytes().fold(0, |col, b| col + if b == b'\t' { tabs.pad(col) } else { 1 })
+    }
+
+    /// `shift_line`: the indent a line of `cols` cells gets from `amount` shifts to the right or left. 'shiftwidth' is the
+    /// size of a shift, else 'tabstop', or the stops of 'vartabstop' when there is a list (`get_new_vts_indent`).
+    pub fn shift_indent(&self, cols: usize, right: bool, amount: usize) -> usize {
+        if self.shiftwidth != 0 || self.vts_array.is_empty() {
+            let sw = self.sw() * amount;
+            return if right { cols + sw } else { cols.saturating_sub(sw) };
+        }
+        let stops = &self.vts_array;
+        // `get_vts`: the stop with index `i` (from 1), the last one for any beyond.
+        let get_vts = |i: usize| if i < 1 { 0 } else { stops[(i - 1).min(stops.len() - 1)] };
+        // `get_vts_sum`: the columns up to the stop with index `i`.
+        let sum = |i: usize| stops.iter().take(i).sum::<usize>() + stops[stops.len() - 1] * i.saturating_sub(stops.len());
+        // The stop at or left of the indent.
+        let (mut at, mut stop_col, mut width) = (0, 0, 0);
+        while stop_col <= cols {
+            at += 1;
+            width = get_vts(at);
+            stop_col += width;
+        }
+        stop_col -= width;
+        at -= 1;
+        let offset = cols - stop_col;
+        if right {
+            sum(at + amount) + offset
+        } else if amount > at {
+            0
+        } else {
+            sum(at - amount) + offset
+        }
     }
 
     /// Effective shift width (`shiftwidth`, or `tabstop` when 0).
@@ -301,7 +480,8 @@ impl Options {
         if self.expandtab {
             " ".repeat(width)
         } else {
-            format!("{}{}", "\t".repeat(width / self.tabstop), " ".repeat(width % self.tabstop))
+            let (tabs, spaces) = self.tabs().fromto(0, width);
+            format!("{}{}", "\t".repeat(tabs), " ".repeat(spaces))
         }
     }
 
@@ -342,6 +522,7 @@ impl Options {
             "cursorline" => Some(&mut self.cursorline),
             "wrap" => Some(&mut self.wrap),
             "expandtab" => Some(&mut self.expandtab),
+            "smarttab" => Some(&mut self.smarttab),
             "list" => Some(&mut self.list),
             "ignorecase" => Some(&mut self.ignorecase),
             "smartcase" => Some(&mut self.smartcase),
@@ -355,6 +536,9 @@ impl Options {
             "equalalways" => Some(&mut self.equalalways),
             "wildignorecase" => Some(&mut self.wildignorecase),
             "modeline" => Some(&mut self.modeline),
+            "endofline" => Some(&mut self.endofline),
+            "fixendofline" => Some(&mut self.fixendofline),
+            "binary" => Some(&mut self.binary),
             _ => None,
         }
     }
@@ -368,6 +552,10 @@ impl Options {
             "cursorline" => on(self.cursorline, name),
             "wrap" => on(self.wrap, name),
             "expandtab" => on(self.expandtab, name),
+            "smarttab" => on(self.smarttab, name),
+            "softtabstop" => format!("softtabstop={}", self.softtabstop),
+            "undolevels" => format!("undolevels={}", self.undolevels),
+            "varsofttabstop" => format!("varsofttabstop={}", self.varsofttabstop),
             "list" => on(self.list, name),
             "ignorecase" => on(self.ignorecase, name),
             "smartcase" => on(self.smartcase, name),
@@ -387,6 +575,9 @@ impl Options {
             "winminwidth" => format!("winminwidth={}", self.winminwidth),
             "wildignorecase" => on(self.wildignorecase, name),
             "modeline" => on(self.modeline, name),
+            "endofline" => on(self.endofline, name),
+            "fixendofline" => on(self.fixendofline, name),
+            "binary" => on(self.binary, name),
             "modelines" => format!("modelines={}", self.modelines),
             "fileformat" => format!("fileformat={}", self.fileformat),
             "wildmode" => format!("wildmode={}", self.wildmode),
@@ -411,6 +602,7 @@ impl Options {
                 format!("messagesopt={}", v.join(","))
             }
             "tabstop" => format!("tabstop={}", self.tabstop),
+            "vartabstop" => format!("vartabstop={}", self.vartabstop),
             "shiftwidth" => format!("shiftwidth={}", self.shiftwidth),
             "scrolloff" => format!("scrolloff={}", self.scrolloff),
             "report" => format!("report={}", self.report),
@@ -428,6 +620,26 @@ impl Options {
         let name = long(name).ok_or_else(|| format!("Unknown option: {arg}"))?;
         match name {
             "tabstop" => self.tabstop = value.parse().map_err(|_| invalid())?,
+            "vartabstop" | "varsofttabstop" => {
+                // `did_set_vartabstop`: digits and commas, a comma only after a digit; then `tabstop_set`.
+                if !(value.is_empty() || value == "0") {
+                    let b = value.as_bytes();
+                    if b.iter().enumerate().any(|(i, &c)| !(c.is_ascii_digit() || (c == b',' && i > 0 && b[i - 1] != b','))) {
+                        return Err(invalid());
+                    }
+                }
+                match tabstop_set(value) {
+                    Ok(stops) if name == "vartabstop" => (self.vartabstop, self.vts_array) = (value.to_string(), stops),
+                    Ok(stops) => (self.varsofttabstop, self.vsts_array) = (value.to_string(), stops),
+                    Err(m) => {
+                        self.first_error = Some(m);
+                        return Err(invalid());
+                    }
+                }
+            }
+            // Any number that fits 32 bits: a negative one is 'shiftwidth'.
+            "softtabstop" => self.softtabstop = value.parse().map_err(|_| invalid())?,
+            "undolevels" => self.undolevels = value.parse().map_err(|_| invalid())?,
             "background" => {
                 self.background = match value {
                     "dark" => Background::Dark,
@@ -491,7 +703,7 @@ impl Options {
     }
 
     /// `validate_num_option` for the number options: the message when `n` is out of range.
-    fn validate_num(&self, name: &str, n: i64) -> Result<usize, &'static str> {
+    fn validate_num(&self, name: &str, n: i64) -> Result<i64, &'static str> {
         const POSITIVE: &str = "E487: Argument must be positive";
         const INVALID: &str = "E474: Invalid argument";
         if n < i64::from(i32::MIN) || n > i64::from(i32::MAX) {
@@ -503,11 +715,12 @@ impl Options {
             } else if n > max {
                 Err(INVALID)
             } else {
-                Ok(n as usize)
+                Ok(n)
             }
         };
         match name {
             "tabstop" => ok(1, 9999, POSITIVE),
+            "softtabstop" | "undolevels" => ok(i64::from(i32::MIN), i64::MAX, INVALID),
             "shiftwidth" | "report" | "scrolloff" | "winminheight" | "winminwidth" => ok(0, i64::MAX, POSITIVE),
             "cmdwinheight" | "winheight" | "winwidth" | "pumwidth" => ok(1, i64::MAX, POSITIVE),
             "laststatus" => ok(0, 3, INVALID),
@@ -517,7 +730,7 @@ impl Options {
 
     /// `do_one_set_option`: one argument of `:set`. The text it shows goes to `shown`; the error is the message
     /// (the argument is added by the caller).
-    fn set_one(&mut self, arg: &str, shown: &mut Vec<String>) -> Result<(), std::borrow::Cow<'static, str>> {
+    fn set_one(&mut self, arg: &str, shown: &mut Vec<String>, global: Option<&Options>) -> Result<(), std::borrow::Cow<'static, str>> {
         const E_INVARG: &str = "E474: Invalid argument";
         const E_TRAILING: &str = "E488: Trailing characters";
         let (prefix, rest) = match arg {
@@ -569,24 +782,25 @@ impl Options {
         }
         let default = Options::default();
         if matches!(nextchar, Some('&' | '<')) {
-            // `opt&`: the default value; `opt<`: the global value, the same here.
-            if let Some(f) = self.flag(name) {
-                *f = *Options::default().flag(name).expect("a flag");
+            // `opt&`: the default value; `opt<`: the global value.
+            let mut from = if nextchar == Some('<') { global.unwrap_or(&default).clone() } else { default.clone() };
+            if self.flag(name).is_some() {
+                self.set_flag(name, *from.flag(name).expect("a flag"));
             } else {
-                let v = default.show(name);
+                let v = from.show(name);
                 let value = v.split_once('=').map_or("", |x| x.1).to_string();
                 self.set_value(name, &value, arg).map_err(|m| shm_err(m, E_INVARG))?;
             }
             return Ok(());
         }
         if is_flag {
-            let f = self.flag(name).expect("a flag");
-            *f = if nextchar == Some('!') || prefix == Prefix::Inv { !*f } else { prefix != Prefix::No };
+            let cur = *self.flag(name).expect("a flag");
+            self.set_flag(name, if nextchar == Some('!') || prefix == Prefix::Inv { !cur } else { prefix != Prefix::No });
             return Ok(());
         }
         let value = &p[1..];
         // A number option: `[-]digits` ending at a blank, else E521.
-        if self.show(name).split_once('=').is_some_and(|(_, v)| v.parse::<i64>().is_ok()) {
+        if self.is_number(name) {
             const E_NUMBER: &str = "E521: Number required after =";
             if !(value.starts_with('-') || value.starts_with(|c: char| c.is_ascii_digit())) {
                 return Err(E_NUMBER.into());
@@ -612,6 +826,21 @@ impl Options {
                 // A comma-separated option adds and removes items; the others join and cut text.
                 let comma = matches!(name, "wildmode" | "wildoptions" | "wildignore" | "messagesopt");
                 let items: Vec<&str> = old.split(',').filter(|s| !s.is_empty()).collect();
+                // `'vartabstop'` is a comma list that keeps duplicates: `+=` and `^=` always add, `-=` takes the first match.
+                if matches!(name, "vartabstop" | "varsofttabstop") {
+                    let join = |a: &str, b: &str| if a.is_empty() || b.is_empty() { format!("{a}{b}") } else { format!("{a},{b}") };
+                    return self
+                        .set_value(
+                            name,
+                            &match op {
+                                Op::Add => join(&old, value),
+                                Op::Prepend => join(value, &old),
+                                _ => comma_remove(&old, value),
+                            },
+                            arg,
+                        )
+                        .map_err(|m| shm_err(m, E_INVARG));
+                }
                 match (op, comma) {
                     (Op::Add, true) => if items.contains(&value) { old.clone() } else { [old.as_str(), value].iter().filter(|s| !s.is_empty()).copied().collect::<Vec<_>>().join(",") },
                     (Op::Prepend, true) => if items.contains(&value) { old.clone() } else { [value, old.as_str()].iter().filter(|s| !s.is_empty()).copied().collect::<Vec<_>>().join(",") },
@@ -638,7 +867,13 @@ impl Options {
     }
 
     /// Applies the arguments of `:set`: the text to show (queried values) and the error that stopped it, if any.
+    #[cfg(test)]
     pub fn set_all(&mut self, args: &str) -> (String, Option<String>) {
+        self.set_all_from(args, None)
+    }
+
+    /// `set_all`; `global` holds the values `opt<` copies (without it, the defaults).
+    pub fn set_all_from(&mut self, args: &str, global: Option<&Options>) -> (String, Option<String>) {
         let mut shown = Vec::new();
         if args.trim().is_empty() {
             for n in [
@@ -654,7 +889,7 @@ impl Options {
             let end = rest.find([' ', '\t']).unwrap_or(rest.len());
             let (arg, after) = rest.split_at(end);
             let next = after.trim_start_matches([' ', '\t']);
-            if let Err(m) = self.set_one(arg, &mut shown) {
+            if let Err(m) = self.set_one(arg, &mut shown, global) {
                 // The message is followed by the argument as it was typed, with the blanks that follow it.
                 return (shown.join("\n"), Some(format!("{m}: {}", &rest[..rest.len() - next.len()])));
             }

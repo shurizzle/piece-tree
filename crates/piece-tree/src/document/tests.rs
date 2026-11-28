@@ -612,3 +612,68 @@ fn drop_history_keeps_the_subtree() {
     assert_eq!((doc.history_len(), doc.seq(), doc.text().to_string().as_str()), (1, 0, "xracd"));
     assert!(!doc.undo());
 }
+
+#[test]
+fn new_version_is_a_step_without_edits() {
+    let mut doc = Document::new("ab");
+    // Outside a group: a version of its own.
+    doc.new_version();
+    assert_eq!((doc.seq(), doc.history_len(), doc.text().to_string().as_str()), (1, 2, "ab"));
+    assert!(doc.last_edits().is_empty());
+    // Inside a group: the group's edits go into it, and an empty group still has its number.
+    doc.begin_group();
+    doc.new_version();
+    doc.insert(2, "c");
+    doc.insert(3, "d");
+    assert!(doc.end_group());
+    assert_eq!((doc.seq(), doc.text().to_string().as_str()), (2, "abcd"));
+    assert!(doc.undo());
+    assert_eq!((doc.seq(), doc.text().to_string().as_str()), (1, "ab"));
+    assert!(doc.undo() && doc.redo() && doc.redo());
+    assert_eq!(doc.text().to_string(), "abcd");
+    doc.begin_group();
+    doc.new_version();
+    assert!(doc.end_group());
+    assert_eq!((doc.seq(), doc.history_len()), (3, 4));
+}
+
+#[test]
+fn a_planned_replacement_is_the_same_as_replacing() {
+    let re = Regex::new("a").unwrap();
+    let mut planned = Document::new("banana\nand a");
+    let mut direct = Document::new("banana\nand a");
+    let plan = planned.plan_replace(&re, "xy", |m| m.start != 3);
+    assert_eq!(plan.edits().len(), 4);
+    assert_eq!(plan.text().to_string(), "bxynanxy\nxynd xy");
+    assert_eq!(planned.text().to_string(), "banana\nand a", "planning changes nothing");
+    assert_eq!(planned.apply_replacement(plan), direct.replace_matching(&re, "xy", |m| m.start != 3));
+    assert_eq!(planned.text().to_string(), direct.text().to_string());
+    assert_eq!(planned.last_edits(), direct.last_edits());
+    assert_eq!((planned.seq(), planned.history_len()), (direct.seq(), direct.history_len()));
+}
+
+#[test]
+#[should_panic(expected = "the text changed")]
+fn a_stale_replacement_is_refused() {
+    let re = Regex::new("a").unwrap();
+    let mut doc = Document::new("a");
+    let plan = doc.plan_replace(&re, "b", |_| true);
+    doc.insert(1, "c");
+    doc.apply_replacement(plan);
+}
+
+#[test]
+fn a_reopened_group_takes_the_next_edits() {
+    let mut doc = Document::new("ab");
+    assert!(!doc.reopen_group(), "the loaded text is no step to join");
+    doc.insert(2, "c");
+    doc.insert(3, "d");
+    assert_eq!(doc.history_len(), 3);
+    assert!(doc.reopen_group());
+    doc.insert(4, "e");
+    assert_eq!((doc.history_len(), doc.text().to_string().as_str()), (3, "abcde"));
+    assert!(doc.end_group());
+    assert!(doc.undo());
+    assert_eq!(doc.text().to_string(), "abc");
+    assert!(!doc.reopen_group(), "an older version cannot grow");
+}

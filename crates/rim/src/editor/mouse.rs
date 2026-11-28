@@ -45,16 +45,10 @@ pub(super) fn parse_scroll(s: &str) -> Option<(usize, usize)> {
     Some((ver, hor))
 }
 
-/// The cluster of `seg` drawn at cell `cell` (the last one when the cell is past the end of it).
-fn col_at_cell(seg: &str, cell: usize, ts: usize) -> usize {
-    let n = graphemes::count(seg);
-    let (mut lo, mut hi) = (0, n);
-    // The least cluster whose right edge is past the cell.
-    while lo < hi {
-        let mid = (lo + hi) / 2;
-        if graphemes::screen_col(seg, mid + 1, ts) > cell { hi = mid } else { lo = mid + 1 }
-    }
-    lo
+/// The cluster of `seg` (laid out from virtual column `vcol0`) drawn at virtual column `cell` (past the end of it: the
+/// cluster count).
+fn col_at_cell(seg: &str, vcol0: usize, cell: usize, tabs: graphemes::Tabs, w: usize) -> usize {
+    graphemes::col_at_vcol(seg, vcol0, tabs, w, cell)
 }
 
 impl Editor {
@@ -76,17 +70,18 @@ impl Editor {
     fn pos_at(&self, x: usize, row: usize) -> Pos {
         let gutter = if self.win.opts.number || self.win.opts.relativenumber { gutter_width(self.line_count()) } else { 0 };
         let cell = x.saturating_sub(gutter);
-        let ts = self.buf.opts.tabstop;
+        let tabs = self.buf.opts.tabs();
         let (line, k) = self.step_rows(self.win.top, self.win.top_sub, true, row);
         if self.win.opts.wrap {
             let col = self.with_rows(line, |text, rows| {
                 let (start, seg) = rows.row(text, k);
-                start + col_at_cell(seg, cell, ts)
+                let w = self.wrap_w();
+                start + col_at_cell(seg, rows.row_vcol(k), k * w + cell, tabs, w)
             });
             (line, col)
         } else {
             let text = self.buf.doc.text().line(line);
-            (line, col_at_cell(&text, cell + self.win.left, ts))
+            (line, col_at_cell(&text, 0, cell + self.win.left, tabs, usize::MAX))
         }
     }
 
@@ -170,7 +165,7 @@ impl Editor {
             self.enforce_win_size();
         }
         let (line, col) = self.pos_at(x - r.x, y - r.y);
-        (self.win.line, self.win.col, self.win.want_col) = (line, col, col);
+        (self.win.line, self.win.col, self.win.want_set) = (line, col, true);
         if self.mode == Mode::Insert {
             self.win.col = col.min(self.line_chars(line));
         } else {
@@ -182,7 +177,7 @@ impl Editor {
                 if let Some(Obj::Chars(range)) = self.text_object(false, 'w', 1) {
                     self.anchor = self.pos_of(range.start);
                     (self.win.line, self.win.col) = self.pos_of(range.end.saturating_sub(1).max(range.start));
-                    self.win.want_col = self.win.col;
+                    self.win.want_set = true;
                     self.mode = Mode::Visual(VKind::Char);
                 }
             }
@@ -212,7 +207,7 @@ impl Editor {
                     (self.anchor, self.mode) = (anchor, Mode::Visual(VKind::Char));
                 }
                 if matches!(self.mode, Mode::Visual(_)) {
-                    (self.win.line, self.win.col, self.win.want_col) = (line, col, col);
+                    (self.win.line, self.win.col, self.win.want_set) = (line, col, true);
                 }
             }
             Some(Drag::Height(id)) => {
@@ -263,14 +258,14 @@ impl Editor {
                 let left = if k == MouseEventKind::ScrollLeft { e.win.left.saturating_sub(hor) } else { e.win.left + hor };
                 e.win.left = left;
                 // The cursor stays in view: on the first or the last column that shows.
-                let ts = e.buf.opts.tabstop;
+                let tabs = e.buf.opts.tabs();
                 let text = e.buf.doc.text().line(e.win.line);
-                let cell = graphemes::screen_col(&text, e.win.col, ts);
+                let cell = graphemes::screen_col(&text, e.win.col, tabs, usize::MAX);
                 let width = e.win.text_w;
                 if cell < left {
-                    e.win.col = col_at_cell(&text, left, ts);
+                    e.win.col = col_at_cell(&text, 0, left, tabs, usize::MAX);
                 } else if cell >= left + width {
-                    e.win.col = col_at_cell(&text, (left + width).saturating_sub(1), ts);
+                    e.win.col = col_at_cell(&text, 0, (left + width).saturating_sub(1), tabs, usize::MAX);
                 }
             }
         });

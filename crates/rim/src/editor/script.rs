@@ -60,6 +60,14 @@ pub(in crate::editor) fn vim_str2nr_all(s: &str) -> (i64, usize) {
     expr::vim_str2nr(s, true)
 }
 pub(in crate::editor) use range::AddrType;
+pub(in crate::editor) use cmdline::{check_nextcmd, delete_flag, one_letter_k, one_letter_s, EXFLAG_LIST, EXFLAG_NR};
+#[cfg(test)]
+pub(in crate::editor) use cmdline::parse_prefix;
+#[cfg(test)]
+pub(in crate::editor) fn cmdline_argt(name: &str) -> u32 {
+    cmdline::lookup(name).map_or(0, |d| d.argt)
+}
+pub(in crate::editor) use docmd::expand_env;
 pub(super) use value::{List, Value, str_to_int};
 
 type Res<T> = Result<T, String>;
@@ -502,7 +510,14 @@ impl Editor {
                     s = format!("{}{s}", cur.text());
                 }
                 let r = self.buf.opts.set_text(name, &s).err().map(String::from);
-                self.on_global(|g| { let _ = g.set_text(name, &s); });
+                // `tabstop_set` gives its message before the one of the option.
+                if let Some(m) = self.buf.opts.first_error.take() {
+                    self.error(m);
+                }
+                self.on_global(|g| {
+                    let _ = g.set_text(name, &s);
+                    g.first_error = None;
+                });
                 self.share_global();
                 self.ff_out();
                 Ok(r)
@@ -1080,7 +1095,7 @@ impl Editor {
                     self.error("E16: Invalid range");
                     break;
                 }
-                (self.win.line, self.win.col, self.win.want_col) = (lnum - 1, 0, 0);
+                (self.win.line, self.win.col, self.win.want_col, self.win.want_set) = (lnum - 1, 0, 0, false);
             }
             p = start;
             self.scripts.does_range = false;

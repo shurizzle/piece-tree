@@ -1078,7 +1078,7 @@ execute "normal 1G1|"
 1,3j 2
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1090,7 +1090,7 @@ execute "normal 2G7|"
 p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1102,7 +1102,7 @@ execute "normal 1G1|"
 p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1114,7 +1114,7 @@ execute "normal 2G7|"
 2p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1126,7 +1126,7 @@ execute "normal 1G1|"
 2p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1138,7 +1138,7 @@ execute "normal 2G7|"
 2,4p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1150,7 +1150,7 @@ execute "normal 1G1|"
 2,4p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma
@@ -1162,7 +1162,7 @@ execute "normal 2G7|"
 $p
 echo line('.') col('.') string(getline(1,'$'))
 "---
-set tabstop=8 shiftwidth=8 noexpandtab
+set tabstop=8 shiftwidth=8 noexpandtab nonumber
 append
   alpha beta
  gamma

@@ -94,7 +94,9 @@ fn line_motions() {
     assert_eq!(pos(&run(s, "$^")), (0, 2));
     assert_eq!(pos(&run(s, "$0")), (0, 0));
     assert_eq!(pos(&run(s, "G")), (2, 0));
-    assert_eq!(pos(&run(s, "Ggg")), (0, 2));
+    // 'startofline' is off: `gg` keeps the column.
+    assert_eq!(pos(&run(s, "Ggg")), (0, 0));
+    assert_eq!(pos(&run(s, "llGgg")), (0, 2));
     assert_eq!(pos(&run(s, "2G")), (1, 0));
     assert_eq!(pos(&run(s, "9l")), (0, 3));
     assert_eq!(pos(&run(s, "lllh")), (0, 2));
@@ -219,9 +221,15 @@ fn undo_groups_whole_commands_and_insert_sessions() {
     let mut e = run("abc", "xxx");
     feed(&mut e, "2u");
     assert_eq!(text(&e), "bc");
+    // A count that runs out is not an error (`u_doit` only says why when the first step fails): the summary of what was undone.
+    feed(&mut e, "5u");
+    assert_eq!(text(&e), "abc");
+    assert!(e.msg().starts_with("1 change; before #1  "), "{}", e.msg());
     feed(&mut e, "5u");
     assert_eq!((text(&e).as_str(), e.msg()), ("abc", "Already at oldest change"));
     feed(&mut e, "9\x12");
+    assert_eq!(text(&e), "");
+    feed(&mut e, "\x12");
     assert_eq!((text(&e).as_str(), e.msg()), ("", "Already at newest change"));
 }
 
@@ -254,7 +262,7 @@ fn quit_commands() {
     let mut e = ed("a");
     assert!(!feed(&mut e, ":x\n"));
     let mut e = run("a", "x:q\n");
-    assert_eq!(e.msg(), "No write since last change (add ! to override)");
+    assert_eq!(e.msg(), "E37: No write since last change (add ! to override)");
     assert!(!feed(&mut e, ":q!\n"));
     // The save target does not exist: write-and-quit stays open.
     let mut e = run("a", "x:wq\n");
@@ -269,7 +277,7 @@ fn save_writes_and_cleans() {
     let path = dir.join("save.txt");
     let mut e = Editor::new(Document::new("a\nb"), path.clone());
     assert!(!feed(&mut e, "dd:wq\n"));
-    assert_eq!(fs::read_to_string(&path).unwrap(), "b");
+    assert_eq!(fs::read_to_string(&path).unwrap(), "b\n");
     let mut e = Editor::new(Document::new("a"), path.clone());
     feed(&mut e, "x:w\n");
     assert!(e.wait_saves());
@@ -314,7 +322,7 @@ fn search_wraps_and_repeats() {
     assert_eq!(pos(&e), (1, 4));
     assert_eq!(text(&run(s, "/bar\nggdn")), "bar foo\nfoo");
     assert_eq!(run(s, "/zzz\n").msg(), "E486: Pattern not found: zzz");
-    assert_eq!(run(s, "n").msg(), "No previous search pattern");
+    assert_eq!(run(s, "n").msg(), "E35: No previous regular expression");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -369,8 +377,8 @@ fn replace_toggle_case_and_shift() {
     // 'nostartofline': the cursor goes back to the column it had.
     assert_eq!((text(&e).as_str(), pos(&e)), ("  a", (0, 0)));
     assert_eq!(text(&run("\ta", "<<")), "a");
-    // The indent is rewritten: a tab counts `tabstop` columns.
-    assert_eq!(text(&run("  \t a", "<<")), "   a");
+    // The indent is rewritten: a tab goes to the next stop (2 spaces and a Tab are 4 columns, with the space 5).
+    assert_eq!(text(&run("  \t a", "<<")), " a");
     // shiftwidth, and noexpandtab writing tabs then spaces.
     assert_eq!(text(&run("a", ":set sw=2\n>>")), "  a");
     assert_eq!(text(&run("  a", ":set noet\n>>")), "\t  a");
@@ -476,12 +484,16 @@ fn reload_from_disk() {
     fs::write(&path, "one\r\ntwo").unwrap();
     let mut e = Editor::open(path.clone()).unwrap();
     feed(&mut e, "jdd:e\n");
-    assert_eq!((text(&e).as_str(), e.msg()), ("one", "No write since last change (add ! to override)"));
+    assert_eq!((text(&e).as_str(), e.msg()), ("one", "E37: No write since last change (add ! to override)"));
     feed(&mut e, ":e!\n");
-    assert_eq!((text(&e).as_str(), e.is_dirty(), e.msg()), ("one\ntwo", false, "Reloaded (CRLF)"));
+    assert_eq!((text(&e).as_str(), e.is_dirty(), e.msg()), ("one\ntwo", false, ""));
     assert_eq!(pos(&e), (0, 0));
+    // The reload is an undo step of its own (`'undoreload'`): undone, the buffer is modified again.
     feed(&mut e, "u");
-    assert_eq!(e.msg(), "Already at oldest change");
+    assert_eq!((text(&e).as_str(), e.is_dirty()), ("one", true));
+    assert!(e.msg().starts_with("1 line less; before #2  "), "{}", e.msg());
+    feed(&mut e, "\x12");
+    assert_eq!((text(&e).as_str(), e.is_dirty()), ("one\ntwo", false));
     fs::write(&path, "x").unwrap();
     feed(&mut e, ":e\n");
     assert_eq!(text(&e), "x");
@@ -511,7 +523,7 @@ fn save_keeps_permissions_and_symlinks() {
     assert!(e.wait_saves());
     assert_eq!(e.msg(), format!("\"{}\" written (LF)", link.display()));
     assert!(fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
-    assert_eq!(fs::read_to_string(&path).unwrap(), "b");
+    assert_eq!(fs::read_to_string(&path).unwrap(), "b\n");
     assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o640);
     fs::remove_dir_all(&dir).unwrap();
 }
@@ -643,7 +655,7 @@ fn grapheme_clusters_are_one_column() {
 #[test]
 fn options_list_case_hlsearch_and_scrolloff() {
     // list: a tab is `>` then spaces, the line end `$`; a selected line end shows `$` reversed.
-    assert_eq!(snapshot("a\tb\nc", ":set list nonu nornu\n", 20, 3).0[..2], ["a>   b$", "c$"]);
+    assert_eq!(snapshot("a\tb\nc", ":set list nonu nornu\n", 20, 3).0[..2], ["a>  b$", "c$"]);
     assert_eq!(snapshot("ab\nc", ":set list nonu nornu\nV", 20, 3).0[0], "[ab$]");
     // ignorecase, smartcase: `/`, `n`, `:s`, `:g`, `*`.
     assert_eq!(pos(&run("x Ab ab", ":set ic\n/ab\n")), (0, 2));
@@ -711,22 +723,23 @@ fn jump_and_change_lists() {
     feed(&mut e, "g;");
     assert_eq!(e.win.line, 0);
     feed(&mut e, "g;");
-    assert_eq!((e.win.line, e.msg()), (0, "At start of change list"));
+    assert_eq!((e.win.line, e.msg()), (0, "E662: At start of changelist"));
     feed(&mut e, "g,");
     assert_eq!(e.win.line, 2);
     feed(&mut e, "g,");
-    assert_eq!(e.msg(), "At end of change list");
-    assert_eq!(run("a", "g;").msg(), "Change list is empty");
+    assert_eq!(e.msg(), "E663: At end of changelist");
+    assert_eq!(run("a", "g;").msg(), "E664: Changelist is empty");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn gv_gi_gj_gp_and_bracket_p() {
-    // gv: the last selection again, shifted by an edit before it.
+    // gv: the last selection again; an edit before it in the line does not move its columns (Neovim's `b_visual` is a line and a column).
     let e = run("abc def", "lvl\x1b$0iXY\x1bgv");
-    assert_eq!((e.mode == Mode::Visual(VKind::Char), e.anchor, pos(&e)), (true, (0, 3), (0, 4)));
+    assert_eq!((e.mode == Mode::Visual(VKind::Char), e.anchor, pos(&e)), (true, (0, 1), (0, 2)));
     assert_eq!(run("ab\ncd", "Vj\x1bgggvd").buf.doc.text().len(), 0);
-    assert_eq!(run("a", "gv").msg(), "No previous Visual selection");
+    // `nv_gv_cmd` only beeps: no message.
+    assert_eq!(run("a", "gv").msg(), "");
     // gi: Insert where it was last left.
     assert_eq!(text(&run("abc", "Ax\x1b0giy\x1b")), "abcxy");
     // gJ: join without touching blanks.
@@ -849,7 +862,7 @@ fn command_line_history_completion_and_registers() {
     feed(&mut e, "\t");
     assert_eq!(line(&e), "undo");
     feed(&mut e, "\t");
-    assert_eq!(line(&e), "undolist");
+    assert_eq!(line(&e), "undojoin");
     e.key(KeyCode::BackTab.into());
     assert_eq!(line(&e), "undo");
     feed(&mut e, "\n");
@@ -918,7 +931,7 @@ fn frame_wraps_long_lines() {
     let (rows, cursor, _) = snapshot("abcdefghij\nx", "7l", 6, 5);
     assert_eq!((rows[1].as_str(), cursor), ("  efgh", (5, 1)));
     let (rows, cursor, _) = snapshot("abc日本", "", 6, 3);
-    assert_eq!((rows[..2].to_vec(), cursor), (["1 abc", "  日本"].map(String::from).to_vec(), (2, 0)));
+    assert_eq!((rows[..2].to_vec(), cursor), (["1 abc>", "  日本"].map(String::from).to_vec(), (2, 0)));
     // Selected line break stays on the last row; an empty line is one row; the cursor line pads one row.
     assert_eq!(snapshot("abcde\nf", "V", 6, 4).0[..3], ["1 [abcd]", "  [e ]", "1 f"]);
     assert_eq!(snapshot("\nf", "", 6, 3).0[..2], ["1", "1 f"]);
@@ -980,6 +993,84 @@ fn wrap_screen_rows_motions_and_scroll() {
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
+fn tabs_go_to_the_next_stop_and_over_the_edge_of_a_wrapped_row() {
+    use crossterm::event::{MouseButton as B, MouseEvent, MouseEventKind as K};
+    use std::time::Instant;
+    // A Tab ends at the next multiple of 'tabstop', not `tabstop` cells on: `a` + Tab is 4 cells at ts=4, so `b` is in cell 4.
+    let (rows, ..) = snapshot("a\tb", ":set ts=4 list nonu nornu\n", 20, 2);
+    assert_eq!(rows[0], "a>  b$");
+    // With 4 text cells and ts=8 the Tab in "abc\td" starts in the last cell of row 0, fills row 1 and ends there (checked
+    // against Neovim: the text area of 8 cells shows `a`, a Tab to the edge, then the rest of the line on the next row).
+    let (rows, cursor, _) = snapshot("abc\td", ":set ts=8 list\n3l", 6, 4);
+    assert_eq!(rows[..3], ["1 abc>", "", "  d$"]);
+    // The cursor on a Tab is on its first cell with `list`, and in Normal mode without it on its last: row 1, last cell.
+    assert_eq!(cursor, (5, 0));
+    assert_eq!(snapshot("abc\td", ":set ts=8\n3l", 6, 4).1, (5, 1));
+    let (_, cursor, _) = snapshot("abc\td", ":set ts=8 list\nA", 6, 4);
+    assert_eq!(cursor, (3, 2));
+    // A click on the rest of the Tab over the edge puts the cursor on the Tab.
+    let mut e = run("abc\td", ":set ts=8\n");
+    e.frame(6, 4);
+    for kind in [K::Down(B::Left), K::Up(B::Left)] {
+        e.mouse(MouseEvent { kind, column: 3, row: 1, modifiers: KeyModifiers::NONE }, Instant::now());
+    }
+    assert_eq!(pos(&e), (0, 3));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn smarttab_softtabstop_and_varsofttabstop_in_insert_mode() {
+    // 'smarttab': a Tab in the indent is a 'shiftwidth', and Backspace there goes back to the previous one.
+    let setup = ":set sw=4 ts=8 et sta\n";
+    assert_eq!(text(&run("x", &format!("{setup}I\t\ty\x1b"))), "        yx");
+    assert_eq!(text(&run("x", &format!("{setup}I\t\t\x7fy\x1b"))), "    yx");
+    // Without 'expandtab' the blanks are turned into Tabs where they fit.
+    assert_eq!(text(&run("x", ":set sw=4 ts=8 noet sta\nI\t\ty\x1b")), "\tyx");
+    // 'softtabstop' works after text too; a negative value is 'shiftwidth'.
+    assert_eq!(text(&run("ab", ":set ts=8 sw=4 et nosta sts=-1\nA\tx\x1b")), "ab  x");
+    assert_eq!(text(&run("ab", ":set ts=8 sw=4 et nosta sts=-1\nA\t\t\x7fx\x1b")), "ab  x");
+    // `varsofttabstop` is a list.
+    assert_eq!(text(&run("ab", ":set ts=8 et nosta vsts=2,4\nA\t\tx\x1b")), "ab        x");
+    // Typed one key at a time, a space is `inserted_space`: Backspace deletes it alone (from a macro or `:normal` a run of
+    // printable chars is taken from the typeahead at once, and only its first char counts).
+    assert_eq!(text(&run("abc", ":set ts=8 sw=4 et nosta sts=4\nAx  \x7f\x1b")), "abcx ");
+    let mut e = ed("abc");
+    feed(&mut e, ":set ts=8 sw=4 et nosta sts=4\n");
+    e.command("normal! Ax  \x7f");
+    assert_eq!(text(&e), "abcx");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn vartabstop_sets_the_stops_drawn_clicked_and_retabbed() {
+    use crossterm::event::{MouseButton as B, MouseEvent, MouseEventKind as K};
+    use std::time::Instant;
+    // Stops at 2, 6 and then every 4: `a` + Tab fills 1 cell, `b` + Tab fills 3.
+    let (rows, ..) = snapshot("a\tb\tc", ":set vts=2,4 list nonu nornu\n", 20, 2);
+    assert_eq!(rows[0], "a>b>  c$");
+    // A click on the third cell of the second Tab (cells 3 to 5) puts the cursor on it.
+    let mut e = run("a\tb\tc", ":set vts=2,4 nonu nornu\n");
+    e.frame(20, 3);
+    for kind in [K::Down(B::Left), K::Up(B::Left)] {
+        e.mouse(MouseEvent { kind, column: 5, row: 0, modifiers: KeyModifiers::NONE }, Instant::now());
+    }
+    assert_eq!(pos(&e), (0, 3));
+    // `:retab` with a list: the widths are measured with the stops now, the new text is made for the ones given, and a
+    // list in use (or more than one stop) is kept as 'vartabstop'; one stop and no list is the new 'tabstop'.
+    let e = run("\tx", ":set ts=8 et\n:retab 4,8\n");
+    assert_eq!((text(&e).as_str(), e.buf.opts.vartabstop.as_str(), e.buf.opts.tabstop), ("        x", "4,8", 8));
+    let e = run("\tx", ":set ts=8 noet\n:retab 4\n");
+    assert_eq!((text(&e).as_str(), e.buf.opts.vartabstop.as_str(), e.buf.opts.tabstop), ("\t\tx", "", 4));
+    let e = run("\t\tx", ":set vts=2,4 noet\n:retab 3\n");
+    assert_eq!((text(&e).as_str(), e.buf.opts.vartabstop.as_str()), ("\t\tx", "3"));
+    // A bad list gives the message of `tabstop_set`, then the one of the option.
+    let e = run("a", ":set vts=4,\n");
+    assert_eq!(e.msg(), "E475: Invalid argument: 4,\nE474: Invalid argument: vts=4,");
+    assert_eq!(e.buf.opts.vartabstop, "");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
 fn wrapped_rows_with_visual_mode_tabs_wide_chars_and_cursorline() {
     let w = |s: &str, keys: &str| {
         let mut e = ed(s);
@@ -987,8 +1078,8 @@ fn wrapped_rows_with_visual_mode_tabs_wide_chars_and_cursorline() {
         feed(&mut e, keys);
         e
     };
-    // gj/gk over a tab (4 cells) and wide chars (2 cells) keep the screen column.
-    assert_eq!([pos(&w("a\tbcdefg", "gj")), pos(&w("a\tbcdefg", "gjgj")), pos(&w("a\tbcdefg", "gjgjgj"))], [(0, 1), (0, 2), (0, 6)]);
+    // gj/gk over a tab (3 cells after `a`, up to the stop at 4) and wide chars (2 cells) keep the screen column.
+    assert_eq!([pos(&w("a\tbcdefg", "gj")), pos(&w("a\tbcdefg", "gjgj")), pos(&w("a\tbcdefg", "gjgjgj"))], [(0, 2), (0, 6), (0, 6)]);
     assert_eq!([pos(&w("日本語日本語", "lgj")), pos(&w("日本語日本語", "lgjgj")), pos(&w("日本語日本語", "lgjgjgk"))], [(0, 3), (0, 5), (0, 3)]);
     // gj extends a Visual selection by rows, drawn on every row it covers.
     let mut e = w("abcdefghij", "vgj");
@@ -1188,7 +1279,10 @@ fn star_and_hash_search_whole_words() {
     assert_eq!(pos(&run(s, "ll2*")), (1, 0));
     // From blanks: the next word in the line.
     assert_eq!(pos(&run("  foo x foo", "*")), (0, 8));
-    assert_eq!(run("  ..", "*").msg(), "No identifier under cursor");
+    // No identifier: the non-blank text, as it is (checked against Neovim: `/\.\.`); blanks only: E348.
+    let e = run("  ..", "*");
+    assert_eq!((pos(&e), e.msg()), ((0, 2), "search hit BOTTOM, continuing at TOP"));
+    assert_eq!(run("   ", "*").msg(), "E348: No string under cursor");
     assert_eq!(text(&run("a b a", "d*")), "a");
 }
 
@@ -1327,12 +1421,12 @@ fn substitute_confirm_count_and_repeat() {
 #[test]
 fn gn_selects_the_match() {
     let s = "foo bar foo bar foo";
-    assert_eq!(run(s, "gn").msg(), "No previous search pattern");
+    assert_eq!(run(s, "gn").msg(), "E35: No previous regular expression");
     assert_eq!(text(&run(s, "/foo\ngg0dgn")), " bar foo bar foo");
     // On the match, it is that match; `gN` goes backward.
     assert_eq!(text(&run(s, "/foo\ngg0wwdgn")), "foo bar  bar foo");
     assert_eq!(text(&run(s, "/bar\n$dgN")), "foo bar foo  foo");
-    assert_eq!(text(&run(s, "/foo\nggcgnX\x1b")), "X bar foo bar foo");
+    assert_eq!(text(&run(s, "/foo\ngg0cgnX\x1b")), "X bar foo bar foo");
     // `.` repeats `cgn` on the next match.
     assert_eq!(text(&run(s, "/foo\nggcgnX\x1b..")), "X bar X bar X");
     assert_eq!(pos(&run(s, "/bar\ngg0gn")), (0, 6));
@@ -1396,7 +1490,8 @@ fn marks() {
     assert_eq!(pos(&run(s, "jjmaggOx\x1b'a")), (3, 0));
     assert_eq!(pos(&run(s, "jlmaggix\x1bj`a")), (1, 1));
     assert_eq!(pos(&run(s, "jlmaggdd`a")), (0, 1));
-    assert_eq!(pos(&run(s, "jlmakdj`a")), (0, 0));
+    // A mark in lines that go is deleted (`mark_adjust`), so `` `a `` fails and the cursor stays.
+    assert_eq!(pos(&run(s, "jlmakdj`a")), (0, 1));
     // `''` and `` `` `` go back to where the last jump started.
     assert_eq!(pos(&run(s, "lG''")), (0, 0));
     assert_eq!(pos(&run(s, "lG``")), (0, 1));
@@ -1404,7 +1499,7 @@ fn marks() {
     assert_eq!(pos(&run(s, "/h\n``")), (0, 0));
     assert_eq!(pos(&run(s, ":3\n''")), (0, 0));
     assert_eq!(run(s, "'z").msg(), "E20: Mark not set");
-    assert_eq!(run(s, "m1").msg(), "Invalid mark name");
+    assert_eq!(run(s, "m!").msg(), "");
     // Undo and redo move marks back with the text.
     assert_eq!(pos(&run("日本\nx", "jmaggddu`a")), (1, 0));
     assert_eq!(pos(&run("日本\nx", "jmaggddu\x12`a")), (0, 0));
@@ -1504,7 +1599,7 @@ fn named_numbered_and_clipboard_registers() {
     assert_eq!(text(&run("ab", "\"bx\"bp")), "ba");
     assert_eq!(text(&run("ab", "\"bxp")), "ba");
     assert_eq!(text(&run("ab", "vl\"ay$\"aP")), "aabb");
-    assert_eq!(run("a", "\"zp").msg(), "Nothing in register z");
+    assert_eq!(run("a", "\"zp").msg(), "E353: Nothing in register z");
     // An invalid register cancels the prefix; the next key runs alone.
     assert_eq!(text(&run("ab", "\"!x")), "b");
     assert_eq!(text(&run("ab", "v\"!x")), "b");
@@ -1548,8 +1643,8 @@ fn macros() {
     assert_eq!(run("a", "qa@aq@a").msg(), "Macro recursion too deep");
     assert_eq!(run("a", "qaix\x1b@aq@a").msg(), "Macro recursion too deep");
     assert_eq!(run("a", "q1").msg(), "Invalid register name");
-    assert_eq!(run("a", "@z").msg(), "Register z is empty");
-    assert_eq!(run("a", "@@").msg(), "No previously used register");
+    assert_eq!(run("a", "@z").msg(), "");
+    assert_eq!(run("a", "@@").msg(), "E748: No previously used register");
     // A quit inside a macro quits (recorded while dirty, so it was refused then).
     let mut e = ed("a");
     assert!(feed(&mut e, "xqa:q\nqu"));
@@ -1570,19 +1665,20 @@ fn macros() {
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn visual_block_in_screen_columns() {
-    // A tab (cells 1-4 at ts=4) and wide chars keep the block straight on screen.
+    // A tab (cells 1-3 at ts=4: up to the stop) and wide chars keep the block straight on screen (checked against Neovim).
     let e = run("a\tb\nabcdefgh", "ll\x16jd");
-    assert_eq!(text(&e), "a\nabgh");
-    assert_eq!(e.regs.get('"').map(|r| r.text.as_str()), Some("\tb\ncdef"));
-    assert_eq!(text(&run("日本語\nabcdef", "l\x16jd")), "語\naef");
-    assert_eq!(text(&run("a\tb\nabcdefgh", "j5l\x16kIX\x1b")), "a\tXb\nabcdeXfgh");
-    // The block ends at the last cell of 本 (screen column 3): the short line is padded.
-    assert_eq!(text(&run("ab\n日本", "l\x16jAX\x1b")), "ab  X\n日本X");
-    assert_eq!(snapshot("日本語\nabcdef", ":set nonu nornu\nl\x16j", 20, 3).0[..2], ["[日本]語", "a[bcd]ef"]);
+    assert_eq!(text(&e), "a\t\nabcdfgh");
+    assert_eq!(e.regs.get('"').map(|r| r.text.as_str()), Some("b\ne"));
+    assert_eq!(text(&run("a\tb\nabcdefgh", "jllll\x16kd")), "a\t\nabcdfgh");
+    assert_eq!(text(&run("日本語\nabcdef", "l\x16jd")), "日語\nabef");
+    assert_eq!(text(&run("a\tb\nabcdefgh", "j5l\x16kIX\x1b")), "a\tbX\nabcdeXfgh");
+    // The column wanted is cell 1: on 日 (cells 0-1) in the second line (checked against Neovim).
+    assert_eq!(text(&run("ab\n日本", "l\x16jAX\x1b")), "abX\n日X本");
+    assert_eq!(snapshot("日本語\nabcdef", ":set nonu nornu\nl\x16j", 20, 3).0[..2], ["日[本]語", "ab[cd]ef"]);
     // A block pastes at the cursor's screen column, padding short lines.
     assert_eq!(text(&run("ab\ncd\n\tx\ny", "\x16jly2jlP")), "ab\ncd\n\tabx\ny   cd");
     // Visual r over a block of wide chars.
-    assert_eq!(text(&run("日本\nabcd", "\x16jrx")), "x本\nxxcd");
+    assert_eq!(text(&run("日本\nabcd", "\x16jrx")), "xx本\nxxcd");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -1590,7 +1686,7 @@ fn visual_block_in_screen_columns() {
 fn visual_block_delete_yank_paste() {
     let e = run("abc\ndef\nghi", "l\x16jld");
     assert_eq!((text(&e).as_str(), pos(&e)), ("a\nd\nghi", (0, 0)));
-    assert_eq!(e.regs.get('"'), Some(&Reg { text: "bc\nef".into(), kind: RegKind::Block }));
+    assert_eq!(e.regs.get('"'), Some(&Reg { text: "bc\nef".into(), kind: RegKind::Block(1) }));
     assert_eq!(text(&run("ab\ncd", "\x16jy$p")), "aba\ncdc");
     assert_eq!(text(&run("ab\ncd", "\x16jyP")), "aab\nccd");
     assert_eq!(text(&run("a\nb\nq", "\x16jyGp")), "a\nb\nqa\n b");
@@ -1605,8 +1701,8 @@ fn visual_block_delete_yank_paste() {
 #[test]
 fn visual_block_insert_append_change() {
     assert_eq!(text(&run("ab\ncd\nef", "l\x16jjIX\x1b")), "aXb\ncXd\neXf");
-    // The cursor end follows normal clamping: on a short line the block starts at its last char.
-    assert_eq!(text(&run("ab\ncd\ne", "l\x16jjIX\x1b")), "Xab\nXcd\nXe");
+    // The column wanted is kept: on a short line the cursor is past its end (Visual mode), so the block is there (checked against Neovim).
+    assert_eq!(text(&run("ab\ncd\ne", "l\x16jjIX\x1b")), "aXb\ncXd\neX");
     // `I` skips lines shorter than the column, `A` pads them.
     assert_eq!(text(&run("ab\n\ncd", "l\x16jjIX\x1b")), "aXb\n\ncXd");
     assert_eq!(text(&run("abc\nd", "ll\x16jAX\x1b")), "abcX\nd  X");
@@ -1649,10 +1745,13 @@ fn visual_replace_and_insert() {
     assert_eq!(text(&run("abc\nd", "vjrx")), "xxx\nx");
     assert_eq!(text(&run("ab\ncd", "Vrx")), "xx\ncd");
     assert_eq!(run("ab", "vr").pending, "r");
-    assert_eq!(text(&run("abc", "lvlIX\x1b")), "aXbc");
+    // Checked in Neovim: `I` and `A` make the area linewise (`v_visop`), so `I` goes to column 0.
+    assert_eq!(text(&run("abc", "lvlIX\x1b")), "Xabc");
+    assert_eq!(text(&run("abc", "$vAX\x1b")), "abXc");
+    assert_eq!(text(&run("a\nb", "vjAX\x1b")), "a\nXb");
     assert_eq!(text(&run("abc", "lvAX\x1b")), "abXc");
-    assert_eq!(text(&run("  ab\nc", "VIX\x1b")), "  Xab\nc");
-    assert_eq!(text(&run("ab\nc", "VAX\x1b")), "abX\nc");
+    assert_eq!(text(&run("  ab\nc", "VIX\x1b")), "X  ab\nc");
+    assert_eq!(text(&run("ab\nc", "VAX\x1b")), "Xab\nc");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -1770,7 +1869,7 @@ fn regex_search() {
     // Like vim, the next match may start inside the current one.
     feed(&mut e, "n");
     assert_eq!(pos(&e), (0, 5));
-    feed(&mut e, "ggN");
+    feed(&mut e, "gg0N");
     assert_eq!((pos(&e), e.msg()), ((1, 3), "search hit TOP, continuing at BOTTOM"));
     feed(&mut e, "G$n");
     assert_eq!((pos(&e), e.msg()), ((0, 1), "search hit BOTTOM, continuing at TOP"));
@@ -1817,7 +1916,7 @@ fn substitute_lines_and_flags() {
     assert_eq!(text(&run("Ab", ":s/a/x/i\n")), "xb");
     assert_eq!(text(&run("Ab", ":s/a/x/I\n")), "Ab");
     assert_eq!(text(&run("k=v", concat!(r":s/(\w)=(\w)/$2=$1/", "\n"))), "v=k");
-    assert_eq!(text(&run("a,b", concat!(r":s/,/\n/", "\n"))), "a\nb");
+    assert_eq!(text(&run("a,b", concat!(r":s/,/\r/", "\n"))), "a\nb");
     assert_eq!(text(&run("ab", concat!(r":s/b/\$1/", "\n"))), "a$1");
     assert_eq!(text(&run("a\nb", concat!(r":%s/\n//", "\n"))), "ab");
     assert_eq!(text(&run("ab", ":s/$/!/\n")), "ab!");
@@ -1842,11 +1941,11 @@ fn substitute_cursor_messages_and_undo() {
     assert_eq!(run("aa", ":s/a/b/g\n").msg(), "");
     assert_eq!(run("a", ":s/a/b/\n").msg(), "");
     // The cursor goes where the last substitution ends, past the line breaks it added.
-    assert_eq!(pos(&run("a,b\nc,d", concat!(r":%s/,/\n/", "\n"))), (3, 0));
+    assert_eq!(pos(&run("a,b\nc,d", concat!(r":%s/,/\r/", "\n"))), (3, 0));
     let e = run(s, ":%s/q/z/\n");
     assert_eq!((text(&e).as_str(), e.msg()), (s, "E486: Pattern not found: q"));
     assert_eq!(run(s, ":%s/(/z/\n").msg().split(':').next(), Some("Invalid pattern"));
-    assert_eq!(run(s, ":s//z/\n").msg(), "E35: No previous regular expression");
+    assert_eq!(run(s, ":s//z/\n").msg(), "E35: No previous regular expression\nE476: Invalid command");
     assert_eq!(run(s, ":9s/a/z/\n").msg(), "E16: Invalid range");
     // Line 0 counts as line 1 (vim).
     assert_eq!(text(&run(s, ":0s/a/z/\n")), text(&run(s, ":1s/a/z/\n")));
@@ -1873,47 +1972,68 @@ fn substitute_on_a_visual_selection() {
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
-fn undo_tree_commands() {
-    // Two branches: "ab" (undone) and "ac".
-    let mut e = run("a", "Ab\x1buAc\x1b");
-    assert_eq!(text(&e), "ac");
-    feed(&mut e, "g-");
-    assert_eq!(text(&e), "ab", "g- goes back in time across branches");
-    feed(&mut e, "g-");
-    assert_eq!(text(&e), "a");
-    feed(&mut e, "g-");
-    assert_eq!((text(&e).as_str(), e.msg()), ("a", "Already at oldest change"));
-    feed(&mut e, "2g+");
-    assert_eq!(text(&e), "ac");
-    feed(&mut e, "g+");
-    assert_eq!(e.msg(), "Already at newest change");
-    feed(&mut e, ":earlier 2\n");
-    assert_eq!(text(&e), "a");
-    feed(&mut e, ":later\n");
-    assert_eq!(text(&e), "ab");
-    feed(&mut e, ":undo 2\n");
-    assert_eq!(text(&e), "ac");
-    feed(&mut e, ":undo 0\n");
-    assert_eq!(text(&e), "a");
-    feed(&mut e, ":u\n");
-    assert_eq!(e.msg(), "Already at oldest change");
-    feed(&mut e, ":red\n");
-    assert_eq!(text(&e), "ac", "redo follows the last branch visited");
-    feed(&mut e, ":undo\n");
-    assert_eq!(text(&e), "a");
-    feed(&mut e, ":earlier 10m\n");
-    assert_eq!(text(&e), "a");
-    feed(&mut e, ":later 1h\n");
-    assert_eq!(text(&e), "ac", "nothing that late: the newest version");
-    for bad in [":earlier 3x\n", ":later 99999999999999999999999\n"] {
-        feed(&mut e, bad);
-        assert!(e.msg().starts_with("Invalid argument: "), "{bad:?}: {}", e.msg());
+fn undo_time_travel_by_time_matches_neovim() {
+    // Recorded from Neovim with 1.1 s between the changes (`earlier 1s`, `later 2s`, ...): the changes #2, #3 and #4 were one
+    // second apart. The times are set here so the test does not sleep.
+    let mut e = run("a\nb\nc", "xjxjx");
+    let base = crate::editor::undo::now() - 100;
+    for (i, h) in e.buf.undo.headers.iter_mut().enumerate().skip(1) {
+        h.time = base + i as i64;
     }
+    e.buf.undo.time_cur = e.buf.undo.headers[3].time + 1;
+    let state = |e: &Editor| (text(e), e.buf.undo.seq_cur);
+    assert_eq!(state(&e), ("\n\n".into(), 3));
+    for (cmd, want) in [
+        (":earlier 1s\n", ("\n\nc", 2)),
+        (":earlier 1s\n", ("\nb\nc", 1)),
+        (":later 2s\n", ("\n\n", 3)),
+        (":earlier 10s\n", ("a\nb\nc", 0)),
+        (":later 10s\n", ("\n\n", 3)),
+        (":earlier 1m\n", ("a\nb\nc", 0)),
+        (":earlier 1s\n", ("a\nb\nc", 0)),
+        (":later 1h\n", ("\n\n", 3)),
+    ] {
+        feed(&mut e, cmd);
+        assert_eq!(state(&e), (want.0.to_string(), want.1), "{cmd:?}");
+    }
+    // A duration or a count that does not parse.
+    for bad in [":earlier 3x\n", ":later 1sx\n"] {
+        feed(&mut e, bad);
+        assert!(e.msg().starts_with("E475: Invalid argument: "), "{bad:?}: {}", e.msg());
+    }
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn undo_file_writes_and_undolist() {
+    // `:earlier 1f`: the changes since the last write count as one step back (`u_update_save_nr` marks the change a write ends).
+    let mut e = run("a", "Ab\x1b");
+    e.buf.undo.update_save_nr();
+    feed(&mut e, "Ac\x1b");
+    feed(&mut e, ":earlier 1f\n");
+    assert_eq!((text(&e).as_str(), e.buf.undo.seq_cur), ("ab", 1));
+    feed(&mut e, ":earlier 1f\n");
+    assert_eq!((text(&e).as_str(), e.buf.undo.seq_cur), ("a", 0));
+    feed(&mut e, ":later 1f\n");
+    assert_eq!((text(&e).as_str(), e.buf.undo.seq_cur), ("ab", 1));
+    feed(&mut e, ":later 5f\n");
+    assert_eq!((text(&e).as_str(), e.buf.undo.seq_cur), ("abc", 2));
+    // The list: a column for each of number, changes, time, and the write.
     feed(&mut e, ":undolist\n");
-    assert!(e.msg().starts_with("at 2 of 2 | 1:1:") && e.msg().contains(" 2:1:"), "{}", e.msg());
-    // Marks follow time travel too.
-    let e = run("x\ny", "jmaggOz\x1bg-g+`a");
-    assert_eq!(pos(&e), (2, 0));
+    let m = e.msg();
+    assert!(m.starts_with("number changes  when               saved\n     2       2  "), "{m}");
+    // Nothing to undo in a new buffer.
+    let e = run("a", ":undolist\n");
+    assert_eq!(e.msg(), "Nothing to undo");
+    // `:undo!` forgets the branch it leaves; `:undojoin` is refused after an undo.
+    let mut e = run("a", "Ab\x1bAc\x1b:undo!\n");
+    assert_eq!(text(&e), "ab");
+    feed(&mut e, "u:undojoin\n");
+    assert!(e.msg().starts_with("E790"), "{}", e.msg());
+    // `:undojoin` makes the next change part of the last step.
+    let mut e = run("a", "Ab\x1b:undojoin | normal Ac\n");
+    feed(&mut e, "u");
+    assert_eq!(text(&e), "a");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -1950,12 +2070,12 @@ fn char_info_and_byte_motions() {
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn segments_fast_path_matches_the_generic_one() {
-    use super::layout::segments;
+    use super::{graphemes::Tabs, layout::segments};
     // Same rows with and without the ASCII fast path (a trailing non-ASCII char forces the generic one).
     for (line, w) in [("", 4), ("abc", 4), ("abcd", 4), ("abcde", 4), ("abcdefgh", 4), ("abcdefghi", 1), ("abc", usize::MAX)] {
-        let fast = segments(line, w, 4);
+        let fast = segments(line, w, Tabs::every(4));
         let padded = format!("{line}é");
-        let slow = segments(&padded, w, 4);
+        let slow = segments(&padded, w, Tabs::every(4));
         let strip = |v: &[(usize, &str)]| v.iter().map(|&(i, s)| (i, s.trim_end_matches('é').to_string())).collect::<Vec<_>>();
         let mut want = strip(&slow);
         if want.last().is_some_and(|(_, s)| s.is_empty()) && want.len() > 1 {
@@ -1964,18 +2084,28 @@ fn segments_fast_path_matches_the_generic_one() {
         assert_eq!(strip(&fast), want, "{line:?} {w}");
     }
     // Random mixed text (ASCII runs, tabs, wide, combining and control chars) against the plain per-cluster layout.
+    // Neovim's layout, kept apart from `Rows`: a virtual column that runs on over the line, a Tab up to its stop, a
+    // filler cell before a wide char that would start in the last cell of a row, and each row holds the clusters
+    // with a cell in it.
     let naive = |line: &str, w: usize, ts: usize| {
-        let (mut out, mut x, mut b0, mut c0) = (Vec::new(), 0usize, 0, 0);
+        let mut cl = Vec::new();
+        let mut v = 0usize;
         for (i, (b, g)) in unicode_segmentation::UnicodeSegmentation::grapheme_indices(line, true).enumerate() {
-            let cw = graphemes::width(g, ts);
-            if x > 0 && x.saturating_add(cw) > w {
-                out.push((c0, line[b0..b].to_string()));
-                (x, b0, c0) = (0, b, i);
-            }
-            x += cw;
+            let cw = if g == "\t" { ts - v % ts } else { graphemes::width(g, ts) };
+            let cells = if cw == 2 && g != "\t" && w != usize::MAX && v % w == w - 1 { 3 } else { cw };
+            cl.push((i, b, b + g.len(), v, cells));
+            v += cells;
         }
-        out.push((c0, line[b0..].to_string()));
-        out
+        let rows = if w == usize::MAX || cl.is_empty() { 1 } else { (v - 1) / w + 1 };
+        (0..rows)
+            .map(|k| {
+                let mine: Vec<_> = cl.iter().filter(|c| w == usize::MAX || (c.3 < (k + 1) * w && c.3 + c.4 > k * w)).collect();
+                match (mine.first(), mine.last()) {
+                    (Some(f), Some(l)) => (f.0, line[f.1..l.2].to_string()),
+                    _ => (0, String::new()),
+                }
+            })
+            .collect::<Vec<_>>()
     };
     let mut seed = 0x2545_F491_4F6C_DD1Du64;
     let mut next = |n: u64| {
@@ -1991,17 +2121,20 @@ fn segments_fast_path_matches_the_generic_one() {
             })
             .collect();
         let (w, ts) = ([1, 2, 3, 7, 20, 100, usize::MAX][next(7) as usize], 1 + next(8) as usize);
-        let got: Vec<_> = segments(&line, w, ts).into_iter().map(|(i, s)| (i, s.to_string())).collect();
+        let got: Vec<_> = segments(&line, w, Tabs::every(ts)).into_iter().map(|(i, s)| (i, s.to_string())).collect();
         assert_eq!(got, naive(&line, w, ts), "{line:?} w={w} ts={ts}");
     }
-    // A tab takes the generic path: 4 cells at ts=4.
-    assert_eq!(segments("a\tb", 4, 4), [(0, "a"), (1, "\t"), (2, "b")]);
+    // A Tab goes to the next stop: after `a` it takes 3 cells and ends the row.
+    assert_eq!(segments("a\tb", 4, Tabs::every(4)), [(0, "a\t"), (2, "b")]);
+    // One that does not fit is in both rows; a wide char at the edge leaves a filler and is in both too.
+    assert_eq!(segments("abc\td", 4, Tabs::every(8)), [(0, "abc\t"), (3, "\t"), (4, "d")]);
+    assert_eq!(segments("ab\u{65e5}", 3, Tabs::every(4)), [(0, "ab\u{65e5}"), (2, "\u{65e5}")]);
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn layout_kept_across_edits_matches_a_fresh_one() {
-    use super::layout::{Layout, segments};
+    use super::{graphemes::Tabs, layout::{Layout, segments}};
     let mut seed = 0x9E37_79B9_7F4A_7C15u64;
     let mut next = |n: u64| {
         seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
@@ -2020,7 +2153,7 @@ fn layout_kept_across_edits_matches_a_fresh_one() {
         let mut layout = Layout::default();
         for _ in 0..6 {
             // Lay out part of the line, as a frame would, then edit it.
-            let (l, rows) = layout.sync(&line, &Text::new(), 0, w, ts);
+            let (l, rows) = layout.sync(&line, &Text::new(), 0, w, Tabs::every(ts));
             assert_eq!(l, line);
             match next(3) {
                 0 => rows.ensure(l, next(8) as usize),
@@ -2034,10 +2167,10 @@ fn layout_kept_across_edits_matches_a_fresh_one() {
                 line.insert(at, alphabet[next(8) as usize]);
             }
         }
-        let (l, rows) = layout.sync(&line, &Text::new(), 0, w, ts);
+        let (l, rows) = layout.sync(&line, &Text::new(), 0, w, Tabs::every(ts));
         rows.extend(l, |_| false);
         let got: Vec<_> = (0..rows.len()).map(|k| rows.row(l, k)).collect();
-        assert_eq!(got, segments(&line, w, ts), "{line:?} w={w} ts={ts}");
+        assert_eq!(got, segments(&line, w, Tabs::every(ts)), "{line:?} w={w} ts={ts}");
     }
 }
 
@@ -2074,7 +2207,7 @@ fn highlight_cache_follows_text_pattern_and_view() {
     assert_eq!(screen(&e.frame(20, 2))[0], "2 {x}b");
     // Many matches on one line, with wide chars before them: columns stay exact.
     let mut e = run(&"日a".repeat(1000), "/a\n");
-    assert_eq!(screen(&e.frame(12, 2))[0], "1 日{a}日{a}日{a}");
+    assert_eq!(screen(&e.frame(12, 2))[0], "1 日{a}日{a}日{a}>");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2124,7 +2257,7 @@ fn line_scans_count_chars_not_bytes() {
     assert_eq!(pos(&run("日é🦀xéx", "tx")), (0, 2));
     assert_eq!(pos(&run("日é🦀xéx", "$Tx")), (0, 4));
     assert_eq!(pos(&run("日é🦀xéx", "$2Fx;")), (0, 5 - 2));
-    assert_eq!(pos(&run("日é foo é foo", "w*")), (0, 9));
+    assert_eq!(pos(&run("日é foo é foo", "w*")), (0, 7));
     assert_eq!(text(&run("日é 9 é", "\x01")), "日é 10 é");
     assert_eq!(text(&run("日é -9", "$\x01")), "日é -8");
     assert_eq!(text(&run("日 é foo bár x", "wwdiw")), "日 é  bár x");
@@ -2210,7 +2343,9 @@ fn ex_addresses() {
     assert_eq!((e.win.line, e.last_search.as_ref().map(|s| s.pat.as_str())), (1, Some("^a")));
     assert_eq!(pos(&run(s, ":'q\n")), (0, 0));
     assert_eq!(run(s, ":'q\n").msg(), "E20: Mark not set");
-    assert_eq!(run(s, ":3|\n").msg(), "c", ":3| shows line 3");
+    // 'number' is on by default, and `:print` shows the number then (`print_line`).
+    assert_eq!(run(s, ":3|\n").msg(), "  3 c", ":3| shows line 3");
+    assert_eq!(run(s, ":set nonumber|3|\n").msg(), "c");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -2258,7 +2393,10 @@ fn ex_shift_join_print() {
     assert_eq!(text(&run(s, ":j 3\n")), "a b c");
     assert_eq!(text(&run(s, ":3j\n")), s);
     let e = run("a\nb\nc", ":2p\n");
-    assert_eq!((e.msg(), e.win.line), ("b", 1));
+    assert_eq!((e.msg(), e.win.line), ("  2 b", 1));
+    assert_eq!(run("a\nb\nc", ":set nonumber|2p\n").msg(), "b");
+    assert_eq!(run("a\nb\nc", ":2nu\n").msg(), "  2 b");
+    assert_eq!(run("a\nb\nc", ":set nonumber|2#\n").msg(), "  2 b");
     assert_eq!(run("a\nb\nc", ":=\n").msg(), "3");
     assert_eq!(run("a\nb\nc", "j:.=\n").msg(), "2");
 }
@@ -2274,8 +2412,8 @@ fn ex_normal() {
     let e = run("abc", ":norm ix\n");
     assert_eq!((text(&e).as_str(), &e.mode), ("xabc", &Mode::Normal));
     assert_eq!(text(&run("abc", ":norm ix\nu")), "abc");
-    // Lines follow the edits: deleted ones are skipped.
-    assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm dd\n")), "a\nd");
+    // The cursor goes to each line number of the range, as `ex_normal` does: after the first `dd` line 3 is the old line 4.
+    assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm dd\n")), "a\nc");
     assert_eq!(text(&run("a\nb\nc\nd", ":2,3norm jdd\n")), "a\nb\nd");
     assert_eq!(run("a", ":norm\n").msg(), "E471: Argument required");
     // Not recorded by `q`.
@@ -2299,12 +2437,15 @@ fn ex_global() {
     assert_eq!(text(&run("a\nb\na", ":g/a/t.\n")), "a\na\nb\na\na");
     let e = run(s, ":g/b\n");
     // Every matching line is printed, below each other, as `:g/b` does in Neovim.
-    assert_eq!((e.msg(), e.win.line), ("b\nab", 2));
-    assert_eq!(run(s, ":g/zz/d\n").msg(), "E486: Pattern not found: zz");
+    assert_eq!((e.msg(), e.win.line), ("  2 b\n  3 ab", 2));
+    assert_eq!(run(s, ":set nonumber|g/b\n").msg(), "b\nab");
+    assert_eq!(run(s, ":g/zz/d\n").msg(), "Pattern not found: zz");
     assert_eq!(run(s, ":v/./d\n").msg(), "Pattern found in every line: .");
-    assert_eq!(run(s, ":g\n").msg(), "Regular expression missing from :global");
+    assert_eq!(run(s, ":g\n").msg(), "E148: Regular expression missing from global");
     // The first error ends the `:global` (`emsg` makes `global_busy` 2), as in Neovim.
-    assert_eq!(run(s, ":g/a/g/b/d\n").msg(), "Cannot do :global recursive");
+    assert_eq!(run(s, ":g/a/1g/b/d\n").msg(), "E147: Cannot do :global recursive with a range");
+    // Without a range the nested `:global` works on the cursor line.
+    assert_eq!(text(&run("ab\na\nb", ":g/a/g/b/d\n")), "a\nb");
     assert_eq!(run(s, ":g/a/s/a/x/c\n").msg(), "The c flag cannot be used here");
     assert!(!feed(&mut ed(s), ":g/a/q!\n"));
 }
@@ -2324,7 +2465,7 @@ fn ex_sort() {
     assert_eq!(text(&run(s, ":sort /,/\n")), "z\ny,a\nx,b");
     assert_eq!(text(&run(s, ":sort /\\w,/ r\n")), "z\nx,b\ny,a");
     assert_eq!(text(&run(s, ":sort! /,/\n")), "x,b\ny,a\nz");
-    assert_eq!(run(s, ":sort x\n").msg(), "Invalid argument: x");
+    assert_eq!(run(s, ":sort z\n").msg(), "E475: Invalid argument: z");
     assert_eq!(text(&run(s, ":sort\nu")), s);
 }
 
@@ -2346,13 +2487,13 @@ fn ex_read_write_saveas() {
     assert!(e.msg().starts_with("E484: Can't open file /nonexistent/rim"), "{}", e.msg());
     let mut e = Editor::new(Document::new("a\nb\nc"), own.clone());
     feed(&mut e, &format!(":2,3w {}\n", out.display()));
-    assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc");
+    assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc\n");
     feed(&mut e, &format!(":1w {}\n", out.display()));
     assert_eq!(e.msg(), "File exists (add ! to override)");
     feed(&mut e, &format!(":1w! {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "a\n");
     feed(&mut e, &format!(":w >> {}\n", out.display()));
-    assert_eq!(fs::read_to_string(&out).unwrap(), "a\na\nb\nc");
+    assert_eq!(fs::read_to_string(&out).unwrap(), "a\na\nb\nc\n");
     feed(&mut e, ":2w\n");
     assert_eq!(e.msg(), "E140: Use ! to write partial buffer");
     feed(&mut e, ":2w!\n");
@@ -2360,7 +2501,7 @@ fn ex_read_write_saveas() {
     // Line endings follow the document's.
     let mut e = Editor::new(Document::new("a\r\nb"), own.clone());
     feed(&mut e, &format!(":w! {}\n", out.display()));
-    assert_eq!(fs::read_to_string(&out).unwrap(), "a\r\nb");
+    assert_eq!(fs::read_to_string(&out).unwrap(), "a\r\nb\r\n");
     // `:sav` edits the new file from now on.
     let new = dir.join("new");
     let _ = fs::remove_file(&new);
@@ -2369,7 +2510,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":sav {}\n", out.display()));
     assert_eq!(e.msg(), "File exists (add ! to override)");
     feed(&mut e, &format!(":sav {}\n", new.display()));
-    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_deref(), e.is_dirty()), ("xy", Some(new.as_path()), false));
+    assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_deref(), e.is_dirty()), ("xy\n", Some(new.as_path()), false));
     feed(&mut e, ":sav\n");
     assert_eq!(e.msg(), "E471: Argument required");
     fs::remove_dir_all(&dir).unwrap();
@@ -2383,7 +2524,7 @@ fn ex_retab_and_fileformat() {
     assert_eq!(text(&run("        x", ":set noet\n:ret!\n")), "\t\tx");
     // expandtab: tabs become spaces, `!` changes nothing more.
     assert_eq!(text(&run("\tx  \ty", ":ret!\n")), "    x   y");
-    assert_eq!(run("x", ":retab 0\n").msg(), "Invalid argument: 0");
+    assert_eq!(run("x", ":retab 0\n").msg(), "");
     let mut e = ed("a\nb");
     feed(&mut e, ":set ff=dos\n");
     assert_eq!((e.buf.doc.eol(), e.is_dirty()), (LineEnding::CrLf, true));
@@ -2464,7 +2605,7 @@ fn buffers_switch_list_and_delete() {
     assert_eq!((text(&e).as_str(), e.buf.id), ("b1\nb2\nb3", 2));
     // A modified buffer can be left (hidden); each keeps its cursor and marks.
     feed(&mut e, "Gdd\x1e");
-    assert_eq!((text(&e).as_str(), pos(&e), e.buf.marks.get(&'x')), ("a1\na2", (1, 0), Some(&3)));
+    assert_eq!((text(&e).as_str(), pos(&e), e.buf.marks.get(&'x').map(|m| (m.line, m.col))), ("a1\na2", (1, 0), Some((1, 0))));
     feed(&mut e, ":ls\n");
     assert_eq!(e.msg(), format!("  1 %a \"{}\" line 2\n  2 #  + \"{}\" line 2", a.display(), b.display()));
     feed(&mut e, &format!(":e {}\n", a.display()));
@@ -2588,12 +2729,12 @@ fn background_save_writes_the_snapshot() {
     feed(&mut e, "rb:w\nic\x1b");
     assert!(e.wait_saves());
     assert!(!e.saving());
-    assert_eq!(fs::read_to_string(&path).unwrap(), "b", "the version of `:w`, not the later edit");
+    assert_eq!(fs::read_to_string(&path).unwrap(), "b\n", "the version of `:w`, not the later edit");
     assert!(e.is_dirty(), "edits made during the write keep the buffer modified");
     // `:wqa` writes every modified buffer, then quits.
     feed(&mut e, &format!(":e {}\nix\x1b", other.display()));
     assert!(!feed(&mut e, ":wqa\n"));
-    assert_eq!((fs::read_to_string(&path).unwrap().as_str(), fs::read_to_string(&other).unwrap().as_str()), ("cb", "x"));
+    assert_eq!((fs::read_to_string(&path).unwrap().as_str(), fs::read_to_string(&other).unwrap().as_str()), ("cb\n", "x\n"));
     fs::remove_dir_all(dir).unwrap();
 }
 
@@ -2626,7 +2767,7 @@ fn saves_waited_for_and_their_messages() {
     feed(&mut e, ":b 2\nix\x1b:w\n:bd\n");
     assert_eq!((e.buf.id, e.buffers.len()), (1, 0), "{}", e.msg());
     feed(&mut e, "x:w\n:e\n");
-    assert_eq!(e.msg(), "Reloaded (LF)");
+    assert_eq!(e.msg(), format!("\"{}\" written (LF)", a.display()));
     // A write ending later does not cover the message of a later command, but replaces its own.
     feed(&mut e, "ix\x1b:w\n:ls\n");
     assert!(e.wait_saves());
@@ -3162,7 +3303,7 @@ fn buffers_without_a_file() {
     assert_eq!((e.msg(), e.buf.path.is_none()), ("File exists (add ! to override)", true));
     feed(&mut e, &format!(":w {}\n", a.display()));
     e.wait_saves();
-    assert_eq!((e.buf.path.as_deref(), fs::read_to_string(&a).unwrap().as_str(), e.is_dirty()), (Some(a.as_path()), "x", false));
+    assert_eq!((e.buf.path.as_deref(), fs::read_to_string(&a).unwrap().as_str(), e.is_dirty()), (Some(a.as_path()), "x\n", false));
     // `:e file` from an empty unnamed buffer reuses it; from another one it adds a buffer.
     let mut e = Editor::with_path(Document::new(""), None);
     feed(&mut e, &format!(":e {}\n", b.display()));
@@ -3811,7 +3952,7 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.menu)), ("undo", Some(true)));
     tab(&mut e);
-    assert_eq!(line(&e).0, "undolist");
+    assert_eq!(line(&e).0, "undojoin");
     // `longest:full` starts the menu with the first press.
     feed(&mut e, "\x1b:set wim=longest:full\n:und");
     tab(&mut e);
@@ -3829,7 +3970,7 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     feed(&mut e, "\x1b:set wim=list:longest\n:und");
     tab(&mut e);
     assert_eq!((line(&e).0.as_str(), e.wild.as_ref().map(|w| w.list)), ("undo", Some(true)));
-    assert_eq!(screen(&e.frame(40, 8))[6], "undo      undolist");
+    assert_eq!(screen(&e.frame(40, 8))[6], "undo      undojoin  undolist");
     // The empty entry only completes the first match.
     feed(&mut e, "\x1b:set wim=\n:s");
     tab(&mut e);
@@ -4652,12 +4793,280 @@ fn source_runs_the_lines_of_the_buffer_and_expands_the_environment() {
     unsafe { std::env::set_var("RIM_SOURCE_DIR", &dir) };
     assert_eq!(script(&mut e, &["source $RIM_SOURCE_DIR/s.vim", "echo g:viaenv"]), "1");
     assert_eq!(script(&mut e, &["source ${RIM_SOURCE_DIR}/s.vim | echo 2"]), "2");
-    assert_eq!(script(&mut e, &["source $RIM_NOT_SET_AT_ALL/s.vim"]), "E484: Can't open file $RIM_NOT_SET_AT_ALL/s.vim");
+    assert_eq!(script(&mut e, &["source $RIM_NOT_SET_AT_ALL/s.vim"]), "E484: Can't open file /s.vim");
     assert_eq!(script(&mut e, &[&format!("source {}", dir.display())]), format!("Cannot source a directory: \"{0}\"\nE484: Can't open file {0}", dir.display()));
     fs::remove_dir_all(&dir).unwrap();
 }
 
+#[cfg_attr(miri, ignore = "`getpwnam` is libc code Miri cannot run; the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn file_commands_expand_home_and_the_environment() {
+    // `expand_filename()`: `~` at the start, `$VAR`/`${VAR}` anywhere; what is not set stays as written.
+    let home = std::env::var("HOME").unwrap();
+    assert_eq!(super::script::expand_env("~/x"), format!("{home}/x"));
+    assert_eq!(super::script::expand_env("~/"), format!("{home}/"));
+    assert_eq!(super::script::expand_env("a/~/x"), "a/~/x");
+    assert_eq!(super::script::expand_env("~rim_no_such_user_at_all/x"), "~rim_no_such_user_at_all/x");
+    // `~user` is that user's home directory (`os_get_userdir`), the current user's here.
+    // SAFETY: `getpwuid` returns a static entry for the current user; the name is copied at once.
+    let me = unsafe {
+        let pw = libc::getpwuid(libc::getuid());
+        assert!(!pw.is_null());
+        std::ffi::CStr::from_ptr((*pw).pw_name).to_str().unwrap().to_string()
+    };
+    assert_eq!(super::script::expand_env(&format!("~{me}/x")), format!("{home}/x"));
+    assert_eq!(super::script::expand_env(&format!("a~{me}/x")), format!("a~{me}/x"));
+    assert_eq!(super::script::expand_env(r"\$HOME/x"), "$HOME/x");
+    // An unset or empty `$VAR` is removed; a `${VAR}` one stays as written (as Neovim does).
+    assert_eq!(super::script::expand_env("$RIM_NOT_SET_AT_ALL/x"), "/x");
+    assert_eq!(super::script::expand_env("${RIM_NOT_SET_AT_ALL}/x"), "${RIM_NOT_SET_AT_ALL}/x");
+    // SAFETY: the test thread is the only one using the environment (the editor's save thread never reads it).
+    unsafe { std::env::set_var("RIM_FNAME_EMPTY", "") };
+    assert_eq!(super::script::expand_env("$RIM_FNAME_EMPTY/x"), "/x");
+    assert_eq!(super::script::expand_env("${RIM_FNAME_EMPTY}/x"), "${RIM_FNAME_EMPTY}/x");
+    let dir = std::env::temp_dir().join(format!("rim-fname-env-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(dir.join("a.txt"), "one\ntwo\n").unwrap();
+    // SAFETY: the test thread is the only one using the environment (the editor's save thread never reads it).
+    unsafe { std::env::set_var("RIM_FNAME_DIR", &dir) };
+    let a = dir.join("a.txt");
+    // `:e` loads it and keeps the expanded path, as Neovim does (`expand('%')` is absolute).
+    let mut e = ed("x");
+    script(&mut e, &["e $RIM_FNAME_DIR/a.txt"]);
+    assert_eq!((text(&e), e.buf.path.as_deref()), ("one\ntwo".to_string(), Some(a.as_path())));
+    script(&mut e, &["e ${RIM_FNAME_DIR}/a.txt"]);
+    assert_eq!(e.buf.path.as_deref(), Some(a.as_path()));
+    // `:sp` goes through the same door.
+    script(&mut e, &["sp $RIM_FNAME_DIR/a.txt"]);
+    assert_eq!(text(&e), "one\ntwo");
+    // `:r` inserts the file below the cursor line.
+    let mut r = ed("x");
+    script(&mut r, &["r $RIM_FNAME_DIR/a.txt"]);
+    assert_eq!(text(&r), "x\none\ntwo");
+    // `:w file` and `:sav file`: the buffer's own file is left alone by `:w`.
+    script(&mut e, &["w $RIM_FNAME_DIR/out.txt"]);
+    assert_eq!(fs::read_to_string(dir.join("out.txt")).unwrap(), "one\ntwo\n");
+    assert_eq!(e.buf.path.as_deref(), Some(a.as_path()));
+    script(&mut e, &["sav $RIM_FNAME_DIR/out2.txt"]);
+    assert_eq!(e.buf.path.as_deref(), Some(dir.join("out2.txt").as_path()));
+    assert_eq!(fs::read_to_string(dir.join("out2.txt")).unwrap(), "one\ntwo\n");
+    // `\$` keeps a `$` that is part of the name.
+    let mut esc = ed("");
+    script(&mut esc, &[r"e \$RIM_FNAME_DIR/a.txt"]);
+    assert_eq!(esc.buf.path.as_deref(), Some(PathBuf::from(r"$RIM_FNAME_DIR/a.txt").as_path()));
+    assert_eq!(text(&esc), "");
+    fs::remove_dir_all(&dir).unwrap();
+}
 
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn names_under_the_home_directory_show_as_tilde() {
+    // `home_replace`: the home directory, and only it, becomes `~`.
+    let home = std::env::var("HOME").unwrap();
+    assert_eq!(short_name(&home, &home), "~");
+    assert_eq!(short_name(&format!("{home}/a/b"), &home), "~/a/b");
+    assert_eq!(short_name(&format!("{home}2/a"), &home), format!("{home}2/a"));
+    assert_eq!(short_name("/tmp/a", &home), "/tmp/a");
+    assert_eq!(short_name("[No Name]", &home), "[No Name]");
+    assert_eq!(short_name("/tmp/a", ""), "/tmp/a");
+    // The listing and `Ctrl+G` both go through it; the buffer keeps the full path.
+    let mut e = ed("");
+    script(&mut e, &[&format!("e {home}/.rim-short-name-probe")]);
+    assert_eq!(e.buf.path.as_deref(), Some(PathBuf::from(format!("{home}/.rim-short-name-probe")).as_path()));
+    script(&mut e, &["ls"]);
+    assert!(e.msg().contains("\"~/.rim-short-name-probe\""), "{}", e.msg());
+    feed(&mut e, "\x07");
+    assert!(e.msg().starts_with("\"~/.rim-short-name-probe\""), "{}", e.msg());
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn write_and_quit_takes_a_file_name() {
+    let dir = std::env::temp_dir().join(format!("rim-wq-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    // SAFETY: the test thread is the only one using the environment (the editor's save thread never reads it).
+    unsafe { std::env::set_var("RIM_WQ_DIR", &dir) };
+    // `:wq file`: always writes there (the buffer had no name, so it takes it) and quits.
+    let mut e = ed("x");
+    assert!(!feed(&mut e, ":wq $RIM_WQ_DIR/one.txt\n"));
+    assert_eq!(fs::read_to_string(dir.join("one.txt")).unwrap(), "x\n");
+    // The same file again without `!` is refused (`E13`) and the editor stays open.
+    let mut e = ed("y");
+    assert!(feed(&mut e, ":wq $RIM_WQ_DIR/one.txt\n"));
+    assert_eq!(e.msg(), "File exists (add ! to override)");
+    assert_eq!(fs::read_to_string(dir.join("one.txt")).unwrap(), "x\n");
+    // `:x file` writes only a changed buffer; an unmodified one just quits, leaving no file.
+    let mut e = ed("");
+    assert!(!feed(&mut e, ":x $RIM_WQ_DIR/two.txt\n"));
+    assert!(!dir.join("two.txt").exists());
+    let mut e = ed("");
+    e.command("enew");
+    assert!(feed(&mut e, "iz\x1b"));
+    assert!(!feed(&mut e, ":x $RIM_WQ_DIR/three.txt\n"));
+    assert_eq!(fs::read_to_string(dir.join("three.txt")).unwrap(), "z\n");
+    // `!` overwrites.
+    let mut e = ed("w");
+    assert!(!feed(&mut e, ":wq! $RIM_WQ_DIR/three.txt\n"));
+    assert_eq!(fs::read_to_string(dir.join("three.txt")).unwrap(), "w\n");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader*_tests of syntax/tests.rs")]
+#[test]
+fn file_info_is_given_unless_shortmess_has_f() {
+    let dir = std::env::temp_dir().join(format!("rim-shortmess-f-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let a = dir.join("a.txt");
+    let b = dir.join("b.txt");
+    fs::write(&a, "one\ntwo\n").unwrap();
+    fs::write(&b, "one\ntwo\n").unwrap();
+    let mut e = ed("");
+    // `readfile`'s `silent` is `'shortmess'` `F`, which Neovim's default has: reading says nothing.
+    script(&mut e, &[&format!("e {}", a.display())]);
+    assert_eq!(e.msg(), "");
+    script(&mut e, &[&format!("r {}", a.display())]);
+    assert_eq!(e.msg(), "");
+    // Without it the file info comes back (rim's own text for `:e`, Neovim's for `:r`).
+    e.command("set shortmess-=F");
+    script(&mut e, &[&format!("e {}", b.display())]);
+    // rim's own text for `:e`; the count is the buffer's now, like Neovim's `2L`.
+    assert!(e.msg().contains("b.txt\"") && e.msg().ends_with("2 lines --50%--"), "{}", e.msg());
+    script(&mut e, &[&format!("r {}", a.display())]);
+    assert!(e.msg().ends_with("2L, 8B"), "{}", e.msg());
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn a_file_ending_with_a_newline_has_no_extra_line() {
+    let dir = std::env::temp_dir().join(format!("rim-final-eol-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let read = |n: &str| fs::read_to_string(dir.join(n)).unwrap();
+    let mut e = ed("");
+    // The final line break of the file is `'eol'`, not a line: `line('$')` is Neovim's.
+    fs::write(dir.join("a"), "one\ntwo\n").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("a").display())]);
+    assert_eq!(text(&e), "one\ntwo");
+    assert_eq!(script(&mut e, &["echo line('$')"]), "2");
+    // A file without one is the same buffer, and a write gives it back (`'fixendofline'` is on).
+    fs::write(dir.join("b"), "one\ntwo").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("b").display())]);
+    assert_eq!(text(&e), "one\ntwo");
+    assert_eq!(script(&mut e, &["echo line('$')"]), "2");
+    script(&mut e, &[&format!("w {}", dir.join("c").display())]);
+    assert_eq!(read("c"), "one\ntwo\n");
+    // An empty file is one empty line and writes nothing (`ML_EMPTY`); a file of a single line break is
+    // not empty and keeps it.
+    fs::write(dir.join("d"), "").unwrap();
+    fs::write(dir.join("e"), "\n").unwrap();
+    for (name, out) in [("d", ""), ("e", "\n")] {
+        script(&mut e, &[&format!("e {}", dir.join(name).display())]);
+        assert_eq!(script(&mut e, &["echo line('$')"]), "1");
+        script(&mut e, &[&format!("w {}", dir.join(format!("{name}2")).display())]);
+        assert_eq!(read(&format!("{name}2")), out);
+    }
+    // A buffer emptied by an edit writes nothing, on the first write and on the next one.
+    fs::write(dir.join("h"), "a\n").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("h").display())]);
+    script(&mut e, &["normal! dd"]);
+    script(&mut e, &[&format!("w {}", dir.join("i").display())]);
+    assert_eq!(read("i"), "");
+    script(&mut e, &[&format!("w {}", dir.join("j").display())]);
+    assert_eq!(read("j"), "");
+    // A range is written with one line break after each of its lines; one empty line keeps its break,
+    // a range of an empty buffer writes nothing.
+    fs::write(dir.join("f"), "a\nb\nc\n").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("f").display())]);
+    script(&mut e, &[&format!("1,2w {}", dir.join("g").display())]);
+    assert_eq!(read("g"), "a\nb\n");
+    fs::write(dir.join("k"), "\n").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("k").display())]);
+    script(&mut e, &[&format!("1w {}", dir.join("k1").display())]);
+    assert_eq!(read("k1"), "\n");
+    let mut v = ed("");
+    script(&mut v, &[&format!("1w {}", dir.join("k2").display())]);
+    assert_eq!(read("k2"), "");
+    // `'endofline'`, `'fixendofline'` and `'binary'`: the last line break of a write, as `bufwrite.c`.
+    fs::write(dir.join("n"), "x").unwrap();
+    script(&mut e, &[&format!("e {}", dir.join("n").display())]);
+    assert_eq!(script(&mut e, &["set eol?"]), "noendofline");
+    script(&mut e, &[&format!("w {}", dir.join("n1").display())]);
+    assert_eq!(read("n1"), "x\n", "'fixendofline' adds the break");
+    script(&mut e, &["set nofixeol"]);
+    script(&mut e, &[&format!("w {}", dir.join("n2").display())]);
+    assert_eq!(read("n2"), "x");
+    script(&mut e, &["set eol"]);
+    script(&mut e, &[&format!("w {}", dir.join("n3").display())]);
+    assert_eq!(read("n3"), "x\n", "'endofline' brings it back");
+    // `'binary'`: no break on its own, and `'expandtab'`/`'modeline'` off until it is reset.
+    script(&mut e, &["set bin"]);
+    assert_eq!(script(&mut e, &["set eol? fixeol? bin? et? ml?"]), "  endofline\nnofixendofline\n  binary\nnoexpandtab\nnomodeline");
+    // `'binary'` does not change `'endofline'`: with it on the break is still written.
+    script(&mut e, &[&format!("w {}", dir.join("n4").display())]);
+    assert_eq!(read("n4"), "x\n");
+    script(&mut e, &["set noeol"]);
+    script(&mut e, &[&format!("w {}", dir.join("n5").display())]);
+    assert_eq!(read("n5"), "x");
+    script(&mut e, &["set nobin"]);
+    assert_eq!(script(&mut e, &["set bin? et? ml?"]), "nobinary\n  expandtab\n  modeline");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn editing_the_file_the_buffer_holds_reads_it_again() {
+    let dir = std::env::temp_dir().join(format!("rim-e-again-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let (a, b) = (dir.join("a.txt"), dir.join("b.txt"));
+    fs::write(&a, "one\n").unwrap();
+    fs::write(&b, "two\n").unwrap();
+    let mut e = Editor::open(a.clone()).unwrap();
+    // A clean buffer: `:e` reads the file again.
+    fs::write(&a, "three\n").unwrap();
+    script(&mut e, &[&format!("e {}", a.display())]);
+    assert_eq!(text(&e), "three");
+    // Modified: `E37` without `!`, the file on disk with it.
+    feed(&mut e, "ix\x1b");
+    assert_eq!(script(&mut e, &[&format!("e {}", a.display())]), "E37: No write since last change (add ! to override)");
+    script(&mut e, &[&format!("e! {}", a.display())]);
+    assert_eq!(text(&e), "three");
+    // A buffer that already holds the file is only switched to.
+    feed(&mut e, "iY\x1b");
+    script(&mut e, &[&format!("e {}", b.display())]);
+    assert_eq!(text(&e), "two");
+    script(&mut e, &[&format!("e {}", a.display())]);
+    assert_eq!(text(&e), "Ythree", "no re-read for a buffer that already holds it");
+    // `:sp` does not read it again either (Neovim keeps the modified buffer, no error).
+    script(&mut e, &[&format!("sp {}", a.display())]);
+    assert_eq!((text(&e), e.msg()), ("Ythree".to_string(), ""));
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn editing_a_missing_user_directory_is_e79() {
+    let mut e = ed("");
+    // `:e`/`:sp` expand wildcards: a `~user` that does not exist gives Neovim's `E79`.
+    assert_eq!(script(&mut e, &["e ~rim_no_such_user_at_all/x"]), "E79: Cannot expand wildcards");
+    assert_eq!(script(&mut e, &["sp ~rim_no_such_user_at_all/x"]), "E79: Cannot expand wildcards");
+    assert_eq!(e.buf.path.as_deref(), Some(PathBuf::from("/nonexistent/rim-test").as_path()));
+    // Neovim's expansion clears the row first (`msg_putchar('\n')`): a redirection gets the blank line.
+    e.msgs.redir = Some(String::new());
+    e.command("e ~rim_no_such_user_at_all/x");
+    assert_eq!(e.msgs.redir.take().unwrap(), "\n\nE79: Cannot expand wildcards\n");
+    assert_eq!(e.msg(), "E79: Cannot expand wildcards");
+    // A plain message, not an error: nothing in the history, `did_emsg` untouched (the line goes on).
+    e.msgs.redir = Some(String::new());
+    e.command("e ~rim_no_such_user_at_all/x | echo 'after'");
+    assert_eq!(e.msgs.redir.take().unwrap(), "\n\nE79: Cannot expand wildcards\n\nafter");
+    // `:r` and `:w` take the name as written instead.
+    assert_eq!(script(&mut e, &["r ~rim_no_such_user_at_all/x"]), "E484: Can't open file ~rim_no_such_user_at_all/x");
+}
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
@@ -5240,4 +5649,112 @@ fn window_options_follow_the_window() {
     feed(&mut e, ":echo &nu &so\n");
     assert_eq!(e.msg(), "0 7");
     fs::remove_dir_all(&dir).unwrap();
+}
+
+/// The cells a Visual block highlights, recorded from Neovim with `screenattr()` (`tools/block_highlight_probe.vim`, 336
+/// cases: `ts` 4 and 8, seven start columns, four heights, six widths, over Tabs, wide chars, an empty and a short line).
+/// A line is `ts`, keys, the six rows as `X` (highlighted) and `.`; the cell of the cursor (`?`) and the second cell of the
+/// char under it are not compared: the cursor is drawn over them.
+#[cfg_attr(miri, ignore = "safe editor logic; compares frames with recorded output")]
+#[test]
+fn block_highlight_matches_neovim() {
+    use unicode_width::UnicodeWidthChar;
+    let probe = include_str!("script/cases/blockhl.tsv");
+    let text = "abc\tdef\na\tb\tc\n日本語abc\nx\n\n\t\tz";
+    let mut bad = Vec::new();
+    for line in probe.lines() {
+        let mut f = line.split('\t');
+        let (ts, keys) = (f.next().unwrap(), f.next().unwrap());
+        let want: Vec<&str> = f.next().unwrap().split('|').collect();
+        let (rows, _, _) = snapshot(text, &format!(":set ts={ts} nonu nornu\n{keys}"), 40, 8);
+        for (n, (r, w)) in rows.iter().zip(&want).enumerate() {
+            let (mut x, mut on, mut got) = (0, false, vec!['.'; 24]);
+            for ch in r.chars() {
+                match ch {
+                    '[' => on = true,
+                    ']' => on = false,
+                    c => {
+                        let cw = c.width().unwrap_or(1);
+                        (0..cw).filter(|k| on && x + k < 24).for_each(|k| got[x + k] = 'X');
+                        x += cw;
+                    }
+                }
+            }
+            let wc: Vec<char> = w.chars().collect();
+            if !wc.iter().zip(&got).enumerate().all(|(i, (&w, &g))| w == '?' || w == g || (i > 0 && wc[i - 1] == '?')) {
+                bad.push(format!("ts={ts} keys={keys:?} row {n}: nvim {} rim {}", want[n], got.iter().collect::<String>()));
+            }
+        }
+    }
+    assert!(bad.is_empty(), "{} rows differ:\n{}", bad.len(), bad.join("\n"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn a_typed_ctrl_c_copies_nothing_to_the_other_lines_of_a_block() {
+    // Fed through `:normal`, Ctrl-C is an Esc (checked against Neovim, `block3.vim`); typed, it is an interrupt (`got_int`):
+    // the count is dropped and `op_insert`, `op_change` copy nothing.
+    assert_eq!(text(&run("ab\ncd\nef", "l\x16jj3IX\x1b")), "aXXXb\ncXXXd\neXXXf");
+    assert_eq!(text(&run("ab\ncd\nef", "l\x16jj3IX\x03")), "aXb\ncd\nef");
+    assert_eq!(text(&run("abc\ndef", "l\x16jcX\x03")), "aXc\ndf");
+    assert_eq!(text(&run("ab\ncd\nef", "l\x16jjAX\x03")), "abX\ncd\nef");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn insert_mode_arrows_stop_at_the_line_ends_and_end_the_repeat() {
+    // `ins_left` and `ins_right` do not wrap ('whichwrap' is `b,s`); a cursor key that moves ends the repeat of a count.
+    let right = KeyEvent::from(KeyCode::Right);
+    let mut e = ed("ab\ncd");
+    assert!(feed(&mut e, "A"));
+    e.key(right);
+    assert_eq!(pos(&e), (0, 2));
+    let mut e = ed("ab");
+    assert!(feed(&mut e, "3iX"));
+    e.key(right);
+    assert!(feed(&mut e, "Y\x1b"));
+    assert_eq!(text(&e), "XaYb");
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn star_takes_the_word_of_one_class() {
+    // `find_ident_at_pos`: a word ends where the class of its chars changes (checked against Neovim: `日本語` and `abc` are two).
+    let word = |s: &str, keys: &str| run(s, keys).word_under_cursor();
+    assert_eq!(word("日本語abc x", ""), Some(("日本語".into(), 0, true)));
+    assert_eq!(word("日本語abc x", "3l"), Some(("abc".into(), 3, true)));
+    assert_eq!(word("  +++ x", ""), Some(("x".into(), 6, true)));
+    assert_eq!(word("  +++", ""), Some(("+++".into(), 2, false)));
+    assert_eq!(word("   ", ""), None);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic")]
+#[test]
+fn freed_undo_headers_let_go_of_their_document_versions() {
+    // Every `x` is a step of its own (a typed key in Normal mode syncs): with 'undolevels' 3 only the last four stay.
+    let mut e = run(&"abcdefghijklmnopqrstuvwxyz".repeat(2), ":set undolevels=3\n");
+    for _ in 0..40 {
+        feed(&mut e, "x");
+    }
+    assert!(e.buf.doc.history_len() <= 6, "{} versions kept", e.buf.doc.history_len());
+    let after = text(&e);
+    // `u_savecommon` frees before it adds: 'undolevels' + 1 steps. They undo through the renumbered versions, redo goes back,
+    // and there is no fifth.
+    feed(&mut e, "uuuu");
+    assert_eq!(text(&e).len(), after.len() + 4);
+    feed(&mut e, "u");
+    assert_eq!(text(&e).len(), after.len() + 4);
+    feed(&mut e, "\x12\x12\x12\x12");
+    assert_eq!(text(&e), after);
+    // A branch made after an undo is kept as well while it is one of the newest steps.
+    feed(&mut e, "uuiZ\x1b");
+    feed(&mut e, "uu");
+    feed(&mut e, "\x12\x12");
+    assert!(e.buf.doc.history_len() <= 8);
+    // No undo at all keeps the current version and the one an edit has just made.
+    feed(&mut e, ":set undolevels=-1\n");
+    for _ in 0..5 {
+        feed(&mut e, "x");
+    }
+    assert!(e.buf.doc.history_len() <= 2, "{} versions kept", e.buf.doc.history_len());
 }

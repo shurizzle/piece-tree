@@ -10,6 +10,7 @@ import fcntl
 import os
 import pty
 import select
+import shutil
 import struct
 import sys
 import tempfile
@@ -18,9 +19,18 @@ import time
 
 exe = sys.argv[1]
 path = sys.argv[2] if len(sys.argv) > 2 else tempfile.mkstemp()[1]
+# A home of its own, with a file under it: `:e ~/...` and `home_replace` need one, and the temp
+# directory of the machine is not under it here.
+home = tempfile.mkdtemp()
+with open(os.path.join(home, ".rimpty"), "w") as f:
+    f.write("RIMPTYOK\n")
+noeol = os.path.join(home, ".rimnoeol")
+with open(noeol, "w") as f:
+    f.write("NOEOL")
 pid, fd = pty.fork()
 if pid == 0:
     os.environ["XDG_CONFIG_HOME"] = "/nonexistent"
+    os.environ["HOME"] = home
     os.execv(exe, [exe, path])
 fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 20, 60, 0, 0))
 seen = b""
@@ -72,6 +82,37 @@ send(b"\x1b[<0;5;2M\x1b[<0;5;2m" + b"\x1b]52;c;" + base64.b64encode(b"CLIP\n") +
 out = pump(1.0)
 check("mouse reports before the answer do not spoil it", b"CLIP" in out)
 check("reporting on again afterwards", on in out)
+# `:e ~/file`: the `~` is expanded (the file is read, not an empty buffer) and the name comes back
+# as `~/...` in the `Ctrl+G` message (`home_replace`).
+send(b":e ~/.rimpty\r")
+check("`:e ~/file` opens the file", b"RIMPTYOK" in pump(0.6))
+send(b"\x07")
+check("Ctrl+G shows the name with `~`", b"~/.rimpty" in pump(0.4))
+# The file ends with a line break: that is not a line of its own (Neovim's buffer has 1).
+send(b"G")
+check("a file ending with a newline has no extra line", b"Ln 1" in pump(0.4))
+# `'fixendofline'` (default): a write ends the file with a line break even when it had none.
+send(b":e ~/.rimnoeol\r")
+pump(0.4)
+send(b":w\r")
+pump(0.6)
+check("a write adds the last line break", open(noeol, "rb").read() == b"NOEOL\n")
+# `:set nofixeol`: the break is left to `'endofline'`, so a file without one keeps none.
+with open(noeol, "w") as f:
+    f.write("NOEOL")
+send(b":e ~/.rimnoeol\r")
+pump(0.4)
+send(b":set nofixeol\r")
+pump(0.3)
+send(b":w\r")
+pump(0.6)
+check("`:set nofixeol` keeps a file without its last break", open(noeol, "rb").read() == b"NOEOL")
+send(b":set fixeol\r")
+pump(0.3)
+# A `~user` there is no user for: the wildcard expansion Neovim does says `E79`.
+send(b":e ~rim_no_such_user_pty/x\r")
+check("`:e ~nosuchuser/x` says E79", b"E79: Cannot expand wildcards" in pump(0.6))
 send(b":q!\r")
 check("reporting off at exit", off in pump(0.5))
+shutil.rmtree(home, ignore_errors=True)
 sys.exit(1 if failures else 0)

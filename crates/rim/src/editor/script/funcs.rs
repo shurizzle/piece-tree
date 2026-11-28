@@ -49,6 +49,7 @@ const FUNCS: &[Func] = &[
     func("extend", 2, 3, f_extend),
     func("flatten", 1, 2, f_flatten),
     func("filter", 2, 2, |e, a| filter_map(e, a, FilterMap::Filter)),
+    func("feedkeys", 1, 2, f_feedkeys),
     func("float2nr", 1, 1, f_float2nr),
     func("foreach", 2, 2, |e, a| filter_map(e, a, FilterMap::Foreach)),
     func("floor", 1, 1, |e, a| float_op(e, a, f64::floor)),
@@ -59,6 +60,7 @@ const FUNCS: &[Func] = &[
     func("get", 2, 3, f_get),
     func("getline", 1, 2, f_getline),
     func("getreg", 0, 3, f_getreg),
+    func("getregtype", 0, 1, f_getregtype),
     func("has", 1, 1, f_has),
     func("has_key", 2, 2, f_has_key),
     func("index", 2, 4, f_index),
@@ -106,6 +108,13 @@ const FUNCS: &[Func] = &[
     func("type", 1, 1, f_type),
     func("uniq", 1, 3, |e, a| do_sort_uniq(e, a, false)),
     func("values", 1, 1, |e, a| f_dict2list(e, a, Dict2List::Values)),
+    func("getcurpos", 0, 1, f_getcurpos),
+    func("virtcol", 1, 3, f_virtcol),
+    func("changenr", 0, 0, f_changenr),
+    func("getpos", 1, 1, f_getpos),
+    func("setpos", 2, 2, f_setpos),
+    func("visualmode", 0, 1, f_visualmode),
+    func("undotree", 0, 1, f_undotree),
 ];
 
 /// `FUNCS` by name.
@@ -1104,6 +1113,8 @@ fn f_string(e: &mut Editor, a: &[Value]) -> Value {
 #[derive(Default)]
 struct SortInfo {
     ic: bool,
+    /// `l`: `strcoll()`.
+    lc: bool,
     numeric: bool,
     numbers: bool,
     float: bool,
@@ -1138,8 +1149,7 @@ fn parse_sort_uniq_args(e: &mut Editor, a: &[Value], info: &mut SortInfo) -> boo
             "N" => (func, info.numbers) = (None, true),
             "f" => (func, info.float) = (None, true),
             "i" => (func, info.ic) = (None, true),
-            // 'l' is strcoll(): the C locale's, a byte comparison.
-            "l" => func = None,
+            "l" => (func, info.lc) = (None, true),
             _ => {}
         }
     }
@@ -1225,6 +1235,9 @@ fn item_compare(e: &mut Editor, info: &mut SortInfo, a: &Value, b: &Value) -> Or
     }
     if info.numeric {
         return strtod(&p1).partial_cmp(&strtod(&p2)).unwrap_or(Ordering::Equal);
+    }
+    if info.lc {
+        return super::super::collate::strcoll(&p1, &p2);
     }
     if info.ic {
         let low = |s: &str| s.bytes().map(|c| c.to_ascii_lowercase()).collect::<Vec<u8>>();
@@ -2128,7 +2141,7 @@ fn var2fpos(e: &mut Editor, v: &Value, dollar_lnum: bool, winid: Option<usize>) 
         _ => (e.win.line, e.win.col, e.win.top, e.win.rows),
     };
     let count = e.line_count();
-    let byte_col = |e: &Editor, line: usize, col: usize| -> usize { e.buf.doc.text().line(line).chars().take(col).map(char::len_utf8).sum() };
+    let byte_col = |e: &Editor, line: usize, col: usize| -> usize { crate::editor::graphemes::byte_of(&e.buf.doc.text().line(line), col) };
     if let Value::List(l) = v {
         let l = l.borrow().clone();
         let err = std::cell::Cell::new(false);
@@ -2172,8 +2185,16 @@ fn var2fpos(e: &mut Editor, v: &Value, dollar_lnum: bool, winid: Option<usize>) 
         return Some((cur_line, byte_col(e, cur_line, cur_col)));
     }
     if b.first() == Some(&b'\'') {
-        let m = name.chars().nth(1)?;
-        // The mark is a byte offset: its line and the byte column in it.
+        // `` ` `` is the same mark as `'`.
+        let m = name.chars().nth(1).map(|m| if m == '`' { '\'' } else { m })?;
+        // Neovim keeps a line and a byte column, also past the end of the line or of the text.
+        if let Some(mk) = e.mark_get(m) {
+            // `getmark_buf`: a Visual line selection reports its first column and `MAXCOL`.
+            if matches!(m, '<' | '>') && e.buf.last_visual.is_some_and(|(k, ..)| k == crate::editor::VKind::Line) {
+                return Some((mk.line, if m == '<' { 0 } else { 2147483647 }));
+            }
+            return Some((mk.line, mk.col));
+        }
         return e.mark(m).map(|off| {
             let text = e.buf.doc.text();
             let l = text.offset_to_line(off);
@@ -2238,6 +2259,12 @@ fn f_line(e: &mut Editor, a: &[Value]) -> Value {
         }
         None => None,
     };
+    // A file mark in another buffer has a line here (`col()` of it is 0).
+    if let Value::Str(s) = &a[0]
+        && let Some(l) = s.strip_prefix('\'').and_then(|m| m.chars().next().filter(|_| m.chars().count() == 1)).and_then(|m| e.file_mark_line_elsewhere(m))
+    {
+        return int(l as i64 + 1);
+    }
     int(var2fpos(e, &a[0], true, winid).map_or(0, |(l, _)| l as i64 + 1))
 }
 
@@ -2256,7 +2283,217 @@ fn f_col(e: &mut Editor, a: &[Value]) -> Value {
             None => return int(0),
         }
     }
-    int(var2fpos(e, &a[0], false, winid).map_or(0, |(_, c)| c as i64 + 1))
+    // `MAXCOL` (a line yank's `']`) is the end of its line.
+    let col = var2fpos(e, &a[0], false, winid).map(|(l, c)| if c == 2147483647 { e.buf.doc.text().line(l.min(e.line_count() - 1)).len() } else { c });
+    int(col.map_or(0, |c| c as i64 + 1))
+}
+
+/// `find_win_by_nr_or_id`: a Number from `FIRST_WIN_ID` is a window id, any other is a window number of the current tab
+/// (0 is the current window, then the windows in layout order, a negative one or one past the last is none). The
+/// number is read twice, as the C code does, so a List or a Dictionary gives its error twice.
+fn find_win_by_nr_or_id(e: &mut Editor, v: &Value) -> Option<usize> {
+    // `(int)tv_get_number_chk(vp, NULL)`: 32 bits, -1 after an error.
+    let nr = i64::from(e.nr_chk(v).unwrap_or(-1) as i32);
+    if nr >= crate::editor::FIRST_WIN_ID as i64 {
+        return win_id(e, nr);
+    }
+    let nr = i64::from(e.nr_chk(v).unwrap_or(-1) as i32);
+    match nr {
+        ..0 => None,
+        0 => Some(e.win.id),
+        n => e.window_ids().get(n as usize - 1).copied(),
+    }
+}
+
+/// `getcurpos([winid])`: `[0, lnum, col, coladd, curswant]`, the column and `curswant` 1-based (`MAXCOL` after `$`). The
+/// current window's `curswant` is brought up to date without keeping the change (`getpos_both`).
+fn f_getcurpos(e: &mut Editor, a: &[Value]) -> Value {
+    const MAXCOL: i64 = 0x7fff_ffff;
+    let id = match a.first() {
+        None => e.win.id,
+        Some(v) => match find_win_by_nr_or_id(e, v) {
+            Some(id) => id,
+            // `fp` is NULL and so is `wp`: all zeros.
+            None => return Value::list(vec![int(0); 5]),
+        },
+    };
+    let (line, col, want) = if id == e.win.id {
+        let want = if e.win.want_set { e.cursor_vcols().2 } else { e.win.want_col };
+        (e.win.line, e.win.col, want)
+    } else {
+        let w = e.windows.iter().find(|w| w.id == id).expect("win_id found it");
+        (w.line, w.col, w.want_col)
+    };
+    let byte = e.with_window(id, |e| graphemes::byte_of(&e.buf.doc.text().line(line), col)) as i64;
+    let curswant = if want == usize::MAX { MAXCOL } else { want as i64 + 1 };
+    Value::list(vec![int(0), int(line as i64 + 1), int(byte + 1), int(0), int(curswant)])
+}
+
+/// `f_virtcol`: the virtual column (`getvvcol`) of a position, or `[start, end]` with a true second argument.
+/// `getpos({expr})`: `[bufnum, lnum, col, off]` of `.`, `$`, `v`, `'m`, `w0`, `w$` (zeros when there is none). The buffer number is
+/// only given for a file mark.
+fn f_getpos(e: &mut Editor, a: &[Value]) -> Value {
+    if !e.check_arg(matches!(a[0], Value::Str(_)), "E1174: String", 1) {
+        return Value::list(vec![int(0); 4]);
+    }
+    let buf = match &a[0] {
+        Value::Str(s) => s.strip_prefix('\'').and_then(|m| m.chars().next().filter(|c| c.is_ascii_uppercase() || c.is_ascii_digit())).and_then(|m| e.file_mark_owner.get(&m).copied()).map_or(0, |b| b as i64),
+        _ => 0,
+    };
+    match var2fpos(e, &a[0], true, None) {
+        Some((l, c)) => Value::list(vec![int(buf), int(l as i64 + 1), int(if c == 2147483647 { c as i64 } else { c as i64 + 1 }), int(0)]),
+        None => Value::list(vec![int(0); 4]),
+    }
+}
+
+/// `setpos({expr}, {list})` (`set_position`): `.` is the cursor, `'x` a mark (`setmark_pos`); `{list}` is `[bufnum, lnum, col, off]`
+/// with a fifth `curswant` for the cursor. 0 when it worked, -1 when not.
+fn f_setpos(e: &mut Editor, a: &[Value]) -> Value {
+    let Some(name) = e.str_chk(&a[0]) else { return int(-1) };
+    // `list2fpos`: three to five numbers; a missing one is -1 (no `coladd`, no `curswant`).
+    let Value::List(l) = &a[1] else { return int(-1) };
+    let items = l.borrow().to_vec();
+    if !(3..=5).contains(&items.len()) {
+        return int(-1);
+    }
+    let mut n = [0i64; 5];
+    for (i, slot) in n.iter_mut().enumerate() {
+        *slot = match items.get(i) {
+            Some(v) => e.nr_chk(v).unwrap_or(-1),
+            None => -1,
+        };
+    }
+    if n[0] < 0 || n[1] < 0 || n[2] < 0 {
+        return int(-1);
+    }
+    let (lnum, col, curswant) = (n[1], if n[2] == 0x7fff_ffff { 0x7fff_ffff } else { (n[2] - 1).max(0) }, n[4]);
+    let c: Vec<char> = name.chars().collect();
+    if c == ['.'] {
+        let last = e.line_count() - 1;
+        let line = (lnum as usize).saturating_sub(1).min(last);
+        let off = e.mark_offset(crate::editor::buffers::Mark { line, col: col as usize });
+        (e.win.line, e.win.col) = e.pos_of(off);
+        if curswant >= 0 {
+            (e.win.want_col, e.win.want_set) = (curswant as usize - 1, false);
+        }
+        e.clamp_normal();
+        return int(0);
+    }
+    if c.len() == 2 && c[0] == '\'' {
+        // Another buffer's marks are not reachable from here.
+        if n[0] != 0 && n[0] as usize != e.buf.id {
+            return int(-1);
+        }
+        let mk = crate::editor::buffers::Mark { line: (lnum as usize).saturating_sub(1), col: col as usize };
+        return int(if e.set_mark_pos(c[1], mk, lnum == 0) { 0 } else { -1 });
+    }
+    e.error("E474: Invalid argument");
+    int(-1)
+}
+
+/// `visualmode([expr])`: the kind of the last Visual selection (`v`, `V` or CTRL-V), empty before any; a true `expr` forgets it
+/// until Visual mode ends again.
+fn f_visualmode(e: &mut Editor, a: &[Value]) -> Value {
+    use crate::editor::VKind;
+    let kind = if e.buf.visual_mode_cleared { None } else { e.buf.last_visual.map(|(k, ..)| k) };
+    if let Some(v) = a.first() && e.nr(v) != 0 {
+        e.buf.visual_mode_cleared = true;
+    }
+    Value::Str(match kind {
+        Some(VKind::Char) => "v",
+        Some(VKind::Line) => "V",
+        Some(VKind::Block) => "\x16",
+        None => "",
+    }
+    .into())
+}
+
+/// `f_changenr`: the number of the change the text is at (`b_u_seq_cur`).
+fn f_changenr(e: &mut Editor, _a: &[Value]) -> Value {
+    int(e.buf.undo.seq_cur as i64)
+}
+
+/// `u_eval_tree`: the changes from `first` to the newer ones, with the alternate branches of each.
+fn undo_entries(t: &super::super::undo::UndoTree, first: Option<usize>) -> Value {
+    let mut list = Vec::new();
+    let mut uhp = first;
+    while let Some(id) = uhp {
+        let h = &t.headers[id];
+        let mut d = DictMap::new();
+        d.insert("seq".into(), int(h.seq as i64));
+        d.insert("time".into(), int(h.time));
+        if t.newhead == Some(id) {
+            d.insert("newhead".into(), int(1));
+        }
+        if t.curhead == Some(id) {
+            d.insert("curhead".into(), int(1));
+        }
+        if h.save_nr > 0 {
+            d.insert("save".into(), int(h.save_nr as i64));
+        }
+        if h.alt_next.is_some() {
+            d.insert("alt".into(), undo_entries(t, h.alt_next));
+        }
+        list.push(Value::dict(d));
+        uhp = h.prev;
+    }
+    Value::list(list)
+}
+
+/// `f_undotree`: the undo tree of the current buffer or of the one `{buf}` names (`get_buf_arg`: `E158` for none).
+fn f_undotree(e: &mut Editor, a: &[Value]) -> Value {
+    let mut d = DictMap::new();
+    let id = match a.first() {
+        None => e.buf.id,
+        Some(v) => match e.tv_get_buf(v) {
+            Some(id) => id,
+            None => {
+                let name = e.tv_str(v);
+                e.error(format!("E158: Invalid buffer name: {name}"));
+                return Value::dict(d);
+            }
+        },
+    };
+    let t = &e.buffer(id).expect("tv_get_buf found it").undo;
+    for (k, v) in [
+        ("synced", i64::from(t.synced)),
+        ("seq_last", t.seq_last as i64),
+        ("save_last", t.save_nr_last as i64),
+        ("seq_cur", t.seq_cur as i64),
+        ("time_cur", t.time_cur),
+        ("save_cur", t.save_nr_cur as i64),
+    ] {
+        d.insert(k.into(), int(v));
+    }
+    d.insert("entries".into(), undo_entries(t, t.oldhead));
+    Value::dict(d)
+}
+
+fn f_virtcol(e: &mut Editor, a: &[Value]) -> Value {
+    let (mut start, mut end) = (0, 0);
+    let mut winid = None;
+    let mut found = true;
+    if a.len() > 2 {
+        let id = e.nr(&a[2]);
+        match win_id(e, id) {
+            Some(id) => winid = Some(id),
+            None => found = false,
+        }
+    }
+    if found && let Some((line, byte)) = var2fpos(e, &a[0], false, winid) {
+        let (s, e_) = e.with_window(winid.unwrap_or(e.win.id), |e| {
+            let text = e.buf.doc.text().line(line);
+            let col = graphemes::col_of(&text, byte.min(text.len()));
+            graphemes::cell_range(&text, col, e.buf.opts.tabs(), e.wrap_w())
+        });
+        // `getvvcol` gives the last cell of the cluster; both are 1-based.
+        (start, end) = (s as i64 + 1, e_ as i64);
+    }
+    // `tv_get_bool(&argvars[1])` is `tv_get_number_chk(tv, NULL)`: -1 (true) after an error.
+    if a.len() > 1 && e.nr_chk(&a[1]).unwrap_or(-1) != 0 {
+        return Value::list(vec![int(start), int(end)]);
+    }
+    int(end)
 }
 
 fn f_getreg(e: &mut Editor, a: &[Value]) -> Value {
@@ -2288,6 +2525,61 @@ fn f_getreg(e: &mut Editor, a: &[Value]) -> Value {
         return Value::list(lines.into_iter().map(|l| Value::Str(l.to_string().into())).collect());
     }
     Value::Str(reg.map_or_else(String::new, |r| r.text).into())
+}
+
+/// `feedkeys({keys} [, {mode}])`: with 'x' the keys run now, as typed with 't' (an unfinished command or Insert mode ends as
+/// with Esc, as in `:normal`).
+// shortcut: without 'x' the keys wait until a later call with 'x' (Neovim runs them when the script is done); the flags 'm', 'n', 'L', 'c' and '!' do nothing, when someone needs a mapping or a key that is not run at once
+fn f_feedkeys(e: &mut Editor, a: &[Value]) -> Value {
+    let Some(keys) = e.str_chk(&a[0]) else { return int(0) };
+    let flags = a.get(1).and_then(|v| e.str_chk(v)).unwrap_or_default();
+    let keys = crate::editor::parse::text_keys(&keys);
+    if flags.contains('x') {
+        let mut all = std::mem::take(&mut e.scripts.feedq);
+        if flags.contains('i') {
+            all.splice(0..0, keys);
+        } else {
+            all.extend(keys);
+        }
+        if flags.contains('t') {
+            e.run_typed_keys(&all);
+        } else {
+            e.run_keys_untyped(&all);
+        }
+    } else if flags.contains('i') {
+        e.scripts.feedq.splice(0..0, keys);
+    } else {
+        e.scripts.feedq.extend(keys);
+    }
+    int(0)
+}
+
+/// `getregtype([regname])`: `v`, `V`, or Ctrl-V and the width of a block; an empty String for a register that was
+/// never set or is not valid (`get_reg_type`, `format_reg_type`).
+fn f_getregtype(e: &mut Editor, a: &[Value]) -> Value {
+    let empty = || Value::Str("".into());
+    let name = match a.first() {
+        Some(v) => match e.str_chk(v) {
+            Some(s) => s,
+            None => return empty(),
+        },
+        None => String::new(),
+    };
+    let regname = name.chars().next().unwrap_or('"');
+    // Registers that always hold text of no particular shape.
+    if matches!(regname, '%' | '#' | '=' | ':' | '/' | '.' | '\x06' | '\x10' | '\x17' | '\x01' | '_') {
+        return Value::Str("v".into());
+    }
+    if !(regname.is_ascii_alphanumeric() || matches!(regname, '"' | '-' | '*' | '+')) {
+        return empty();
+    }
+    use crate::editor::registers::RegKind;
+    Value::Str(match e.reg(regname).map(|r| r.kind) {
+        Some(RegKind::Line) => "V".into(),
+        Some(RegKind::Char) => "v".into(),
+        Some(RegKind::Block(w)) => format!("\x16{}", w + 1).into(),
+        None => "".into(),
+    })
 }
 
 #[cfg(test)]

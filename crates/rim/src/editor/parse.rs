@@ -9,16 +9,16 @@ pub(super) const MAX_COUNT: usize = 1_000_000;
 
 /// Normal-mode keys after `normal_char` mapping: Ctrl+<letter> is its control char (Ctrl+D `\x04`,
 /// Ctrl+U `\x15`, ...; Tab is Ctrl+I `\x09`), Ctrl+^ is `\x1e`.
-pub(super) const MOTIONS: &str = "hjklwbe0^$gG\x04\x15nNfFtT;,%*#HML`'|";
+pub(super) const MOTIONS: &str = "hjklwbeWBE0^$gG\x04\x15nNfFtT;,%*#HML`'|(){}/?";
 /// Ctrl+R redo, Ctrl+V block, Ctrl+A/X numbers, Ctrl+G file info, Ctrl+W windows, Ctrl+^ alternate
 /// buffer, Ctrl+O/Ctrl+I jumps, Ctrl+E/Ctrl+Y lines and Ctrl+F/Ctrl+B pages of scroll.
-pub(super) const COMMANDS: &str = "iaIAoOxDCJpPRu\x12:/?vV\x16~r.\x01\x18mqz@S\x07&\x17\x1e\x0f\x09\x05\x19\x06\x02]";
+pub(super) const COMMANDS: &str = "iaIAoOxXsDCJpPRuU\x12:/?vV\x16~r.\x01\x18mqz@S\x07&\x17\x1e\x0f\x09\x05\x19\x06\x02]";
 /// Keys followed by a char argument.
 pub(super) const ARG_KEYS: &str = "fFtTr`'mqz@\x17]";
 /// Keys acting on the selection in Visual mode; any other key is parsed as a motion.
 pub(super) const VISUAL_KEYS: &str = "dxcsyJ<>~uUoIAvV\x16:";
 /// `g<c>` motions and commands, as keys `g_key(c)`.
-pub(super) const G_MOTIONS: &str = "onNjk";
+pub(super) const G_MOTIONS: &str = "onNjkeE";
 pub(super) const G_COMMANDS: &str = "-+\x07a8&viJpP;,";
 
 /// Internal key for `g<c>`: a private-use char, so it never collides with a typed key.
@@ -65,7 +65,7 @@ pub(super) enum Parse {
 }
 
 pub(super) fn valid_reg(c: char) -> bool {
-    c.is_ascii_alphanumeric() || matches!(c, '"' | '+' | '*' | '=' | '/')
+    c.is_ascii_alphanumeric() || matches!(c, '"' | '+' | '*' | '=' | '/' | '_' | '-')
 }
 
 /// Parses pending keys: `["x] [count] cmd [arg]` or `["x] [count] op [count] (motion [arg] | (i|a) obj | op)`.
@@ -227,6 +227,24 @@ pub(super) fn normal_char(key: KeyEvent) -> Option<char> {
 /// Special keys kept in register text (a macro), as private-use chars from U+E200.
 const SPECIAL: [KeyCode; 9] =
     [KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down, KeyCode::Home, KeyCode::End, KeyCode::PageUp, KeyCode::PageDown, KeyCode::Delete];
+
+/// The private-use char a string holds for the key `<Left>` and the like (`"\<Left>"`), the one `text_keys` turns back into
+/// the key; none for any other name.
+pub(super) fn special_key_char(name: &str) -> Option<char> {
+    let code = match name.to_ascii_lowercase().as_str() {
+        "<left>" => KeyCode::Left,
+        "<right>" => KeyCode::Right,
+        "<up>" => KeyCode::Up,
+        "<down>" => KeyCode::Down,
+        "<home>" => KeyCode::Home,
+        "<end>" => KeyCode::End,
+        "<pageup>" => KeyCode::PageUp,
+        "<pagedown>" => KeyCode::PageDown,
+        "<del>" | "<delete>" => KeyCode::Delete,
+        _ => return None,
+    };
+    key_char(code.into())
+}
 
 /// A key as register text: chars as themselves, Ctrl+<letter> as its control char, Esc `\x1b`,
 /// Enter `\r`, Backspace `\x7f`, Tab `\t`, other special keys as private-use chars. None for a

@@ -3,15 +3,15 @@
 
 use std::{
     fs,
-    io::{self, BufWriter},
+    io::{self, BufWriter, Write},
     mem,
     path::{Path, PathBuf},
 };
 
 use crossterm::event::{KeyCode, KeyEvent};
-use piece_tree::{Document, Edit, LineEnding, Text};
+use piece_tree::{Edit, LineEnding, Text};
 
-use super::{options::WinOpts, script::AddrType, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self, valid_reg}, script, search::{self, Search}, substitute};
+use super::{graphemes::Tabs, options::{WinOpts, tabstop_set},  registers::{Reg, RegKind}, script::{AddrType, EXFLAG_LIST, EXFLAG_NR}, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self}, script, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -97,11 +97,6 @@ pub(super) fn field(s: &mut &str, d: char, unescape: impl Fn(char, &mut String))
     (out, false)
 }
 
-/// A delimiter for `:s`, `:g` and `:sort` patterns: not a letter, digit, blank, `\`, `"` or `|`.
-pub(super) fn is_delim(d: char) -> bool {
-    !(d.is_alphanumeric() || d.is_whitespace() || matches!(d, '\\' | '"' | '|'))
-}
-
 fn addr(s: &mut &str) -> Result<Option<Addr>, String> {
     let base = if let Some(rest) = s.strip_prefix('.') {
         *s = rest;
@@ -161,16 +156,20 @@ pub(super) fn parse(cmd: &str) -> Result<ExCmd<'_>, String> {
         }
     };
     let s = s.trim_start();
-    let n = if s.starts_with(|c: char| c.is_ascii_alphabetic()) {
+    let n = if script::one_letter_k(s) || script::one_letter_s(s) {
+        1
+    } else if s.starts_with(|c: char| c.is_ascii_alphabetic()) {
         s.find(|c: char| !c.is_ascii_alphabetic()).unwrap_or(s.len())
     } else {
-        usize::from(s.starts_with(['&', '<', '>', '=']))
+        usize::from(s.starts_with(['&', '<', '>', '=', '#', '~']))
     };
+    // `:dl` and `:delp` are `:delete`; docmd has read the flag already.
+    let n = n - usize::from(script::delete_flag(&s[..n]).is_some());
     Ok(ExCmd { range, name: &s[..n], arg: &s[n..] })
 }
 
 /// `name` is `long` or an abbreviation of it at least as long as `short` (vim's `:d[elete]`).
-const DIRTY: &str = "No write since last change (add ! to override)";
+pub(super) const DIRTY: &str = "E37: No write since last change (add ! to override)";
 
 pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
     name.len() >= short.len() && long.starts_with(name)
@@ -198,38 +197,12 @@ pub(super) const NAMES: &[&str] = &[
     "bNext", "bdelete", "bnext", "bprevious", "break", "buffer", "buffers", "call", "close", "compact", "const", "continue", "copy", "defer", "delete", "digraphs", "earlier", "echo", "echoerr",
     "echomsg", "echon", "edit", "else", "elseif", "endfor", "endif", "endwhile", "enew", "execute", "files", "finish", "for", "global", "goto", "highlight", "if", "join", "later",
     "let", "lockvar", "ls", "messages", "move", "new", "nohlsearch", "normal", "only", "print", "qall", "quit", "quitall", "read", "redo", "retab", "saveas", "set", "sort", "source", "split",
-    "stats", "substitute", "syntax", "undo", "undolist", "unlet", "unlockvar", "vglobal", "vnew", "vsplit", "while", "wq", "wqall", "write", "xall", "xit", "yank",
+    "stats", "substitute", "syntax", "undo", "undojoin", "undolist", "unlet", "unlockvar", "vglobal", "vnew", "vsplit", "while", "wq", "wqall", "write", "xall", "xit", "yank",
 ];
 
 /// Commands whose argument is a file name, as (shortest abbreviation, name).
 pub(super) const FILE_COMMANDS: &[(&str, &str)] =
     &[("e", "edit"), ("sp", "split"), ("vs", "vsplit"), ("r", "read"), ("w", "write"), ("sav", "saveas"), ("wq", "wq"), ("x", "xit")];
-
-/// `[x] [count]` after `:d` and `:y`.
-fn reg_count(arg: &str) -> Result<(Option<char>, Option<usize>), String> {
-    let mut s = arg;
-    let reg = s.chars().next().filter(|c| !c.is_ascii_digit());
-    if let Some(c) = reg {
-        if !valid_reg(c) {
-            return Err(format!("Invalid register: {c}"));
-        }
-        s = s[c.len_utf8()..].trim_start();
-    }
-    Ok((reg, count(s)?))
-}
-
-/// An optional count; zero is an error, like vim's E939.
-fn count(s: &str) -> Result<Option<usize>, String> {
-    match s {
-        "" => Ok(None),
-        s => match s.parse::<usize>() {
-            Ok(0) => Err("E939: Positive count required".into()),
-            Ok(n) => Ok(Some(n)),
-            Err(_) => Err(format!("Trailing characters: {s}")),
-        },
-    }
-}
-
 
 impl Editor {
     /// Runs `f` on the global options, which `filetype` and `buftype` never reach (`noglob` in Neovim).
@@ -298,28 +271,147 @@ fn ff_name(eol: LineEnding) -> &'static str {
     }
 }
 
-/// `:retab` of one line: each run of blanks holding a tab (with `all`, also runs of two or more
-/// spaces) is rewritten for tab stop `new`, keeping its width under tab stop `old`. Columns are
-/// screen cells of the clusters before the run (a wide char counts 2).
-fn retab_line(s: &str, old: usize, new: usize, all: bool, et: bool) -> String {
+/// The number a `:sort n|x|b|o` line sorts on: the first digit of the kind (a `-` before it is part of it), `None` when
+/// there is none (such a line sorts first). Saturates like `vim_str2nr`.
+fn sort_number(key: &str, what: u8) -> Option<i64> {
+    let b = key.as_bytes();
+    let found = match what {
+        b'x' => b.iter().position(u8::is_ascii_hexdigit),
+        b'b' => b.iter().position(|&c| c == b'0' || c == b'1'),
+        _ => b.iter().position(u8::is_ascii_digit),
+    }?;
+    let neg = found > 0 && b[found - 1] == b'-';
+    let mut rest = &key[found..];
+    let (radix, pre) = match what {
+        b'x' => (16, ["0x", "0X"]),
+        b'b' => (2, ["0b", "0B"]),
+        b'o' => (8, ["0o", "0O"]),
+        _ => (10, ["", ""]),
+    };
+    // A prefix of the radix is skipped when digits follow it.
+    for p in pre {
+        if !p.is_empty() && rest.starts_with(p) && rest[2..].chars().next().is_some_and(|c| c.is_digit(radix)) {
+            rest = &rest[2..];
+        }
+    }
+    let mut v: i64 = 0;
+    for c in rest.chars() {
+        let Some(d) = c.to_digit(radix) else { break };
+        v = v.saturating_mul(i64::from(radix)).saturating_add(i64::from(d));
+    }
+    Some(if neg { -v } else { v })
+}
+
+/// The float `:sort f` sorts on: `strtod` of the key after blanks and a `+`; an empty key sorts first.
+fn sort_float(key: &str) -> f64 {
+    let s = key.trim_start_matches([' ', '\t']);
+    let s = match s.strip_prefix('+') {
+        Some(r) => r.trim_start_matches([' ', '\t']),
+        None => s,
+    };
+    if s.is_empty() {
+        return -f64::MAX;
+    }
+    // The longest prefix that is a number.
+    let b = s.as_bytes();
+    let mut i = 0;
+    if b[0] == b'-' || b[0] == b'+' {
+        i += 1;
+    }
+    let lower = s[i..].to_ascii_lowercase();
+    if lower.starts_with("inf") {
+        return if b[0] == b'-' { f64::NEG_INFINITY } else { f64::INFINITY };
+    }
+    if lower.starts_with("nan") {
+        return f64::NAN;
+    }
+    // A hexadecimal float: `0x1F`, `0x1.8p3`.
+    if lower.starts_with("0x") && lower[2..].chars().next().is_some_and(|c| c.is_ascii_hexdigit() || c == '.') {
+        let neg = b[0] == b'-';
+        let mut v = 0.0f64;
+        let mut chars = lower[2..].chars().peekable();
+        while let Some(d) = chars.peek().and_then(|c| c.to_digit(16)) {
+            v = v * 16.0 + f64::from(d);
+            chars.next();
+        }
+        let mut scale = 1.0 / 16.0;
+        if chars.peek() == Some(&'.') {
+            chars.next();
+            while let Some(d) = chars.peek().and_then(|c| c.to_digit(16)) {
+                v += f64::from(d) * scale;
+                scale /= 16.0;
+                chars.next();
+            }
+        }
+        if chars.peek() == Some(&'p') {
+            chars.next();
+            let rest: String = chars.collect();
+            let digits: String = rest.chars().enumerate().take_while(|(i, c)| c.is_ascii_digit() || (*i == 0 && (*c == '-' || *c == '+'))).map(|(_, c)| c).collect();
+            if let Ok(x) = digits.parse::<i32>() {
+                v *= 2f64.powi(x);
+            }
+        }
+        return if neg { -v } else { v };
+    }
+    let start_digits = i;
+    while i < b.len() && b[i].is_ascii_digit() {
+        i += 1;
+    }
+    if i < b.len() && b[i] == b'.' {
+        i += 1;
+        while i < b.len() && b[i].is_ascii_digit() {
+            i += 1;
+        }
+    }
+    if i == start_digits {
+        return 0.0;
+    }
+    if i < b.len() && (b[i] == b'e' || b[i] == b'E') {
+        let mut j = i + 1;
+        if j < b.len() && (b[j] == b'-' || b[j] == b'+') {
+            j += 1;
+        }
+        if j < b.len() && b[j].is_ascii_digit() {
+            while j < b.len() && b[j].is_ascii_digit() {
+                j += 1;
+            }
+            i = j;
+        }
+    }
+    s[..i].parse().unwrap_or(0.0)
+}
+
+/// `ex_retab` of one line: each run of blanks holding a tab (with `all`, also runs of two or more spaces) is rewritten
+/// for the stops `new`, keeping its width under the stops `old`. Columns are screen cells of the
+/// clusters before the run (a wide char counts 2). `indent_only` stops after the first run.
+fn retab_line(s: &str, old: Tabs, new: Tabs, all: bool, et: bool, indent_only: bool) -> (String, bool) {
     let mut out = String::with_capacity(s.len());
     let (mut col, mut run, mut run_col, mut tab) = (0, String::new(), 0, false);
-    let flush = |out: &mut String, run: &mut String, start: usize, end: usize, tab: bool| {
-        if et && tab {
+    // `ml_replace` runs for a run that is rewritten (also into the same text): that is a changed line.
+    let mut touched = false;
+    let mut flush = |out: &mut String, run: &mut String, start: usize, end: usize, tab: bool| {
+        let entered = tab || (all && run.chars().filter(|&c| c == ' ').count() > 1);
+        if entered && et {
             out.extend(std::iter::repeat_n(' ', end - start));
-        } else if !et && (tab || (all && run.len() > 1)) {
-            let mut c = start;
-            while (c / new + 1) * new <= end {
-                out.push('\t');
-                c = (c / new + 1) * new;
+            touched = true;
+        } else if entered {
+            // The run is only rewritten when it held a Tab or the new one is shorter.
+            let (tabs, spaces) = new.fromto(start, end);
+            if tab || tabs + spaces < end - start {
+                out.extend(std::iter::repeat_n('\t', tabs));
+                out.extend(std::iter::repeat_n(' ', spaces));
+                touched = true;
+            } else {
+                out.push_str(run);
             }
-            out.extend(std::iter::repeat_n(' ', end - c));
         } else {
             out.push_str(run);
         }
         run.clear();
     };
+    let mut rest = s;
     for g in graphemes::iter(s) {
+        rest = &rest[g.len()..];
         match g {
             " " | "\t" => {
                 let ch = if g == " " { ' ' } else { '\t' };
@@ -328,27 +420,33 @@ fn retab_line(s: &str, old: usize, new: usize, all: bool, et: bool) -> String {
                 }
                 run.push(ch);
                 tab |= ch == '\t';
-                col = if ch == '\t' { (col / old + 1) * old } else { col + 1 };
+                col += if ch == '\t' { old.pad(col) } else { 1 };
             }
             _ => {
                 if !run.is_empty() {
                     flush(&mut out, &mut run, run_col, col, tab);
                 }
+                // `-indentonly`: the first char that is not a blank ends the line, whether blanks came before it or not.
+                if indent_only {
+                    out.push_str(g);
+                    out.push_str(rest);
+                    return (out, touched);
+                }
                 out.push_str(g);
                 // Screen cells, so a tab after wide chars keeps its place on screen.
-                col += graphemes::width(g, old);
+                col += graphemes::width(g, old.ts);
             }
         }
     }
     if !run.is_empty() {
         flush(&mut out, &mut run, run_col, col, tab);
     }
-    out
+    (out, touched)
 }
 
 /// Writes through a temp file renamed over the target, so a failed write never truncates it.
 /// Symlinks are followed so the link survives and the temp file sits on the target's filesystem.
-pub(super) fn write_atomic(path: &Path, text: &Text, eol: LineEnding) -> io::Result<()> {
+pub(super) fn write_atomic(path: &Path, text: &Text, eol: LineEnding, final_eol: bool, empty: bool) -> io::Result<()> {
     let target = fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
     let mut tmp = target.clone().into_os_string();
     tmp.push(".rim.tmp");
@@ -364,15 +462,26 @@ pub(super) fn write_atomic(path: &Path, text: &Text, eol: LineEnding) -> io::Res
         }
     }
     let mut w = BufWriter::new(file);
-    text.write_to(&mut w, eol)?;
+    // `ML_EMPTY`: a buffer created empty or emptied by an edit writes nothing.
+    if !empty {
+        text.write_to(&mut w, eol)?;
+        if final_eol {
+            w.write_all(eol.as_str().as_bytes())?;
+        }
+    }
     w.into_inner().map_err(io::IntoInnerError::into_error)?.sync_all()?;
     fs::rename(&tmp, &target)
 }
 
-fn append_to(path: &Path, text: &Text, eol: LineEnding) -> io::Result<()> {
+fn append_to(path: &Path, text: &Text, eol: LineEnding, final_eol: bool, empty: bool) -> io::Result<()> {
     let file = fs::OpenOptions::new().append(true).create(true).open(path)?;
     let mut w = BufWriter::new(file);
-    text.write_to(&mut w, eol)?;
+    if !empty {
+        text.write_to(&mut w, eol)?;
+        if final_eol {
+            w.write_all(eol.as_str().as_bytes())?;
+        }
+    }
     w.into_inner().map_err(io::IntoInnerError::into_error)?.sync_all()
 }
 
@@ -400,11 +509,18 @@ impl LineMarks {
         off.wrapping_add_signed(self.shift)
     }
 
-    pub fn map(&mut self, edits: &[Edit]) {
+    /// `text` is the text after `edits`: an insertion at the very start of the next line that does not end with a line break
+    /// is typed into that line (Neovim's mark is a flag of the line, `ml_replace` keeps it), so the line starts where it did.
+    pub fn map(&mut self, edits: &[Edit], text: &Text) {
         for ed in edits {
             let Some(&(s, _, _)) = self.lines.get(self.next) else { return };
             let delta = ed.new_len as isize - ed.old_len as isize;
-            if ed.start + ed.old_len <= self.at(s) {
+            let typed_in = edits.len() == 1
+                && ed.old_len == 0
+                && ed.start == self.at(s)
+                && ed.start + ed.new_len <= text.len()
+                && !text.slice(ed.start..ed.start + ed.new_len).ends_with('\n');
+            if !typed_in && ed.start + ed.old_len <= self.at(s) {
                 self.shift += delta;
                 continue;
             }
@@ -413,6 +529,10 @@ impl LineMarks {
                 let (a, b) = (s.wrapping_add_signed(shift), e.wrapping_add_signed(shift));
                 *alive &= !(ed.old_len > 0 && ed.start <= a && b <= ed.start + ed.old_len);
                 (*s, *e) = (ed.map(a), ed.map(b));
+            }
+            if typed_in {
+                // The shift was flushed above, so the stored start is the real one.
+                self.lines[self.next].0 = ed.start;
             }
         }
     }
@@ -428,6 +548,54 @@ impl LineMarks {
         }
         None
     }
+}
+
+/// Which of `:print`, `:number` and `:list` runs.
+#[derive(Clone, Copy, PartialEq)]
+enum Print {
+    Plain,
+    Number,
+    List,
+}
+
+/// `msg_prt_line`: a line as `:print` shows it. A Tab is blanks up to the next 'tabstop'; with `list` it is `>` and
+/// blanks (the default 'listchars' is `tab:> ,trail:-,nbsp:+`), a trailing blank is `-` and a no-break space `+`. A control
+/// character is `^X`; an empty line is one blank, else the next message would overwrite it.
+fn msg_prt_line(s: &str, list: bool, tabs: Tabs) -> String {
+    let mut out = String::new();
+    if s.is_empty() {
+        out.push(' ');
+    }
+    let trail = if list { s.trim_end_matches([' ', '\t']).len() } else { s.len() };
+    let mut col = 0;
+    for (i, c) in s.char_indices() {
+        match c {
+            '\t' => {
+                let pad = tabs.pad(col);
+                out.push(if list { '>' } else { ' ' });
+                out.extend(std::iter::repeat_n(' ', pad - 1));
+                col += pad;
+            }
+            ' ' if list && i >= trail => {
+                out.push('-');
+                col += 1;
+            }
+            '\u{a0}' | '\u{202f}' if list => {
+                out.push('+');
+                col += 1;
+            }
+            '\0'..='\x1f' | '\x7f' => {
+                out.push('^');
+                out.push((c as u8 ^ 0x40) as char);
+                col += 2;
+            }
+            c => {
+                out.push(c);
+                col += graphemes::width(c.encode_utf8(&mut [0; 4]), tabs.ts);
+            }
+        }
+    }
+    out
 }
 
 impl Editor {
@@ -462,8 +630,29 @@ impl Editor {
         let res = match n {
             "" if a.is_empty() && r.is_some() => self.goto_line(r),
             "" if a.is_empty() => Ok(()),
-            "wq" => return !self.save(true) || self.quit(false, false),
-            "x" | "xi" | "xit" => return self.is_dirty() && !self.save(true) || self.quit(false, false),
+            "wq" | "x" | "xi" | "xit" => {
+                // `ex_exit`: `:wq` always writes, `:x` only when the buffer was changed; a file name goes
+                // with the write, as `:w file`. A write of the buffer's own file runs in the background, so
+                // the quit waits for it; one that failed leaves the buffer modified, and `:q` then refuses.
+                let write = n == "wq" || self.is_dirty();
+                let mut ok = true;
+                if write {
+                    match self.write_cmd(None, bang, a) {
+                        Ok(()) => {
+                            self.wait_saves();
+                            ok = !self.is_dirty() || !a.is_empty();
+                        }
+                        Err(e) => {
+                            self.error(e);
+                            ok = false;
+                        }
+                    }
+                }
+                if !ok {
+                    return true;
+                }
+                return self.quit(false, false);
+            }
             "wqa" | "wqal" | "wqall" | "xa" | "xal" | "xall" => {
                 let dirty: Vec<usize> = [&self.buf].into_iter().chain(&self.buffers).filter(|b| b.is_dirty()).map(|b| b.id).collect();
                 let ok = dirty.into_iter().all(|id| self.save_buffer(id, true));
@@ -511,9 +700,9 @@ impl Editor {
             }
             _ if abbr(n, "sp", "split") || abbr(n, "vs", "vsplit") => {
                 self.split_window(n.starts_with('v'));
-                if a.is_empty() { Ok(()) } else { self.edit_file(a) }
+                if a.is_empty() { Ok(()) } else { self.edit_file(a, bang, false) }
             }
-            _ if abbr(n, "e", "edit") && !a.is_empty() => self.edit_file(a),
+            _ if abbr(n, "e", "edit") && !a.is_empty() => self.edit_file(a, bang, true),
             _ if abbr(n, "bn", "bnext") || abbr(n, "bp", "bprevious") || abbr(n, "bN", "bNext") => {
                 let count = if a.is_empty() { Ok(1) } else { a.parse().map_err(|_| format!("Invalid count: {a}")) };
                 count.map(|k| self.cycle_buffer(if n.starts_with("bn") { 1 } else { -1 }, k))
@@ -542,23 +731,33 @@ impl Editor {
             }
             _ if abbr(n, "mes", "messages") => self.messages_cmd(a),
             _ if abbr(n, "undol", "undolist") => {
-                self.info(self.undolist());
+                self.ex_undolist();
+                Ok(())
+            }
+            _ if abbr(n, "undoj", "undojoin") => {
+                self.ex_undojoin();
                 Ok(())
             }
             "go" | "got" | "goto" => self.goto_byte(a),
             _ if let Some(&(_, long)) = [("ea", "earlier"), ("lat", "later"), ("u", "undo"), ("red", "redo")].iter().find(|(short, long)| abbr(n, short, long)) => {
-                self.time_travel(long, a);
+                self.time_travel(long, bang, a);
                 Ok(())
             }
             _ if abbr(n, "se", "set") => self.set_cmd(a),
-            _ if abbr(n, "d", "delete") => self.delete_yank(r, a, false),
-            _ if abbr(n, "y", "yank") => self.delete_yank(r, a, true),
+            _ if abbr(n, "d", "delete") => self.delete_yank(r, false),
+            _ if abbr(n, "y", "yank") => self.delete_yank(r, true),
             _ if abbr(n, "m", "move") => self.move_lines(r, a),
             "t" => self.copy_lines(r, a),
             _ if abbr(n, "co", "copy") => self.copy_lines(r, a),
             ">" | "<" => self.shift_cmd(r, n == ">", a),
-            _ if abbr(n, "j", "join") => self.join_cmd(r, bang, a),
-            _ if abbr(n, "p", "print") => self.print(r),
+            _ if abbr(n, "j", "join") => self.join_cmd(r, bang),
+            _ if abbr(n, "p", "print") => self.print_cmd(r, Print::Plain),
+            "#" => self.print_cmd(r, Print::Number),
+            _ if abbr(n, "nu", "number") => self.print_cmd(r, Print::Number),
+            _ if abbr(n, "l", "list") => self.print_cmd(r, Print::List),
+            "k" => self.mark_cmd(r, a),
+            _ if abbr(n, "pu", "put") => self.put_cmd(r, bang),
+            _ if abbr(n, "ma", "mark") => self.mark_cmd(r, a),
             "=" => self.lines(r, (self.line_count(), self.line_count())).map(|(_, b)| self.info(b.to_string())),
             _ if abbr(n, "norm", "normal") => self.normal_cmd(r, arg),
             _ if abbr(n, "sor", "sort") => self.sort(r, bang, a),
@@ -674,18 +873,21 @@ impl Editor {
     /// `beginline(BL_SOL | BL_FIX)` with 'nostartofline' (Neovim's default): line `l`, the column the cursor wanted.
     pub(in crate::editor) fn line_wanted_col(&mut self, l: usize) {
         self.win.line = l;
-        self.win.col = self.win.want_col.min(self.line_chars(l).saturating_sub(1));
+        // With 'nostartofline' `beginline` only moves to the column wanted: `w_curswant` stays as it is.
+        self.win.col = self.col_wanted(l);
     }
 
+    /// `beginline(BL_WHITE | BL_FIX)`: the first non-blank, or the last char of a line that is all blanks.
     pub(in crate::editor) fn first_line(&mut self, l: usize) {
         self.win.line = l;
-        self.set_col(self.first_non_blank(l));
+        let col = self.first_non_blank(l).min(self.line_chars(l).saturating_sub(1));
+        self.set_col(col);
     }
 
     /// `:N`, `:/pat/`, `:'a`: the cursor goes to the last address; past the end, the last line.
     pub(in crate::editor) fn goto_line(&mut self, r: Option<&LineRange>) -> Result<(), String> {
+        // `ex_range_without_command` does not `setpcmark()`.
         let (_, b) = self.lines_clamped(r, (0, 0), true)?;
-        self.set_jump();
         self.line_wanted_col(b.max(1) - 1);
         self.clamp_normal();
         Ok(())
@@ -697,7 +899,7 @@ impl Editor {
             Ok(n) => {
                 self.set_jump();
                 (self.win.line, self.win.col) = self.pos_of(self.byte_pos(n.saturating_sub(1)));
-                self.win.want_col = self.win.col;
+                self.win.want_set = true;
                 self.clamp_normal();
             }
             Err(_) if n.is_empty() => {
@@ -758,7 +960,7 @@ impl Editor {
             _ if self.cmdwin_refuses() => Ok(()),
             _ if abbr(sub, "sp", "split") => {
                 self.split_window(true);
-                if rest.is_empty() { Ok(()) } else { self.edit_file(rest) }
+                if rest.is_empty() { Ok(()) } else { self.edit_file(rest, false, false) }
             }
             _ if abbr(sub, "new", "new") => {
                 self.split_window(true);
@@ -787,12 +989,19 @@ impl Editor {
         if !rest.is_empty() || arg.is_empty() {
             self.opts_in();
             let args = rest.join(" ");
-            let (text, err) = self.buf.opts.set_all(&args);
+            let (text, err) = self.buf.opts.set_all_from(&args, Some(&self.global_opts));
+            // `tabstop_set` gives its message before the one of the option.
+            if let Some(m) = self.buf.opts.first_error.take() {
+                self.error(m);
+            }
             self.ff_out();
             self.win_out(local, super::options::Options::names_scrolloff(&args));
             if !local {
                 self.on_global(|g| {
-                    let _ = g.set_all(&args);
+                    // `opt<` copies the global value to the local one: for the global options it changes nothing.
+                    let same = g.clone();
+                    let _ = g.set_all_from(&args, Some(&same));
+                    g.first_error = None;
                 });
             }
             self.share_global();
@@ -810,17 +1019,48 @@ impl Editor {
         Ok(())
     }
 
-    fn delete_yank(&mut self, r: Option<&LineRange>, arg: &str, yank: bool) -> Result<(), String> {
-        let (reg, count) = reg_count(arg)?;
+    /// `ex_operators` for `:d` and `:y`: the register and the count come from `do_one_cmd` (`Prefix`).
+    fn delete_yank(&mut self, r: Option<&LineRange>, yank: bool) -> Result<(), String> {
+        let ea = self.scripts.ea.clone();
         let (a, b) = self.range0(r, false)?;
-        let (a, b) = self.counted((a, b), count);
+        let (a, b) = self.counted((a, b), ea.count);
         let keep = (self.win.line, self.win.col);
-        self.cur_reg = reg;
+        self.cur_reg = ea.reg;
+        // `ex_operators`: but for `:yank` the cursor starts on the first line at the column it wanted (`beginline(BL_SOL | BL_FIX)`).
+        if !yank {
+            // `ex_operators`: `setpcmark()` first, but for `:yank`.
+            self.set_jump();
+            self.line_wanted_col(a);
+        }
+        self.end_visual_mode();
         self.operate(if yank { 'y' } else { 'd' }, (a, 0), (b, 0), Kind::Linewise);
         if yank {
             (self.win.line, self.win.col) = keep;
         }
+        self.may_print(ea.flags);
         Ok(())
+    }
+
+    /// `ex_may_print`: the flags `l`, `p` and `#` show the cursor line.
+    fn may_print(&mut self, flags: u8) {
+        if flags != 0 {
+            let l = self.win.line;
+            let text = self.print_line(l, flags & EXFLAG_NR != 0, flags & EXFLAG_LIST != 0);
+            self.info(text);
+        }
+    }
+
+    /// `print_line`: the text of 0-based line `l` as `:print` shows it, with its number when `number`.
+    pub(super) fn print_line(&self, l: usize, number: bool, list: bool) -> String {
+        let mut out = String::new();
+        if self.buf.opts.number || number {
+            // `number_width`: the digits of the last line, at least 'numberwidth' (4) minus one.
+            let width = self.line_count().to_string().len().max(3);
+            out = format!("{:>width$} ", l + 1);
+        }
+        let line = self.buf.doc.text().line(l);
+        out.push_str(&msg_prt_line(&line, list || self.buf.opts.list, self.buf.opts.tabs()));
+        out
     }
 
     /// Lines `a..=b` without the line break after `b`.
@@ -830,16 +1070,20 @@ impl Editor {
     }
 
     /// Inserts `block` (lines without a final line break) below 1-based line `after` (0: on top).
+    #[track_caller]
     pub(in crate::editor) fn insert_lines(&mut self, after: usize, block: &str) {
         if after == 0 {
             self.edit_insert(0, &format!("{block}\n"));
         } else {
             let off = self.line_end_offset(after - 1);
+            self.marks_below = true;
             self.edit_insert(off, &format!("\n{block}"));
+            self.marks_below = false;
         }
     }
 
     /// Removes lines `a..=b` with one line break (the one before, on the last line).
+    #[track_caller]
     pub(in crate::editor) fn delete_lines(&mut self, a: usize, b: usize) {
         let text = self.buf.doc.text();
         let range = if b + 1 < text.line_count() {
@@ -864,7 +1108,6 @@ impl Editor {
     }
 
     /// `:m {address}`: the lines go below the address; the cursor ends on the last one.
-    // shortcut: marks on moved lines stay where the lines were, when marks follow moved lines
     fn move_lines(&mut self, r: Option<&LineRange>, arg: &str) -> Result<(), String> {
         let (a, b) = self.range0(r, false)?;
         let dest = self.dest(arg)?;
@@ -872,23 +1115,46 @@ impl Editor {
             return Err("E134: Cannot move a range of lines into itself".into());
         }
         let n = b - a + 1;
-        let last = if dest == a || dest == b + 1 {
+        // `do_move`: nothing moves when the lines go where they are: no message.
+        let moves = dest != a && dest != b + 1;
+        let old_count = self.line_count();
+        let last = if !moves {
             b
         } else {
             let block = self.lines_text(a, b);
-            if dest > b {
-                self.insert_lines(dest, &block);
-                self.delete_lines(a, b);
-                dest - 1
+            // `do_move` copies the lines to their place, then deletes the old ones (`extra` lines were added before them).
+            self.marks_manual = true;
+            self.u_save(dest, dest + 1);
+            self.insert_lines(dest, &block);
+            let extra = if dest > b { 0 } else { n };
+            self.u_save(a + 1 + extra - 1, b + 1 + extra + 1);
+            self.delete_lines(a + extra, b + extra);
+            self.marks_manual = false;
+            // `do_move`: the marks of the moved lines go to the end of the text, the lines between the old and the new place
+            // move over, then the marks at the end come back to the new place (1-based `line1`, `line2`, `dest` as in C).
+            let (l1, l2, last_line) = (a + 1, b + 1, old_count + n);
+            self.mark_adjust(a, n, Some((last_line - l2) as isize), 0);
+            if dest >= l2 {
+                self.mark_adjust(l2, dest - l2, Some(-(n as isize)), 0);
             } else {
-                self.delete_lines(a, b);
-                self.insert_lines(dest, &block);
-                dest + n - 1
+                self.mark_adjust(dest, l1 - 1 - dest, Some(n as isize), 0);
             }
+            let extra_c = if dest < l1 { n } else { 0 };
+            self.mark_adjust(last_line - n, n, Some(-((last_line - dest - extra_c) as isize)), 0);
+            if dest > b { dest - 1 } else { dest + n - 1 }
         };
+        // `ex_copymove`: no `U` after `:m` or `:t`.
+        self.u_clearline();
         self.line_wanted_col(last);
+        if moves {
+            // `do_move`: `'[` and `']` are the first and last line moved, `'.` the first line the move touched.
+            let (s, en, dot) = if dest > b { (dest - n, dest - 1, a) } else { (dest, dest + n - 1, dest) };
+            let (so, eo, dof) = (self.mark_off(s, 0), self.mark_off(en, 0), self.mark_off(dot, 0));
+            self.set_op_marks(so, eo);
+            self.set_dot(dof);
+        }
         // `do_move`: a message over 'report' lines (a `:global` stays quiet).
-        if n > self.buf.opts.report && !self.scripts.global_busy {
+        if moves && n > self.buf.opts.report && !self.scripts.global_busy {
             self.info(format!("{n} line{} moved", if n == 1 { "" } else { "s" }));
         }
         Ok(())
@@ -899,7 +1165,13 @@ impl Editor {
         let (a, b) = self.range0(r, false)?;
         let dest = self.dest(arg)?;
         let block = self.lines_text(a, b);
+        self.u_save(dest, dest + 1);
         self.insert_lines(dest, &block);
+        // `ex_copy`: `'[` and `']` are the first and last line of the copy, `'.` the first.
+        let (so, eo) = (self.mark_off(dest, 0), self.mark_off(dest + b - a, 0));
+        self.set_op_marks(so, eo);
+        self.set_dot(so);
+        self.u_clearline();
         self.line_wanted_col(dest + b - a);
         self.msgmore((b - a + 1) as i64);
         Ok(())
@@ -909,74 +1181,258 @@ impl Editor {
     fn shift_cmd(&mut self, r: Option<&LineRange>, right: bool, arg: &str) -> Result<(), String> {
         let ch = if right { '>' } else { '<' };
         let extra = arg.chars().take_while(|&c| c == ch).count();
-        let n = count(arg[extra..].trim())?;
+        let ea = self.scripts.ea.clone();
         let (a, b) = self.range0(r, false)?;
-        let (a, b) = self.counted((a, b), n);
-        self.shift(a, b, right, extra + 1);
-        // `op_shift`: the cursor stays on the last line, at the end of its new indent (`set_indent`).
+        let (a, b) = self.counted((a, b), ea.count);
+        // `ex_operators`: the cursor starts on the first line at the column it wanted (`beginline(BL_SOL | BL_FIX)`).
+        self.set_jump();
+        self.line_wanted_col(a);
+        self.end_visual_mode();
+        let col = self.shift(a, b, right, extra + 1, 0);
+        // `op_shift`: the cursor stays on the last line, `check_cursor_col` keeps it on a char.
         self.win.line = b;
-        self.win.col = self.buf.doc.text().line(b).chars().take_while(|c| matches!(c, ' ' | '\t')).count();
-        let last_col = self.line_chars(b).saturating_sub(1);
-        if self.line_chars(b) == 0 {
-            self.win.col = 0;
-        } else {
-            self.win.col = self.win.col.min(last_col);
-        }
+        self.win.col = col.min(self.line_chars(b).saturating_sub(1));
+        self.may_print(ea.flags);
         Ok(())
     }
 
     /// `:j`: one address joins with the next line; `:j!` keeps blanks and adds no space.
-    fn join_cmd(&mut self, r: Option<&LineRange>, bang: bool, arg: &str) -> Result<(), String> {
-        let n = count(arg)?;
+    fn join_cmd(&mut self, r: Option<&LineRange>, bang: bool) -> Result<(), String> {
+        let ea = self.scripts.ea.clone();
         let (a, b) = self.range0(r, false)?;
-        let (a, b) = match n {
-            Some(n) => (b, b + n - 1),
-            None if a == b => (a, a + 1),
-            None => (a, b),
-        };
-        let b = b.min(self.line_count() - 1);
+        let (a, b) = self.counted((a, b), ea.count);
+        // `ex_join`: the cursor goes to the first line, and one line alone (no two addresses) joins with the next.
         self.win.line = a;
-        self.join(b.saturating_sub(a), !bang);
+        let b = if a == b {
+            // `:2,2join` does nothing: `eap->addr_count` counts the count too.
+            let addr_count = r.map_or(0, |r| 1 + usize::from(r.last.is_some())) + usize::from(ea.count.is_some());
+            if addr_count >= 2 {
+                return Ok(());
+            }
+            if b + 1 >= self.line_count() {
+                return Ok(());
+            }
+            b + 1
+        } else {
+            b
+        };
+        self.join(b - a, !bang);
         // `ex_join`: `beginline(BL_WHITE | BL_FIX)`.
         let l = self.win.line;
         self.first_line(l);
+        self.may_print(ea.flags);
         Ok(())
     }
 
     /// `:p`: the cursor goes to the last line, which is shown.
     // shortcut: an empty buffer is one without text, Neovim's is one without lines (`ML_EMPTY`)
     pub(in crate::editor) fn print(&mut self, r: Option<&LineRange>) -> Result<(), String> {
+        self.scripts.ea = Default::default();
+        self.print_cmd(r, Print::Plain)
+    }
+
+    /// `ex_print`: `:p`, `:#`/`:nu`, `:l`; the cursor goes to the last line.
+    fn print_cmd(&mut self, r: Option<&LineRange>, how: Print) -> Result<(), String> {
+        let ea = self.scripts.ea.clone();
         let (a, b) = self.range0(r, false)?;
+        let (a, b) = self.counted((a, b), ea.count);
         // `ex_print`: an empty buffer is an error, else every line of the range is shown.
         if self.buf.doc.text().is_empty() {
             self.error("E749: Empty buffer");
             return Ok(());
         }
         for l in a..=b {
-            // An empty line is shown as a blank, else the next message would overwrite it (`msg_prt_line`).
-            let text = self.buf.doc.text().line(l).into_owned();
-            self.info(if text.is_empty() { " ".to_string() } else { text });
+            let text = self.print_line(l, how == Print::Number || ea.flags & EXFLAG_NR != 0, how == Print::List || ea.flags & EXFLAG_LIST != 0);
+            self.info(text);
         }
         self.set_jump();
         self.line_wanted_col(b);
         Ok(())
     }
 
+    /// `ex_put` and the linewise branch of `do_put`: the lines of the register go below the last line of the range
+    /// (above it with `!`; `:0put` is `:1put!`), whatever the kind of the register; the cursor goes to the first
+    /// non-blank of the last one, `'[` and `']` to the first and last.
+    fn put_cmd(&mut self, r: Option<&LineRange>, bang: bool) -> Result<(), String> {
+        let ea = self.scripts.ea.clone();
+        let cur = self.win.line + 1;
+        let (_, l2) = self.lines(r, (cur, cur))?;
+        let (l2, bang) = if l2 == 0 { (1, true) } else { (l2, bang) };
+        self.win.line = l2 - 1;
+        self.win.col = self.win.col.min(self.line_chars(l2 - 1).saturating_sub(1));
+        let name = ea.reg.unwrap_or('"');
+        // `do_put` starts with `'[` and `']` on the cursor, whatever follows.
+        let here = self.offset_of((l2 - 1, self.win.col));
+        self.put_off('[', here);
+        self.put_off(']', here);
+        // `get_spec_reg` with `errmsg`: what a register that has no value says.
+        let none = match name {
+            '%' if self.buf.path.is_none() => Some("E32: No file name"),
+            '#' if self.alt.and_then(|id| self.buffer(id)).and_then(|b| b.path.as_ref()).is_none() => Some("E23: No alternate file"),
+            '/' if self.last_search.is_none() => Some("E35: No previous regular expression"),
+            ':' if self.last_cmdline().is_none() => Some("E30: No previous command line"),
+            _ => None,
+        };
+        if let Some(e) = none {
+            return Err(e.into());
+        }
+        let reg = match name {
+            // Nothing is kept in the black hole: one empty line.
+            '_' => Some(Reg { text: String::new(), kind: RegKind::Char }),
+            '.' => {
+                // `do_put('_')` makes the empty line; then Neovim types `i`, the text inserted last and Esc, and goes to
+                // `'[`, once the command is done (`stuff_inserted`); none inserted yet is an error after the line.
+                let at = if bang { l2 - 1 } else { l2 };
+                self.insert_lines(at, "");
+                let off = self.offset_of((at, 0));
+                self.put_off('[', off);
+                self.put_off(']', off);
+                self.set_dot(off);
+                self.first_line(at);
+                self.msgmore(1);
+                let Some(keys) = self.last_insert_keys.clone() else {
+                    return Err("E29: No inserted text yet".into());
+                };
+                let mut stuffed = vec![KeyEvent::from(KeyCode::Char('i'))];
+                stuffed.extend(keys);
+                stuffed.push(KeyCode::Esc.into());
+                self.scripts.stuffed.push(stuffed);
+                return Ok(());
+            }
+            '=' => {
+                // The expression is evaluated and its value is the text: a List has a line per item.
+                if let Some(expr) = &ea.expr {
+                    let v = self.eval(expr).map_err(|e| e.to_string())?;
+                    let t = match &v {
+                        crate::editor::script::Value::List(l) => {
+                            let items: Vec<_> = l.borrow().iter().cloned().collect();
+                            let mut t = String::new();
+                            for i in &items {
+                                t.push_str(&self.to_string(i).map_err(|e| e.to_string())?);
+                                t.push('\n');
+                            }
+                            t
+                        }
+                        v => self.to_string(v).map_err(|e| e.to_string())?,
+                    };
+                    self.regs.set_expr(t);
+                }
+                self.regs.get('=').cloned()
+            }
+            _ => self.reg(name),
+        };
+        // An expression that gave nothing puts nothing (`insert_string.data` is NULL).
+        if name == '=' && reg.is_none() {
+            return Ok(());
+        }
+        // A register that was set to an empty string holds one empty line; one never set holds none.
+        let Some(Reg { text, .. }) = reg else {
+            let shown = if ea.reg.is_none() || name == '"' { "\"".to_string() } else { super::messages::trans(&name.to_string(), false) };
+            return Err(format!("E353: Nothing in register {shown}"));
+        };
+        let mut lines: Vec<&str> = text.split('\n').collect();
+        // A trailing line break ends the last line (a linewise register, or an expression with one).
+        if lines.len() > 1 && lines.last() == Some(&"") {
+            lines.pop();
+        }
+        let first = if bang { l2 - 1 } else { l2 };
+        // `do_put`: the line it works from, then the lines the text goes between (the empty line of an empty buffer too).
+        self.u_save(l2, l2 + 1);
+        if self.buf.doc.text().is_empty() {
+            self.u_save(0, 2);
+        } else {
+            self.u_save(first, first + 1);
+        }
+        self.insert_lines(first, &lines.join("\n"));
+        let last = first + lines.len() - 1;
+        let last_text = lines[lines.len() - 1];
+        // `'[` is the first inserted line, `']` the first byte of the last character of the last one.
+        let start = self.offset_of((first, 0));
+        let at = if last_text.len() > 1 { last_text.floor_char_boundary(last_text.len() - 1) } else { 0 };
+        let end = self.offset_of((last, 0)) + at;
+        self.put_off('[', start);
+        self.put_off(']', end);
+        self.set_dot(start);
+        self.first_line(last);
+        self.msgmore(lines.len() as i64);
+        Ok(())
+    }
+
+    /// `ex_mark` (`:k`, `:mark`): a mark on the last line of the range, at its first non-blank; the cursor stays.
+    fn mark_cmd(&mut self, r: Option<&LineRange>, arg: &str) -> Result<(), String> {
+        if arg.is_empty() {
+            return Err("E471: Argument required".into());
+        }
+        if arg.chars().nth(1).is_some() {
+            return Err(format!("E488: Trailing characters: {arg}"));
+        }
+        let (_, b) = self.range0(r, false)?;
+        let off = self.offset_of((b, self.first_non_blank(b)));
+        match arg.chars().next() {
+            Some(m) if self.set_mark(m, off) => Ok(()),
+            _ => Err("E191: Argument must be a letter or forward/backward quote".into()),
+        }
+    }
+
     /// Runs `keys` as typed in Normal mode; an unfinished command or insert ends as with Esc.
+    /// What commands stuffed into the typeahead (`:put .`), typed when the command line is done, each followed by `g'[`.
+    pub(super) fn run_stuffed(&mut self) {
+        for keys in std::mem::take(&mut self.scripts.stuffed) {
+            self.run_keys(&keys);
+            if let Some(off) = self.mark('[') {
+                // `g'[`: the first non-blank of the line of `'[`.
+                let l = self.pos_of(off).0;
+                self.first_line(l);
+            }
+        }
+    }
+
     fn run_keys(&mut self, keys: &[KeyEvent]) {
+        self.run_keys_as(keys, false);
+    }
+
+    pub(super) fn run_keys_untyped(&mut self, keys: &[KeyEvent]) {
+        self.run_keys_as(keys, false);
+    }
+
+    /// `run_keys` for `feedkeys(.., 'xt')`: the keys are typed (not replayed by a macro: `macro_depth` stays 0, so `Ctrl+C`
+    /// interrupts and `q` records them).
+    pub(super) fn run_typed_keys(&mut self, keys: &[KeyEvent]) {
+        self.run_keys_as(keys, true);
+    }
+
+    fn run_keys_as(&mut self, keys: &[KeyEvent], typed: bool) {
         // Counted as a macro: the keys are not recorded by `q`.
-        self.macro_depth += 1;
-        self.mode = Mode::Normal;
-        for &k in keys {
-            if !self.key(k) {
+        if !typed {
+            self.macro_depth += 1;
+            self.ex_normal += 1;
+        }
+        // `ex_normal` does not end Visual mode: a Visual selection started by the keys (or before them) stays.
+        let visual = matches!(self.mode, Mode::Visual(_));
+        if !visual {
+            self.mode = Mode::Normal;
+        }
+        for (i, &k) in keys.iter().enumerate() {
+            self.peek_key = keys.get(i + 1).copied();
+            self.flush_typeahead = false;
+            // `flush_buffers(FLUSH_MINIMAL)` drops the mapped part of the typeahead only: keys `feedkeys(.., 't')` typed stay.
+            if !self.key(k) || (mem::take(&mut self.flush_typeahead) && !typed) {
                 break;
             }
         }
-        if self.mode != Mode::Normal {
+        self.peek_key = None;
+        if self.mode != Mode::Normal && !matches!(self.mode, Mode::Visual(_)) {
             self.key(KeyCode::Esc.into());
         }
         self.pending.clear();
-        self.macro_depth -= 1;
+        if !typed {
+            self.macro_depth -= 1;
+            self.ex_normal -= 1;
+        }
+        // `ex_normal` ends with `update_topline_cursor`: the column wanted is the cursor's again (keys of `feedkeys()` are no `:normal`).
+        if !typed {
+            self.update_curswant();
+        }
     }
 
     /// `:normal {keys}`: once at the cursor, or on each line of the range (column 0). One undo step.
@@ -992,7 +1448,18 @@ impl Editor {
             return Ok(());
         }
         let (a, b) = self.range0(r, false)?;
-        self.for_lines(a..=b, |e| e.run_keys(&keys));
+        // `ex_normal`: the cursor goes to each line number of the range (not to the line it was on: lines that go shift the
+        // numbers), column 0, and a number past the end is the last line.
+        self.buf.doc.begin_group();
+        for l in a..=b {
+            self.win.line = l.min(self.line_count() - 1);
+            self.set_col(0);
+            self.run_keys(&keys);
+            if self.quit {
+                break;
+            }
+        }
+        self.buf.doc.end_group();
         Ok(())
     }
 
@@ -1015,30 +1482,82 @@ impl Editor {
     /// `:g/pat/cmd` (`:g!`, `:v`: lines without a match): marks the lines, then runs `cmd`
     /// (default `:p`) on each one still there. A match belongs to the line it starts on.
     fn global(&mut self, r: Option<&LineRange>, invert: bool, arg: &str) -> Result<(), String> {
-        if !self.line_marks.is_empty() {
-            return Err("Cannot do :global recursive".into());
-        }
-        let d = arg.chars().next().filter(|&d| is_delim(d)).ok_or("Regular expression missing from :global")?;
-        let mut s = &arg[d.len_utf8()..];
-        let (pat, _) = field(&mut s, d, keep_escape);
-        let cmd = if s.trim().is_empty() { "p" } else { s };
         let (a, b) = self.range0(r, true)?;
+        // `ex_global`: a nested `:global` works on the cursor line, and takes no range.
+        if self.scripts.global_busy && (a != 0 || b + 1 != self.line_count()) {
+            return Err("E147: Cannot do :global recursive with a range".into());
+        }
+        let mut s = arg;
+        // `\/`, `\?` and `\&` instead of a pattern: the last search or substitute pattern.
+        let (pat, cmd_text) = if let Some(rest) = s.strip_prefix('\\') {
+            let Some(k) = rest.chars().next().filter(|k| "/?&".contains(*k)) else {
+                return Err("E10: \\ should be followed by /, ? or &".into());
+            };
+            let from = if k == '&' { self.last_sub.as_ref().map(|l| l.pat.clone()) } else { self.last_search.as_ref().map(|l| l.pat.clone()) };
+            let Some(p) = from else {
+                self.error(if k == '&' { "E33: No previous substitute regular expression" } else { "E35: No previous regular expression" });
+                return Err("E476: Invalid command".into());
+            };
+            (p, &rest[1..])
+        } else {
+            let Some(d) = s.chars().next() else { return Err("E148: Regular expression missing from global".into()) };
+            if d.is_alphabetic() {
+                return Err("E146: Regular expressions can't be delimited by letters".into());
+            }
+            s = &s[d.len_utf8()..];
+            let (pat, _) = field(&mut s, d, keep_escape);
+            (pat, s)
+        };
+        let cmd = if cmd_text.is_empty() || cmd_text.starts_with('\n') { "p" } else { cmd_text };
+        // An empty pattern is the last one used.
+        let pat = if pat.is_empty() {
+            match &self.last_search {
+                Some(l) => l.pat.clone(),
+                None => {
+                    self.error("E35: No previous regular expression");
+                    return Err("E476: Invalid command".into());
+                }
+            }
+        } else {
+            pat
+        };
         let search = self.ex_regex(&pat)?;
+        self.last_sub = Some(super::substitute::LastSub { pat: pat.clone(), rep: self.last_sub.as_ref().map_or_else(String::new, |l| l.rep.clone()) });
         self.hl = true;
+        if self.scripts.global_busy {
+            // The cursor line only.
+            let l = self.win.line;
+            let text = self.buf.doc.text().clone();
+            let (s0, e0) = (text.line_to_offset(l), self.line_end_offset(l));
+            let hit = text.find_iter_in(&search.re, s0..e0).take_while(|m| m.start <= e0).next().is_some();
+            if hit != invert && !self.command(cmd) {
+                self.quit = true;
+            }
+            return Ok(());
+        }
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(a), self.line_end_offset(b));
         let mut hit = vec![invert; b - a + 1];
-        for m in text.find_iter_in(&search.re, start..end).take_while(|m| m.start <= end) {
+        // The line break after the last line belongs to it (`\\n`).
+        for m in text.find_iter_in(&search.re, start..(end + 1).min(text.len())).take_while(|m| m.start <= end) {
             hit[text.offset_to_line(m.start) - a] = !invert;
         }
+        // The last line of the text has a line break for a pattern too (`\n`).
+        if b + 1 == self.line_count() && hit[b - a] == invert && piece_tree::Text::from(format!("{}\n", text.line(b))).find_iter_in(&search.re, 0..text.line(b).len() + 1).next().is_some() {
+            hit[b - a] = !invert;
+        }
         if !hit.contains(&true) {
-            return Err(if invert { format!("Pattern found in every line: {}", search.pat) } else { format!("E486: Pattern not found: {}", search.pat) });
+            // `smsg`, not an error.
+            self.info(if invert { format!("Pattern found in every line: {}", search.pat) } else { format!("Pattern not found: {}", search.pat) });
+            return Ok(());
         }
         self.set_jump();
         // `global_exe`: the reports of what the commands do wait for the end.
         (self.scripts.sub_nsubs, self.scripts.sub_nlines) = (0, 0);
         self.scripts.global_busy = true;
+        self.scripts.global_need_beginline = false;
         self.scripts.global_error = false;
+        self.ml_empty = false;
         let old_lines = self.line_count() as i64;
         self.for_lines((a..=b).filter(|l| hit[l - a]), |e| {
             if e.scripts.global_error {
@@ -1049,82 +1568,172 @@ impl Editor {
             }
         });
         self.scripts.global_busy = false;
+        // `global_exe`: after a `:s` the cursor goes to the first non-blank, whatever the commands that followed did with it.
+        if mem::take(&mut self.scripts.global_need_beginline) {
+            self.first_line(self.win.line);
+        }
         // Substitutions are reported, else the lines that were added or taken away.
         if !self.do_sub_msg(false) {
-            self.msgmore(self.line_count() as i64 - old_lines);
+            // Taking every line leaves "--No lines in buffer--" to be shown, which keeps the report back.
+            if self.ml_empty && old_lines > 1 {
+                let keep = self.buf.opts.msg_history;
+                self.msgs.show_with(super::messages::Level::Info, "--No lines in buffer--".into(), keep, false);
+            } else {
+                self.msgmore(self.line_count() as i64 - old_lines);
+            }
         }
         Ok(())
     }
 
-    /// `:sort [i] [n] [u] [r] [/pat/]`, `!` reversed. With a pattern, lines are sorted by what
-    /// follows the first match (`r`: by the match); lines without one stay first, in order (last,
-    /// reversed, with `!`). `n` sorts by the first decimal number (`-` included), lines without one
-    /// first. `u` keeps the first of equal lines. Stable, like vim.
+    /// `ex_sort`: `:sort [i] [l] [r] [n|f|b|o|x] [u] [/pat/]`, `!` reversed. The key of a line is what follows the match of
+    /// the pattern (`r`: the match; none: the line, a line without a match has an empty key); `n`, `x`, `b`, `o` sort
+    /// on the first number in the key, `f` on a float, a line without one first. The sort is stable; `u` keeps the first
+    /// of lines that are equal as text (also with a number sort), as `string_compare` says.
     fn sort(&mut self, r: Option<&LineRange>, reverse: bool, arg: &str) -> Result<(), String> {
-        let (mut icase, mut num, mut uniq, mut by_match, mut pat) = (false, false, false, false, None);
-        let mut s = arg;
-        while let Some(c) = s.chars().next() {
-            s = &s[c.len_utf8()..];
+        // `ex_sort` returns before it reads its arguments when there are fewer than two lines.
+        let (first, last) = self.range0(r, true)?;
+        if last <= first {
+            return Ok(());
+        }
+        // `ex_sort` saves the lines before it reads the arguments, so a bad one still makes an undo step.
+        self.u_save_lines(first, last);
+        let (mut ic, mut lc, mut rx, mut uniq, mut flt, mut format_found) = (false, false, false, false, false, 0);
+        let (mut nr, mut what, mut pat): (bool, u8, Option<String>) = (false, 0, None);
+        let mut p = arg;
+        while let Some(c) = p.chars().next() {
+            let next = &p[c.len_utf8()..];
             match c {
-                'i' => icase = true,
-                'n' => num = true,
+                ' ' | '\t' => {}
+                'i' => ic = true,
+                'l' => lc = true,
+                'r' => rx = true,
+                'n' => (nr, format_found) = (true, format_found + 1),
+                'f' => (flt, format_found) = (true, format_found + 1),
+                'b' | 'o' | 'x' => (what, format_found) = (c as u8, format_found + 1),
                 'u' => uniq = true,
-                'r' => by_match = true,
-                ' ' => {}
-                d if is_delim(d) => pat = Some(field(&mut s, d, keep_escape).0),
-                _ => return Err(format!("Invalid argument: {c}{s}")),
+                '"' => break,
+                _ if script::check_nextcmd(p).is_some() => {
+                    self.scripts.nextcmd = script::check_nextcmd(p).map(str::to_string);
+                    break;
+                }
+                c if !c.is_ascii_alphabetic() && pat.is_none() => {
+                    // A pattern: up to the closing delimiter, `\` takes the next char.
+                    let mut it = next.char_indices();
+                    let mut end = None;
+                    while let Some((i, d)) = it.next() {
+                        if d == '\\' {
+                            it.next();
+                        } else if d == c {
+                            end = Some(i);
+                            break;
+                        }
+                    }
+                    let Some(end) = end else { return Err(format!("E654: Missing delimiter after search pattern: {next}")) };
+                    let text = &next[..end];
+                    pat = Some(if text.is_empty() {
+                        match &self.last_search {
+                            Some(l) => l.pat.clone(),
+                            None => return Err("E35: No previous regular expression".into()),
+                        }
+                    } else {
+                        let mut s = text;
+                        field(&mut s, '\0', keep_escape).0
+                    });
+                    // Past the closing delimiter.
+                    p = &next[end + c.len_utf8()..];
+                    continue;
+                }
+                _ => return Err(format!("E475: Invalid argument: {p}")),
             }
+            p = next;
+        }
+        if format_found > 1 {
+            return Err("E474: Invalid argument".into());
         }
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(a), self.line_end_offset(b));
-        let body = text.slice(start..end);
+        let body = text.slice(start..end).into_owned();
         let lines: Vec<&str> = body.split('\n').collect();
-        // Byte range of each line's sort key inside the line; `None`: no match.
-        let mut keys: Vec<Option<(usize, usize)>> = lines.iter().map(|l| Some((0, l.len()))).collect();
-        if let Some(pat) = pat {
-            let re = self.ex_regex(&pat)?.re;
-            keys.fill(None);
-            for m in text.find_iter_in(&re, start..end).take_while(|m| m.start <= end) {
-                let l = text.offset_to_line(m.start);
-                let ls = text.line_to_offset(l);
-                let len = lines[l - a].len();
-                let (ms, me) = (m.start - ls, (m.end - ls).min(len));
-                keys[l - a].get_or_insert(if by_match { (ms, me) } else { (me, len) });
+        let re = match &pat {
+            Some(p) => Some(Search::new(&format!("(?m){}", self.buf.opts.case_pattern(p)))?),
+            None => None,
+        };
+        // The key of every line: a byte range, or a number.
+        enum Key {
+            Str(usize, usize),
+            Num(bool, i64),
+            Flt(f64),
+        }
+        let numeric = nr || what != 0;
+        let keys: Vec<Key> = lines
+            .iter()
+            .map(|l| {
+                let (mut s, mut e) = (0, l.len());
+                if let Some(re) = &re {
+                    let t = piece_tree::Text::from(l.to_string());
+                    match t.find_iter_in(&re.re, 0..l.len()).next() {
+                        Some(m) if rx => (s, e) = (m.start, m.end),
+                        Some(m) => s = m.end,
+                        None => e = 0,
+                    }
+                }
+                let key = &l[s.min(e)..e];
+                if numeric {
+                    match sort_number(key, what) {
+                        Some(v) => Key::Num(true, v),
+                        None => Key::Num(false, 0),
+                    }
+                } else if flt {
+                    Key::Flt(sort_float(key))
+                } else {
+                    Key::Str(s.min(e), e)
+                }
+            })
+            .collect();
+        let str_cmp = |x: &str, y: &str| {
+            if lc {
+                super::collate::strcoll(x, y)
+            } else if ic { x.bytes().map(|b| b.to_ascii_lowercase()).cmp(y.bytes().map(|b| b.to_ascii_lowercase())) } else { x.as_bytes().cmp(y.as_bytes()) }
+        };
+        let mut order: Vec<usize> = (0..lines.len()).collect();
+        order.sort_by(|&x, &y| {
+            let r = match (&keys[x], &keys[y]) {
+                (Key::Num(px, vx), Key::Num(py, vy)) => px.cmp(py).then(vx.cmp(vy)),
+                (Key::Flt(vx), Key::Flt(vy)) => vx.partial_cmp(vy).unwrap_or(std::cmp::Ordering::Equal),
+                (Key::Str(sx, ex), Key::Str(sy, ey)) => str_cmp(&lines[x][*sx..*ex], &lines[y][*sy..*ey]),
+                _ => std::cmp::Ordering::Equal,
+            };
+            // Equal keys keep the order of the lines.
+            r.then(x.cmp(&y))
+        });
+        // `!` takes them from the end; `u` drops a line equal as text to the one put before.
+        let mut out: Vec<&str> = Vec::with_capacity(lines.len());
+        for i in 0..order.len() {
+            let l = lines[order[if reverse { order.len() - i - 1 } else { i }]];
+            if !uniq || out.last().is_none_or(|prev| str_cmp(l, prev).is_ne()) {
+                out.push(l);
             }
         }
-        let key = |i: usize| keys[i].map(|(s, e)| &lines[i][s..e]);
-        let number = |s: &str| -> Option<i64> {
-            let d = s.find(|c: char| c.is_ascii_digit())?;
-            let neg = s[..d].ends_with('-');
-            let digits = &s[d..s[d..].find(|c: char| !c.is_ascii_digit()).map_or(s.len(), |k| d + k)];
-            let v = digits.parse::<i64>().unwrap_or(i64::MAX);
-            Some(if neg { -v } else { v })
-        };
-        let cmp = |x: usize, y: usize| {
-            let (kx, ky) = (key(x).expect("sorted lines have a key"), key(y).expect("sorted lines have a key"));
-            if num {
-                number(kx).cmp(&number(ky))
-            } else if icase {
-                kx.to_lowercase().cmp(&ky.to_lowercase())
-            } else {
-                kx.cmp(ky)
-            }
-        };
-        let (mut sorted, mut rest): (Vec<usize>, Vec<usize>) = (0..lines.len()).partition(|&i| keys[i].is_some());
-        sorted.sort_by(|&x, &y| if reverse { cmp(y, x) } else { cmp(x, y) });
-        if uniq {
-            sorted.dedup_by(|y, x| cmp(*x, *y).is_eq());
-        }
-        let order: Vec<usize> = if reverse {
-            rest.reverse();
-            sorted.into_iter().chain(rest).collect()
-        } else {
-            rest.into_iter().chain(sorted).collect()
-        };
-        let new = order.iter().map(|&i| lines[i]).collect::<Vec<_>>().join("\n");
+        let new = out.join("\n");
+        let deleted = lines.len() - out.len();
         if new != body {
+            // `do_sort` replaces the lines one by one: a mark stays on its line and column; `mark_adjust` only deletes the marks of
+            // the lines `u` takes (the last ones of the range) and moves the lines below them.
+            self.marks_manual = true;
             self.edit_replace(start..end, &new);
+            self.marks_manual = false;
+            if deleted > 0 {
+                self.mark_adjust(b - deleted, deleted + 1, None, -(deleted as isize));
+            }
+        }
+        if new != body || deleted > 0 {
+            // `changed_lines(line1, 0, line2 + 1, -deleted)`: `'.` is the first line sorted.
+            let off = self.mark_off(a, 0);
+            self.set_dot(off);
+        }
+        if deleted > 0 {
+            self.msgmore(-(deleted as i64));
         }
         self.first_line(a);
         Ok(())
@@ -1134,21 +1743,27 @@ impl Editor {
     /// a name. Line endings are converted like on load.
     // shortcut: the file is copied into the text (no structural sharing), when `Text::append_text` exists
     fn read(&mut self, r: Option<&LineRange>, file: &str) -> Result<(), String> {
-        let path = if file.is_empty() { self.buf.path.clone().ok_or("E32: No file name")? } else { PathBuf::from(file) };
         let (_, after) = self.lines(r, (self.win.line + 1, self.win.line + 1))?;
+        // `ex_read` saves the line the text goes below before it looks at the file.
+        self.u_save(after, after + 1);
+        let path = if file.is_empty() { self.buf.path.clone().ok_or("E32: No file name")? } else { super::fname(file) };
         let content = fs::read_to_string(&path).map_err(|_e| format!("E484: Can't open file {}", path.display()))?;
-        let doc = Document::from_string(content);
-        let t = doc.text();
-        let mut s = t.slice(0..t.len()).into_owned();
-        if s.is_empty() {
+        if content.is_empty() {
             return Ok(());
         }
-        if s.ends_with('\n') {
-            s.pop();
-        }
+        let (bytes, noeol) = (content.len(), !content.ends_with('\n'));
+        let doc = super::doc_without_final_eol(content);
+        let t = doc.text();
+        let s = t.slice(0..t.len()).into_owned();
+        let lines = t.line_count();
         self.insert_lines(after, &s);
+        // `readfile`: no `U` after adding lines.
+        self.u_clearline();
         self.first_line(after);
-        self.info(format!("\"{}\" {}L, {}B", path.display(), s.split('\n').count(), t.len()));
+        // `readfile` gives the file info unless `'shortmess'` has `F` (Neovim's default has it).
+        if !self.buf.opts.shortmess('F') {
+            self.info(format!("\"{}\"{} {lines}L, {bytes}B", path.display(), if noeol { " [noeol]" } else { "" }));
+        }
         Ok(())
     }
 
@@ -1187,7 +1802,7 @@ impl Editor {
         if file.is_empty() && self.buf.path.is_none() {
             return Err("E32: No file name".into());
         }
-        let path = if file.is_empty() { self.buf.path.clone().expect("checked above") } else { PathBuf::from(file) };
+        let path = if file.is_empty() { self.buf.path.clone().expect("checked above") } else { super::fname(file) };
         // A buffer without a name takes the one it is written to, like vim.
         if self.buf.path.is_none() && r.is_none() && !append {
             if !bang && path.exists() {
@@ -1211,11 +1826,14 @@ impl Editor {
         }
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text();
-        // The line break after the range's last line goes with it, as each line ends with one.
-        let end = if b + 1 < text.line_count() { text.line_to_offset(b + 1) } else { text.len() };
-        let part = Text::from(&*text.slice(text.line_to_offset(a)..end));
+        // The lines of the range without their last break: `write_atomic` ends the file with one.
+        let part = Text::from(&*text.slice(text.line_to_offset(a)..text.line_end(b)));
         let eol = self.buf.doc.eol();
-        let res = if append { append_to(&path, &part, eol) } else { write_atomic(&path, &part, eol) };
+        let o = &self.buf.opts;
+        // The last line of the buffer keeps its break on `'endofline'` alone (`bufwrite.c`).
+        let final_eol = b + 1 < text.line_count() || !((o.binary || !o.fixendofline) && !o.endofline);
+        let empty = self.buf.ml_empty();
+        let res = if append { append_to(&path, &part, eol, final_eol, empty) } else { write_atomic(&path, &part, eol, final_eol, empty) };
         res.map_err(|e| format!("Save failed: {e}"))?;
         self.info(format!("\"{}\" {}L written", path.display(), b - a + 1));
         Ok(())
@@ -1226,7 +1844,7 @@ impl Editor {
         if file.is_empty() {
             return Err("E471: Argument required".into());
         }
-        let path = PathBuf::from(file);
+        let path = super::fname(file);
         if !bang && self.buf.path.as_ref() != Some(&path) && path.exists() {
             return Err("File exists (add ! to override)".into());
         }
@@ -1241,18 +1859,50 @@ impl Editor {
     /// `tabstop`): as spaces with `expandtab`, else as tabs plus spaces, and then `!` also turns
     /// runs of spaces into tabs.
     fn retab(&mut self, r: Option<&LineRange>, all: bool, arg: &str) -> Result<(), String> {
-        let old = self.buf.opts.tabstop;
-        let new = if arg.is_empty() { old } else { arg.parse().ok().filter(|n| (1..=32).contains(n)).ok_or_else(|| format!("Invalid argument: {arg}"))? };
+        let (indent_only, arg) = match arg.strip_prefix("-indentonly") {
+            Some(rest) if rest.is_empty() || rest.starts_with([' ', '\t']) => (true, rest.trim_start_matches([' ', '\t'])),
+            _ => (false, arg),
+        };
+        let given = tabstop_set(arg)?;
         let (a, b) = self.range0(r, true)?;
+        // The cursor goes back to the column it wanted on its line (`coladvance(curwin, curwin->w_curswant)`).
+        let want = self.win.want_col;
+        // The widths are those of the stops now; the new text is made for the stops asked for, or those now when none were.
+        let (ts, old_vts) = (self.buf.opts.tabstop, self.buf.opts.vts_array.clone());
+        let new_vts = if given.is_empty() { old_vts.clone() } else { given.clone() };
+        let (old, new) = (Tabs { ts, vts: &old_vts }, Tabs { ts, vts: &new_vts });
+        let mut first = None;
         for l in a..=b {
             let line = self.buf.doc.text().line(l).into_owned();
-            let s = retab_line(&line, old, new, all, self.buf.opts.expandtab);
+            let (s, touched) = retab_line(&line, old, new, all, self.buf.opts.expandtab, indent_only);
             if s != line {
                 let start = self.buf.doc.text().line_to_offset(l);
+                self.u_save_line(l);
                 self.edit_replace(start..start + line.len(), &s);
             }
+            if touched {
+                first.get_or_insert(l);
+            }
         }
-        self.buf.opts.tabstop = new;
+        // `changed_lines(first_line, 0, ..)`.
+        if let Some(l) = first {
+            let off = self.mark_off(l, 0);
+            self.set_dot(off);
+        }
+        // `ex_retab`.
+        self.u_clearline();
+        // A new value was given: with a list in use or more than one stop it is the new 'vartabstop' (`set_option_direct`),
+        // else it is the new 'tabstop'.
+        if !given.is_empty() {
+            if !old_vts.is_empty() || given.len() > 1 {
+                let text = arg.trim_end_matches(|c: char| !(c.is_ascii_digit() || c == ','));
+                (self.buf.opts.vartabstop, self.buf.opts.vts_array) = (text.to_string(), given);
+            } else {
+                self.buf.opts.tabstop = given[0];
+            }
+        }
+        let l = self.win.line;
+        self.win.col = self.coladvance(l, want);
         Ok(())
     }
 }
@@ -1312,29 +1962,46 @@ mod tests {
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn registers_and_counts() {
-        assert_eq!(reg_count(""), Ok((None, None)));
-        assert_eq!(reg_count("a 3"), Ok((Some('a'), Some(3))));
-        assert_eq!(reg_count("12"), Ok((None, Some(12))));
-        assert_eq!(reg_count("%"), Err("Invalid register: %".into()));
-        assert_eq!(reg_count("0"), Err("E939: Positive count required".into()));
-        assert_eq!(reg_count("a b"), Err("Trailing characters: b".into()));
+        use super::script::{EXFLAG_LIST, EXFLAG_NR};
+        // `:d` takes a register and a count (`_` and `-` are registers), `:p` a count and flags.
+        let prefix = |name, a| crate::editor::script::parse_prefix(crate::editor::script::cmdline_argt(name), a, false).map(|(p, rest)| (p.reg, p.count, p.flags, rest));
+        assert_eq!(prefix("delete", ""), Ok((None, None, 0, "")));
+        assert_eq!(prefix("delete", "a 3"), Ok((Some('a'), Some(3), 0, "")));
+        assert_eq!(prefix("delete", "12"), Ok((None, Some(12), 0, "")));
+        assert_eq!(prefix("delete", "_"), Ok((Some('_'), None, 0, "")));
+        assert_eq!(prefix("print", "2 # l"), Ok((None, Some(2), EXFLAG_NR | EXFLAG_LIST, "")));
+        assert_eq!(prefix("delete", "%"), Ok((None, None, 0, "%")));
+        assert_eq!(prefix("delete", "0"), Err("E939: Positive count required"));
+        assert_eq!(prefix("delete", "a b"), Ok((Some('a'), None, 0, "b")));
+    }
+
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+    #[test]
+    fn print_line_text() {
+        // The Tab is blanks up to 'tabstop', or `>` and blanks with `list`; the empty line is a blank.
+        assert_eq!(msg_prt_line("a\tb", false, Tabs::every(8)), "a       b");
+        assert_eq!(msg_prt_line("\tb", true, Tabs::every(8)), ">       b");
+        assert_eq!(msg_prt_line("", false, Tabs::every(8)), " ");
+        assert_eq!(msg_prt_line("x  \t", true, Tabs::every(4)), "x-->");
+        assert_eq!(msg_prt_line("a\u{a0}b\x01", true, Tabs::every(4)), "a+b^A");
+        assert_eq!(msg_prt_line("日\tx", false, Tabs::every(4)), "日  x");
     }
 
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn retab_lines() {
-        assert_eq!(retab_line("\tx", 4, 8, false, false), "    x");
-        assert_eq!(retab_line("\t\tx", 4, 8, false, false), "\tx");
-        assert_eq!(retab_line("ab\t x\t", 2, 4, false, false), "ab\t x\t");
-        assert_eq!(retab_line("\t\tx", 2, 4, false, false), "\tx");
-        assert_eq!(retab_line("        x  y", 4, 4, false, false), "        x  y");
-        assert_eq!(retab_line("        x  y", 4, 4, true, false), "\t\tx  y");
-        assert_eq!(retab_line("x ", 4, 4, true, false), "x ");
+        assert_eq!(retab_line("\tx", Tabs::every(4), Tabs { ts: 8, vts: &[8] }, false, false, false).0, "    x");
+        assert_eq!(retab_line("\t\tx", Tabs::every(4), Tabs { ts: 8, vts: &[8] }, false, false, false).0, "\tx");
+        assert_eq!(retab_line("ab\t x\t", Tabs::every(2), Tabs { ts: 4, vts: &[4] }, false, false, false).0, "ab\t x\t");
+        assert_eq!(retab_line("\t\tx", Tabs::every(2), Tabs { ts: 4, vts: &[4] }, false, false, false).0, "\tx");
+        assert_eq!(retab_line("        x  y", Tabs::every(4), Tabs { ts: 4, vts: &[4] }, false, false, false).0, "        x  y");
+        assert_eq!(retab_line("        x  y", Tabs::every(4), Tabs { ts: 4, vts: &[4] }, true, false, false).0, "\t\tx  y");
+        assert_eq!(retab_line("x ", Tabs::every(4), Tabs { ts: 4, vts: &[4] }, true, false, false).0, "x ");
         // Wide chars and clusters count their screen cells: `日` takes 2, `e` + U+0301 one.
-        assert_eq!(retab_line("日\tx", 4, 8, false, false), "日  x");
-        assert_eq!(retab_line("日\tx", 4, 4, false, true), "日  x");
-        assert_eq!(retab_line("e\u{301}\tx", 4, 8, false, true), "e\u{301}   x");
-        assert_eq!(retab_line("日本語  x", 4, 4, true, false), "日本語\tx");
+        assert_eq!(retab_line("日\tx", Tabs::every(4), Tabs { ts: 8, vts: &[8] }, false, false, false).0, "日  x");
+        assert_eq!(retab_line("日\tx", Tabs::every(4), Tabs { ts: 4, vts: &[4] }, false, true, false).0, "日  x");
+        assert_eq!(retab_line("e\u{301}\tx", Tabs::every(4), Tabs { ts: 8, vts: &[8] }, false, true, false).0, "e\u{301}   x");
+        assert_eq!(retab_line("日本語  x", Tabs::every(4), Tabs { ts: 4, vts: &[4] }, true, false, false).0, "日本語\tx");
     }
 
     /// `LineMarks::map` against mapping every line through every edit.
@@ -1352,7 +2019,7 @@ mod tests {
         marks.pop(&text);
         let mut plain = marks.lines.clone();
         for ed in &edits {
-            marks.map(std::slice::from_ref(ed));
+            marks.map(std::slice::from_ref(ed), &text);
             for (s, e, alive) in &mut plain[1..] {
                 *alive &= !(ed.old_len > 0 && ed.start <= *s && *e <= ed.start + ed.old_len);
                 (*s, *e) = (ed.map(*s), ed.map(*e));
@@ -1361,7 +2028,7 @@ mod tests {
         let got: Vec<_> = marks.lines[1..].iter().map(|&(s, e, a)| (marks.at(s), marks.at(e), a)).collect();
         assert_eq!(got, plain[1..]);
         let mut marks = LineMarks::new(&text, 0..0);
-        marks.map(&edits);
+        marks.map(&edits, &text);
         assert_eq!(marks.pop(&text), None);
     }
 }

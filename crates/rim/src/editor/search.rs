@@ -56,10 +56,11 @@ impl Search {
             .map_err(|e| format!("Invalid pattern: {e}"))
     }
 
-    /// `*`/`#`: `word` as a whole word, ignoring case with `ignorecase` (`smartcase` does not
-    /// apply, as in vim). Words are alnum and `_` only, so nothing needs escaping.
-    pub fn word(word: &str, ignore_case: bool) -> Search {
-        Search::new(&format!(r"{}\b{word}\b", if ignore_case { "(?i)" } else { "" })).expect("a word is a valid pattern")
+    /// `*`/`#`: `word` as a whole word when it is an identifier (`whole`, Neovim's `\<`/`\>`), else as it is; ignoring case with
+    /// `ignorecase` (`smartcase` does not apply, as in vim).
+    pub fn word(word: &str, whole: bool, ignore_case: bool) -> Search {
+        let b = if whole { r"\b" } else { "" };
+        Search::new(&format!("{}{b}{}{b}", if ignore_case { "(?i)" } else { "" }, regex::escape(word))).expect("an escaped word is a valid pattern")
     }
 }
 
@@ -157,8 +158,9 @@ mod tests {
     fn invalid_patterns_report_the_cause() {
         let e = Search::new("(").err().unwrap();
         assert!(e.starts_with("Invalid pattern: ") && e.len() > "Invalid pattern: ".len(), "{e}");
-        assert_eq!(Search::word("foo", false).pat, r"\bfoo\b");
-        assert_eq!(Search::word("foo", true).pat, r"(?i)\bfoo\b");
+        assert_eq!(Search::word("foo", true, false).pat, r"\bfoo\b");
+        assert_eq!(Search::word("foo", true, true).pat, r"(?i)\bfoo\b");
+        assert_eq!(Search::word("a.b", false, false).pat, r"a\.b");
     }
 
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]

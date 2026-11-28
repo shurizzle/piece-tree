@@ -1,0 +1,2721 @@
+NVIM v0.12.6
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 2
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  2   four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 substitutions on 1 line
+1 1 ['onX two thrXX', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 substitutions on 1 line
+1 1 ['onX two thrXX', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 1 1
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 matches on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+  1 onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 3
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+2 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+  3 thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 1 7
+"---
+
+19 substitutions on 5 lines
+7 1 ['onX two thrXX', '  four fivX six', 'thrXX two onX', '', 'XXX XXX XXX', 'x', 'last linX hXrX'] 'e' 1 7
+"---
+
+19 substitutions on 5 lines
+7 1 ['onX two thrXX', '  four fivX six', 'thrXX two onX', '', 'XXX XXX XXX', 'x', 'last linX hXrX'] 'e' 1 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'E' 1 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+5 matches on 5 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 7
+"---
+
+19 matches on 5 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 7
+"---
+
+5 substitutions on 5 lines
+last linX here
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 1 7
+"---
+
+5 substitutions on 5 lines
+  7 last linX here
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 1 7
+"---
+
+5 substitutions on 5 lines
+last linX here
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 1 7
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+3 substitutions on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX hXrX'] 'e' 7 7
+"---
+
+3 substitutions on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX hXrX'] 'e' 7 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'E' 7 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+3 matches on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+1 substitution on 1 line
+last linX here
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+1 substitution on 1 line
+  7 last linX here
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+1 substitution on 1 line
+last linX here
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 substitutions on 1 line
+1 1 ['onX two thrXX', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 substitutions on 1 line
+1 1 ['onX two thrXX', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 1 1
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 matches on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+  1 onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+onX two three
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/g
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/ge
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/zz/X/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/zz/X/e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/E/X/i
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/E/X/I
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/n
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/gn
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/p
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/#
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,2s/e/X/l
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/g
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/ge
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/zz/X/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/zz/X/e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/E/X/i
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/E/X/I
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/n
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/gn
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/p
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/#
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range: 1,100s/e/X/l
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 3
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+2 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+4 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+  3 thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 2
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  2   four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 4
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: E
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'E' 2 7
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 match on 1 line
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+4 matches on 2 lines
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+  2   four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+  3 thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+thrXe two one
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+  four fivX six
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+4 substitutions on 2 lines
+thrXX two onX
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+9 substitutions on 1 line
+5 1 ['one two three', '  four five six', 'three two one', '', 'XXX XXX XXX', 'x', 'last line here'] 'e' 4 5
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+1 substitution on 1 line
+5 1 ['one two three', '  four five six', 'three two one', '', 'Xee eee eee', 'x', 'last line here'] 'e' 4 5
+"---
+
+4 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXX two onX', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+9 substitutions on 1 line
+5 1 ['one two three', '  four five six', 'three two one', '', 'XXX XXX XXX', 'x', 'last line here'] 'e' 4 6
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fiv six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fiv six', 'thre two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fiv six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fiv six', 'thre two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+3 2 ['one two three', '  four fiv', ' six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 3
+"---
+
+2 substitutions on 2 lines
+5 1 ['one two three', '  four fiv', ' six', 'thr', 'e two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 6
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fiva	b six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fiva	b six', 'thra	be two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 16 ['one two three', '  four five sixthree two one', '', 'eee eee eee', 'x', 'last line here'] '\n' 2 2
+"---
+
+3 substitutions on 1 line
+2 29 ['one two three', '  four five sixthree two oneeee eee eee', 'x', 'last line here'] '\n' 2 2
+"---
+
+1 substitution on 1 line
+1 substitution on 1 line
+2 3 ['one two three', '  f0ur fiv1 six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+3 substitutions on 2 lines
+3 substitutions on 1 line
+3 1 ['one two three', '  f0ur five six', 'thr11 tw0 0n1', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E488: Trailing characters: x
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E488: Trailing characters: x
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 substitution on 1 line
+2 1 ['one two three', '>   four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '^' 2 2
+"---
+
+3 substitutions on 3 lines
+4 1 ['one two three', '>   four five six', '> three two one', '> ', 'eee eee eee', 'x', 'last line here'] '^' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four five six <', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '$' 2 2
+"---
+
+3 substitutions on 3 lines
+4 2 ['one two three', '  four five six <', 'three two one <', ' <', 'eee eee eee', 'x', 'last line here'] '$' 2 4
+"---
+
+4 substitutions on 1 line
+2 1 ['one two three', '__four_five_six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] ' ' 2 2
+"---
+
+6 substitutions on 2 lines
+3 1 ['one two three', '__four_five_six', 'three_two_one', '', 'eee eee eee', 'x', 'last line here'] ' ' 2 4
+"---
+
+Error in {file}:
+line   12:
+E486: Pattern not found: t
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 't' 2 7
+"---
+
+2 substitutions on 1 line
+x
+3 1 ['one two three', '  four five six', 'Three Two one', '', 'eee eee eee', 'x', 'last line here'] 't' 2 4
+"---
+
+1 substitution on 1 line
+Error in {file}:
+line   12:
+E486: Pattern not found: e
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+1 substitution on 1 line
+3 1 ['one two three', '  four fivX six', 'thrXY two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E33: No previous substitute regular expression
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E939: Positive count required
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E939: Positive count required
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E488: Trailing characters: -1
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E488: Trailing characters: -1
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+4 substitutions on 4 lines
+7 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 2 7
+"---
+
+2 substitutions on 2 lines
+7 1 ['one two three', '  four five six', 'three two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 4 7
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 substitutions on 2 lines
+3 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 4
+"---
+
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+7 9 ['        one two three', '          four five six', '        three two one', '', '        eee eee eee', 'x', '        last line here'] 'e' 7 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 1 [''] 'zz' 1 1
+"---
+
+6 fewer lines
+1 1 [''] '.' 2 2
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 line less
+6 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+7 15 ['one two threex', '  four five sixx', 'three two onex', '', 'eee eee eeex', 'x', 'last line herex'] 'e' 7 7
+"---
+
+1 3 ['last line here', 'eee eee eee', 'three two one', '  four five six', 'one two three', '', 'x'] 'e' 1 1
+"---
+
+5 more lines
+12 3 ['one two three', 'one two three', '  four five six', '  four five six', 'three two one', 'three two one', '', 'eee eee eee', 'eee eee eee', 'x', 'last line here', 'last line here'] 'e' 12 12
+"---
+
+3 fewer lines
+4 1 ['one two three four five six', 'three two one', 'eee eee eee x', 'last line here'] 'e' 3 3
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+4 fewer lines
+3 1 ['one two three four five six three two one', 'eee eee eee', 'x last line here'] 'e' 3 3
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+3 fewer lines
+4 1 ['one two three', 'three two one', 'eee eee eee', 'last line here'] 'e' 4 4
+"---
+
+1 line less
+4 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'x', 'last line here'] '^$' 4 4
+"---
+
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+9 substitutions on 9 lines
+7 1 ['onX two thrYe', '  four fivX six', 'thrXY two one', '', 'XYe eee eee', 'x', 'last linX hYre'] 'e' 7 7
+"---
+
+1 1 [''] 'e' 1 1
+"---
+
+x
+x
+x
+x
+x
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+ 
+x
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five siy', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 1 [''] '\n' 1 1
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+6 fewer lines
+1 1 ['last line here'] 'e' 1 1
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+7
+7
+7
+7
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+3 9 ['        one two three', '          four five six', '        three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 substitutions on 3 lines
+3 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'zz' 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] '.' 1 1
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+3 14 ['one two threex', '  four five sixx', 'three two onex', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+1 3 ['three two one', '  four five six', 'one two three', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 more lines
+6 3 ['one two three', 'one two three', '  four five six', '  four five six', 'three two one', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 6 6
+"---
+
+2 fewer lines
+2 1 ['one two three four five six', 'three two one', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+2 fewer lines
+1 1 ['one two three four five six three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+2 fewer lines
+3 1 ['one two three', 'three two one', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+Pattern not found: ^$
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '^$' 2 7
+"---
+
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+3 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+5 substitutions on 5 lines
+3 1 ['onX two thrYe', '  four fivX six', 'thrXY two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+4 fewer lines
+1 1 ['eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+x
+x
+x
+3 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+one two three
+  four five six
+three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+3 1 ['one two three', '  four five siy', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+3 substitutions on 3 lines
+3 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] '\n' 1 1
+"---
+
+4 fewer lines
+1 1 ['eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 fewer lines
+1 1 ['', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+3 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+7
+7
+3 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+3 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+7 9 ['        one two three', '          four five six', '        three two one', '', '        eee eee eee', 'x', '        last line here'] 'e' 7 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 1 [''] 'zz' 1 1
+"---
+
+6 fewer lines
+1 1 [''] '.' 2 2
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 line less
+6 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+7 15 ['one two threex', '  four five sixx', 'three two onex', '', 'eee eee eeex', 'x', 'last line herex'] 'e' 7 7
+"---
+
+1 3 ['last line here', 'eee eee eee', 'three two one', '  four five six', 'one two three', '', 'x'] 'e' 1 1
+"---
+
+5 more lines
+12 3 ['one two three', 'one two three', '  four five six', '  four five six', 'three two one', 'three two one', '', 'eee eee eee', 'eee eee eee', 'x', 'last line here', 'last line here'] 'e' 12 12
+"---
+
+3 fewer lines
+4 1 ['one two three four five six', 'three two one', 'eee eee eee x', 'last line here'] 'e' 3 3
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+4 fewer lines
+3 1 ['one two three four five six three two one', 'eee eee eee', 'x last line here'] 'e' 3 3
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+3 fewer lines
+4 1 ['one two three', 'three two one', 'eee eee eee', 'last line here'] 'e' 4 4
+"---
+
+1 line less
+4 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'x', 'last line here'] '^$' 4 4
+"---
+
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+9 substitutions on 9 lines
+7 1 ['onX two thrYe', '  four fivX six', 'thrXY two one', '', 'XYe eee eee', 'x', 'last linX hYre'] 'e' 7 7
+"---
+
+1 1 [''] 'e' 1 1
+"---
+
+x
+x
+x
+x
+x
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+ 
+x
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five siy', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+5 substitutions on 5 lines
+7 1 ['onX two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 1 [''] '\n' 1 1
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+6 fewer lines
+1 1 ['last line here'] 'e' 1 1
+"---
+
+5 fewer lines
+2 1 ['', 'x'] 'e' 3 3
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+7
+7
+7
+7
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line >ed 1 time
+2 11 ['one two three', '          four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 2
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '.' 2 2
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+2 16 ['one two three', '  four five sixx', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 3 ['  four five six', 'one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 more line
+3 3 ['one two three', '  four five six', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+1 line less
+2 3 ['one two three', '  four five six three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+1 1 ['one two three four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+3 1 ['one two three', '  four five six', '', 'eee eee eee', 'x', 'last line here'] 'e' 3 3
+"---
+
+Pattern not found: ^$
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '^$' 2 7
+"---
+
+1 line yanked into "A
+2 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 fewer lines
+2 1 ['one two three', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+x
+2 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+  four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+2 3 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four five siy', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+1 substitution on 1 line
+2 3 ['one two three', '  four fivX six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '\n' 2 2
+"---
+
+2 fewer lines
+2 1 ['one two three', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+2 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+2 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  2   four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  2   four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line >ed 1 time
+7 9 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', '        last line here'] 'e' 7 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'zz' 7 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] '.' 7 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 7
+"---
+
+7 15 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line herex'] 'e' 7 7
+"---
+
+1 3 ['last line here', 'one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 1 1
+"---
+
+1 more line
+8 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here', 'last line here'] 'e' 8 8
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x last line here'] 'e' 6 6
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: ^$
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '^$' 2 7
+"---
+
+1 line yanked into "A
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+2 substitutions on 2 lines
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX hYre'] 'e' 7 7
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee'] 'e' 6 6
+"---
+
+x
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 7
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] '\n' 7 7
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x'] 'e' 7 7
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line >ed 1 time
+1 9 ['        one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '.' 1 1
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 7
+"---
+
+1 14 ['one two threex', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 more line
+2 3 ['one two three', 'one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+1 line less
+1 1 ['one two three four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 1 ['one two three four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 2
+"---
+
+Pattern not found: ^$
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '^$' 2 7
+"---
+
+1 line yanked into "A
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+2 substitutions on 2 lines
+1 1 ['onX two thrYe', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+2 fewer lines
+1 1 ['three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+x
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E35: No previous regular expression
+E476: Invalid command
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Pattern found in every line: e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 7
+"---
+
+1 substitution on 1 line
+1 1 ['onX two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '\n' 1 1
+"---
+
+2 fewer lines
+1 1 ['three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 line less
+1 3 ['  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 1 1
+"---
+
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+1 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  1 one two three
+1 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/>
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/s/e/X/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g!/e/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1v/e/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/p
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/zz/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/zz/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1v/zz/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/./d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g//d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/g/x/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/normal Ax
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/m0
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/t.
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/j
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g#e#d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/-1j
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/+1d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/^$/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/y A
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/s/e/X/|s/e/Y/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/d|d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/echo "x"
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g!
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g!/e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/ d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/normal dd
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/s/x/y/
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/s/e/X/e
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/g/e/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/v/e/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/\n/d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/.,+1d
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/d x
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/k a
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/=
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/#
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/l
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+Error in {file}:
+line   12:
+E493: Backwards range given: 3,1g/e/nu
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] '' 2 7
+"---
+
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+1 line >ed 1 time
+7 9 ['one two three', '          four five six', '        three two one', '', '        eee eee eee', 'x', '        last line here'] 'e' 7 7
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+4 substitutions on 4 lines
+7 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+Pattern not found: zz
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'zz' 2 7
+"---
+
+6 fewer lines
+1 1 ['one two three'] 'zz' 2 2
+"---
+
+5 fewer lines
+2 1 ['one two three', ''] '.' 3 3
+"---
+
+1 line less
+2 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'five' 2 2
+"---
+
+1 line less
+6 1 ['one two three', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+7 15 ['one two three', '  four five sixx', 'three two onex', '', 'eee eee eeex', 'x', 'last line herex'] 'e' 7 7
+"---
+
+1 3 ['last line here', 'eee eee eee', 'three two one', '  four five six', 'one two three', '', 'x'] 'e' 1 1
+"---
+
+4 more lines
+11 3 ['one two three', '  four five six', '  four five six', 'three two one', 'three two one', '', 'eee eee eee', 'eee eee eee', 'x', 'last line here', 'last line here'] 'e' 11 11
+"---
+
+2 fewer lines
+5 1 ['one two three', '  four five six three two one', '', 'eee eee eee x', 'last line here'] 'e' 4 4
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+4 fewer lines
+3 1 ['one two three four five six three two one', 'eee eee eee', 'x last line here'] 'e' 3 3
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+2 fewer lines
+5 1 ['one two three', '  four five six', '', 'eee eee eee', 'last line here'] 'e' 5 5
+"---
+
+1 line less
+4 1 ['one two three', '  four five six', 'three two one', 'eee eee eee', 'x', 'last line here'] '^$' 4 4
+"---
+
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+1 line yanked into "A
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 7 7
+"---
+
+7 substitutions on 7 lines
+7 1 ['one two three', '  four fivX six', 'thrXY two one', '', 'XYe eee eee', 'x', 'last linX hYre'] 'e' 7 7
+"---
+
+6 fewer lines
+1 1 ['one two three'] 'e' 2 2
+"---
+
+x
+x
+x
+x
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'five' 2 7
+"---
+
+  four five six
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'five' 2 7
+"---
+
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+Error in {file}:
+line   12:
+E148: Regular expression missing from global
+2 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'five' 2 7
+"---
+
+ 
+x
+6 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+1 substitution on 1 line
+7 1 ['one two three', '  four five siy', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'x' 2 2
+"---
+
+4 substitutions on 4 lines
+7 1 ['one two three', '  four fivX six', 'thrXe two one', '', 'Xee eee eee', 'x', 'last linX here'] 'e' 7 7
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+6 fewer lines
+1 1 ['one two three'] '\n' 2 2
+"---
+
+Error in {file}:
+line   12:
+E16: Invalid range
+4 fewer lines
+3 1 ['one two three', '', 'last line here'] 'e' 3 3
+"---
+
+4 fewer lines
+3 1 ['one two three', '', 'x'] 'e' 4 4
+"---
+
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+7
+7
+7
+7
+7 1 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  four five six
+three two one
+eee eee eee
+last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7
+"---
+
+  2   four five six
+  3 three two one
+  5 eee eee eee
+  7 last line here
+7 3 ['one two three', '  four five six', 'three two one', '', 'eee eee eee', 'x', 'last line here'] 'e' 2 7

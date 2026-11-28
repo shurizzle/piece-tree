@@ -266,6 +266,8 @@ pub(in crate::editor) struct State {
     pub equal_limit: usize,
     /// `global_busy`: a `:global` runs its commands; their reports come once at the end.
     pub global_busy: bool,
+    /// `global_need_beginline`: a `:s` ran inside `:global`, which ends with the cursor on the first non-blank.
+    pub global_need_beginline: bool,
     /// `called_emsg`: errors given so far, also when they were not shown (`:silent!`).
     pub called_emsg: usize,
     /// An error was given while `:global` ran its commands: `emsg` makes `global_busy` 2 and `global_exe` stops.
@@ -277,6 +279,12 @@ pub(in crate::editor) struct State {
     pub typed: bool,
     /// The command that ran ends its line (an `:unlet` whose lvalue failed): no command after it.
     pub drop_next: bool,
+    /// Keys a command put into the typeahead (`:put .`), typed once the outermost command line is done.
+    pub stuffed: Vec<Vec<crossterm::event::KeyEvent>>,
+    /// Keys `feedkeys()` queued without the 'x' flag, run by the next call that has it.
+    pub feedq: Vec<crossterm::event::KeyEvent>,
+    /// The register, count and flags `do_one_cmd` read for the command that runs (`eap->regname`, the count, `eap->flags`).
+    pub ea: cmdline::Prefix,
     /// What follows the argument of the command that runs, up to the end of its line (`| echo 1`): a message that quotes
     /// its argument by pointer shows it too (`E716: Key not present in Dictionary: "zz | echo 1"`).
     pub arg_rest: String,
@@ -388,7 +396,11 @@ fn has_loop_cmd(line: &str) -> bool {
 impl Editor {
     /// Runs the command line(s) `line`, which may hold `|`, comments and blocks. Returns false to quit.
     pub(in crate::editor) fn command(&mut self, line: &str) -> bool {
-        self.do_cmdline(Some(line.to_string()), false, false, false)
+        let go = self.do_cmdline(Some(line.to_string()), false, false, false);
+        if self.scripts.depth == 0 {
+            self.run_stuffed();
+        }
+        go
     }
 
     /// `getsourceline`: the next line of the file being sourced; its number becomes the current one.
@@ -753,6 +765,10 @@ impl Editor {
             let skip = self.scripts.did_emsg || self.scripts.did_throw || (cstack.idx >= 0 && cstack.flags[cstack.idx as usize] & CSF_ACTIVE == 0);
             // 2. The command (to know what the range counts), then the range.
             let name_of = |t: &str| -> usize {
+                // `one_letter_cmd`: `:k` can be followed by any character, but `:kee[pmarks]` is another command.
+                if cmdline::one_letter_k(t) || cmdline::one_letter_s(t) {
+                    return 1;
+                }
                 let n = t.bytes().take_while(u8::is_ascii_alphabetic).count();
                 if n == 0 && t.starts_with(['@', '!', '=', '>', '<', '&', '~', '#']) { 1 } else { n }
             };
@@ -796,8 +812,11 @@ impl Editor {
                 break 'doend;
             }
             // `find_ex_command`: a name is letters, or one of `@!=><&~#`.
-            let n = name_of(after_range);
-            let (name, argtxt) = (&after_range[..n], &after_range[n..]);
+            let n_full = name_of(after_range);
+            // `:dl`, `:delp`: `:delete` with a flag, which is no part of the name.
+            let dflag = cmdline::delete_flag(&after_range[..n_full]);
+            let n = n_full - usize::from(dflag.is_some());
+            let (name, argtxt) = (&after_range[..n], &after_range[n_full..]);
             let argpos = s.len() - argtxt.len();
             let Some(def) = cmdline::lookup(name) else {
                 // The modifiers are commands too (`ex_wrongmodifier`) and none takes a range: `3silent echo 1` is E481.
@@ -898,8 +917,12 @@ impl Editor {
             next = nextcmd;
             let bare = skipwhite(&arg);
             // 5. The register, count and flags, then the arguments that are not allowed or missing.
-            let rest = match cmdline::after_prefix(argt, bare) {
-                Ok(r) => r,
+            let rest = match cmdline::parse_prefix(argt, bare, long == "put") {
+                Ok((mut p, r)) => {
+                    p.flags |= dflag.unwrap_or(0);
+                    self.scripts.ea = p;
+                    r
+                }
                 Err(e) => {
                     errormsg = Some(e.into());
                     break 'doend;
@@ -1085,12 +1108,13 @@ impl Editor {
             // `openscript`: Normal mode commands from a file are not supported.
             return Err(":source! is not supported (Normal mode commands from a file)".into());
         }
-        let full = PathBuf::from(fix_fname(&expand_env(arg)));
+        let name = expand_env(arg);
+        let full = PathBuf::from(fix_fname(&name));
         if full.is_dir() {
-            self.info(format!("Cannot source a directory: \"{arg}\""));
-            return Err(format!("E484: Can't open file {arg}"));
+            self.info(format!("Cannot source a directory: \"{name}\""));
+            return Err(format!("E484: Can't open file {name}"));
         }
-        let bytes = fs::read(&full).map_err(|_| format!("E484: Can't open file {arg}"))?;
+        let bytes = fs::read(&full).map_err(|_| format!("E484: Can't open file {name}"))?;
         Ok(self.source_text(full.display().to_string(), SourceCookie::new(&String::from_utf8_lossy(&bytes))))
     }
 
@@ -1155,53 +1179,82 @@ fn fix_fname(name: &str) -> String {
     if file.is_empty() { abs } else if abs.ends_with('/') { format!("{abs}{file}") } else { format!("{abs}/{file}") }
 }
 
+/// `os_get_userdir`: the home directory of `name` (`getpwnam`), none when there is no such user.
+fn user_dir(name: &str) -> Option<String> {
+    let name = std::ffi::CString::new(name).ok()?;
+    // SAFETY: `getpwnam` reads a NUL-terminated name and returns a pointer to a static `passwd`,
+    // checked for null; the string it points to is copied before anything else can replace it.
+    unsafe {
+        let pw = libc::getpwnam(name.as_ptr());
+        if pw.is_null() || (*pw).pw_dir.is_null() {
+            return None;
+        }
+        Some(std::ffi::CStr::from_ptr((*pw).pw_dir).to_str().ok()?.to_string())
+    }
+}
+
 /// `expand_env_esc(.., one = true)`: `~` at the start and `$VAR`, `${VAR}` anywhere are replaced by
-/// what the environment has; one that is not set stays as written. A backslash keeps the next char.
-pub(super) fn expand_env(s: &str) -> String {
+/// what the environment has. An unset `$VAR` (or one with an empty value) is removed; an unset
+/// `${VAR}`, an empty one stay as written; `~user` is the home directory of that user (kept as written
+/// when there is no such user). A backslash drops itself and keeps the char after it as written, not
+/// expanded.
+pub(in crate::editor) fn expand_env(s: &str) -> String {
     let src = skipwhite(s);
     let b = src.as_bytes();
     let (mut out, mut i, mut at_start) = (String::new(), 0, true);
     let idc = |c: u8| c.is_ascii_alphanumeric() || c == b'_';
     while i < b.len() {
-        let mut copy = true;
-        if b[i] == b'$' || (b[i] == b'~' && at_start) {
-            let (var, tail): (Option<String>, usize) = if b[i] == b'$' {
-                if b.get(i + 1) == Some(&b'{') {
-                    let end = src[i + 2..].find('}').map(|e| i + 2 + e);
-                    match end {
-                        Some(e) => (std::env::var(&src[i + 2..e]).ok(), e + 1),
-                        None => (None, i + 1),
-                    }
-                } else {
-                    let mut t = i + 1;
-                    while t < b.len() && idc(b[t]) {
-                        t += 1;
-                    }
-                    (std::env::var(&src[i + 1..t]).ok(), t)
+        // What replaces the text from `i` to `end` (an empty one removes it); none: kept as written.
+        let mut repl: Option<(String, usize)> = None;
+        if b[i] == b'~' && at_start {
+            if b.get(i + 1).is_none_or(|c| *c == b'/' || b" ,\t\n".contains(c)) {
+                if let Some(home) = std::env::var("HOME").ok().filter(|v| !v.is_empty()) {
+                    repl = Some((home, i + 1));
                 }
-            } else if b.get(i + 1).is_none_or(|c| *c == b'/' || b" ,\t\n".contains(c)) {
-                (std::env::var("HOME").ok(), i + 1)
             } else {
-                // `~user`: home directories of other users are not looked up.
-                (None, i + 1)
+                // `~user`: the home directory of that user; one that does not exist stays as written.
+                let end = src[i + 1..].find(['/', ' ', '\t', '\n']).map_or(src.len(), |j| i + 1 + j);
+                if let Some(dir) = user_dir(&src[i + 1..end]) {
+                    repl = Some((dir, end));
+                }
+            }
+        } else if b[i] == b'$' {
+            let braced = b.get(i + 1) == Some(&b'{');
+            let (name, end) = if braced {
+                match src[i + 2..].find('}') {
+                    Some(e) => (&src[i + 2..i + 2 + e], i + 2 + e + 1),
+                    None => ("", i + 1),
+                }
+            } else {
+                let mut t = i + 1;
+                while t < b.len() && idc(b[t]) {
+                    t += 1;
+                }
+                (&src[i + 1..t], t)
             };
-            if let Some(v) = var.filter(|v| !v.is_empty()) {
-                out.push_str(&v);
-                // A path separator right after a value that ends in one is not doubled.
-                i = if v.ends_with('/') && b.get(tail) == Some(&b'/') { tail + 1 } else { tail };
-                copy = false;
+            // A lone `$` is kept.
+            if end != i + 1 {
+                match std::env::var(name).ok().filter(|v| !v.is_empty()) {
+                    Some(v) => repl = Some((v, end)),
+                    None if !braced => repl = Some((String::new(), end)),
+                    None => {}
+                }
             }
         }
-        if copy {
-            at_start = false;
-            if b[i] == b'\\' && i + 1 < b.len() {
-                out.push('\\');
-                i += 1;
-            }
-            let l = src[i..].chars().next().map_or(1, char::len_utf8);
-            out.push_str(&src[i..i + l]);
-            i += l;
+        if let Some((v, end)) = repl {
+            out.push_str(&v);
+            // A path separator right after a value that ends in one is not doubled.
+            i = if v.ends_with('/') && b.get(end) == Some(&b'/') { end + 1 } else { end };
+            continue;
         }
+        at_start = false;
+        // A backslash drops itself and keeps the next char as it is, not expanded.
+        if b[i] == b'\\' && i + 1 < b.len() {
+            i += 1;
+        }
+        let l = src[i..].chars().next().map_or(1, char::len_utf8);
+        out.push_str(&src[i..i + l]);
+        i += l;
     }
     out
 }

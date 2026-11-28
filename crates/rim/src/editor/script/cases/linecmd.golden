@@ -1,0 +1,4440 @@
+NVIM v0.12.6
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+2 4 ['one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+' 'A' '  two three
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2d
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'one
+' 'A' 'one
+' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100d
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+8 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine'] 'ten
+' 'A' 'ten
+' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' 'five six
+
+seven
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'ad
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+1 1 [''] 'one
+  two three
+   four
+five six
+
+seven
+eight
+nine
+ten
+' 'A' 'one
+  two three
+   four
+five six
+
+seven
+eight
+nine
+ten
+' ''
+"---
+
+3 1 ['one', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '   four
+' 'A' '   four
+' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '
+' 'A' '
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3d
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+' 'A' '   four
+five six
+' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+' 'A' '' '  two three
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' '  two three
+   four
+five six
+'
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2y
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'one
+' 'A' '' 'one
+'
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100y
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'ten
+' 'A' '' 'ten
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' '' 'five six
+
+seven
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'ay
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines yanked
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' '  two three
+   four
+five six
+'
+"---
+
+9 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+
+seven
+eight
+nine
+ten
+' 'A' '' 'one
+  two three
+   four
+five six
+
+seven
+eight
+nine
+ten
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '   four
+' 'A' '' '   four
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '
+' 'A' '' '
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' '  two three
+   four
+five six
+'
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3y
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+' 'A' '' '   four
+five six
+'
+"---
+
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 4 ['one', '	  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 2 ['	one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 2 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', '	ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+6 2 ['one', '  two three', '   four', '	five six', '', '	seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'a>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 lines >ed 1 time
+9 2 ['	one', '	  two three', '	   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+3 5 ['one', '  two three', '	   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 2 ['one', '  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 1 ['one', 'two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2<
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100<
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+6 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'a<
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 lines <ed 1 time
+9 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3<
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 1 ['one two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'aj
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 1 ['one two three four five six seven eight nine ten'] '' 'A' '' ''
+"---
+
+3 4 ['one', '  two three', '   four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 4 ['one', '  two three', '   four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three   fourfive six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2j!
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 1 ['one  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100j!
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five sixseven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'aj!
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three   fourfive six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 1 ['one  two three   fourfive sixseveneightnineten'] '' 'A' '' ''
+"---
+
+3 4 ['one', '  two three', '   fourfive six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three   fourfive six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3j!
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 4 ['one', '  two three', '   fourfive six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2p
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+one
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100p
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'ap
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+one
+  two three
+   four
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+   four
+3 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+ 
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3p
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2=
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100=
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'a=
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3=
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2#
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100#
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  9 ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+  5  
+  6 seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'a#
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+  2   two three
+  3    four
+  4 five six
+  5  
+  6 seven
+  7 eight
+  8 nine
+  9 ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  3    four
+3 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  5  
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3#
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2nu
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100nu
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  9 ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+  5  
+  6 seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'anu
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+  2   two three
+  3    four
+  4 five six
+  5  
+  6 seven
+  7 eight
+  8 nine
+  9 ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  3    four
+3 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  5  
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3nu
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  3    four
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2l
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+one
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range: 1,100l
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set: 'al
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+one
+  two three
+   four
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+   four
+3 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+ 
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: ,3l
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'five six
+' 'five six
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' '  two three
+   four
+five six
+' '  two three
+   four
+five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'A
+five six
+' 'A
+five six
+' 'five six
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] 'A
+  two three
+   four
+five six
+' 'A
+  two three
+   four
+five six
+' '  two three
+   four
+five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' 'five six
+
+seven
+' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' 'five six
+
+seven
+' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'five six
+
+seven
+' 'five six
+
+seven
+' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'five six
+
+seven
+' 'five six
+
+seven
+' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: d 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4d 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+6 fewer lines
+3 4 ['one', '  two three', '   four'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' 'five six
+
+seven
+eight
+nine
+ten
+' ''
+"---
+
+6 fewer lines
+3 4 ['one', '  two three', '   four'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' 'five six
+
+seven
+eight
+nine
+ten
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: d 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4d 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: d 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4d 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+3 fewer lines
+2 1 ['one', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '  two three
+   four
+five six
+' ''
+"---
+
+6 fewer lines
+3 4 ['one', '  two three', '   four'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' 'five six
+
+seven
+eight
+nine
+ten
+' ''
+"---
+
+6 fewer lines
+3 4 ['one', '  two three', '   four'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' 'five six
+
+seven
+eight
+nine
+ten
+' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: d 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4d 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' '  two three
+   four
+five six
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'five six
+' '' ''
+"---
+
+3 lines yanked into "a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' '  two three
+   four
+five six
+' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'A
+five six
+' 'A
+five six
+' '' ''
+"---
+
+3 lines yanked into "A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'A
+  two three
+   four
+five six
+' 'A
+  two three
+   four
+five six
+' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' '' 'five six
+
+seven
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' '' 'five six
+
+seven
+'
+"---
+
+3 lines yanked into "a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'five six
+
+seven
+' '' ''
+"---
+
+3 lines yanked into "a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'five six
+
+seven
+' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: y 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4y 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' ''
+"---
+
+6 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' '' 'five six
+
+seven
+eight
+nine
+ten
+'
+"---
+
+6 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' '' 'five six
+
+seven
+eight
+nine
+ten
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' ''
+"---
+
+3 lines yanked into "x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: y 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4y 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: y 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4y 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+3 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+five six
+' 'A' '' '  two three
+   four
+five six
+'
+"---
+
+6 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' '' 'five six
+
+seven
+eight
+nine
+ten
+'
+"---
+
+6 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+eight
+nine
+ten
+' 'A' '' 'five six
+
+seven
+eight
+nine
+ten
+'
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: y 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4y 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: > a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: 2,4> a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: > A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: 2,4> A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: > _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: 2,4> _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+6 2 ['one', '  two three', '   four', '	five six', '', '	seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+6 2 ['one', '  two three', '   four', '	five six', '', '	seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: > a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: 2,4> a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: > 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4> 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: > -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: 2,4> -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 1 time
+9 2 ['one', '  two three', '   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 1 time
+9 2 ['one', '  two three', '   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: > x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4> x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: > 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4> 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: > 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4> 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '	   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 1 time
+9 2 ['one', '  two three', '   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 1 time
+9 2 ['one', '  two three', '   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: > 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4> 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: < a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: 2,4< a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: < A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: 2,4< A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: < _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: 2,4< _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+6 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+6 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: < a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: 2,4< a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: < 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4< 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: < -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: 2,4< -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines <ed 1 time
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines <ed 1 time
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: < x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4< x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: < 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4< 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: < 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4< 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines <ed 1 time
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines <ed 1 time
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: < 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4< 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 2 times
+4 3 ['one', '		  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: >> a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: 2,4>> a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: >> A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: 2,4>> A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: >> _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: 2,4>> _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 2 times
+6 3 ['one', '  two three', '   four', '		five six', '', '		seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 2 times
+6 3 ['one', '  two three', '   four', '		five six', '', '		seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: >> a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: 2,4>> a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: >> 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4>> 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: >> -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: 2,4>> -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 2 times
+9 3 ['one', '  two three', '   four', '		five six', '', '		seven', '		eight', '		nine', '		ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 2 times
+9 3 ['one', '  two three', '   four', '		five six', '', '		seven', '		eight', '		nine', '		ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: >> x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4>> x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: >> 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4>> 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: >> 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4>> 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 2 times
+4 3 ['one', '		  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 2 times
+9 3 ['one', '  two three', '   four', '		five six', '', '		seven', '		eight', '		nine', '		ten'] '' 'A' '' ''
+"---
+
+6 lines >ed 2 times
+9 3 ['one', '  two three', '   four', '		five six', '', '		seven', '		eight', '		nine', '		ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: >> 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4>> 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: j a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: 2,4j a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: j A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: 2,4j A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: j _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: 2,4j _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: j a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: 2,4j a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: j 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4j 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: j -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: 2,4j -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven eight nine ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven eight nine ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: j x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4j x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: j 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4j 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: j 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4j 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven eight nine ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six seven eight nine ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: j 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4j 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: p a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a: 2,4p a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: p A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: A: 2,4p A
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: p _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: _: 2,4p _
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: p a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a 3: 2,4p a 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: p 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4p 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: p -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: -1: 2,4p -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: p x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4p x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: p 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: x: 2,4p 1x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: p 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: 4: 2,4p 3 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+   four
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: p 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: 2,4p 0 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['five six', 'one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', 'five six', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '  two three'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+3 3 ['  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+5 3 ['one', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+9 3 ['one', '', 'seven', 'eight', 'nine', 'ten', '  two three', '   four', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+5 3 ['one', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 2
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 5
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m $
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 99
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 'a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m /six/
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m 2,3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2m .+1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', 'one'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+3 1 ['   four', 'five six', '', 'one', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+4 1 ['one', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+9 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten', '   four', 'five six', ''] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E134: Cannot move a range of lines into itself
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['  two three', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '  two three'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+4 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 3 ['one', '  two three', '  two three', '   four', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 3 ['one', '  two three', '   four', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 3 ['one', '  two three', '   four', 'five six', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+12 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '  two three', '   four', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 3 ['one', '  two three', '   four', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 3 ['one', '  two three', '  two three', '   four', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 3 ['one', '  two three', '   four', 'five six', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 2
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 5
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t $
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 99
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 'a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t /six/
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t 2,3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2t .+1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['one', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', 'one'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 1 ['   four', 'five six', '', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+4 1 ['one', '   four', 'five six', '', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 1 ['one', '  two three', '   four', '   four', 'five six', '', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 1 ['one', '  two three', '   four', 'five six', '   four', 'five six', '', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+12 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '   four', 'five six', ''] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 1 ['one', '  two three', '   four', '   four', 'five six', '', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 1 ['one', '  two three', '   four', 'five six', '   four', 'five six', '', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['  two three', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '  two three'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', '  two three', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', '  two three', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+4 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 3 ['one', '  two three', '  two three', '   four', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 3 ['one', '  two three', '   four', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 3 ['one', '  two three', '   four', 'five six', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+12 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '  two three', '   four', 'five six'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 3 ['one', '  two three', '   four', '  two three', '   four', 'five six', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 3 ['one', '  two three', '   four', 'five six', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 3 ['one', '  two three', '  two three', '   four', 'five six', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 3 ['one', '  two three', '   four', 'five six', '', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 2
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 5
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co $
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 99
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co -1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 'a
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co /six/
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co 2,3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E493: Backwards range given: 4,2co .+1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1 3 ['one', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+10 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', 'one'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+5 3 ['one', '  two three', '   four', 'five six', 'one', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', 'one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+6 3 ['one', '  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 1 ['   four', 'five six', '', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+4 1 ['one', '   four', 'five six', '', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 1 ['one', '  two three', '   four', '   four', 'five six', '', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 1 ['one', '  two three', '   four', 'five six', '   four', 'five six', '', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+12 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten', '   four', 'five six', ''] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+6 1 ['one', '  two three', '   four', '   four', 'five six', '', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E16: Invalid range
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E20: Mark not set
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+7 1 ['one', '  two three', '   four', 'five six', '   four', 'five six', '', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+5 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+8 1 ['one', '  two three', '   four', 'five six', '', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E471: Argument required
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E471: Argument required
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: aa
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+x
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'seven
+' 'A' 'seven
+' ''
+"---
+
+1 1 ['five six', '', 'seven', 'eight', 'nine', 'ten'] 'one
+' 'A' 'one
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+' 'five six
+
+' '
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+' 'A' '
+' ''
+"---
+
+3 fewer lines
+4 1 ['one', '  two three', '   four', 'eight', 'nine', 'ten'] 'five six
+
+seven
+' 'A' 'five six
+
+seven
+' ''
+"---
+
+1 4 ['   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+' 'A' 'one
+  two three
+' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+five six
+' 'five six
+five six
+' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'fixve six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 1 ['one', 'x  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+7 fewer lines
+2 1 ['   four', ''] 'ten
+' 'A' 'ten
+' ''
+"---
+
+1 3 ['ten', 'nine', 'eight', 'seven', 'five six', '  two three', 'one', '   four', ''] '' 'A' '' ''
+"---
+
+7 more lines
+16 3 ['one', 'one', '  two three', '  two three', '   four', 'five six', 'five six', '', 'seven', 'seven', 'eight', 'eight', 'nine', 'nine', 'ten', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', 'five six', 'seven', 'eight', 'nine', 'ten'] '
+' 'A' '
+' ''
+"---
+
+4 fewer lines
+5 1 ['one two three', '   four', 'five six', 'seven eight', 'nine ten'] '' 'A' '' ''
+"---
+
+9 2 ['	one', '	  two three', '   four', '	five six', '', '	seven', '	eight', '	nine', '	ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+4 1 ['one', '   four', '', 'eight', 'nine', 'ten'] 'seven
+' 'A' 'seven
+' ''
+"---
+
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'A
+one
+  two three
+five six
+seven
+eight
+nine
+ten
+' 'A
+one
+  two three
+five six
+seven
+eight
+nine
+ten
+' '' ''
+"---
+
+3 4 ['one', '  two three', '   four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 4 ['onex', '  two threex', '   four', 'five sixx', '', 'sevenx', 'eightx', 'ninex', 'tenx'] '' 'A' '' ''
+"---
+
+one
+  two three
+five six
+seven
+eight
+nine
+ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9
+9
+9
+9
+9
+9
+9
+9 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+  2   two three
+  4 five six
+  6 seven
+  7 eight
+  8 nine
+  9 ten
+9 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+3 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+
+' 'A' '   four
+five six
+
+' ''
+"---
+
+4 fewer lines
+1 1 ['', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+' 'A' 'one
+  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '' '  two three
+   four
+'
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 lines moved
+4 1 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 9,10t0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+9 3 ['five six', '', 'seven', 'eight', 'nine', 'ten', 'one', '  two three', '   four'] '' 'A' '' ''
+"---
+
+2 lines <ed 1 time
+3 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 lines >ed 2 times
+4 3 ['one', '  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+3 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+
+' 'A' '   four
+five six
+
+' ''
+"---
+
+4 fewer lines
+1 1 ['', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+' 'A' 'one
+  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '' '  two three
+   four
+'
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 lines moved
+4 1 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 9,10t0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+9 3 ['five six', '', 'seven', 'eight', 'nine', 'ten', 'one', '  two three', '   four'] '' 'A' '' ''
+"---
+
+2 lines <ed 1 time
+3 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 lines >ed 2 times
+4 3 ['one', '  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 fewer lines
+3 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+
+' 'A' '   four
+five six
+
+' ''
+"---
+
+4 fewer lines
+1 1 ['', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+' 'A' 'one
+  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '' '  two three
+   four
+'
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 lines moved
+4 1 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 more lines
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 9,10t0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines moved
+9 3 ['five six', '', 'seven', 'eight', 'nine', 'ten', 'one', '  two three', '   four'] '' 'A' '' ''
+"---
+
+3 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+
+' 'A' '   four
+five six
+
+' ''
+"---
+
+4 fewer lines
+1 1 ['', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+' 'A' 'one
+  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '' '  two three
+   four
+'
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 lines moved
+4 1 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 9,10t0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['five six', '', 'seven', 'eight', 'nine', 'ten', 'one', '  two three', '   four'] '' 'A' '' ''
+"---
+
+3 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', 'seven', 'eight', 'nine', 'ten'] '   four
+five six
+
+' 'A' '   four
+five six
+
+' ''
+"---
+
+1 1 ['', 'seven', 'eight', 'nine', 'ten'] 'one
+  two three
+   four
+five six
+' 'A' 'one
+  two three
+   four
+five six
+' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10>
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '' '  two three
+   four
+'
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 2,10j
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['  two three', '   four', 'five six', '', 'one', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['  two three', '   four', 'five six', 'one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   16:
+E16: Invalid range: 9,10t0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 3 ['five six', '', 'seven', 'eight', 'nine', 'ten', 'one', '  two three', '   four'] '' 'A' '' ''
+"---
+
+3 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '		   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  two three
+        four
+five six
+4 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+        four
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+        four
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 3 ['one', '  two three', '		four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 2 ['one', '  two three', '	four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+2 3 ['one', '  two three four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines >ed 1 time
+4 2 ['one', '	  two three', '		four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 lines <ed 1 time
+4 1 ['one', 'two three', 'four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3 1 ['one', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '	four
+' 'A' '	four
+' ''
+"---
+
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '	four
+' 'A' '' '	four
+'
+"---
+
+4 1 ['one', '  two three', '	four', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9 1 ['one', '  two three', 'five six', '', 'seven', 'eight', 'nine', 'ten', '	four'] '' 'A' '' ''
+"---
+
+  3         four
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+>       four
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  3         four
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+        four
+five six
+4 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+        four
+five six
+4 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+one
+  two three
+>       four
+five six
+4 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  1 one
+  2   two three
+  3         four
+  4 five six
+4 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E471: Argument required
+3 1 ['one', '  two three', '	four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+ 
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+ 
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+ 
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+ 
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+five six
+2 1 ['one', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+   four
+' 'A' '  two three
+   four
+' ''
+"---
+
+   four
+2 4 ['one', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '  two three
+' 'A' '  two three
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' 'five six
+'
+"---
+
+>       five six
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+        five six
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4         five six
+4 2 ['one', '  two three', '   four', '	five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+>       >       five six
+4 3 ['one', '  two three', '   four', '		five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 1 ['one', '  two three', '   four', 'five six', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  2   two three four five six
+2 3 ['one', '  two three four five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+  5  
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+five six
+ 
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+  5  
+5 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+  4 five six
+  5  
+  6 seven
+6 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E191: Argument must be a letter or forward/backward quote
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E471: Argument required
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E191: Argument must be a letter or forward/backward quote
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E471: Argument required
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: ab
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: ep
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: ea
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: a x
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+3
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+1
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+9
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: d 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: /: d /
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E488: Trailing characters: =: d =
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+Error in {file}:
+line   15:
+E939: Positive count required: y 0
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' 'five six
+'
+"---
+
+5 lines yanked
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+seven
+eight
+nine
+' 'A' '' 'five six
+
+seven
+eight
+nine
+'
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'five six
+' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'A
+five six
+' 'A
+five six
+' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''
+"---
+
+4 3 ['one', '  two three', '   four', 'fisix', '', 'seven', 'eight', 'nine', 'ten'] 've ' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+
+' 'five six
+
+' 'five six
+' ''
+"---
+
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' 'five six
+'
+"---
+
+5 1 ['one', '  two three', '   four', '', 'five six', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' 'five six
+'
+"---
+
+Error in {file}:
+line   15:
+E353: Nothing in register "
+4 1 ['one', '  two three', '   four', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+Error in {file}:
+line   15:
+E353: Nothing in register -
+4 3 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] '' 'A' '' ''
+"---
+
+4 1 ['one', '  two three', '   four', 'five six', '', 'seven', 'eight', 'nine', 'ten'] 'five six
+' 'A' 'five six
+' ''

@@ -84,6 +84,7 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("noh", "nohlsearch", TRLBAR),
     c("mes", "messages", EXTRA | TRLBAR | RANGE),
     c("undol", "undolist", TRLBAR),
+    c("undoj", "undojoin", TRLBAR),
     c("go", "goto", RANGE | COUNT | TRLBAR),
     c("ea", "earlier", TRLBAR | EXTRA),
     c("lat", "later", TRLBAR | EXTRA),
@@ -102,9 +103,16 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("i", "insert", BANG | RANGE | TRLBAR),
     c("c", "change", BANG | RANGE | COUNT | TRLBAR),
     c("p", "print", RANGE | COUNT | FLAGS | TRLBAR),
+    c("pu", "put", BANG | RANGE | REGSTR | ZEROR | TRLBAR),
+    c("nu", "number", RANGE | COUNT | FLAGS | TRLBAR),
+    c("#", "#", RANGE | COUNT | FLAGS | TRLBAR),
+    c("l", "list", RANGE | COUNT | FLAGS | TRLBAR),
+    c("k", "k", RANGE | EXTRA | TRLBAR),
+    c("ma", "mark", RANGE | EXTRA | TRLBAR),
     c("=", "=", RANGE | EXTRA),
     c("norm", "normal", RANGE | BANG | EXTRA | NEEDARG | NOTRLCOM | CTRLV),
     c("sor", "sort", RANGE | BANG | EXTRA | NOTRLCOM),
+    c("~", "~", RANGE | EXTRA),
     c("g", "global", RANGE | BANG | EXTRA),
     c("v", "vglobal", RANGE | EXTRA),
     c("r", "read", BANG | RANGE | ZEROR | XFILE | TRLBAR),
@@ -208,7 +216,7 @@ pub(super) fn addr_type(long: &str) -> super::range::AddrType {
         "quit" | "close" | "only" => Windows,
         "resize" | "new" | "vnew" | "split" | "vsplit" | "bnext" | "bprevious" | "bNext" | "messages" | "goto" | "undo" => Other,
         "buffer" | "bdelete" => Buffers,
-        "write" | "wq" | "xit" | "append" | "insert" | "change" | "delete" | "yank" | "move" | "t" | "copy" | ">" | "<" | "join" | "print" | "=" | "normal" | "sort" | "global" | "vglobal" | "read" | "retab" | "call" | "source" | "substitute" | "&" | "&&" | "~" => Lines,
+        "write" | "wq" | "xit" | "append" | "insert" | "change" | "delete" | "yank" | "move" | "t" | "copy" | ">" | "<" | "join" | "print" | "put" | "number" | "#" | "list" | "k" | "mark" | "=" | "normal" | "sort" | "global" | "vglobal" | "read" | "retab" | "call" | "source" | "substitute" | "&" | "&&" | "~" => Lines,
         _ => None,
     }
 }
@@ -347,7 +355,7 @@ pub(super) fn ends_excmd(c: Option<u8>) -> bool {
 }
 
 /// `check_nextcmd`: what follows when `s` (after blanks) starts with `|` or a newline.
-pub(super) fn check_nextcmd(s: &str) -> Option<&str> {
+pub(in crate::editor) fn check_nextcmd(s: &str) -> Option<&str> {
     let t = skipwhite(s);
     t.strip_prefix(['|', '\n'])
 }
@@ -406,16 +414,69 @@ pub(super) fn separate_nextcmd(arg: &str, argt: u32, long: &str) -> (String, Opt
     (String::from_utf8_lossy(&v).into_owned(), next)
 }
 
-/// `parse_register`, `parse_count` and `get_flags`: what is left of `arg` once the register, the
-/// count and the `l`/`p`/`#` flags the command takes are read.
-pub(super) fn after_prefix(argt: u32, arg: &str) -> Result<&str, &'static str> {
+/// `one_letter_cmd` for `:k`: it can be followed directly by any character (`:ka`), but `:kee[pmarks]` is another command.
+pub(in crate::editor) fn one_letter_k(t: &str) -> bool {
+    let b = t.as_bytes();
+    b.first() == Some(&b'k') && (b.get(1) != Some(&b'e') || b.get(2) != Some(&b'e'))
+}
+
+/// `find_ex_command`: `:dl`, `:dell`, `:delp`... are `:delete` with the `l` or `p` flag. The flag is the last letter of `name`.
+pub(in crate::editor) fn delete_flag(name: &str) -> Option<u8> {
+    let (head, last) = name.split_at(name.len().checked_sub(1)?);
+    if head.is_empty() || !name.starts_with('d') || !"delete".starts_with(head) || !matches!(last, "l" | "p") {
+        return None;
+    }
+    Some(if last == "l" { EXFLAG_LIST } else { EXFLAG_PRINT })
+}
+
+/// `one_letter_cmd` for `:s`: it can be followed directly by `c`, `g`, `i`, `I` or `r` (the flags), but `:sre[wind]`,
+/// `:scr[iptnames]`, `:scs[cope]`, `:sim[alt]`, `:sig[ns]` and `:sil[ent]` are other commands.
+pub(in crate::editor) fn one_letter_s(t: &str) -> bool {
+    let b = t.as_bytes();
+    let g = |i: usize| b.get(i).copied().unwrap_or(0);
+    g(0) == b's'
+        && ((g(1) == b'c' && (g(2) == 0 || (g(2) != b's' && g(2) != b'r' && (g(3) == 0 || (g(3) != b'i' && g(4) != b'p')))))
+            || g(1) == b'g'
+            || (g(1) == b'i' && g(2) != b'm' && g(2) != b'l' && g(2) != b'g')
+            || g(1) == b'I'
+            || (g(1) == b'r' && g(2) != b'e'))
+}
+
+/// What `do_one_cmd` reads before the arguments of a command: `parse_register`, `parse_count`, `get_flags`.
+#[derive(Clone, Debug, Default)]
+pub(in crate::editor) struct Prefix {
+    /// The expression after `:put =` (`set_expr_line`): the rest of the line.
+    pub expr: Option<String>,
+    /// `eap->regname`.
+    pub reg: Option<char>,
+    /// The count (`parse_count`), always positive here.
+    pub count: Option<usize>,
+    /// `eap->flags`: a bit of `EXFLAG_*`.
+    pub flags: u8,
+}
+
+pub(in crate::editor) const EXFLAG_LIST: u8 = 1;
+pub(in crate::editor) const EXFLAG_NR: u8 = 2;
+pub(in crate::editor) const EXFLAG_PRINT: u8 = 4;
+
+/// The register, the count and the `l`/`p`/`#` flags the command takes, and what is left of `arg`.
+pub(in crate::editor) fn parse_prefix(argt: u32, arg: &str, reading: bool) -> Result<(Prefix, &str), &'static str> {
+    let mut p = Prefix::default();
     let mut a = arg;
     let first = a.as_bytes().first().copied();
     if argt & REGSTR != 0 && first.is_some() && !(argt & COUNT != 0 && first.is_some_and(|b| b.is_ascii_digit())) {
         // `valid_yank_reg(.., writing)`: the commands with a register write to it.
         let c = a.chars().next().unwrap_or('\0');
-        if c.is_ascii_alphanumeric() || "#\"-_*+".contains(c) {
-            a = skipwhite(&a[c.len_utf8()..]);
+        // `:put` reads the register: `valid_yank_reg(.., false)` also takes `/`, `.`, `%`, `:` and `=`.
+        if c.is_ascii_alphanumeric() || "#\"-_*+".contains(c) || (reading && "/.%:=".contains(c)) {
+            p.reg = Some(c);
+            a = &a[c.len_utf8()..];
+            // `=`: the rest of the line is the expression, as it is.
+            if c == '=' && !a.is_empty() {
+                p.expr = Some(a.to_string());
+                a = "";
+            }
+            a = skipwhite(a);
         }
     }
     if argt & COUNT != 0 && a.as_bytes().first().is_some_and(u8::is_ascii_digit) {
@@ -428,14 +489,20 @@ pub(super) fn after_prefix(argt: u32, arg: &str) -> Result<&str, &'static str> {
             if n <= 0 && argt & ZEROR == 0 {
                 return Err("E939: Positive count required");
             }
+            p.count = Some(n as usize);
         }
     }
     if argt & FLAGS != 0 {
-        while a.starts_with(['l', 'p', '#']) {
+        while let Some(c) = a.chars().next().filter(|c| matches!(c, 'l' | 'p' | '#')) {
+            p.flags |= match c {
+                'l' => EXFLAG_LIST,
+                'p' => EXFLAG_PRINT,
+                _ => EXFLAG_NR,
+            };
             a = skipwhite(&a[1..]);
         }
     }
-    Ok(a)
+    Ok((p, a))
 }
 
 // ---- names of variables: eval.c `find_name_end`, eval/vars.c `skip_var_list` -------------------

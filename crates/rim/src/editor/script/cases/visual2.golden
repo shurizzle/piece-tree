@@ -1,0 +1,387 @@
+NVIM v0.12.6
+
+2 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[0, 0], [0, 0]] 4 1  ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 1], [2, 1]] 2 1 v ['alpha beta gamma', 'eta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'ta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+3 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'appa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[1, 1], [1, 1]] 1 1 v ['eta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [3, 5]] 3 4 v ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [5, 1]] 5 1 v ['alpha beta gamma', 'delta epsilon', 'zeta', '', '', 'xeta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 1], [2, 1]] 2 1 v ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[3, 1], [3, 1]] 3 1 v ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[1, 1], [1, 1]] 1 1 v ['']
+"---
+
+1 line moved
+G [[0, 0], [0, 0]] 1 1  ['', 'alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line moved
+G [[0, 0], [0, 0]] 8 1  ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'delta epsilon']
+"---
+
+2 lines moved
+G [[0, 0], [0, 0]] 2 1  ['zeta', '', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[0, 0], [0, 0]] 2 1  ['alpha beta gamma', 'delta epsilon zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+4 substitutions on 4 lines
+G [[0, 0], [0, 0]] 5 1  ['alpha bEta gamma', 'dElta epsilon', 'zEta', '', 'Eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 substitutions on 1 line
+G [[0, 0], [0, 0]] 4 1  ['alpha beta gamma', 'delta epsilon', 'zeta', '-eta theta iota-kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 fewer lines
+G [[1, 1], [1, 1]] 1 1 v ['', 'mu nu xi', 'omicron pi']
+"---
+
+G [[0, 0], [0, 0]] 1 1  ['', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'zeta']
+"---
+
+8 fewer lines; before #1  0 seconds ago
+G [[0, 0], [0, 0]] 1 1  ['']
+"---
+
+1 more line
+G [[0, 0], [0, 0]] 4 1  ['alpha beta gamma', 'delta epsilon', 'zeta', 'n', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+G [[0, 0], [0, 0]] 1 1  ['n', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1
+G [[0, 0], [0, 0]] 4 1  ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', 'x', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[3, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'delta epsilon', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+3 fewer lines
+G [[3, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'delta epsilon', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'mu nu xi', 'omicron pi']
+"---
+
+G [[4, 1], [5, 2147483647]] 5 1 V ['x', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'x', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [3, 2147483647]] 3 4 V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'x', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[3, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[1, 1], [1, 2147483647]] 1 1 V ['']
+"---
+
+1 line moved
+G [[1, 1], [4, 2147483647]] 1 1 V ['', 'alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line moved
+G [[2, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'delta epsilon']
+"---
+
+2 lines moved
+G [[1, 1], [2, 2147483647]] 2 1 V ['zeta', '', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 1], [3, 2147483647]] 3 1 V ['alpha beta gamma', 'delta epsilon zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+4 substitutions on 4 lines
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha bEta gamma', 'dElta epsilon', 'zEta', '', 'Eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 substitutions on 1 line
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '-eta theta iota-kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 fewer lines
+G [[1, 1], [1, 2147483647]] 1 1 V ['', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 1], [4, 2147483647]] 4 1 V ['', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'zeta']
+"---
+
+8 fewer lines; before #1  0 seconds ago
+G [[1, 1], [1, 2147483647]] 1 1 V ['']
+"---
+
+1 more line
+G [[3, 1], [5, 2147483647]] 5 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', 'n', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+G [[4, 1], [5, 2147483647]] 5 1 V ['n', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1
+G [[3, 1], [4, 2147483647]] 4 1 V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zea', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'xzeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [2, 3]] 2 3 ^V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [3, 1]] 3 1 ^V ['alpha beta gamma', 'delta epsilon', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+3 fewer lines
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'mu nu xi', 'omicron pi']
+"---
+
+G [[3, 2], [4, 3]] 4 3 ^V ['x', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'x', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'x', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+G [[2, 2], [2, 3]] 2 3 ^V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[1, 1], [1, 1]] 1 1 ^V ['']
+"---
+
+1 line moved
+G [[1, 3], [3, 2]] 1 3 ^V ['zeta', 'alpha beta gamma', 'delta epsilon', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line moved
+G [[2, 3], [8, 2]] 2 3 ^V ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'delta epsilon']
+"---
+
+2 lines moved
+G [[1, 3], [4, 2]] 1 3 ^V ['zeta', '', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [2, 17]] 2 17 ^V ['alpha beta gamma', 'delta epsilon zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+4 substitutions on 4 lines
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha bEta gamma', 'dElta epsilon', 'zEta', '', 'Eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+2 substitutions on 1 line
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '-eta theta iota-kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 fewer lines
+G [[1, 1], [1, 1]] 1 1 ^V ['', 'mu nu xi', 'omicron pi']
+"---
+
+G [[2, 2], [3, 3]] 3 3 ^V ['', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'zeta']
+"---
+
+8 fewer lines; before #1  0 seconds ago
+G [[1, 1], [1, 1]] 1 1 ^V ['']
+"---
+
+1 more line
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', 'n', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+G [[3, 2], [4, 3]] 4 3 ^V ['n', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1
+G [[2, 2], [3, 3]] 3 3 ^V ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+1 line less
+['Xabc'] 1 1 [1, 1] [1, 2] [1, 1]
+"---
+
+1 more line
+1 line less
+['abXc'] 1 3 [1, 3] [1, 4] [1, 3]
+"---
+
+2 more lines
+1 line less
+['X  ab', 'c'] 1 1 [1, 1] [1, 2] [1, 1]
+"---
+
+2 more lines
+1 line less
+['Xab', 'c'] 1 1 [1, 1] [1, 2] [1, 1]
+"---
+
+1 more line
+1 line less
+['abXc'] 1 3 [1, 3] [1, 4] [1, 3]
+"---
+
+2 more lines
+1 line less
+['a', 'Xb'] 2 1 [2, 1] [2, 2] [2, 1]
+"---
+
+1 more line
+1 line less
+['日本X語'] 1 7 [1, 7] [1, 8] [1, 7]
+"---
+
+3 more lines
+1 line less
+['abcdef', 'ghiXjkl', 'mnopqr'] 2 4 [2, 4] [2, 5] [2, 4]
+"---
+
+3 more lines
+1 line less
+['abcdef', 'ghijkl', 'Xmnopqr'] 3 1 [3, 1] [3, 2] [3, 1]
+"---
+
+3 more lines
+1 line less
+['abcdef', 'ghijklX', 'mnopqr'] 2 7 [2, 7] [2, 8] [2, 7]
+"---
+
+3 more lines
+1 line less
+['abcdef', 'ghijkl', 'Xmnopqr'] 3 1 [3, 1] [3, 2] [3, 1]
+"---
+
+3 more lines
+1 line less
+['Xabcdef', 'ghijkl', 'mnopqr'] 1 1 [1, 1] [1, 2] [1, 1]
+"---
+
+3 more lines
+1 line less
+['abcdef', 'ghiXjkl', 'mnopqr'] 2 4 [2, 4] [2, 5] [2, 4]
+"---
+
+2 more lines
+1 line less
+['a	Xb', 'cd'] 1 3 [1, 3] [1, 4] [1, 3]
+"---
+
+3 more lines
+1 line less
+['ab', 'X', 'cd'] 2 1 [2, 1] [2, 2] [2, 1]
+"---
+
+3 more lines
+1 line less
+['Xab', '', 'cd'] 1 1 [1, 1] [1, 2] [1, 1]

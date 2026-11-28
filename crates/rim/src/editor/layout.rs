@@ -8,17 +8,35 @@
 
 use piece_tree::Text;
 
-use super::{graphemes, render::cell_width};
+use std::rc::Rc;
 
-/// Row starts of one line at one width, found on demand.
+use super::graphemes::{self, Tabs};
+
+/// Where a row of a line starts: the first cluster with a cell in it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct RowStart {
+    /// Index and byte of that cluster, and the virtual column it starts at (its filler, if any, included).
+    pub col: usize,
+    pub b: usize,
+    pub vcol: usize,
+    /// Byte where the row before this one ends: after the last cluster with a cell in it, which is this
+    /// row's first one when a Tab or a wide char with its filler goes over the edge.
+    prev_end: usize,
+}
+
+/// Row starts of one line at one width, found on demand. The virtual column runs on over the whole line
+/// as in Neovim, so row `k` shows the cells `k * w..(k + 1) * w`: a Tab goes over the edge into the next
+/// row, and a wide char that would start in the last cell of a row leaves it as a filler and is drawn
+/// on the next one (`charsize_fast_impl`).
 #[derive(Debug)]
 pub(super) struct Rows {
     w: usize,
     ts: usize,
-    /// (cluster index, byte offset) of each row start found so far; the first is `(0, 0)`.
-    starts: Vec<(usize, usize)>,
-    /// Layout state: next byte and cluster to place, cells used in the current row, and the size of the
-    /// next window of the plain loop (see `extend`).
+    vts: Rc<[usize]>,
+    /// The first is the start of the line.
+    starts: Vec<RowStart>,
+    /// Layout state: next byte and cluster to place, its virtual column, and the size of the next window of the
+    /// plain loop (see `extend`).
     b: usize,
     i: usize,
     x: usize,
@@ -27,9 +45,9 @@ pub(super) struct Rows {
 }
 
 impl Rows {
-    pub fn new(w: usize, ts: usize) -> Self {
+    pub fn new(w: usize, tabs: Tabs) -> Self {
         // Without a width limit a line is one row and there is nothing to lay out.
-        Self { w, ts, starts: vec![(0, 0)], b: 0, i: 0, x: 0, window: 16, done: w == usize::MAX }
+        Self { w, ts: tabs.ts, vts: tabs.vts.into(), starts: vec![RowStart { col: 0, b: 0, vcol: 0, prev_end: 0 }], b: 0, i: 0, x: 0, window: 16, done: w == usize::MAX }
     }
 
     /// Rows found so far (all of them once `done`).
@@ -42,12 +60,12 @@ impl Rows {
     }
 
     /// Lays out `line` until `stop` accepts the row starts found so far, or the line ends.
-    /// Runs of plain ASCII that fit in the row are skipped 64 bytes at a time; anything else is laid
-    /// out by a plain per-cluster loop over a window of bytes. Each failed ASCII check doubles the window
-    /// (up to 4 KiB), so dense non-ASCII text costs the plain loop and a run after a lone accent is
-    /// found again within 16 bytes.
-    pub fn extend(&mut self, line: &str, stop: impl Fn(&[(usize, usize)]) -> bool) {
-        let (w, ts, bytes) = (self.w, self.ts, line.as_bytes());
+    /// Runs of plain ASCII are skipped 64 bytes at a time; anything else is laid out by a plain per-cluster
+    /// loop over a window of bytes. Each failed ASCII check doubles the window (up to 4 KiB), so dense
+    /// non-ASCII text costs the plain loop and a run after a lone accent is found again within 16 bytes.
+    pub fn extend(&mut self, line: &str, stop: impl Fn(&[RowStart]) -> bool) {
+        let (w, vts, bytes) = (self.w, Rc::clone(&self.vts), line.as_bytes());
+        let tabs = Tabs { ts: self.ts, vts: &vts };
         let (mut b, mut i, mut x, mut window) = (self.b, self.i, self.x, self.window);
         while !self.done {
             if stop(&self.starts) {
@@ -57,47 +75,34 @@ impl Rows {
                 self.done = true;
                 break;
             }
-            let room = w.saturating_sub(x).min(64).min(bytes.len() - b);
+            let room = bytes.len() - b;
             let mut end = b + 1;
-            if room > 0 {
-                let chunk = &bytes[b..b + room];
-                if chunk.is_ascii() && memchr::memchr2(b'\t', b'\r', chunk).is_none() {
-                    // The last byte may start a cluster with a non-ASCII char after it (`e` + U+0301).
-                    let room = if bytes.get(b + room).is_none_or(u8::is_ascii) { room } else { room - 1 };
-                    if room > 0 {
-                        (x, b, i, window) = (x + room, b + room, i + room, 16);
-                        continue;
+            let room = room.min(64);
+            let chunk = &bytes[b..b + room];
+            if chunk.is_ascii() && memchr::memchr2(b'\t', b'\r', chunk).is_none() {
+                // The last byte may start a cluster with a non-ASCII char after it (`e` + U+0301).
+                let room = if bytes.get(b + room).is_none_or(u8::is_ascii) { room } else { room - 1 };
+                if room > 0 {
+                    // Every byte is a cell: a row starts at each multiple of `w` inside the chunk.
+                    while let Some(d) = (self.starts.len().checked_mul(w)).and_then(|bound| bound.checked_sub(x)).filter(|&d| d < room) {
+                        self.starts.push(RowStart { col: i + d, b: b + d, vcol: x + d, prev_end: b + d });
                     }
+                    (x, b, i, window) = (x + room, b + room, i + room, 16);
+                    continue;
                 }
-                end = (b + window).min(bytes.len());
-                window = (window * 2).min(4096);
             }
-            // Whole clusters: the last one may end past `end`. In a run of simple chars each char is
-            // a cluster, but the last one, which may join a non-simple char after it (`e` + U+0301).
-            let rend = graphemes::run_end(bytes, b, line.ceil_char_boundary(end));
-            while b < end {
-                let cell = if b < rend {
-                    graphemes::lead_cell(bytes, b, ts).or_else(|| {
-                        let c = line[b..].chars().next().expect("a char");
-                        Some((c.len_utf8(), cell_width(c, ts).max(1)))
-                    })
-                } else {
-                    None
-                };
-                let (e, cw) = match cell {
-                    Some((len, cw)) if b + len < rend || rend == bytes.len() => (b + len, cw),
-                    _ => {
-                        let e = graphemes::next(line, b);
-                        (e, graphemes::width(&line[b..e], ts))
-                    }
-                };
-                if x > 0 && x.saturating_add(cw) > w {
-                    self.starts.push((i, b));
-                    x = 0;
+            end = end.max((b + window).min(bytes.len()));
+            window = (window * 2).min(4096);
+            // Whole clusters: the last one may end past `end`.
+            for c in graphemes::cells(line, b, x, tabs, w, end) {
+                if c.a >= end {
+                    break;
                 }
-                x += cw;
-                i += 1;
-                b = e;
+                let (r0, r1) = (c.vcol / w, (c.end() - 1) / w);
+                for m in self.starts.len()..=r1 {
+                    self.starts.push(RowStart { col: i, b: c.a, vcol: c.vcol, prev_end: if r0 < m { c.e } else { c.a } });
+                }
+                (b, x, i) = (c.e, c.end(), i + 1);
             }
         }
         (self.b, self.i, self.x, self.window) = (b, i, x, window);
@@ -110,14 +115,20 @@ impl Rows {
 
     /// Cluster index and text of row `k`; the row must be known (`ensure`).
     pub fn row<'a>(&self, line: &'a str, k: usize) -> (usize, &'a str) {
-        let (c, b) = self.starts[k];
-        (c, &line[b..self.starts.get(k + 1).map_or(line.len(), |s| s.1)])
+        let s = self.starts[k];
+        (s.col, &line[s.b..self.starts.get(k + 1).map_or(line.len(), |n| n.prev_end)])
     }
 
-    /// Index of the row holding cluster `col` (the last row for a `col` past the end), laid out.
-    pub fn row_of(&mut self, line: &str, col: usize) -> usize {
-        self.extend(line, |s| s.last().is_some_and(|l| l.0 > col));
-        self.starts.partition_point(|s| s.0 <= col) - 1
+    /// Virtual column of the first cluster of row `k`.
+    pub fn row_vcol(&self, k: usize) -> usize {
+        self.starts[k].vcol
+    }
+
+    /// Index of the row showing virtual column `vcol` (the last row when the line ends before it), laid out.
+    pub fn row_of(&mut self, line: &str, vcol: usize) -> usize {
+        let k = if self.w == usize::MAX { 0 } else { vcol / self.w };
+        self.ensure(line, k);
+        k.min(self.starts.len() - 1)
     }
 
     /// Number of rows of the line, counted up to `cap` (at least 1).
@@ -129,11 +140,11 @@ impl Rows {
     /// Drops what depends on bytes from `keep` on: `keep` is the start of the cluster the change
     /// may extend, and a row start was decided by the cluster at it and the clusters before it.
     fn retain(&mut self, keep: usize) {
-        while self.starts.len() > 1 && self.starts.last().is_some_and(|s| s.1 >= keep) {
+        while self.starts.len() > 1 && self.starts.last().is_some_and(|s| s.b >= keep) {
             self.starts.pop();
         }
-        let (i, b) = self.starts[self.starts.len() - 1];
-        (self.b, self.i, self.x, self.window, self.done) = (b, i, 0, 16, self.w == usize::MAX);
+        let s = self.starts[self.starts.len() - 1];
+        (self.b, self.i, self.x, self.window, self.done) = (s.b, s.col, s.vcol, 16, self.w == usize::MAX);
     }
 }
 
@@ -149,18 +160,18 @@ pub(super) struct Layout {
 
 impl Layout {
     /// The cached rows, when they already describe line `n` of `text` at width `w`.
-    pub fn cached(&mut self, text: &Text, n: usize, w: usize, ts: usize) -> Option<(&str, &mut Rows)> {
+    pub fn cached(&mut self, text: &Text, n: usize, w: usize, tabs: Tabs) -> Option<(&str, &mut Rows)> {
         let hit = self.at.as_ref().is_some_and(|(t, l)| *l == n && t.ptr_eq(text));
-        let rows = self.rows.as_mut().filter(|r| hit && r.w == w && r.ts == ts)?;
+        let rows = self.rows.as_mut().filter(|r| hit && r.w == w && r.ts == tabs.ts && *r.vts == *tabs.vts)?;
         Some((&self.line, rows))
     }
 
     /// Makes the cached rows describe `line`, line `n` of `text`, at width `w`: it keeps the rows that
     /// end before the first byte differing from the text they came from, and returns the cached copy
     /// with its rows.
-    pub fn sync(&mut self, line: &str, text: &Text, n: usize, w: usize, ts: usize) -> (&str, &mut Rows) {
+    pub fn sync(&mut self, line: &str, text: &Text, n: usize, w: usize, tabs: Tabs) -> (&str, &mut Rows) {
         let rows = match self.rows.take() {
-            Some(mut r) if r.w == w && r.ts == ts => {
+            Some(mut r) if r.w == w && r.ts == tabs.ts && *r.vts == *tabs.vts => {
                 if self.line != line {
                     let mut common = common_prefix(self.line.as_bytes(), line.as_bytes());
                     while !(self.line.is_char_boundary(common) && line.is_char_boundary(common)) {
@@ -175,7 +186,7 @@ impl Layout {
             }
             _ => {
                 line.clone_into(&mut self.line);
-                Rows::new(w, ts)
+                Rows::new(w, tabs)
             }
         };
         self.at = Some((text.clone(), n));
@@ -197,22 +208,22 @@ impl Layouts {
     const SLOTS: usize = 4;
 
     /// The cached rows, when some slot already describes line `n` of `text` at width `w`.
-    pub fn cached(&mut self, text: &Text, n: usize, w: usize, ts: usize) -> Option<(&str, &mut Rows)> {
-        let i = self.slots.iter_mut().position(|l| l.cached(text, n, w, ts).is_some())?;
+    pub fn cached(&mut self, text: &Text, n: usize, w: usize, tabs: Tabs) -> Option<(&str, &mut Rows)> {
+        let i = self.slots.iter_mut().position(|l| l.cached(text, n, w, tabs).is_some())?;
         let slot = self.slots.remove(i);
         self.slots.push(slot);
-        self.slots.last_mut()?.cached(text, n, w, ts)
+        self.slots.last_mut()?.cached(text, n, w, tabs)
     }
 
     /// Slot of line `n` (an older version of it, or the least recently used one), synced to `line`.
-    pub fn sync(&mut self, line: &str, text: &Text, n: usize, w: usize, ts: usize) -> (&str, &mut Rows) {
+    pub fn sync(&mut self, line: &str, text: &Text, n: usize, w: usize, tabs: Tabs) -> (&str, &mut Rows) {
         let slot = match self.slots.iter().position(|l| l.at.as_ref().is_some_and(|(_, l)| *l == n)) {
             Some(i) => self.slots.remove(i),
             None if self.slots.len() == Self::SLOTS => self.slots.remove(0),
             None => Layout::default(),
         };
         self.slots.push(slot);
-        self.slots.last_mut().expect("just pushed").sync(line, text, n, w, ts)
+        self.slots.last_mut().expect("just pushed").sync(line, text, n, w, tabs)
     }
 }
 
@@ -230,11 +241,11 @@ fn common_prefix(a: &[u8], b: &[u8]) -> usize {
     n
 }
 
-/// Rows of `line` at text width `w`: cluster index and text of each. A cluster never splits (a wide one that
-/// does not fit starts the next row), and an empty line is one row.
+/// Rows of `line` at text width `w`: cluster index and text of each (a Tab over the edge is in both rows), and an
+/// empty line is one row.
 #[cfg(test)]
-pub(super) fn segments(line: &str, w: usize, ts: usize) -> Vec<(usize, &str)> {
-    let mut rows = Rows::new(w, ts);
+pub(super) fn segments<'a>(line: &'a str, w: usize, tabs: Tabs) -> Vec<(usize, &'a str)> {
+    let mut rows = Rows::new(w, tabs);
     rows.extend(line, |_| false);
     (0..rows.len()).map(|k| rows.row(line, k)).collect()
 }

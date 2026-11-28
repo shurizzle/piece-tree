@@ -1,0 +1,3998 @@
+NVIM v0.12.6
+
+5 more lines
+['one two three', 'our five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['nly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'r five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['y line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fie', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only lie'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+3 fewer lines
+['one two three', 'ten'] ['
+3 more lines; before #2  T', '
+3 fewer lines; after #2  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+3 more lines; before #2  T', '
+3 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+3 fewer lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 more lines; before #2  T']
+"---
+
+5 more lines
+4 fewer lines
+['one two three'] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+3 more lines; before #2  T', '
+3 fewer lines; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+4 fewer lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 more lines; before #2  T']
+"---
+
+5 more lines
+['six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', '', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+[''] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', '', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+[''] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', '', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+[''] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 more lines; before #2  T', '
+5 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Q', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Q line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Q', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Q'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'Q'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Q', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Q'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'Q', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'Q', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'Q'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'Q', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['Q', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'Q', 'Q', 'Q', 'six', 'seven eight nine', 'ten'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'Q', 'Q', 'Q', '', 'abc abc abc'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+['only line', 'Q', 'Q', 'Q'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiveQ', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'xQ', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only lineQ'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Qfour five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Qx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Qonly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'QQQfour five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'QQQx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['QQQonly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'Rfour five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'Q', 'Rx', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['Q', 'Ronly line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiveQ', 'R', 'S', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'xQ', 'R', 'S', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+['only lineQ', 'R', 'S'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiv', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only lin'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'FOUr five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'X', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['ONLy line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'FOUR FIVE', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'X', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['ONLY LINE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'FOUR FIVE', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'X', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['ONLY LINE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+3 lines changed
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+3 lines changed
+['', 'x', '', 'abc abc abc'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+3 lines changed
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+5 lines changed
+['ONE TWO THREE', 'FOUR FIVE', 'SIX', 'SEVEN EIGHT NINE', 'TEN'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', 'X', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['ONLY LINE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+5 lines changed
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'x abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fivesix', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '	x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['	only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+3 lines >ed 1 time
+['one two three', '	four five', '	six', '	seven eight nine', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+3 lines >ed 1 time
+['', '	x', '', '	abc abc abc'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+3 lines >ed 1 time
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+3 more lines
+['one two three', 'four five', 'four five', 'four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+4 more lines
+3 more lines
+['', 'x', 'x', 'x', 'x', '', 'abc abc abc'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+3 more lines
+['only line', 'only line', 'only line', 'only line'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+5 more lines
+3 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'six', 'four five', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', 'x', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ofur five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['noly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ffour five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'xx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['oonly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'xx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Zour five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Z', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Znly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ZZZr five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['ZZZy line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3d
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 more lines; before #2  T', '
+5 fewer lines; after #2  T']
+"---
+
+4 more lines
+[''] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+5 more lines
+['four five', 'one two three', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['x', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'six', 'seven eight nine', 'ten', 'four five'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc', 'x'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'ten', 'four five', 'six'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc', 'x', ''] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3m$
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'four five', 'six', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc', 'x', ''] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :4m1
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['four five', 'one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['x', '', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten', 'one two three', 'four five'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc', '', 'x'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :1,2t$
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fivE', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fivE', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['onE two three', 'four fivE', 'siE', 'sEven eight nine', 'tEn'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['onE two thrEE', 'four fivE', 'siE', 'sEvEn Eight ninE', 'tEn'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['onE', ' two three', 'four fivE', '', 'siE', '', 'sE', 'ven eight nine', 'tE', 'n'] ['
+5 fewer lines; before #2  T', '
+5 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only linE', ''] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['onE', ' two thrE', 'E', '', 'four fivE', '', 'siE', '', 'sE', 'vE', 'n E', 'ight ninE', '', 'tE', 'n'] ['
+10 fewer lines; before #2  T', '
+10 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only linE', ''] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+10 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two threefour fivesixseven eight nineten'] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+4 more lines
+['xabc abc abc'] ['
+3 more lines; before #2  T', '
+3 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'x  abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3s/\n/ /
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['on', '', ' two thr', '', '', '', '', 'four fiv', '', '', 'si', '', '', 's', '', 'v', '', 'n ', '', 'ight nin', '', '', 't', '', 'n'] ['
+20 fewer lines; before #2  T', '
+20 more lines; after #2  T']
+"---
+
+4 more lines
+['', '', '', '', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+['only lin', '', ''] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+20 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['four five', 'one two three', 'seven eight nine', 'six', 'ten'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc', 'x'] ['
+4 changes; before #2  T', '
+4 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+['ten', 'six', 'seven eight nine', 'one two three', 'four five'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['x', 'abc abc abc', '', ''] ['
+4 changes; before #2  T', '
+4 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'seven eight nine', 'six', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc', 'x'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,4sort
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three four five six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['x', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :1,3j
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', '	x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['	only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', '	six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', '	x', '', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3>
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 more lines; before #2  T', '
+5 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', '', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+[''] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenx'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', 'xx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linex'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['onE two three', 'four fivE', 'siE', 'sEven eight nine', 'tEn'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linE'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+Pattern found in every line: [ex]
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+3 fewer lines
+['x'] ['
+3 more lines; before #2  T', '
+3 fewer lines; after #2  T']
+"---
+
+Pattern found in every line: [ex]
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+Pattern found in every line: [ex]
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['ten', 'seven eight nine', 'six', 'four five', 'one two three'] ['
+4 changes; before #2  T', '
+4 changes; after #2  T']
+"---
+
+4 more lines
+['abc abc abc', '', 'x', ''] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 changes; before #2  T']
+"---
+
+5 more lines
+5 more lines
+['one two three', 'one two three', 'four five', 'four five', 'six', 'six', 'seven eight nine', 'seven eight nine', 'ten', 'ten'] ['
+5 fewer lines; before #2  T', '
+5 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fivex', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'xx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only linex'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenx'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+['x', 'xx', 'x', 'abc abc abcx'] ['
+4 changes; before #2  T', '
+4 changes; after #2  T']
+"---
+
+['only linex'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'our five', 'ix', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3normal 0x
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'new', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'new', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['only line', 'new'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'new', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'new', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['new', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['new', 'one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['new', '', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+['new', 'only line'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'n1', 'n2', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'n1', 'n2', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+['only line', 'n1', 'n2'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T']
+"---
+
+5 more lines
+"---
+
+4 more lines
+"---
+
+"---
+
+5 more lines
+"---
+
+5 more lines
+"---
+
+4 more lines
+"---
+
+"---
+
+5 more lines
+"---
+
+5 more lines
+"---
+
+4 more lines
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2change|x
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+Error in {file}:
+line    8:
+E16: Invalid range: :2,3y
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', 'Q', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+['', 'x', 'abc abc abc'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', '	six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', '	x', '', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ZZZZZZZZZ', 'Zix', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'Z', '', 'abc abc abc'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'FOUR FIVE', 'Six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+3 lines changed
+['', 'X', '', 'abc abc abc'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ur five', 'x', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Qfour five', 'Qsix', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'Qx', 'Q', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiveQ', 'sixQ', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'xQ', 'Q', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Qur five', 'Qx', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ZZur five', 'ZZx', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four fivefo', 'six      si', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', '	six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+4 more lines
+['', '	x', '', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['only line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'Zour five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+['', 'Z', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+['Znly line'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 fewer lines; before #1  T', '
+5 more lines; after #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 fewer lines; before #1  T', '
+4 more lines; after #1  T']
+"---
+
+['only line'] ['
+1 line less; before #1  T', '
+1 more line; after #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 line less; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+3 changes; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two threefour fivesixseven eight nineTEN'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+['one two three', 'seven eight nine', 'ten', 'four five', ''] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #3  T', '
+1 change; before #2  T']
+"---
+
+4 more lines
+['x', 'abc abc abc'] ['
+1 change; before #3  T']
+"---
+
+5 more lines
+4 fewer lines
+Error in {file}:
+line    9:
+E16: Invalid range: :2,4sort
+['one two three'] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 more lines; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+"---
+
+4 more lines
+['', 'E', 'new', '', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+Error in {file}:
+line    9:
+E486: Pattern not found: [ex]
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'sseven eight nine', 'ten'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+5 more lines
+4 fewer lines
+Error in {file}:
+line    9:
+E16: Invalid range: :2,3normal 0x
+[''] ['
+1 line less; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 line less; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+2 changes; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+"---
+
+5 more lines
+[''] ['
+1 change; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'X', '', 'abc abc abc'] ['
+1 more line; before #3  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 more lines; before #2  T']
+"---
+
+4 more lines
+['x', '', 'x', '', 'abc abc abc', ''] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #3  T', '
+1 line less; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+[''] ['
+10 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['new', 'one two three', 'Q', 'ten'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+4 more lines
+[''] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+5 more lines
+[''] ['
+4 changes; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 more lines; before #3  T']
+"---
+
+4 more lines
+[''] ['
+2 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 more line; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', '	Q', '', 'abc abc abc'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+5 changes; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+1 line less; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenx'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+5 more lines
+['one two three', 'ur five', 'x', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['onE two three', 'four fivE', 'siE', 'sEven eight nine', 'tEn'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+['one two three', 'four fivexx', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+"---
+
+4 more lines
+3 lines changed
+['', 'x', 'X', '', 'abc abc abc'] ['
+3 changes; before #3  T', '
+3 changes; after #3  T']
+"---
+
+5 more lines
+['one two three', 'four fivE', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 more lines; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #3  T', '
+5 changes; before #2  T']
+"---
+
+5 more lines
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'E', '', 'abc abc abc'] ['
+4 changes; before #3  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+18 fewer lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 more lines; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+Error in {file}:
+line   10:
+E486: Pattern not found: e\ne
+[''] ['
+1 line less; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 line less; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+Error in {file}:
+line   10:
+E16: Invalid range: :1,2t$
+['one two threefour fivesixseven eight nineten'] ['
+4 more lines; before #2  T', '
+4 fewer lines; after #2  T']
+"---
+
+5 more lines
+['one two threex', 'sixx', 'four fivex', 'seven eight ninex', 'tenx'] ['
+6 changes; before #2  T', '
+6 changes; after #2  T']
+"---
+
+4 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'Q', 'R', 'S', 'abc abc abc', 'x'] ['
+2 fewer lines; before #3  T', '
+2 more lines; after #3  T']
+"---
+
+4 more lines
+[''] ['
+4 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+2 changes; before #3  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'our five', 'ZZ', 'ZZven eight nine', 'ten'] ['
+2 changes; before #3  T', '
+2 changes; after #3  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+3 more lines
+[''] ['
+3 fewer lines; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+5 changes; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+2 more lines; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+3 fewer lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 more lines; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+3 changes; before #2  T']
+"---
+
+4 more lines
+[''] ['
+2 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+1 change; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+1 more line; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+1 line less; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 changes; before #3  T', '
+4 changes; before #2  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+"---
+
+5 more lines
+[''] ['
+1 line less; before #1  T']
+"---
+
+5 more lines
+Pattern found in every line: [ex]
+['one two three', 'four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+5 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+5 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+7 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #3  T', '
+2 more lines; before #2  T']
+"---
+
+4 more lines
+3 fewer lines
+['', 'x', '', 'abc abc abc'] ['
+3 more lines; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+4 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+4 substitutions on 1 line
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 more lines; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+['six seven eight nine ten'] ['
+2 more lines; before #3  T', '
+2 fewer lines; after #3  T']
+"---
+
+4 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+Pattern found in every line: [ex]
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T']
+"---
+
+4 more lines
+"---
+
+5 more lines
+3 lines >ed 1 time
+['one two three', '	Q', '	four five', '	six', 'seven eight nine', 'ten'] ['
+3 changes; before #3  T', '
+3 changes; after #3  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+2 fewer lines; before #2  T']
+"---
+
+5 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 more line; before #3  T', '
+2 more lines; before #2  T']
+"---
+
+5 more lines
+Pattern found in every line: [ex]
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+1 change; before #2  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T', '
+Already at oldest change']
+"---
+
+5 more lines
+['one two three', '	four five', '	six', 'seven eight nine', 'ten'] ['
+2 more lines; before #3  T']
+"---
+
+4 more lines
+['', 'xx', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+4 more lines
+Error in {file}:
+line   10:
+E486: Pattern not found: [ex]
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+Error in {file}:
+line   10:
+E486: Pattern not found: [ex]
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+4 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiv', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 fewer lines; before #2  T']
+"---
+
+4 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+4 more lines
+Error in {file}:
+line    9:
+E486: Pattern not found: [ex]
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', 'Q', 'Q', '', '', 'abc abc abc'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+3 more lines
+[''] ['
+2 fewer lines; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+2 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+"---
+
+4 more lines
+[''] ['
+1 change; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #3  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T']
+"---
+
+5 more lines
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenx'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+5 more lines
+['ten', 'six', 'seven eight nine'] ['
+3 changes; before #3  T', '
+3 changes; after #3  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+2 changes; before #3  T']
+"---
+
+5 more lines
+5 more lines
+['one two three', 'one two three', 'four five', 'four five', 'six', 'six', 'seven eight nine', 'seven eight nine', 'ten', 'ten', 'Q', 'Q', 'Q'] ['
+3 fewer lines; before #3  T', '
+3 more lines; after #3  T']
+"---
+
+4 more lines
+['X', 'abc abc abc', '', ''] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five six seven eight nine', 'ten'] ['
+2 more lines; before #3  T', '
+2 fewer lines; after #3  T']
+"---
+
+5 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+2 more lines; before #2  T']
+"---
+
+4 more lines
+['', 'X', 'ABC ABC ABC'] ['
+1 more line; before #2  T', '
+1 line less; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+1 line less; before #2  T']
+"---
+
+4 more lines
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'ZZZZZZZZZ', 'Zix', 'seven eight nine', 'ten'] ['
+5 more lines; before #3  T']
+"---
+
+5 more lines
+Error in {file}:
+line    8:
+E486: Pattern not found: e\ne
+[''] ['
+1 line less; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['ten', 'six', 'seven eight nine', 'one two three', 'four five'] ['
+2 changes; before #3  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 more line; before #2  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+3 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', '	E', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['on', '', ' two thr', '', '', '', '', 'four fiv', '', '', 'si', '', '', 's', '', 'v', '', 'n ', '', 'ight nin', '', '', 't', '', 'n'] ['
+20 fewer lines; before #2  T', '
+20 more lines; after #2  T']
+"---
+
+4 more lines
+"---
+
+4 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 changes; before #2  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+7 changes; before #1  T']
+"---
+
+5 more lines
+['one two three', '	four five', '	six', 'seven eight nine', 'ten'] ['
+2 changes; before #2  T', '
+2 changes; after #2  T']
+"---
+
+5 more lines
+['one two three', 'four fiveQ', 'R', 'S', 'S', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+1 more line; after #3  T']
+"---
+
+4 more lines
+['', 'X abc abc abc'] ['
+2 more lines; before #3  T', '
+2 fewer lines; after #3  T']
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenQQQx'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+5 more lines
+[''] ['
+2 changes; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+1 more line; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+"---
+
+5 more lines
+"---
+
+5 more lines
+[''] ['
+1 line less; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+1 line less; before #2  T']
+"---
+
+4 more lines
+[''] ['
+2 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+1 more line; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+"---
+
+5 more lines
+[''] ['
+7 fewer lines; before #1  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+4 more lines
+3 fewer lines
+['Qx'] ['
+3 more lines; before #3  T', '
+3 fewer lines; after #3  T']
+"---
+
+5 more lines
+3 fewer lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'QUR FIVE', 'Qx', 'seven eight nine', 'ten'] ['
+3 changes; before #2  T', '
+3 changes; after #2  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+5 more lines
+4 substitutions on 2 lines
+[''] ['
+7 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+6 fewer lines; before #1  T']
+"---
+
+4 more lines
+3 more lines
+[''] ['
+3 fewer lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x  abc abc abc'] ['
+2 fewer lines; before #3  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+8 fewer lines; before #1  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['onE two three', 'four fivE', 'siE', 'sEven eight nine', 'tEn'] ['
+5 changes; before #2  T', '
+5 changes; after #2  T']
+"---
+
+4 more lines
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 changes; before #3  T', '
+1 change; before #2  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four fiveQ', 'R', 'S', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T']
+"---
+
+4 more lines
+3 lines changed
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', '', '', 'abc abc abc'] ['
+4 more lines; before #3  T']
+"---
+
+5 more lines
+[''] ['
+2 changes; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'bc abc abc'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+4 more lines
+3 fewer lines
+['', 'x', '', 'abc abc abc'] ['
+3 more lines; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+3 fewer lines
+['', 'x', '', 'abc abc abc'] ['
+3 more lines; before #2  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+1 change; before #3  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'QQQx', '', 'abc abc abc'] ['
+1 change; before #3  T']
+"---
+
+4 more lines
+3 fewer lines
+[''] ['
+3 more lines; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+1 change; before #2  T']
+"---
+
+4 more lines
+['', 'xx', 'Q', 'Q', 'Q', '', 'abc abc abc'] ['
+3 fewer lines; before #2  T', '
+3 more lines; after #2  T']
+"---
+
+4 more lines
+3 lines >ed 1 time
+[''] ['
+5 changes; before #2  T', '
+4 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'x', 'x', '', 'abc abc abc'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+5 more lines
+['four five', 'one two three', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #2  T', '
+1 change; after #2  T']
+"---
+
+5 more lines
+['one two three', 'Q', 'four five', 'Q', 'Q', 'six', 'seven eight nine', 'ten'] ['
+1 change; before #3  T', '
+1 change; after #3  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+[''] ['
+2 more lines; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['x', 'abc abc abc'] ['
+1 change; before #3  T']
+"---
+
+5 more lines
+3 lines >ed 1 time
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #3  T', '
+1 change; before #2  T']
+"---
+
+4 more lines
+Error in {file}:
+line   10:
+E16: Invalid range: :2,3d
+[''] ['
+2 fewer lines; before #1  T']
+"---
+
+5 more lines
+[''] ['
+3 fewer lines; before #1  T']
+"---
+
+4 more lines
+Pattern not found: [ex]
+['', 'x', '', 'abc abc abc'] ['
+2 more lines; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+6 changes; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #3  T', '
+2 changes; before #2  T']
+"---
+
+5 more lines
+Error in {file}:
+line    9:
+E486: Pattern not found: e\ne
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+[''] ['
+6 changes; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+['', 'abc abc abc'] ['
+2 more lines; before #2  T', '
+2 fewer lines; after #2  T']
+"---
+
+5 more lines
+['one two three', '	four five', 'four five', 'six', 'seven eight nine', 'ten'] ['
+1 line less; before #2  T', '
+1 more line; after #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+4 changes; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc'] ['
+1 change; before #2  T']
+"---
+
+4 more lines
+['', 'x', '', 'abc abc abc', '', 'x'] ['
+2 fewer lines; before #2  T', '
+2 more lines; after #2  T']
+"---
+
+5 more lines
+[''] ['
+7 changes; before #1  T']
+"---
+
+5 more lines
+[''] ['
+1 line less; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+5 more lines
+4 fewer lines
+[''] ['
+1 line less; before #1  T']
+"---
+
+5 more lines
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+3 changes; before #3  T', '
+1 change; before #2  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+5 changes; before #2  T']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+[''] ['
+5 fewer lines; before #2  T', '
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+5 fewer lines; before #1  T']
+"---
+
+4 more lines
+[''] ['
+4 fewer lines; before #1  T']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten'] ['
+4 more lines; before #2  T']

@@ -1,0 +1,156 @@
+NVIM v0.12.6
+
+W 5 5 ['alpha beta gamma', 'deta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 5 ['alpha beta gamma', 'delta epsilon!', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 5 ['alpha beta gamma', 'xdelta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 4 5 ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+3 fewer lines
+W 2 5 ['alpha beta gamma', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+4 fewer lines
+W 1 1 ['alpha beta gamma', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 fewer lines
+W 1 1 ['alpha beta gamma', 'mu nu xi', 'omicron pi']
+"---
+
+2 fewer lines
+W 3 5 ['alpha beta gamma', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 6 5 ['alpha beta gamma', 'x', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 6 5 ['alpha beta gamma', 'delta epsilon', 'x', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 4 5 ['alpha beta gamma', 'delta epsilon zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 3 5 ['alpha beta gamma', 'delta epsilon zeta', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 2 24 ['alpha beta gamma', 'delta epsilon zeta eta theta iota kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line yanked
+1 more line
+W 6 5 ['alpha beta gamma', 'delta epsilon', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 4 5 ['alpha beta gamma', 'delta epsilon', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 4 1 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'omicron pi']
+"---
+
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'x', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 1 ['alpha beta gamma', 'delta epsilon', 'zeta', '', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 4 5 ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+4 fewer lines
+W 1 1 ['alpha beta gamma', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line less
+W 4 1 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+7 fewer lines
+W 1 1 ['alpha beta gamma']
+"---
+
+W 1 1 ['']
+"---
+
+1 line moved
+W 5 5 ['delta epsilon', 'alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 line moved
+W 4 5 ['alpha beta gamma', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'delta epsilon']
+"---
+
+5 lines moved
+W 8 5 ['kappa lambda', 'mu nu xi', 'omicron pi', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota']
+"---
+
+1 line moved
+W 1 5 ['eta theta iota', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 4 5 ['alpha beta gamma', 'delta epsilon zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 4 5 ['alpha beta gamma', 'delta epsilon', 'zeta', 'eta theta iota kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+5 substitutions on 5 lines
+W 5 5 ['Alpha beta gamma', 'deltA epsilon', 'zetA', '', 'etA theta iota', 'kAppa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 substitution on 1 line
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'Eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+3 substitutions on 1 line
+W 4 1 ['alpha beta gamma', 'delta epsilon', 'zeta', '-eta theta iota-kappa lambda-mu nu xi', 'omicron pi']
+"---
+
+4 fewer lines
+W 1 1 ['', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+W 5 5 ['', 'alpha beta gamma', 'delta epsilon', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'zeta']
+"---
+
+W 5 5 ['zeta', 'omicron pi', 'mu nu xi', 'kappa lambda', 'eta theta iota', 'delta epsilon', 'alpha beta gamma', '']
+"---
+
+8 fewer lines; before #1  0 seconds ago
+W 1 1 ['']
+"---
+
+1 more line
+W 6 5 ['alpha beta gamma', 'delta epsilon', 'zeta', 'n', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+W 6 5 ['n', 'alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']
+"---
+
+1 more line
+W 5 5 ['alpha beta gamma', 'delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi', 'n']
+"---
+
+2 lines >ed 1 time
+W 5 5 ['  alpha beta gamma', '  delta epsilon', 'zeta', '', 'eta theta iota', 'kappa lambda', 'mu nu xi', 'omicron pi']

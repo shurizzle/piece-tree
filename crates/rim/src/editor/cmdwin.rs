@@ -66,7 +66,7 @@ impl Editor {
         self.park_and_take(win);
         let col = graphemes::col_of(typed, pos.min(typed.len()));
         (self.win.line, self.win.col) = (self.line_count() - 1, col);
-        self.win.want_col = col;
+        self.win.want_set = true;
         self.clamp_normal();
     }
 

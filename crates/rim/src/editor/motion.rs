@@ -1,6 +1,6 @@
 //! Motions: char iterators, words, finds, brackets, screen lines, marks and searches.
 
-use super::{Cmd, Editor, G_DOWN, G_UP, Kind, Pos, class, graphemes, search};
+use super::{Cmd, Editor, G_DOWN, G_END_BACK, G_END_BACK_BIG, G_UP, Kind, Pos, graphemes, search};
 
 /// First char of each cluster of a line, then its `\n` if it has one, from byte `b` on.
 struct FwdChars<'a> {
@@ -52,7 +52,7 @@ impl Iterator for BwdChars<'_> {
 }
 
 /// Motions that set the `''` mark when they move the cursor (vim "jumps").
-pub(super) const JUMPS: &str = "Gg%nN*#HML`'\u{E16F}";
+pub(super) const JUMPS: &str = "Gg%nN*#HML`'(){}\u{E16F}";
 
 impl Editor {
     /// Clusters from `p` forward, as their first chars; each line but the last ends with `\n`. Lazy: a
@@ -90,54 +90,6 @@ impl Editor {
             };
             BwdChars { s, b_end, nl, idx }.map(move |(c, ch)| ((l, c), ch))
         })
-    }
-
-    /// `w`: start of the next word; an empty line counts as a word.
-    fn word_start(&self, p: Pos) -> Pos {
-        let mut it = self.fwd(p).peekable();
-        let Some((_, first)) = it.next() else { return p };
-        let cls = class(first);
-        if cls != 0 {
-            while it.next_if(|&(_, ch)| class(ch) == cls).is_some() {}
-        }
-        for (q, ch) in it {
-            if class(ch) != 0 || (q.1 == 0 && ch == '\n') {
-                return q;
-            }
-        }
-        self.end_pos()
-    }
-
-    /// `e`: last char of the next word; without `skip_first`, of the word under `p` (for `cw`).
-    fn word_end(&self, p: Pos, skip_first: bool) -> Pos {
-        let mut it = self.fwd(p).skip(usize::from(skip_first)).peekable();
-        while it.next_if(|&(_, ch)| class(ch) == 0).is_some() {}
-        let Some((mut q, ch)) = it.next() else { return p };
-        let cls = class(ch);
-        while let Some((r, _)) = it.next_if(|&(_, c)| class(c) == cls) {
-            q = r;
-        }
-        q
-    }
-
-    /// `b`: start of the previous word; an empty line counts as a word.
-    fn word_back(&self, p: Pos) -> Pos {
-        let mut it = self.bwd(p).skip(1).peekable();
-        while let Some(&(q, ch)) = it.peek() {
-            if class(ch) != 0 {
-                break;
-            }
-            if q.1 == 0 && ch == '\n' {
-                return q;
-            }
-            it.next();
-        }
-        let Some((mut q, ch)) = it.next() else { return (0, 0) };
-        let cls = class(ch);
-        while let Some((r, _)) = it.next_if(|&(_, c)| class(c) == cls) {
-            q = r;
-        }
-        q
     }
 
     /// `f`/`F`/`t`/`T` in the cursor line. Repeated `t`/`T` skip an adjacent match (vim default `cpo`).
@@ -180,36 +132,142 @@ impl Editor {
         self.matching((self.win.line, i), open, close, ch == open)
     }
 
-    /// `*`/`#`: the word under the cursor (or the next one in the line) and its start column.
-    pub(super) fn word_under_cursor(&self) -> Option<(String, usize)> {
+    /// `find_ident_at_pos` with `FIND_IDENT | FIND_STRING` (`*`, `#`, `Ctrl+R Ctrl+W`): the identifier under the cursor or the next
+    /// one in the line, else the non-blank text; its start column, and whether it is an identifier (a word of class 2: `*` then
+    /// matches it as a whole word). A word ends where the class of its chars changes (`日本語abc` is two).
+    pub(super) fn word_under_cursor(&self) -> Option<(String, usize, bool)> {
+        use super::wordclass::class;
         let line = self.buf.doc.text().line(self.win.line);
-        let b = self.line_byte(self.win.line, self.win.col);
-        let (skipped, _) = line[b..].char_indices().find(|&(_, c)| class(c) == 1)?;
-        let mut start = b + skipped;
-        let mut col = self.win.col + graphemes::col_of(&line[b..], start - b);
-        start = b + graphemes::byte_of(&line[b..], col - self.win.col);
-        // Back to the word start, then on to its end.
-        while start > 0 {
-            let p = graphemes::prev(&line, start);
-            if line[p..].chars().next().is_none_or(|c| class(c) != 1) {
+        let cls = |b: usize| line[b..].chars().next().map_or(0, class);
+        let startb = self.line_byte(self.win.line, self.win.col);
+        let (mut b, mut this_class) = (startb, 0);
+        let mut pass = 0;
+        while pass < 2 {
+            // 1. Skip to the start of the identifier (pass 0) or of any non-blank text (pass 1).
+            b = startb;
+            while b < line.len() {
+                this_class = cls(b);
+                if this_class != 0 && (pass == 1 || this_class != 1) {
+                    break;
+                }
+                b = graphemes::next(&line, b);
+            }
+            // 2. Back up to the start: while the class stays the same (pass 0), or up to a blank (pass 1, as `FIND_IDENT` is set: the
+            // class must stay the same too).
+            this_class = if b < line.len() { cls(b) } else { 0 };
+            while b > 0 && this_class != 0 {
+                let prev = graphemes::prev(&line, b);
+                if this_class != cls(prev) {
+                    break;
+                }
+                b = prev;
+            }
+            // An identifier found, or any text wanted and it is not one: stop at the first pass that found a word.
+            this_class = this_class.min(2);
+            if this_class == 2 {
                 break;
             }
-            (start, col) = (p, col - 1);
+            pass += 1;
         }
-        let mut end = start;
-        while line[end..].chars().next().is_some_and(|c| class(c) == 1) {
+        let pass = pass.min(1);
+        if b >= line.len() || (pass == 0 && this_class != 2) {
+            return None;
+        }
+        // 3. The end: where the class changes (pass 0) or at a blank (pass 1).
+        let first = cls(b);
+        let mut end = b;
+        while end < line.len() && (if pass == 0 { cls(end) == first } else { cls(end) != 0 }) {
             end = graphemes::next(&line, end);
         }
-        Some((line[start..end].to_string(), col))
+        let col = graphemes::col_of(&line, b);
+        // `vim_iswordp`: a word char starts it.
+        Some((line[b..end].to_string(), col, first >= 2))
     }
 
     /// Byte offset of mark `m`, kept inside the text and on a char boundary (undo does not move marks).
     pub(super) fn mark(&self, m: char) -> Option<usize> {
-        let off = (*self.buf.marks.get(&m)?).min(self.buf.doc.text().len());
-        let text = self.buf.doc.text();
-        let line = text.offset_to_line(off);
-        let start = text.line_to_offset(line);
-        Some(start + text.line(line).floor_char_boundary(off - start))
+        // `mark_get_motion`: `(`, `)`, `{` and `}` are where those motions would go from the cursor.
+        if matches!(m, '(' | ')' | '{' | '}') {
+            let text = self.buf.doc.text();
+            let here = super::sentence::P { l: self.win.line, c: self.offset() - text.line_to_offset(self.win.line) };
+            let p = if matches!(m, '(' | ')') { self.findsent(m == ')', 1, here)? } else { self.findpar(m == '}', 1, here.l, 0, false)?.0 };
+            return Some(text.line_to_offset(p.l) + p.c);
+        }
+        let mk = self.mark_get(m)?;
+        Some(self.mark_offset(mk))
+    }
+
+    /// `linetabsize`: cells of the line, its end excluded.
+    fn linetabsize(&self, line: usize) -> usize {
+        let s = self.buf.doc.text().line(line);
+        graphemes::cells(&s, 0, 0, self.buf.opts.tabs(), self.wrap_w(), usize::MAX).last().map_or(0, |c| c.end())
+    }
+
+    /// `nv_screengo`: `dist` screen rows down or up from the cursor. The column wanted keeps the rows (it is a virtual
+    /// column of the whole line, so `gj` then `gk` come back), and `$` sticks to the last column of a row. Returns
+    /// the position reached and whether the cursor could move that far; the column wanted is left as Neovim does.
+    fn screengo(&mut self, down: bool, dist: usize) -> ((usize, usize), bool) {
+        // Both widths are the text width: 'cpoptions' has no `n`.
+        let w = self.wrap_w().max(1);
+        let last = self.line_count() - 1;
+        let mut line = self.win.line;
+        let mut linelen = self.linetabsize(line);
+        let mut cs = self.win.want_col;
+        let atend = cs == usize::MAX;
+        let rows_to = |linelen: usize| if linelen > w { ((linelen - w - 1) / w + 1) * w + w } else { w };
+        if atend {
+            let vcol = self.cursor_vcols().2;
+            cs = w - 1;
+            if vcol > cs {
+                cs += ((vcol - cs - 1) / w + 1) * w;
+            }
+        } else {
+            cs = cs.min(rows_to(linelen) - 1);
+        }
+        let mut ok = true;
+        for _ in 0..dist {
+            if !down {
+                if cs >= w {
+                    cs -= w;
+                } else {
+                    if line == 0 {
+                        ok = false;
+                        break;
+                    }
+                    line -= 1;
+                    linelen = self.linetabsize(line);
+                    if linelen > w {
+                        cs += ((linelen - w - 1) / w + 1) * w;
+                    }
+                }
+            } else if cs.saturating_add(w) < rows_to(linelen) {
+                cs += w;
+            } else {
+                if line >= last {
+                    ok = false;
+                    break;
+                }
+                line += 1;
+                cs %= w;
+                linelen = self.linetabsize(line);
+            }
+        }
+        let mut col = self.coladvance(line, cs);
+        if col > 0 && self.win.opts.wrap {
+            // A char split at the end of the last row: advance a row, do not stay in it or move two.
+            let virtcol = self.vcols_at((line, col)).2;
+            let text = self.buf.doc.text().line(line);
+            let c = text[graphemes::byte_of(&text, col)..].chars().next().map_or(0, |c| c as u32);
+            if down && virtcol < cs && cs <= w && !super::messages::utf_printable(c) && c > 255 && col < graphemes::count(&text).saturating_sub(1) {
+                col += 1;
+            }
+            if virtcol > cs && (if cs < w { cs > w / 2 } else { (cs - w) % w > w / 2 }) {
+                col -= 1;
+            }
+        }
+        // Stick in the last column.
+        self.win.want_col = if atend { usize::MAX } else { cs };
+        ((line, col), ok)
     }
 
     pub(super) fn motion(&mut self, cmd: &Cmd) -> Option<(Pos, Kind)> {
@@ -217,7 +275,7 @@ impl Editor {
         let n = count.unwrap_or(1);
         let (line, col) = (self.win.line, self.win.col);
         let last = self.line_count() - 1;
-        let vertical = |e: &Self, l: usize| ((l, e.win.want_col.min(e.line_chars(l))), Kind::Linewise);
+        let vertical = |e: &Self, l: usize| ((l, e.col_wanted(l)), Kind::Linewise);
         let first = |e: &Self, l: usize| ((l, e.first_non_blank(l)), Kind::Linewise);
         let half = (self.win.rows / 2).max(1);
         Some(match key {
@@ -234,14 +292,22 @@ impl Editor {
                 let (l, _) = self.step_rows(line, k, key == '\x04', half);
                 vertical(self, l)
             }
+            // With 'nowrap' `gj` and `gk` work just like `j` and `k`.
+            G_DOWN | G_UP if !self.win.opts.wrap => {
+                if (key == G_DOWN && line >= last) || (key == G_UP && line == 0) {
+                    return None;
+                }
+                vertical(self, if key == G_DOWN { (line + n).min(last) } else { line.saturating_sub(n) })
+            }
             G_DOWN | G_UP => {
-                let (k, x) = self.cursor_row();
-                let x = self.win.want_x.filter(|&(_, p)| p == (line, col)).map_or(x, |(x, _)| x);
-                let (l, k) = self.step_rows(line, k, key == G_DOWN, n);
-                let pos = (l, self.col_at(l, k, x));
-                // Stored as Normal mode will clamp it, so the next `gj` recognizes the cursor.
-                self.win.want_x = Some((x, (l, pos.1.min(self.line_chars(l).saturating_sub(1)))));
-                (pos, Kind::Exclusive)
+                let inclusive = self.win.want_col == usize::MAX;
+                let (pos, ok) = self.screengo(key == G_DOWN, n);
+                if !ok {
+                    // The cursor has moved to the column wanted before the move failed.
+                    (self.win.line, self.win.col) = pos;
+                    return None;
+                }
+                (pos, if inclusive { Kind::Inclusive } else { Kind::Exclusive })
             }
             '0' => ((line, 0), Kind::Exclusive),
             '^' => ((line, self.first_non_blank(line)), Kind::Exclusive),
@@ -249,16 +315,17 @@ impl Editor {
                 let l = (line + n - 1).min(last);
                 ((l, self.line_chars(l).saturating_sub(1)), Kind::Inclusive)
             }
-            'g' | 'G' => first(self, count.map_or(if key == 'g' { 0 } else { last }, |c| (c - 1).min(last))),
+            // 'startofline' is off in Neovim: `G`, `gg`, `H`, `M`, `L` and `N%` keep the column the cursor wanted (`beginline(BL_SOL | BL_FIX)`).
+            'g' | 'G' => vertical(self, count.map_or(if key == 'g' { 0 } else { last }, |c| (c - 1).min(last))),
             // `scrolloff` lines stay between them and the screen edge, but at the text's ends.
             'H' => {
                 let so = if self.win.top > 0 { self.scrolloff() } else { 0 };
-                first(self, (self.win.top + (n - 1).max(so)).min(self.bottom_line()))
+                vertical(self, (self.win.top + (n - 1).max(so)).min(self.bottom_line()))
             }
             'L' => {
                 let bottom = self.bottom_line();
                 let so = if bottom < last { self.scrolloff() } else { 0 };
-                first(self, bottom.saturating_sub((n - 1).max(so)).max(self.win.top.min(bottom)))
+                vertical(self, bottom.saturating_sub((n - 1).max(so)).max(self.win.top.min(bottom)))
             }
             'M' => {
                 // The line on the middle screen row of what is shown.
@@ -269,54 +336,66 @@ impl Editor {
                     row -= self.height_to(l, self.win.rows + 1);
                     l += 1;
                 }
-                first(self, l)
+                vertical(self, l)
             }
             // `N%` goes to N percent of the lines, rounded up (vim).
-            '%' if count.is_some() => first(self, ((n.min(100) * (last + 1)).div_ceil(100)).saturating_sub(1)),
+            '(' | ')' | '{' | '}' => self.sentence_motion(key, n)?,
+            // A search is typed on the command line (`search_op` for an operator): not a motion computed here.
+            '/' | '?' => return None,
+            '%' if count.is_some() => vertical(self, ((n.min(100) * (last + 1)).div_ceil(100)).saturating_sub(1)),
             '%' => (self.match_bracket()?, Kind::Inclusive),
-            'w' if op == Some('c') && !self.char_at((line, col)).is_whitespace() => {
-                // Vim: `cw` on a word changes only up to its end, like `ce`.
-                let mut p = self.word_end((line, col), false);
-                for _ in 1..n {
-                    p = self.word_end(p, true);
-                }
-                (p, Kind::Inclusive)
+            // `nv_wordcmd`: `cw` is `ce` only with a char under the cursor (an empty line is the NUL, which is `dw`'s way) that is
+            // no blank; a count of words of the same kind (`cpoptions` has `_`: `end_word(count, bigword, stop = true)`).
+            'w' | 'W' if op == Some('c') && col < self.line_chars(line) && !matches!(self.char_at((line, col)), ' ' | '\t') => {
+                let (p, _) = self.end_word((line, col), n, key == 'W', true, false);
+                (self.adjust_word_end((line, col), p), Kind::Inclusive)
             }
-            'w' => {
-                let mut p = (line, col);
-                for _ in 0..n {
-                    p = self.word_start(p);
-                }
-                // Vim: an operator stops at the end of the line of the last word moved over.
-                if op.is_some() && p.0 > line && p.1 <= self.first_non_blank(p.0) {
-                    p = (p.0 - 1, self.line_chars(p.0 - 1));
+            'w' | 'W' => {
+                let (p, ok) = self.fwd_word((line, col), n, key == 'W', op.is_some());
+                if !ok && op.is_none() {
+                    self.beep_flush();
                 }
                 (p, Kind::Exclusive)
             }
-            'e' => {
-                let mut p = (line, col);
-                for _ in 0..n {
-                    p = self.word_end(p, true);
+            'e' | 'E' => {
+                let (p, ok) = self.end_word((line, col), n, key == 'E', false, false);
+                if !ok && op.is_none() {
+                    self.beep_flush();
                 }
-                (p, Kind::Inclusive)
+                (self.adjust_word_end((line, col), p), Kind::Inclusive)
             }
-            'b' => {
-                let mut p = (line, col);
-                for _ in 0..n {
-                    p = self.word_back(p);
+            // `nv_bck_word` and `nv_g_cmd`: a failing `b` or `ge` is `clearopbeep`, with an operator too.
+            'b' | 'B' => {
+                let (p, ok) = self.bck_word((line, col), n, key == 'B', false);
+                if !ok {
+                    self.beep_flush();
+                    // The cursor stays where the counts that worked took it; an operator is dropped.
+                    if op.is_some() {
+                        return None;
+                    }
                 }
                 (p, Kind::Exclusive)
+            }
+            G_END_BACK | G_END_BACK_BIG => {
+                let (p, ok) = self.bckend_word((line, col), n, key == G_END_BACK_BIG, false);
+                if !ok {
+                    self.beep_flush();
+                    if op.is_some() {
+                        return None;
+                    }
+                }
+                (p, Kind::Inclusive)
             }
             'n' | 'N' => {
                 let back = self.last_search.as_ref().is_some_and(|s| s.back);
                 self.search_motion(back == (key == 'N'), n, None)?
             }
             '*' | '#' => {
-                let Some((word, start)) = self.word_under_cursor() else {
-                    self.error("No identifier under cursor");
+                let Some((word, start, ident)) = self.word_under_cursor() else {
+                    self.error("E348: No string under cursor");
                     return None;
                 };
-                let mut s = search::Search::word(&word, self.buf.opts.ignorecase);
+                let mut s = search::Search::word(&word, ident, self.buf.opts.ignorecase);
                 s.back = key == '#';
                 self.last_search = Some(s);
                 let from = self.offset_of((line, start));
@@ -343,8 +422,8 @@ impl Editor {
             }
             '|' => {
                 // `nv_pipe`: the column wanted is the one asked for, also when the line is shorter.
-                self.win.want_col = n - 1;
-                ((line, (n - 1).min(self.line_chars(line))), Kind::Exclusive)
+                (self.win.want_col, self.win.want_set) = (n - 1, false);
+                ((line, self.coladvance(line, n - 1)), Kind::Exclusive)
             }
             super::G_BYTE => (self.pos_of(self.byte_pos(n - 1)), Kind::Exclusive),
             '`' | '\'' => {
@@ -352,6 +431,16 @@ impl Editor {
                     '`' => '\'',
                     m => m,
                 };
+                // A file mark of another buffer takes the window there.
+                if let Some(id) = self.file_mark_elsewhere(m) {
+                    if op.is_some() {
+                        return None;
+                    }
+                    self.set_jump();
+                    self.switch_buffer(id);
+                    // `buflist_getfile` leaves an empty message line behind (the file info is off in 'shortmess').
+                    self.capture_msg("", false);
+                }
                 let Some(off) = self.mark(m) else {
                     self.error("E20: Mark not set");
                     return None;
@@ -373,18 +462,38 @@ impl Editor {
         self.buf.doc.text().floor_char_boundary(b)
     }
 
+    /// `adjust_cursor` of `nv_wordcmd`: a word end that landed on the NUL of its line (and moved) is the last char of it.
+    fn adjust_word_end(&self, start: Pos, p: Pos) -> Pos {
+        if p > start && p.1 > 0 && p.1 >= self.line_chars(p.0) && !matches!(self.mode, super::Mode::Visual(_)) { (p.0, p.1 - 1) } else { p }
+    }
+
     /// Moves the cursor to a motion's target in Normal or Visual mode; jumps set the `''` mark.
     pub(super) fn move_to(&mut self, key: char, to: Pos) {
-        if JUMPS.contains(key) && to != (self.win.line, self.win.col) {
+        // `nv_goto` sets the mark whether the cursor moves or not.
+        if JUMPS.contains(key) && (to != (self.win.line, self.win.col) || matches!(key, 'G' | 'g')) {
             self.set_jump();
         }
         self.win.line = to.0;
         let col = to.1.min(self.line_chars(to.0).saturating_sub(1));
         match key {
-            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP | '|' => self.win.col = col,
+            // `coladvance` already allows the position past the end where the mode does (Visual).
+            'j' | 'k' | '\x04' | '\x15' | G_DOWN | G_UP | '|' | 'g' | 'G' | 'H' | 'M' | 'L' => self.win.col = to.1.min(self.line_chars(to.0)),
             '$' => {
+                // `coladvance(MAXCOL)`: in Visual mode the cursor goes on the position past the last char.
+                self.win.col = if matches!(self.mode, super::Mode::Visual(_)) { self.line_chars(to.0) } else { col };
+                (self.win.want_col, self.win.want_set) = (usize::MAX, false);
+            }
+            // `oneright`/`oneleft` set `w_set_curswant` only when they moved.
+            'h' | 'l' => {
+                // `nv_right`: in Visual mode `l` goes on to the position past the last char (`past_line`).
+                let col = if key == 'l' && matches!(self.mode, super::Mode::Visual(_)) { to.1.min(self.line_chars(to.0)) } else { col };
+                let moved = (self.win.line, self.win.col) != (to.0, col);
                 self.win.col = col;
-                self.win.want_col = usize::MAX;
+                self.win.want_set |= moved;
+                // `nv_left`, `nv_right`: nothing moved at all.
+                if !moved {
+                    self.beep_flush();
+                }
             }
             _ => self.set_col(col),
         }
@@ -392,7 +501,11 @@ impl Editor {
 
     /// Records the cursor as the `''` mark and in the jump list before a jump.
     pub(super) fn set_jump(&mut self) {
-        self.buf.marks.insert('\'', self.offset());
+        // `setpcmark`: for `:global` the mark is set only once, by `:global` itself.
+        if self.scripts.global_busy {
+            return;
+        }
+        self.put_off('\'', self.offset());
         self.push_jump();
     }
 
@@ -400,7 +513,7 @@ impl Editor {
     /// default), wrapping, with the search offset applied. Sets the wrap or not-found message.
     pub(super) fn search_motion(&mut self, forward: bool, n: usize, from: Option<usize>) -> Option<(Pos, Kind)> {
         let Some(s) = self.last_search.clone() else {
-            self.error("No previous search pattern");
+            self.error("E35: No previous regular expression");
             return None;
         };
         self.hl = true;

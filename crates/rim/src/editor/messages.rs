@@ -7,6 +7,8 @@ use std::{
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
+use crate::string_builder::StringBuilder;
+
 use super::{Editor, graphemes};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -67,7 +69,7 @@ pub(super) struct Messages {
 
 /// `utf_printable`: false for the chars from U+0100 that Neovim does not draw (soft hyphens of scripts, zero width
 /// marks, bidi controls, the byte order mark...).
-fn utf_printable(c: u32) -> bool {
+pub(super) fn utf_printable(c: u32) -> bool {
     const NONPRINT: [(u32, u32); 9] = [(0x070f, 0x070f), (0x180b, 0x180e), (0x200b, 0x200f), (0x202a, 0x202e), (0x2060, 0x206f), (0xd800, 0xdfff), (0xfeff, 0xfeff), (0xfff9, 0xfffb), (0xfffe, 0xffff)];
     c < 0x100 || !NONPRINT.iter().any(|&(lo, hi)| (lo..=hi).contains(&c))
 }
@@ -115,9 +117,8 @@ fn trunc_string(s: &str, room_in: usize) -> String {
 /// `^X` (DEL `^?`), a C1 control as `<xx>`. With `multiline` (`msg_multiline`) newline, tab and
 /// carriage return stay as they are and BELL is dropped (Neovim beeps). A char from U+0100 that `utf_printable` refuses
 /// (`<200b>`) is shown as its hex code.
-pub(super) fn trans(text: &str, multiline: bool) -> String {
-    let mut out = String::with_capacity(text.len());
-    for c in text.chars() {
+pub(super) fn trans_in<II: IntoIterator<Item = char>, B: StringBuilder>(out: &mut B, text: II, multiline: bool) {
+    for c in text.into_iter() {
         match c {
             '\n' | '\t' | '\r' if multiline => out.push(c),
             '\x07' if multiline => {}
@@ -127,11 +128,16 @@ pub(super) fn trans(text: &str, multiline: bool) -> String {
                 out.push('^');
                 out.push((c as u8 ^ 0x40) as char);
             }
-            '\u{80}'..='\u{9f}' => out.push_str(&format!("<{:02x}>", c as u32)),
-            c if !utf_printable(c as u32) => out.push_str(&format!("<{:04x}>", c as u32)),
+            '\u{80}'..='\u{9f}' => { let _ =  write!(out, "<{:02x}>", c as u32); },
+            c if !utf_printable(c as u32) => { let _ = write!(out, "<{:04x}>", c as u32); },
             c => out.push(c),
         }
     }
+}
+
+pub(super) fn trans(text: &str, multiline: bool) -> String {
+    let mut out = String::with_capacity(text.len());
+    trans_in(&mut out, text.chars(), multiline);
     out
 }
 
@@ -336,7 +342,7 @@ impl Editor {
         if !text.is_empty() {
             self.capture_msg(&text, false);
         }
-        // `:silent`: nothing is shown (a redirection still gets it).
+        // `:silent`: nothing is shown (a redirection still gets it, Neovim's does not: a difference).
         if self.scripts.msg_silent == 0 {
             self.msgs.show(Level::Info, text, keep);
         }
@@ -430,10 +436,15 @@ impl Editor {
             return;
         }
         let pn = n.unsigned_abs() as usize;
+        // "We don't want to overwrite another important message, but do overwrite a previous "more lines" or "fewer lines" message."
+        if self.keep_msg.is_some_and(|(seq, more)| seq == self.msgs.seq && !more) {
+            return;
+        }
         if pn > self.buf.opts.report {
             let plural = if pn == 1 { "" } else { "s" };
             let text = if n > 0 { format!("{pn} more line{plural}") } else if pn == 1 { "1 line less".to_string() } else { format!("{pn} fewer lines") };
             self.info(text);
+            self.keep_msg = Some((self.msgs.seq, true));
         }
     }
 
@@ -452,7 +463,7 @@ impl Editor {
     pub(super) fn do_sub_msg(&mut self, count_only: bool) -> bool {
         let (n, l) = (self.scripts.sub_nsubs, self.scripts.sub_nlines);
         let report = self.buf.opts.report;
-        let key_typed = self.scripts.typed && !self.scripts.sourcing;
+        let key_typed = self.key_typed;
         if (n > report && (key_typed || l > 1 || report < 1)) || count_only {
             let what = match (count_only, n == 1) {
                 (true, true) => "match",
@@ -461,12 +472,18 @@ impl Editor {
                 (false, false) => "substitutions",
             };
             self.info(format!("{n} {what} on {l} line{}", if l == 1 { "" } else { "s" }));
+            // `set_keep_msg`: it is shown again after the redraw.
+            self.keep_msg = Some((self.msgs.seq, false));
             return true;
         }
         false
     }
 
+    /// `give_warning`: nothing under `:silent`.
     pub(super) fn warn(&mut self, text: impl Into<String>) {
+        if self.scripts.msg_silent > 0 {
+            return;
+        }
         let keep = self.buf.opts.msg_history;
         let text = text.into();
         self.capture_msg(&text, false);
@@ -516,6 +533,8 @@ impl Editor {
         self.scripts.msg_silent = 0;
         self.capture_msg(&text, false);
         self.msgs.show(Level::Error, text, keep);
+        // `emsg` flushes the typeahead.
+        self.flush_typeahead = true;
     }
 
     /// How long `main` waits for a key: `base` (save poll or idle period, if any) or the time left

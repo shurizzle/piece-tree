@@ -86,6 +86,15 @@ struct Pane {
 }
 
 impl Editor {
+    /// Cells of a line inside a Visual block (`oap->start_vcol..=end_vcol`, to the end of the line after `$`), when the
+    /// window shows one. A Tab is drawn cell by cell, any other char whole when one of its cells is inside.
+    fn block_cells(&self) -> Option<(Range<usize>, Range<usize>)> {
+        let Mode::Visual(VKind::Block) = self.mode else { return None };
+        let op = self.block_oparg(super::block::BOp::Yank);
+        let end = if op.is_max { usize::MAX } else { op.end_vcol.max(0) as usize + 1 };
+        Some((op.start.0..op.end.0 + 1, op.start_vcol.max(0) as usize..end))
+    }
+
     /// Cluster range of `line` inside the Visual selection; `len` stands for the line break.
     fn selection(&self, line: usize) -> Range<usize> {
         if let (Mode::Confirm, Some(c)) = (&self.mode, &self.confirm) {
@@ -104,7 +113,8 @@ impl Editor {
         let len = self.line_chars(line);
         match kind {
             VKind::Line => 0..len + 1,
-            VKind::Block => self.block_range(line),
+            // Drawn by cells (`block_cells`).
+            VKind::Block => 0..0,
             VKind::Char => {
                 let start = if line == a.0 { a.1 } else { 0 };
                 let end = if line == b.0 { b.1 + 1 } else { len + 1 };
@@ -140,29 +150,29 @@ impl Editor {
     }
 
     /// Wrap width of the last frame, `usize::MAX` without `wrap` (a line is then one row).
-    fn wrap_w(&self) -> usize {
+    pub(super) fn wrap_w(&self) -> usize {
         if self.win.opts.wrap { self.win.text_w } else { usize::MAX }
     }
 
     /// Runs `f` on line `n` and its rows. The rows of the cursor line and of huge lines are kept between
     /// calls, so only what an edit changed is laid out again; `f` must not ask for rows again.
     pub(super) fn with_rows<R>(&self, n: usize, f: impl FnOnce(&str, &mut Rows) -> R) -> R {
-        let (w, ts) = (self.wrap_w(), self.buf.opts.tabstop);
+        let (w, tabs) = (self.wrap_w(), self.buf.opts.tabs());
         let text = self.buf.doc.text();
         if w != usize::MAX {
             let mut layouts = self.win.layout.borrow_mut();
-            if let Some((line, rows)) = layouts.cached(text, n, w, ts) {
+            if let Some((line, rows)) = layouts.cached(text, n, w, tabs) {
                 return f(line, rows);
             }
             let line = text.line(n);
             if n == self.win.line || line.len() >= LONG_LINE {
-                let (line, rows) = layouts.sync(&line, text, n, w, ts);
+                let (line, rows) = layouts.sync(&line, text, n, w, tabs);
                 return f(line, rows);
             }
             drop(layouts);
-            return f(&line, &mut Rows::new(w, ts));
+            return f(&line, &mut Rows::new(w, tabs));
         }
-        f(&text.line(n), &mut Rows::new(w, ts))
+        f(&text.line(n), &mut Rows::new(w, tabs))
     }
 
     /// Screen rows of line `n` at the last frame's width, counted up to `cap` (at least 1).
@@ -184,12 +194,33 @@ impl Editor {
         bottom
     }
 
+    /// `getvcol` of the cursor: the first virtual column of its cluster, the one after the last, and the one the
+    /// cursor is drawn on. That is the first, but for a Tab in Normal mode (or Visual after the anchor) without
+    /// `list`: its last.
+    pub(super) fn cursor_vcols(&self) -> (usize, usize, usize) {
+        self.vcols_at((self.win.line, self.win.col))
+    }
+
+    /// `cursor_vcols` for the cursor at `(line, col)`.
+    pub(super) fn vcols_at(&self, (l, col): (usize, usize)) -> (usize, usize, usize) {
+        let line = self.buf.doc.text().line(l);
+        let (a, e) = graphemes::cell_range(&line, col, self.buf.opts.tabs(), self.wrap_w());
+        let on_tab = line[graphemes::byte_of(&line, col)..].starts_with('\t');
+        let late = match self.mode {
+            Mode::Normal => true,
+            Mode::Visual(_) => (l, col) > self.anchor,
+            _ => false,
+        };
+        (a, e, if on_tab && late && !self.win.opts.list { e - 1 } else { a })
+    }
+
     /// Screen row of the cursor inside its line and its cell column inside that row.
     pub(super) fn cursor_row(&self) -> (usize, usize) {
+        let (.., cur) = self.cursor_vcols();
+        let w = self.wrap_w();
         self.with_rows(self.win.line, |line, rows| {
-            let k = rows.row_of(line, self.win.col);
-            let (start, seg) = rows.row(line, k);
-            (k, graphemes::screen_col(seg, self.win.col - start, self.buf.opts.tabstop))
+            let k = rows.row_of(line, cur);
+            (k, if w == usize::MAX { cur } else { cur - k * w })
         })
     }
 
@@ -220,32 +251,13 @@ impl Editor {
         (line, k)
     }
 
-    /// Cluster index in row `k` of `line` at cell column `x`; a row that is not the last never ends past its last cluster.
-    pub(super) fn col_at(&self, line: usize, k: usize, x: usize) -> usize {
-        let ts = self.buf.opts.tabstop;
-        self.with_rows(line, |text, rows| {
-            rows.ensure(text, k);
-            let (start, seg) = rows.row(text, k);
-            let (mut cx, mut idx) = (0, 0);
-            for g in graphemes::iter(seg) {
-                let cw = graphemes::width(g, ts);
-                if cx + cw > x {
-                    break;
-                }
-                cx += cw;
-                idx += 1;
-            }
-            let max = if k + 1 < rows.len() { idx.min(graphemes::count(seg).saturating_sub(1)) } else { idx };
-            start + max
-        })
-    }
-
     /// Lays out the current window's `w`×`h` text rows and scrolls to keep the cursor visible;
     /// `active` draws the selection and the cursor line.
     fn window_rows(&mut self, w: usize, h: usize, active: bool) -> Pane {
         let w = w.max(1);
         self.win.rows = h.max(1);
-        let ts = self.buf.opts.tabstop;
+        let vts = self.buf.opts.vts_array.clone();
+        let tabs = graphemes::Tabs { ts: self.buf.opts.tabstop, vts: &vts };
 
         let text = self.buf.doc.text().clone();
         let wrap = self.win.opts.wrap;
@@ -291,16 +303,15 @@ impl Editor {
         if wrap {
             self.win.left = 0;
         } else {
-            let line = text.line(self.win.line);
-            let b = graphemes::byte_of(&line, self.win.col);
-            let cw = if b < line.len() { graphemes::width(&line[b..graphemes::next(&line, b)], ts) } else { 1 };
-            if cx < self.win.left {
-                self.win.left = cx;
-            } else if cx + cw > self.win.left + text_w {
-                self.win.left = (cx + cw).saturating_sub(text_w);
+            let (cs, ce, _) = self.cursor_vcols();
+            if cs < self.win.left {
+                self.win.left = cs;
+            } else if ce > self.win.left + text_w {
+                self.win.left = ce - text_w;
             }
         }
 
+        let block = if active { self.block_cells() } else { None };
         let hl = self.highlight();
         let visible = self.win.top..(self.win.top + self.win.rows).min(text.line_count());
         let syntax = self.syntax_lines(visible.clone());
@@ -319,8 +330,9 @@ impl Editor {
             let sel = if active { self.selection(n) } else { 0..0 };
             let matches = matches.get(n - self.win.top).map_or(&[][..], Vec::as_slice);
             let syntax = syntax.get(n - self.win.top).map_or(&[][..], Vec::as_slice);
-            let style_at = |i: usize| {
-                if sel.contains(&i) {
+            let cells = block.as_ref().filter(|(lines, _)| lines.contains(&n)).map(|(_, c)| c.clone());
+            let style_at = |i: usize, x0: usize, x1: usize| {
+                if sel.contains(&i) || cells.as_ref().is_some_and(|c| x0 < c.end && x1 > c.start) {
                     Style::Reverse
                 } else if matches.get(matches.partition_point(|r| r.end <= i)).is_some_and(|r| r.start <= i) {
                     Style::Match
@@ -332,7 +344,7 @@ impl Editor {
             self.with_rows(n, |s, r| {
                 r.ensure(s, skip + want - 1);
                 if n == self.win.line {
-                    let x = if wrap { cx.min(text_w - 1) } else { cx - self.win.left };
+                    let x = if wrap { cx.min(text_w - 1) } else { cx.saturating_sub(self.win.left) };
                     cursor = (gutter + x, (rows.len() + kc.saturating_sub(skip)).min(self.win.rows - 1));
                 }
                 for k in skip..(skip + want).min(r.len()) {
@@ -348,7 +360,8 @@ impl Editor {
                         }
                     }
                     let last = r.done() && k + 1 == r.len();
-                    spans.extend(row_spans(seg, |i| style_at(start + i), self.win.left, text_w, ts, last, self.win.opts.list));
+                    let (lo, wr) = if wrap { (k * text_w, text_w) } else { (self.win.left, usize::MAX) };
+                    spans.extend(row_spans(seg, r.row_vcol(k), |i, x0, x1| style_at(start + i, x0, x1), lo, text_w, tabs, wr, last, self.win.opts.list));
                     if active && n == self.win.line && self.win.opts.cursorline {
                         // Explicit padding: erasing with a background color is not portable (no BCE everywhere).
                         let used: usize = spans.iter().map(|s| str_width(&s.text)).sum();
@@ -382,6 +395,8 @@ impl Editor {
 
     /// Lays out a `w`×`h` screen: the windows, then the status or command row.
     pub fn frame(&mut self, w: usize, h: usize) -> Frame {
+        // `update_screen` shows `keep_msg` and forgets it.
+        self.keep_msg = None;
         let w = w.max(1);
         let area = Rect { x: 0, y: 0, w, h: h.saturating_sub(1).max(1) };
         self.screen = area;
@@ -751,9 +766,9 @@ pub(super) fn cell_width(c: char, ts: usize) -> usize {
 /// width (a lone combining mark) is drawn on a space, and a wide cluster cut by the edge shows as
 /// spaces.
 #[allow(clippy::too_many_arguments)]
-fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: usize, ts: usize, last: bool, list: bool) -> Vec<Span> {
+fn row_spans(line: &str, vcol0: usize, style_at: impl Fn(usize, usize, usize) -> Style, left: usize, width: usize, tabs: graphemes::Tabs, wrap: usize, last: bool, list: bool) -> Vec<Span> {
     let mut spans: Vec<Span> = Vec::new();
-    let (mut x, mut i) = (0, 0);
+    let (mut x, mut i) = (vcol0, 0);
     let right = left + width;
     // One cell or cluster at `x` of `cw` cells; false once past the right edge.
     let mut put = |i: usize, x0: usize, cw: usize, glyph: Glyph| {
@@ -765,22 +780,30 @@ fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: 
         if start >= end {
             return true;
         }
-        let style = style_at(i);
+        if let Glyph::Tab = glyph {
+            // A Tab is drawn cell by cell: a Visual block may cover only some of its cells. With `list` its first cell is
+            // `>`, even when the left edge cuts the tab.
+            for x in start..end {
+                let style = style_at(i, x, x + 1);
+                if spans.last().is_none_or(|s| s.style != style) {
+                    spans.push(Span { style, text: String::new() });
+                }
+                spans.last_mut().expect("just pushed").text.push(if list && x == x0 { '>' } else { ' ' });
+            }
+            return true;
+        }
+        let style = style_at(i, x0, x1);
         if spans.last().is_none_or(|s| s.style != style) {
             spans.push(Span { style, text: String::new() });
         }
         let out = &mut spans.last_mut().expect("just pushed").text;
         let whole = start == x0 && end == x1;
         match glyph {
-            Glyph::Tab if list => {
-                // The tab's first cell is `>`, even when the left edge cuts the tab.
-                out.push(if start == x0 { '>' } else { ' ' });
-                out.extend(std::iter::repeat_n(' ', end - start - 1));
-            }
+            Glyph::Filler => out.push('>'),
             Glyph::Char(c) if whole => out.push(if c.is_control() { '?' } else { c }),
             Glyph::Str(g) if whole => match g.chars().next() {
                 Some(c) if c.is_control() => out.push('?'),
-                Some(c) if g.len() == c.len_utf8() && cell_width(c, ts) == 0 => {
+                Some(c) if g.len() == c.len_utf8() && cell_width(c, tabs.ts) == 0 => {
                     out.push(' ');
                     out.push_str(g);
                 }
@@ -790,30 +813,28 @@ fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: 
         }
         true
     };
-    'line: for (a, e, _, run) in graphemes::spans_in(line, 0, usize::MAX) {
-        if run {
-            // Chars of a run are clusters of one char: one decode each.
-            for c in line[a..e].chars() {
-                let (cw, glyph) = if c == '\t' { (ts, Glyph::Tab) } else { (cell_width(c, ts).max(1), Glyph::Char(c)) };
-                if !put(i, x, cw, glyph) {
-                    break 'line;
-                }
-                (x, i) = (x + cw, i + 1);
-            }
-        } else {
-            let g = &line[a..e];
-            let cw = graphemes::width(g, ts);
-            if !put(i, x, cw, Glyph::Str(g)) {
-                break;
-            }
-            (x, i) = (x + cw, i + 1);
+    for c in graphemes::cells(line, 0, vcol0, tabs, wrap, usize::MAX) {
+        let g = &line[c.a..c.e];
+        let mut chars = g.chars();
+        let glyph = match (chars.next(), chars.next()) {
+            (Some('\t'), None) => Glyph::Tab,
+            (Some(ch), None) if cell_width(ch, tabs.ts) > 0 => Glyph::Char(ch),
+            _ => Glyph::Str(g),
+        };
+        // A wide char that would start in the last cell of a row leaves a `>` there and is drawn on the next row.
+        if c.head > 0 && !put(i, c.vcol, c.head, Glyph::Filler) {
+            break;
         }
+        if !put(i, c.start(), c.cells - c.head, glyph) {
+            break;
+        }
+        (x, i) = (c.end(), i + 1);
     }
     // The line break shows as one cell after the last row of the line when selected, or as `$` with `list`.
     if last && x < right {
         if list {
             put(i, x, 1, Glyph::Str("$"));
-        } else if style_at(i) == Style::Reverse {
+        } else if style_at(i, usize::MAX, usize::MAX) == Style::Reverse {
             put(i, x, 1, Glyph::Char(' '));
         }
     }
@@ -823,6 +844,8 @@ fn row_spans(line: &str, style_at: impl Fn(usize) -> Style, left: usize, width: 
 /// What `row_spans` draws for a cluster.
 enum Glyph<'a> {
     Tab,
+    /// The `>` that stands where a wide char did not fit at the end of a row.
+    Filler,
     Char(char),
     Str(&'a str),
 }

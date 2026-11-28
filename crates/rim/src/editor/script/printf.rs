@@ -5,7 +5,7 @@
 //! gives the bare byte, and `%c` of a number above 127 is U+FFFD (Neovim writes one byte).
 
 use super::Value;
-use crate::editor::Editor;
+use crate::{editor::Editor, string_builder::StringBuilder};
 
 const MAX_ALLOWED_STRING_WIDTH: u32 = 1_048_576;
 
@@ -339,95 +339,139 @@ fn parse_fmt_types(e: &mut Editor, fmt: &str, nargs: usize) -> Option<Vec<Option
 }
 
 /// The text of the number conversions of C's `snprintf("%e")`: `1.500000e+03`.
-fn c_exp(f: f64, prec: usize, upper: bool) -> String {
-    let sci = format!("{f:.prec$e}");
-    let (m, x) = sci.split_once('e').expect("an exponent");
-    let x: i32 = x.parse().expect("a number");
-    let s = format!("{m}e{}{:02}", if x < 0 { '-' } else { '+' }, x.abs());
-    if upper { s.to_uppercase() } else { s }
+fn c_exp_in<B: StringBuilder>(s: &mut B, f: f64, prec: usize, upper: bool) {
+    let start = s.len();
+    s.reserve(prec + 8);
+
+    if upper {
+        let _ = write!(s, "{f:.prec$E}");
+    } else {
+        let _ = write!(s, "{f:.prec$e}");
+    }
+
+    let Some(rel_e) = s[start..].rfind(['e', 'E']) else {
+        return; // NaN o inf
+    };
+
+    let e_pos = start + rel_e;
+    let exp: i32 = s[e_pos + 1..].parse().expect("a number");
+
+    s.truncate(e_pos + 1);
+    let _ = write!(s, "{exp:+03}");
 }
 
 /// The floating point branch of `vim_vsnprintf_typval`: `%f %F %e %E %g %G`. Returns the text and whether the `0`
 /// flag still applies (not to inf and nan). `%g` is never C's: the plain form between 0.001 and 1e7, else the
 /// exponent form, with the zeros trimmed.
-pub(super) fn format_float(f: f64, spec: char, precision: Option<usize>, force_sign: bool, space_for_positive: bool) -> (String, bool) {
-    let mut spec = spec;
+pub(super) fn format_float_in<B: StringBuilder>(
+    t: &mut B,
+    f: f64,
+    spec: char,
+    precision: Option<usize>,
+    force_sign: bool,
+    space_for_positive: bool,
+) -> bool {
     let abs_f = f.abs();
-    let mut remove_trailing_zeroes = false;
-    if spec == 'g' || spec == 'G' {
-        spec = if (0.001..10_000_000.0).contains(&abs_f) || abs_f == 0.0 {
+    let remove_trailing_zeroes = matches!(spec, 'g' | 'G');
+    let spec = if remove_trailing_zeroes {
+        if (0.001..10_000_000.0).contains(&abs_f) || abs_f == 0.0 {
             if spec.is_ascii_uppercase() { 'F' } else { 'f' }
         } else if spec == 'g' {
             'e'
         } else {
             'E'
-        };
-        remove_trailing_zeroes = true;
-    }
-    if f.is_infinite() || (matches!(spec, 'f' | 'F') && abs_f > 1.0e307) {
-        let positive = f > 0.0;
-        let idx = usize::from(positive) * (1 + usize::from(force_sign) + usize::from(force_sign && space_for_positive)) + if spec.is_ascii_uppercase() { 4 } else { 0 };
-        const TABLE: [&str; 8] = ["-inf", "inf", "+inf", " inf", "-INF", "INF", "+INF", " INF"];
-        return (TABLE[idx].to_string(), false);
-    }
-    if f.is_nan() {
-        return ((if spec.is_ascii_uppercase() { "NAN" } else { "nan" }).to_string(), false);
-    }
-    let mut prec = precision;
-    if let Some(p) = &mut prec {
-        let mut max_prec = 350 - 10;
-        if matches!(spec, 'f' | 'F') && abs_f > 1.0 {
-            max_prec -= abs_f.log10() as usize;
-        }
-        *p = (*p).min(max_prec);
-    }
-    // snprintf with the sign flags (`%+.3f`, `% e`); a negative zero has its sign too.
-    let mut t = match spec {
-        'f' | 'F' => format!("{f:.*}", prec.unwrap_or(6)),
-        'e' => c_exp(f, prec.unwrap_or(6), false),
-        'E' => c_exp(f, prec.unwrap_or(6), true),
-        _ => unreachable!("g was turned into f or e"),
-    };
-    if force_sign && !f.is_sign_negative() {
-        t.insert(0, if space_for_positive { ' ' } else { '+' });
-    }
-    // The sign is not part of what Rust formatted for -0.0 with `{:.*}`: it is (`-0.000000`).
-    if remove_trailing_zeroes {
-        let mut tp: Option<usize> = None;
-        if matches!(spec, 'f' | 'F') {
-            tp = Some(t.len() - 1);
-        } else if let Some(x) = t.find(if spec == 'e' { 'e' } else { 'E' }) {
-            // "1.0e+07" is "1.0e7": no `+` and no leading zeros in the exponent.
-            let mut s = t.clone().into_bytes();
-            if s[x + 1] == b'+' {
-                s.remove(x + 1);
-            }
-            let i = if s[x + 1] == b'-' { 2 } else { 1 };
-            while s[x + i] == b'0' {
-                s.remove(x + i);
-            }
-            t = String::from_utf8(s).expect("ASCII");
-            tp = Some(x - 1);
-        }
-        if let (Some(mut tp), None) = (tp, precision) {
-            let mut s = t.into_bytes();
-            // Keep the zero just after a dot.
-            while tp > 2 && s[tp] == b'0' && s[tp - 1] != b'.' {
-                s.remove(tp);
-                tp -= 1;
-            }
-            t = String::from_utf8(s).expect("ASCII");
         }
     } else {
-        // "1.0e+012" on some systems: one zero less.
-        if let Some(x) = t.find(if spec == 'e' { 'e' } else { 'E' }) {
-            let s = t.as_bytes();
-            if matches!(s.get(x + 1), Some(b'+' | b'-')) && s.get(x + 2) == Some(&b'0') && s.get(x + 3).is_some_and(u8::is_ascii_digit) && s.get(x + 4).is_some_and(u8::is_ascii_digit) {
-                t.remove(x + 2);
+        spec
+    };
+
+    if f.is_infinite() || (matches!(spec, 'f' | 'F') && abs_f > 1.0e307) {
+        let idx = usize::from(f > 0.0)
+            * (1 + usize::from(force_sign) + usize::from(force_sign && space_for_positive))
+            + if spec.is_ascii_uppercase() { 4 } else { 0 };
+        const TABLE: [&str; 8] = ["-inf", "inf", "+inf", " inf", "-INF", "INF", "+INF", " INF"];
+        t.push_str(TABLE[idx]);
+        return false;
+    }
+
+    if f.is_nan() {
+        t.push_str(if spec.is_ascii_uppercase() { "NAN" } else { "nan" });
+        return false;
+    }
+
+    let prec = match precision {
+        Some(p) => {
+            let mut max_prec = 340;
+            if matches!(spec, 'f' | 'F') && abs_f > 1.0 {
+                max_prec -= abs_f.log10() as usize;
+            }
+            p.min(max_prec)
+        }
+        None => 6,
+    };
+
+    let int_digits = if matches!(spec, 'f' | 'F') && abs_f >= 1.0 {
+        abs_f.log10() as usize + 1
+    } else {
+        1
+    };
+    let start = t.len();
+    t.reserve(int_digits + prec + 8);
+
+    if force_sign && !f.is_sign_negative() {
+        t.push(if space_for_positive { ' ' } else { '+' });
+    }
+
+    match (spec, remove_trailing_zeroes) {
+        ('f' | 'F', _) => {
+            let _ = write!(t, "{f:.prec$}");
+        }
+        ('e', true) => {
+            let _ = write!(t, "{f:.prec$e}");
+        }
+        ('E', true) => {
+            let _ = write!(t, "{f:.prec$E}");
+        }
+        ('e', false) => c_exp_in(t, f, prec, false),
+        ('E', false) => c_exp_in(t, f, prec, true),
+        _ => unreachable!("g was turned into f or e"),
+    }
+
+    if remove_trailing_zeroes && precision.is_none() {
+        let mantissa_end = if matches!(spec, 'f' | 'F') {
+            t.len()
+        } else {
+            t[start..].rfind(['e', 'E']).map_or(t.len(), |i| start + i)
+        };
+
+        let bytes = t.as_bytes();
+        let mut end = mantissa_end;
+        while end > start + 3 && bytes[end - 1] == b'0' && bytes[end - 2] != b'.' {
+            end -= 1;
+        }
+
+        if end < mantissa_end {
+            if mantissa_end == t.len() {
+                t.truncate(end);
+            } else {
+                t.drain(end..mantissa_end);
             }
         }
     }
-    (t, true)
+
+    true
+}
+
+pub(super) fn format_float(
+    f: f64,
+    spec: char,
+    precision: Option<usize>,
+    force_sign: bool,
+    space_for_positive: bool,
+) -> (String, bool) {
+    let mut t = String::new();
+    let finite = format_float_in(&mut t, f, spec, precision, force_sign, space_for_positive);
+    (t, finite)
 }
 
 /// The arguments of the call, read the way `tv_nr`, `tv_str` and `tv_float` do (`arg_idx` counts from 1).

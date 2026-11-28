@@ -56,6 +56,25 @@ pub struct Version {
     pub time: Instant,
 }
 
+/// A replacement planned by [`Document::plan_replace`].
+pub struct Replacement {
+    base: Text,
+    next: Text,
+    edits: Vec<Edit>,
+}
+
+impl Replacement {
+    /// One [`Edit`] per replaced match, in order (each start is in the text left by the previous ones).
+    pub fn edits(&self) -> &[Edit] {
+        &self.edits
+    }
+
+    /// The text after the replacement.
+    pub fn text(&self) -> &Text {
+        &self.next
+    }
+}
+
 /// A version in the history tree.
 struct State {
     text: Text,
@@ -209,6 +228,34 @@ impl Document {
         }
     }
 
+    /// Makes a version with the current text and no edits, so a change that turns out to be none
+    /// still has a number and an undo step (an editor's undo header is made before its text is
+    /// known to differ). Inside an open group the group owns it, as if its first edit had made it.
+    pub fn new_version(&mut self) {
+        self.last.clear();
+        let id = self.states.len();
+        let text = self.text().clone();
+        self.states[self.cur].redo = Some(id);
+        let at = self.log.len();
+        self.states.push(State { text, parent: self.cur, edits: at..at, redo: None, time: Instant::now() });
+        self.cur = id;
+        if self.depth > 0 {
+            self.group = Some(id);
+        }
+    }
+
+    /// Opens a group on the current version, so the next edits go into it instead of making a version (an editor's `:undojoin`).
+    /// Returns false, changing nothing, unless the current version is the newest one: only that one can grow in place.
+    pub fn reopen_group(&mut self) -> bool {
+        self.last.clear();
+        if self.cur + 1 != self.states.len() || self.cur == 0 {
+            return false;
+        }
+        self.depth = 1;
+        self.group = Some(self.cur);
+        true
+    }
+
     /// Starts a group: until the matching [`Document::end_group`], effective edits make a single
     /// version (one undo step). Groups nest; only the outermost one counts. Moving in the history
     /// closes every open group.
@@ -246,6 +293,21 @@ impl Document {
         let (next, edits) = self.text().replace_matching_edits(re, rep, keep);
         let n = edits.len();
         self.apply(next, &edits);
+        n
+    }
+
+    /// What [`Document::replace_matching`] would do, without doing it, for a caller that has to
+    /// prepare (an editor saves undo information line by line before the text changes).
+    pub fn plan_replace(&self, re: &Regex, rep: &str, keep: impl FnMut(Range<usize>) -> bool) -> Replacement {
+        let (next, edits) = self.text().replace_matching_edits(re, rep, keep);
+        Replacement { base: self.text().clone(), next, edits }
+    }
+
+    /// Does what [`Document::plan_replace`] planned; returns the replaced count. The text must be the one it was planned for.
+    pub fn apply_replacement(&mut self, plan: Replacement) -> usize {
+        assert!(plan.base.ptr_eq(self.text()), "the text changed after the replacement was planned");
+        let n = plan.edits.len();
+        self.apply(plan.next, &plan.edits);
         n
     }
 

@@ -770,9 +770,13 @@ impl Editor {
                             out.push(k);
                             i = from + len;
                         }
-                        // Deliberate difference: a key Neovim stores as `K_SPECIAL` bytes ("\<Up>", "\<BS>", "\<M-a>") is not UTF-8, so it stays as typed
+                        // Deliberate difference: a key Neovim stores as `K_SPECIAL` bytes ("\<BS>", "\<M-a>") is not UTF-8, so it stays as
+                        // typed; the cursor keys are the private-use chars that macros and `:normal` read back as the keys.
                         Ok(Some((Key::Special, len))) => {
-                            out.push_str(&s[from - 1..from + len]);
+                            match super::super::parse::special_key_char(&s[from..from + len]) {
+                                Some(c) => out.push(c),
+                                None => out.push_str(&s[from - 1..from + len]),
+                            }
                             i = from + len;
                         }
                         Ok(None) => out.push('<'),

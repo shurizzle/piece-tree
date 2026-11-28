@@ -158,13 +158,6 @@ fn spans(s: &str) -> Spans<'_> {
     Spans { s, i: 0, limit: usize::MAX }
 }
 
-/// Spans of `s` from byte `from` (a boundary) that start before `limit`, runs cut at it (moved up
-/// to a char boundary).
-pub(super) fn spans_in(s: &str, from: usize, limit: usize) -> impl Iterator<Item = (usize, usize, usize, bool)> + '_ {
-    let limit = s.ceil_char_boundary(limit.min(s.len()));
-    Spans { s, i: from, limit }.take_while(move |sp| sp.0 < limit)
-}
-
 /// Byte of the `k`-th char of a run `r` of `n` chars (ASCII when `n` is its length).
 fn run_byte(r: &str, n: usize, k: usize) -> usize {
     if n == r.len() { k } else { str_indices::chars::to_byte_idx(r, k) }
@@ -250,20 +243,6 @@ pub(super) struct Clusters<'a> {
     run: usize,
 }
 
-/// Length and cells of the char at lead byte `b[p]` when the lead alone says them: ASCII, and the
-/// wide ideographs and Hangul syllables (U+4000–U+9FFF but the hexagrams U+4DC0–U+4DFF,
-/// U+B000–U+CFFF). None for any other char.
-#[inline]
-pub(super) fn lead_cell(b: &[u8], p: usize, ts: usize) -> Option<(usize, usize)> {
-    match b[p] {
-        b'\t' => Some((1, ts)),
-        0x00..=0x7F => Some((1, 1)),
-        0xE4 if b.get(p + 1) == Some(&0xB7) => None,
-        0xE4..=0xE9 | 0xEB | 0xEC => Some((3, 2)),
-        _ => None,
-    }
-}
-
 /// Bytes of the UTF-8 char whose lead byte is `c`.
 fn char_len(c: u8) -> usize {
     match c {
@@ -313,8 +292,8 @@ impl DoubleEndedIterator for Clusters<'_> {
     }
 }
 
-/// Screen cells of a cluster: a single char by `cell_width`, a longer cluster by its width; at
-/// least 1 (a lone combining mark is drawn on a space) and, but for a tab, at most 2.
+/// Screen cells of a cluster that is not a Tab: a single char by `cell_width`, a longer cluster by its
+/// width; at least 1 (a lone combining mark is drawn on a space) and at most 2. A Tab is `size`'s.
 pub(super) fn width(g: &str, ts: usize) -> usize {
     let mut it = g.chars();
     match (it.next(), it.next()) {
@@ -324,19 +303,232 @@ pub(super) fn width(g: &str, ts: usize) -> usize {
     }
 }
 
-/// Screen cells of the first `col` clusters of `s`.
-pub(super) fn screen_col(s: &str, col: usize, ts: usize) -> usize {
-    let mut x = 0;
-    let mut left = col;
-    for (a, b, n, run) in spans(s) {
-        if left == 0 {
-            break;
-        }
-        let k = n.min(left);
-        x += if run { s[a..a + run_byte(&s[a..b], n, k)].chars().map(|c| cell_width(c, ts).max(1)).sum() } else { width(&s[a..b], ts) };
-        left -= k;
+/// The tab stops of a buffer: every `ts` columns, or the list `vts` (`'vartabstop'`) with its last value repeating.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Tabs<'a> {
+    pub ts: usize,
+    pub vts: &'a [usize],
+}
+
+impl Tabs<'_> {
+    /// Stops every `ts` columns.
+    #[cfg(test)]
+    pub fn every(ts: usize) -> Tabs<'static> {
+        Tabs { ts, vts: &[] }
     }
-    x
+
+    /// `tabstop_padding`: the cells a Tab takes at virtual column `vcol`, up to the next stop.
+    pub fn pad(&self, vcol: usize) -> usize {
+        let Some(&last) = self.vts.last() else {
+            let ts = self.ts.max(1);
+            return ts - vcol % ts;
+        };
+        let mut tabcol = 0;
+        for &stop in self.vts {
+            tabcol += stop;
+            if tabcol > vcol {
+                return tabcol - vcol;
+            }
+        }
+        last - (vcol - tabcol) % last
+    }
+
+    /// `tabstop_at`: the size of the tab interval right of `col` (with `left`, left of it): what a shift is when 'shiftwidth' is 0.
+    pub fn at(&self, col: usize, left: bool) -> usize {
+        if self.vts.is_empty() {
+            return self.ts;
+        }
+        let mut tabcol = 0;
+        for (i, &stop) in self.vts.iter().enumerate() {
+            tabcol += stop;
+            if tabcol > col {
+                return if left && i == 0 { col } else { self.vts[i - usize::from(left)] };
+            }
+        }
+        self.vts[self.vts.len() - 1]
+    }
+
+    /// `tabstop_start`: the column of the stop at or before `col`.
+    pub fn start(&self, col: usize) -> usize {
+        let Some(&last) = self.vts.last() else { return col - col % self.ts.max(1) };
+        let mut tabcol = 0;
+        for &stop in self.vts {
+            tabcol += stop;
+            if tabcol > col {
+                return tabcol - stop;
+            }
+        }
+        col - (col - tabcol % last) % last
+    }
+
+    /// `tabstop_fromto`: the tabs and spaces that fill the columns `start..end`, as `(tabs, spaces)`.
+    pub fn fromto(&self, start: usize, end: usize) -> (usize, usize) {
+        let mut spaces = end - start;
+        let Some(&last) = self.vts.last() else {
+            let ts = self.ts.max(1);
+            let mut tabs = 0;
+            let init = ts - start % ts;
+            if spaces >= init {
+                spaces -= init;
+                tabs += 1;
+            }
+            return (tabs + spaces / ts, spaces % ts);
+        };
+        // The padding to the next stop.
+        let (mut tabcol, mut t) = (0, 0);
+        let mut padding = 0;
+        while t < self.vts.len() {
+            tabcol += self.vts[t];
+            t += 1;
+            if tabcol > start {
+                padding = tabcol - start;
+                break;
+            }
+        }
+        if t == self.vts.len() && tabcol <= start {
+            padding = last - (start - tabcol) % last;
+        }
+        // With less to fill than the padding no Tab fits.
+        if spaces < padding {
+            return (0, spaces);
+        }
+        let mut tabs = 1;
+        spaces -= padding;
+        // At least one Tab was used: see if more fit.
+        while spaces != 0 && t < self.vts.len() {
+            let stop = self.vts[t];
+            t += 1;
+            if spaces < stop {
+                return (tabs, spaces);
+            }
+            tabs += 1;
+            spaces -= stop;
+        }
+        (tabs + spaces / last, spaces % last)
+    }
+}
+
+/// `(cells, head)` of a char of `cw` cells at virtual column `vcol` in a window that wraps at `w` cells
+/// (`usize::MAX` when it does not): a double-width char that would start in the last cell of a row takes
+/// that cell as a filler (`head`) and is drawn on the next row (`charsize_fast_impl`, `in_win_border`).
+#[inline]
+pub(super) fn fit(cw: usize, vcol: usize, w: usize) -> (usize, usize) {
+    if cw == 2 && w != usize::MAX && vcol % w == w - 1 { (3, 1) } else { (cw, 0) }
+}
+
+/// `(cells, head)` of cluster `g` at virtual column `vcol` (`charsize`): a Tab by its stop, the others by `fit`.
+pub(super) fn size(g: &str, vcol: usize, tabs: Tabs, w: usize) -> (usize, usize) {
+    if g.starts_with('\t') { (tabs.pad(vcol), 0) } else { fit(width(g, tabs.ts), vcol, w) }
+}
+
+/// One cluster laid out by `Cells`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Cell {
+    /// Bytes of the cluster in the line.
+    pub a: usize,
+    pub e: usize,
+    /// Virtual column before the cluster, its cells (the head included) and its head.
+    pub vcol: usize,
+    pub cells: usize,
+    pub head: usize,
+}
+
+impl Cell {
+    /// First cell the cluster itself is drawn on.
+    pub fn start(&self) -> usize {
+        self.vcol + self.head
+    }
+
+    /// Virtual column after it.
+    pub fn end(&self) -> usize {
+        self.vcol + self.cells
+    }
+}
+
+/// The clusters of a line with their cells, from byte `from` (a cluster boundary) at virtual column `vcol`.
+pub(super) struct Cells<'a> {
+    s: &'a str,
+    spans: Spans<'a>,
+    /// Bytes left of the run being read.
+    run: Range<usize>,
+    vcol: usize,
+    tabs: Tabs<'a>,
+    w: usize,
+}
+
+/// The cells of `s` from byte `from` (a cluster boundary) at virtual column `vcol`; `w` is the wrap width
+/// (`usize::MAX` without `wrap`). Runs of simple chars are read up to byte `limit` only (a cluster may end past
+/// it), so a caller that stops early does not scan the rest of a long line.
+pub(super) fn cells<'a>(s: &'a str, from: usize, vcol: usize, tabs: Tabs<'a>, w: usize, limit: usize) -> Cells<'a> {
+    Cells { s, spans: Spans { s, i: from, limit: s.ceil_char_boundary(limit.min(s.len())) }, run: 0..0, vcol, tabs, w }
+}
+
+impl Iterator for Cells<'_> {
+    type Item = Cell;
+
+    #[inline]
+    fn next(&mut self) -> Option<Cell> {
+        if self.run.start >= self.run.end {
+            let (a, e, _, run) = self.spans.next()?;
+            if !run {
+                let (cells, head) = size(&self.s[a..e], self.vcol, self.tabs, self.w);
+                let c = Cell { a, e, vcol: self.vcol, cells, head };
+                self.vcol += cells;
+                return Some(c);
+            }
+            self.run = a..e;
+        }
+        let a = self.run.start;
+        let ch = self.s[a..].chars().next().expect("a char");
+        let e = a + ch.len_utf8();
+        let (cells, head) = if ch == '\t' { (self.tabs.pad(self.vcol), 0) } else { fit(cell_width(ch, self.tabs.ts).max(1), self.vcol, self.w) };
+        self.run.start = e;
+        let c = Cell { a, e, vcol: self.vcol, cells, head };
+        self.vcol += cells;
+        Some(c)
+    }
+}
+
+/// `(start, end)` virtual columns of the cells of the first cluster after `col` clusters of `s`
+/// (`getvcol`'s start and end + 1): past the last cluster the cell of the line end, one wide.
+pub(super) fn cell_range(s: &str, col: usize, tabs: Tabs, w: usize) -> (usize, usize) {
+    let (mut vcol, mut left) = (0, col);
+    for (a, e, n, run) in spans(s) {
+        let r = &s[a..e];
+        // ASCII without a Tab: a cell per char, nothing to look at.
+        if run && n == r.len() && memchr::memchr(b'\t', r.as_bytes()).is_none() {
+            if left < n {
+                return (vcol + left, vcol + left + 1);
+            }
+            (vcol, left) = (vcol + n, left - n);
+            continue;
+        }
+        for c in cells(r, 0, vcol, tabs, w, usize::MAX) {
+            if left == 0 {
+                return (c.start(), c.end());
+            }
+            (vcol, left) = (c.end(), left - 1);
+        }
+    }
+    (vcol, vcol + 1)
+}
+
+/// Index of the cluster of `s` (laid out from `vcol`) whose cells hold virtual column `target`; the cluster
+/// count when `target` is past the end.
+pub(super) fn col_at_vcol(s: &str, vcol: usize, tabs: Tabs, w: usize, target: usize) -> usize {
+    let mut n = 0;
+    for c in cells(s, 0, vcol, tabs, w, usize::MAX) {
+        if c.end() > target {
+            return n;
+        }
+        n += 1;
+    }
+    n
+}
+
+/// Virtual column where cluster `col` of `s` starts.
+pub(super) fn screen_col(s: &str, col: usize, tabs: Tabs, w: usize) -> usize {
+    cell_range(s, col, tabs, w).0
 }
 
 /// Lines at least this long (bytes) get a `LineIndex`; shorter ones are scanned whole.
@@ -615,8 +807,8 @@ mod tests {
             }
             front.extend(back.into_iter().rev());
             assert_eq!(front, want, "{s:?}");
-            let cells: usize = iter(&s).map(|g| width(g, 4)).sum();
-            assert_eq!(screen_col(&s, starts.len(), 4), cells, "{s:?}");
+            let cells: usize = cells(&s, 0, 0, Tabs::every(4), usize::MAX, usize::MAX).map(|c| c.cells).sum();
+            assert_eq!(screen_col(&s, starts.len(), Tabs::every(4), usize::MAX), cells, "{s:?}");
         }
     }
 
@@ -733,13 +925,30 @@ mod tests {
 
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
-    fn lead_cells_agree_with_cell_width() {
-        for c in (0..=0x10FFFFu32).filter_map(char::from_u32) {
-            let mut buf = [0; 4];
-            let s = c.encode_utf8(&mut buf);
-            if let Some(cell) = lead_cell(s.as_bytes(), 0, 4) {
-                assert_eq!(cell, (s.len(), cell_width(c, 4)), "{:04x}", c as u32);
+    fn tab_stops_of_a_list_and_every_ts() {
+        let t = Tabs { ts: 8, vts: &[4, 8] };
+        // `tabstop_padding`: the list, then its last value over and over.
+        let pads: Vec<usize> = [0, 3, 4, 11, 12, 13, 20].iter().map(|&c| t.pad(c)).collect();
+        assert_eq!(pads, [4, 1, 8, 1, 8, 7, 8]);
+        assert_eq!((Tabs::every(4).pad(0), Tabs::every(4).pad(3), Tabs::every(4).pad(4)), (4, 1, 4));
+        assert_eq!(Tabs { ts: 4, vts: &[3] }.pad(7), 2);
+        // `tabstop_fromto` is the greedy fill with `pad`.
+        let mut seed = 0x1234_5678_9abc_def0u64;
+        let mut next = |n: u64| {
+            seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+            ((seed >> 33) % n) as usize
+        };
+        for _ in 0..3000 {
+            let stops: Vec<usize> = (0..next(4)).map(|_| 1 + next(9)).collect();
+            let tabs = Tabs { ts: 1 + next(9), vts: &stops };
+            let (start, end) = (next(40), 0);
+            let end = start + next(60) + end;
+            let (mut col, mut want) = (start, 0);
+            while col + tabs.pad(col) <= end {
+                col += tabs.pad(col);
+                want += 1;
             }
+            assert_eq!(tabs.fromto(start, end), (want, end - col), "{start}..{end} {tabs:?}");
         }
     }
 
@@ -750,7 +959,7 @@ mod tests {
         assert_eq!(count(s), 29);
         assert_eq!(byte_of(s, 27), 27);
         assert_eq!(byte_of(s, 28), 30);
-        assert_eq!(screen_col(s, 27, 4), 30);
+        assert_eq!(screen_col(s, 27, Tabs::every(4), usize::MAX), 28);
         assert_eq!(width("e\u{301}", 4), 1);
         assert_eq!(width("\u{65e5}", 4), 2);
         assert_eq!(width("\u{1f468}\u{200d}\u{1f469}", 4), 2);

@@ -10,12 +10,28 @@ use std::{
 
 use piece_tree::{Document, LineEnding, Text};
 
-use super::{Editor, ex, graphemes::LineIndex, filetype, options::{Options, WinOpts}, read_doc};
+use super::{Editor, ex, undo::UndoTree, graphemes::LineIndex, filetype, options::{Options, WinOpts}, read_doc};
 
 /// Long lines whose cluster index a buffer keeps.
 pub(super) const INDEXES: usize = 4;
 
+/// A mark: 0-based line and byte column, as `pos_T` (the column is not adjusted when text before it in the line changes).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Mark {
+    pub line: usize,
+    pub col: usize,
+}
+
 /// One file being edited: its text and history, its marks and options.
+/// What `U` swaps with a line: the text the line had before the latest run of changes made to it, and the column.
+#[derive(Clone, Debug)]
+pub struct ULine {
+    /// 0-based line (`b_u_line_lnum` - 1).
+    pub line: usize,
+    pub text: String,
+    pub col: usize,
+}
+
 pub(super) struct Buffer {
     /// Number shown by `:ls` and taken by `:b N`, never reused.
     pub id: usize,
@@ -31,8 +47,13 @@ pub(super) struct Buffer {
     /// Version and line ending last written to disk; dirty is a pointer comparison.
     pub saved: Text,
     pub saved_eol: LineEnding,
-    /// `a`–`z` and `'` (position before the last jump), as byte offsets shifted by edits.
-    pub marks: HashMap<char, usize>,
+    /// The text version the file was read as (`ML_EMPTY`: a buffer is empty only when nothing was read
+    /// and nothing was typed, or an edit emptied it).
+    pub loaded: Text,
+    /// The file had no bytes, or there was none.
+    pub empty_at_open: bool,
+    /// `a`–`z`, `'`, `[`, `<`... as Neovim keeps them: a line and a byte column, which can lie past the end of the text.
+    pub marks: HashMap<char, Mark>,
     /// Cluster indexes of recently used long lines, the most recent last (`Editor::with_index`).
     pub cols: RefCell<Vec<LineIndex>>,
     pub opts: Options,
@@ -40,10 +61,16 @@ pub(super) struct Buffer {
     pub last: usize,
     /// Change list (`g;`/`g,`): offsets of recent changes, oldest first, shifted by edits;
     /// `change_idx` is where the next `g;` goes back from (`changes.len()` after a new change).
-    pub changes: Vec<usize>,
+    pub changes: Vec<Mark>,
     pub change_idx: usize,
+    /// The line `U` brings back (`b_u_line_ptr`, `b_u_line_lnum`, `b_u_line_colnr`).
+    pub u_line: Option<ULine>,
+    /// `b_new_change`: an undo step began since the last entry was added to the change list.
+    pub new_change: bool,
+    /// `visualmode(1)` was called since Visual mode last ended.
+    pub visual_mode_cleared: bool,
     /// Last Visual selection (`gv`): kind, anchor and cursor offsets, shifted by edits.
-    pub last_visual: Option<(super::VKind, usize, usize)>,
+    pub last_visual: Option<(super::VKind, Mark, Mark)>,
     /// Syntax tree of the filetype's grammar (`Editor::sync_syntax`).
     pub syntax: Option<super::syntax::Syntax>,
     /// `b:` variables.
@@ -52,6 +79,8 @@ pub(super) struct Buffer {
     pub wininfo: Vec<WinInfo>,
     /// Read from a file whose modelines have not been looked at yet (`Editor::check_modelines`).
     pub modelines_pending: bool,
+    /// Undo headers (`b_u_*`).
+    pub undo: UndoTree,
 }
 
 /// `WinInfo`: the window-local options a window had when it left the buffer. `win` is none once the window is gone.
@@ -64,10 +93,13 @@ impl Buffer {
     pub fn new(id: usize, doc: Document, path: Option<PathBuf>, mut opts: Options) -> Self {
         opts.filetype = path.as_deref().map_or("", filetype::detect).into();
         let modelines_pending = path.is_some();
+        let doc_empty = doc.text().is_empty();
         Self {
             id,
             saved: doc.text().clone(),
             saved_eol: doc.eol(),
+            loaded: doc.text().clone(),
+            empty_at_open: doc.text().is_empty(),
             doc,
             path,
             listed: true,
@@ -79,11 +111,15 @@ impl Buffer {
             last: 0,
             changes: Vec::new(),
             change_idx: 0,
+            new_change: false,
+            u_line: None,
+            visual_mode_cleared: false,
             last_visual: None,
             syntax: None,
             vars: Default::default(),
             wininfo: Vec::new(),
             modelines_pending,
+            undo: UndoTree::new(doc_empty),
         }
     }
 
@@ -91,6 +127,12 @@ impl Buffer {
     pub fn for_window(mut self, win: usize) -> Self {
         self.wininfo.push(WinInfo { win: Some(win), opts: None });
         self
+    }
+
+    /// `ML_EMPTY`: a write gives nothing for this buffer. A file read into the buffer is not empty even
+    /// when it holds a single line break (`loaded` is that version); one emptied by an edit is.
+    pub fn ml_empty(&self) -> bool {
+        self.doc.text().is_empty() && (self.empty_at_open || !self.doc.text().ptr_eq(&self.loaded))
     }
 
     /// A `buftype=nofile` buffer is never modified.
@@ -119,7 +161,7 @@ fn writing_msg(path: &Path) -> String {
     format!("\"{}\" writing...", path.display())
 }
 
-fn same_file(a: &Path, b: &Path) -> bool {
+pub(super) fn same_file(a: &Path, b: &Path) -> bool {
     a == b || fs::canonicalize(a).is_ok_and(|a| fs::canonicalize(b).is_ok_and(|b| a == b))
 }
 
@@ -128,7 +170,7 @@ impl Editor {
         if self.buf.id == id { Some(&self.buf) } else { self.buffers.iter().find(|b| b.id == id) }
     }
 
-    fn buffer_mut(&mut self, id: usize) -> Option<&mut Buffer> {
+    pub(super) fn buffer_mut(&mut self, id: usize) -> Option<&mut Buffer> {
         if self.buf.id == id { Some(&mut self.buf) } else { self.buffers.iter_mut().find(|b| b.id == id) }
     }
 
@@ -243,14 +285,32 @@ impl Editor {
         }
     }
 
-    /// `:e file`: switches to the buffer of `file`, or loads it into a new one.
-    pub(super) fn edit_file(&mut self, file: &str) -> Result<(), String> {
-        let path = PathBuf::from(file);
+    /// `:e file`: switches to the buffer of `file`, or loads it into a new one. `reload`: the command
+    /// reads the file again when the buffer already holds it (Neovim's `:e`; `:sp`/`:vs` only switch).
+    pub(super) fn edit_file(&mut self, file: &str, bang: bool, reload: bool) -> Result<(), String> {
+        let path = super::fname(file);
+        // `expand_filename` expands wildcards for `:e`/`:sp`: a `~user` there is no user for leaves
+        // nothing to open, and Neovim says `E79` after a bare newline, with a plain message (no error,
+        // the line goes on).
+        if path.to_str().and_then(|s| s.strip_prefix('~')).is_some_and(|rest| !rest.is_empty() && !rest.starts_with('/')) {
+            // `msg_putchar('\n')`, `msg(...)`, `msg_start()`: a line before and after in a redirection.
+            self.capture_msg("", false);
+            self.info("E79: Cannot expand wildcards");
+            self.capture_msg("", false);
+            return Ok(());
+        }
         if let Some(id) = self.all_buffers().iter().find(|b| b.path.as_deref().is_some_and(|p| same_file(p, &path))).map(|b| b.id) {
+            if reload && id == self.buf.id {
+                if !bang && self.is_dirty() {
+                    return Err(ex::DIRTY.into());
+                }
+                self.reload();
+                return Ok(());
+            }
             self.switch_buffer(id);
             return Ok(());
         }
-        let doc = read_doc(&path).map_err(|e| format!("\"{file}\": {e}"))?;
+        let (doc, endofline, had_bytes) = read_doc(&path).map_err(|e| format!("\"{file}\": {e}"))?;
         // The empty buffer of a start without a file is reused, like vim does.
         if self.buf.path.is_none() && !self.buf.is_dirty() && self.buf.doc.text().is_empty() && self.buf.listed {
             self.buf = Buffer::new(self.buf.id, doc, Some(path), self.global_opts.clone()).for_window(self.win.id);
@@ -258,13 +318,17 @@ impl Editor {
             self.win.opts = self.get_winopts(self.win.id, self.buf.id);
             self.win.reset_view();
             (self.win.line, self.win.col) = (0, 0);
-            self.check_modelines();
         } else {
             self.next_buf += 1;
             self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id));
             self.switch_buffer(self.next_buf);
         }
-        self.info(self.file_info());
+        (self.buf.opts.endofline, self.buf.empty_at_open) = (endofline, !had_bytes);
+        self.check_modelines();
+        // `readfile` gives the file info unless `'shortmess'` has `F` (Neovim's default has it).
+        if !self.buf.opts.shortmess('F') {
+            self.info(self.file_info());
+        }
         Ok(())
     }
 
@@ -273,9 +337,11 @@ impl Editor {
         if self.all_buffers().iter().any(|b| b.path.as_deref().is_some_and(|p| same_file(p, &path))) {
             return Ok(());
         }
-        let doc = read_doc(&path)?;
+        let (doc, endofline, had_bytes) = read_doc(&path)?;
         self.next_buf += 1;
-        self.buffers.push(Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id));
+        let mut b = Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id);
+        (b.opts.endofline, b.empty_at_open) = (endofline, !had_bytes);
+        self.buffers.push(b);
         Ok(())
     }
 
@@ -322,6 +388,7 @@ impl Editor {
 
     /// `:ls`: `id`, `%a` (current) or `#` (alternate), name, `+` when modified, cursor line.
     pub(super) fn list_buffers(&self) -> String {
+        let home = std::env::var("HOME").unwrap_or_default();
         self.all_buffers()
             .into_iter()
             .filter(|b| b.listed)
@@ -334,7 +401,8 @@ impl Editor {
                     "  "
                 };
                 let line = if b.id == self.buf.id { self.win.line } else { b.doc.text().offset_to_line(b.last.min(b.doc.text().len())) };
-                format!("{:>3} {flag} {}\"{}\" line {}", b.id, if b.is_dirty() { "+ " } else { "" }, b.name(), line + 1)
+                let name = super::short_name(&b.name(), &home);
+                format!("{:>3} {flag} {}\"{name}\" line {}", b.id, if b.is_dirty() { "+ " } else { "" }, line + 1)
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -358,7 +426,13 @@ impl Editor {
         if self.buf.id == id {
             self.switch_buffer(other);
         }
-        let last = self.buffer(other).expect("listed").last;
+        let last = {
+            let b = self.buffer(other).expect("listed");
+            let t = b.doc.text();
+            let off = b.last.min(t.len());
+            let line = t.offset_to_line(off);
+            Mark { line, col: off - t.line_to_offset(line) }
+        };
         let shown: Vec<usize> = self.windows.iter().filter(|w| w.buf == id).map(|w| w.id).collect();
         for win in shown {
             let opts = self.get_winopts(win, other);
@@ -391,15 +465,22 @@ impl Editor {
             return false;
         };
         let (text, eol) = (b.doc.text().clone(), b.doc.eol());
+        // The last line gets its line break unless `'binary'`/`'nofixendofline'` leave it to `'endofline'`.
+        let final_eol = !((b.opts.binary || !b.opts.fixendofline) && !b.opts.endofline);
+        let empty = b.ml_empty();
         let mut ok = self.wait_saves_where(|s| same_file(&s.path, &path));
         let handle = {
             let (path, text) = (path.clone(), text.clone());
-            thread::spawn(move || ex::write_atomic(&path, &text, eol))
+            thread::spawn(move || ex::write_atomic(&path, &text, eol, final_eol, empty))
         };
         // A write is a command of its own in Neovim (`msg_scroll`): its message is never cut.
         self.info_whole(writing_msg(&path));
         let seq = self.msgs.seq;
         self.saves.push(Saving { buf: id, path, text, eol, handle, seq });
+        // `u_update_save_nr`: the change this text ends with is the one of this write (`:earlier 1f`).
+        if let Some(b) = self.buffer_mut(id) {
+            b.undo.update_save_nr();
+        }
         if wait {
             ok &= self.wait_saves_where(|s| s.buf == id);
         }

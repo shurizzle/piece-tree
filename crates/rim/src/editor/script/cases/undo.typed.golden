@@ -1,0 +1,1721 @@
+NVIM v0.12.6
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+Already at oldest change
+E486: Pattern not found: [ex]
+['']
+"---
+
+
+2 more lines; before #8  0 seconds ago
+Already at newest change
+['', 'b c', 'b c', 'd e f']
+"---
+
+5 more lines
+
+2 more lines; before #9  0 seconds ago
+['en ntwo threex', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+E486: Pattern not found: [ex]
+['', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+['', 'x', 'y', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+5 more lines
+['one two three', 'one two three', 'four five', 'six', 'seven eight nine', 'ten four five six', 'ten four fiveX', 'x', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+E353: Nothing in register "
+5 fewer lines; before #1  0 seconds ago
+['Q']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+Pattern not found: [ex]
+['', 'a b c', 'd e f']
+"---
+
+4 more lines
+4 more lines
+['', '', 'x', 'y', '', 'x', '', 'abc abc abc', 'abc abc abc']
+"---
+
+['x', 'a b c', 'd e f']
+"---
+
+4 more lines
+E486: Pattern not found: [ex]
+['', 'x', '', '', 'abc abc abc']
+"---
+
+5 more lines
+
+4 changes; before #3  0 seconds ago
+1 more line; before #2  0 seconds ago
+['one two threex', 'xx', 'four fivex', 'sixx', 'seven eight ninex', 'tenx']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+
+['four fivxZx | call feedkeys("2u", "xt") | call feedkeys("xp", "xt")', 'sixx | call feedkeys("2u", "xt") | call feedkeys("xp", "xt")', 'seven eight ninex | call feedkeys("2u", "xt") | call feedkeys("xp", "xt")', 'tenx | call feedkeys("2u", "xt") | call feedkeys("xp", "xt")']
+"---
+
+4 more lines
+1 change; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+4 more lines
+8 fewer lines; before #1  0 seconds ago
+E486: Pattern not found: [ex]
+['', '']
+"---
+
+5 more lines
+['four five', 'one two three', 'one two three', 'x', 'six', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+E353: Nothing in register "
+['Qx | call feedkeys("g~~", "xt")', 'xx | call feedkeys("g~~", "xt")', 'x | call feedkeys("g~~", "xt")', 'abc abc abcx | call feedkeys("g~~", "xt")x']
+"---
+
+4 more lines
+1 more line; before #3  0 seconds ago
+['', 'abc abc abc']
+"---
+
+4 more lines
+['x', 'x']
+"---
+
+4 more lines
+1 change; before #4  0 seconds ago
+1 change; after #4  0 seconds ago
+['x', '', 'abc abc abc']
+"---
+
+['', ' ab c']
+"---
+
+1 line less; before #2  0 seconds ago
+['a b c', 'd e f']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+Already at oldest change
+['']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+
+['xx']
+"---
+
+4 more lines
+Already at newest change
+Already at newest change
+['xxx', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+['yxxy', 'abc abc abc', 'x']
+"---
+
+5 more lines
+1 change; before #5  0 seconds ago
+Already at newest change
+Already at newest change
+['', 'xxx', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+['a b c', 'x', 'd e f']
+"---
+
+4 more lines
+
+['	xx', 'x', 'abc abc abcx']
+"---
+
+5 more lines
+Already at newest change
+Already at newest change
+5 more lines
+['xQ', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+Already at newest change
+['tenx | call feedkeys("g~~", "xt") | call feedkeys("w", "xt"', 'x', 'Y', 'one two threex | call feedkeys("g~~", "xt") | call feedkeys("w", "xt")', 'four fivex | call feedkeys("g~~", "xt") | call feedkeys("w", "xt")', 'sixx | call feedkeys("g~~", "xt") | call feedkeys("w", "xt")', 'seven eight ninex | call feedkeys("g~~", "xt") | call feedkeys("w", "xt")']
+"---
+
+5 more lines
+Already at newest change
+['esven eight nine', 'ten']
+"---
+
+5 more lines
+1 line less; before #6  0 seconds ago
+['sixyx', 'seven eight nine', 'teQ', 'teQ']
+"---
+
+5 more lines
+1 change; before #5  0 seconds ago
+
+8 substitutions on 5 lines
+['E', 'E', 'y', 'y', 'Exx', 'y']
+"---
+
+Already at newest change
+1 more line; before #3  0 seconds ago
+['xxxa b c', 'd e f']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+0 changes; before #2  0 seconds ago
+E16: Invalid range
+['']
+"---
+
+4 more lines
+['Z', '', 'abc abc abc']
+"---
+
+5 more lines
+
+Already at newest change
+Already at newest change
+['	one two three', 'seven eight nine', 'six', 'ten']
+"---
+
+
+['']
+"---
+
+1 change; before #9  0 seconds ago
+['Za b cyx']
+"---
+
+5 more lines
+['ONE TWO THREE FOUR FIVEX | CALL FEEDKEYS("3j", "XT")', 'sixx | call feedkeys("3J", "xt")', 'seven eight ninex | call feedkeys("3J", "xt")', 'tenx | call feedkeys("3J", "xt")']
+"---
+
+5 more lines
+Already at newest change
+Already at newest change
+1 line less; before #7  0 seconds ago
+['Zour five six seven eight ninex | call feedkeys("<<", "xt") ten']
+"---
+
+5 more lines
+['Q four fiveQ two three six', 'x', 'seven eight nine', 'ten']
+"---
+
+1 line less; before #2  0 seconds ago
+['a b cx', 'xx', 'yx', 'd e f']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+1 change; before #4  0 seconds ago
+['xx | call feedkeys("j", "xt") | call feedkeys("rZ", "xt"xxx)']
+"---
+
+5 more lines
+Already at newest change
+['one two three', 'xZour five six', 'seven eight nine', 'x', 'ten']
+"---
+
+4 more lines
+1 more line; before #3  0 seconds ago
+['Q', 'x abc abc abc']
+"---
+
+5 more lines
+E353: Nothing in register "
+10 substitutions on 5 lines
+1 line less; before #7  0 seconds ago
+1 more line; after #7  0 seconds ago
+['onE two thrEE', 'four fivE', 'siE', 'sEvEn Eight ninE', 'Q']
+"---
+
+
+
+['A b c', 'a b c', 'd e fx', 'd e f']
+"---
+
+4 more lines
+['', 'abc abc abc']
+"---
+
+4 more lines
+1 more line; before #2  0 seconds ago
+1 line less; after #2  0 seconds ago
+['', 'xx']
+"---
+
+4 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+['', 'x', 'abc abc abc']
+"---
+
+E486: Pattern not found: [ex]
+['xx', 'd e fx']
+"---
+
+5 more lines
+5 more lines
+2 changes; before #3  0 seconds ago
+
+['one two three', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+
+['', 'x']
+"---
+
+4 more lines
+E353: Nothing in register "
+['X', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+
+2 changes; before #3  0 seconds ago
+2 changes; after #4  0 seconds ago
+['', '', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+
+Already at newest change
+E353: Nothing in register "
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'xyxyx']
+"---
+
+4 more lines
+Already at newest change
+['', 'xx', 'y xx', 'Xyxx', '', 'abc abc abc']
+"---
+
+5 more lines
+['Qx | call feedkeys("3J", "xt") | call feedkeys("u", "xt")', 'four fivex | call feedkeys("3J", "xt") | call feedkeys("u", "xt")', 'sixx | call feedkeys("3J", "xt") | call feedkeys("u", "xt")', 'seven eight ninex | call feedkeys("3J", "xt") | call feedkeys("u", "xt")', 'tenx | call feedkeys("3J", "xt") | call feedkeys("u", "xt")']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+E486: Pattern not found: [ex]
+E353: Nothing in register "
+E486: Pattern not found: [ex]
+['xxy', '']
+"---
+
+4 more lines
+1 more line; before #2  0 seconds ago
+['', 'abc abc abc']
+"---
+
+['x', 'a b c', 'd e f']
+"---
+
+Already at newest change
+['']
+"---
+
+5 more lines
+['four five', 'six', 'esven eight nine', 'seven eight nine']
+"---
+
+4 more lines
+E353: Nothing in register "
+['x x', '', 'abc abc abc']
+"---
+
+5 more lines
+Already at newest change
+5 more lines
+['one two three four five', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'ten', 'x', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+Pattern not found: [ex]
+1 change; before #5  0 seconds ago
+['x | call feedkeys("3x", "xt")', 'abc abc abc']
+"---
+
+4 more lines
+['xxxx', 'abc abc abc']
+"---
+
+4 more lines
+E353: Nothing in register "
+1 more line; before #6  0 seconds ago
+['', 'EQ', '', 'abc abc abc']
+"---
+
+5 more lines
+
+1 change; before #3  0 seconds ago
+6 changes; before #2  0 seconds ago
+['one two threexy', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+['a b cxy', 'd e fyx']
+"---
+
+5 more lines
+Already at newest change
+E353: Nothing in register "
+
+1 change; before #4  0 seconds ago
+
+['fouxr five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+Already at newest change
+E353: Nothing in register "
+['ONE TWO THREE', 'x', 'Y', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+3 fewer lines; before #1  0 seconds ago
+Already at oldest change
+E353: Nothing in register "
+['']
+"---
+
+4 more lines
+Already at newest change
+['', 'abc abc abc']
+"---
+
+5 more lines
+5 more lines
+6 fewer lines; before #3  0 seconds ago
+['one two three', 'one two threeX', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+
+E486: Pattern not found: [ex]
+0 changes; before #2  0 seconds ago
+
+['', 'yEx']
+"---
+
+5 more lines
+1 change; before #3  0 seconds ago
+['']
+"---
+
+5 more lines
+['one two three four fiveQsix', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+1 change; before #5  0 seconds ago
+['one two three four five six seven eight ninxe', 'ten']
+"---
+
+5 more lines
+2 changes; before #3  0 seconds ago
+['four fivex', 'xx', 'y', 'sixx', 'seven eight ninex', 'ten', 'tenx']
+"---
+
+5 more lines
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+E486: Pattern not found: [ex]
+
+1 change; before #5  0 seconds ago
+Already at newest change
+['x', 'EE']
+"---
+
+
+['', '', 'd e f']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+['a b c', 'xxxa b c', '', 'xxxa b c', 'd e f']
+"---
+
+4 more lines
+1 line less; before #5  0 seconds ago
+['Q', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+1 change; before #4  0 seconds ago
+Pattern not found: [ex]
+['', 'abc abc abc']
+"---
+
+
+Already at newest change
+['d e f', 'x', 'e f']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+4 more lines
+Already at newest change
+E486: Pattern not found: [ex]
+Pattern not found: [ex]
+['', '', 'abc abc abc']
+"---
+
+4 more lines
+
+Already at newest change
+['x', '', 'abc abc abc']
+"---
+
+4 more lines
+
+4 more lines
+['x', '', 'x', '', 'abc abc abc', '', 'abc abc abc']
+"---
+
+5 more lines
+Already at newest change
+['four five', 'Xxxone two threexY', 'six', 'seven eight nine', 'ten']
+"---
+
+E486: Pattern not found: [ex]
+['d E f', 'd E f', 'a b c', 'd e f', 'a b c']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+1 more line; before #3  0 seconds ago
+1 line less; before #5  0 seconds ago
+['four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+E353: Nothing in register "
+5 changes; before #2  0 seconds ago
+['Q two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+
+E16: Invalid range
+['d e f', 'x']
+"---
+
+4 more lines
+E353: Nothing in register "
+
+E486: Pattern not found: [ex]
+['', '', 'abc abc abc']
+"---
+
+Already at newest change
+1 change; before #2  0 seconds ago
+['a b c', 'd E fxy']
+"---
+
+4 more lines
+1 more line; before #2  0 seconds ago
+['x', '']
+"---
+
+
+['Qx']
+"---
+
+5 more lines
+6 changes; before #2  0 seconds ago
+Already at newest change
+Already at newest change
+['onE two thre', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+
+
+['xxxa b ', 'd e f']
+"---
+
+4 more lines
+Already at newest change
+['Q', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+Already at newest change
+Already at newest change
+['six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+
+['ne two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+Already at newest change
+2 more lines; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+
+1 change; before #3  0 seconds ago
+1 line less; before #4  0 seconds ago
+3 changes; before #5  0 seconds ago
+['four five', 'six', 'seven eight nine', 'ten']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+
+['x']
+"---
+
+4 more lines
+1 change; before #4  0 seconds ago
+
+
+1 change; before #7  0 seconds ago
+['', 'x', '', 'abc abc abcX']
+"---
+
+5 more lines
+['four five siyxxx seven eight nine', 'ten']
+"---
+
+['a b c', 'a b c', 'd e f', 'd e f']
+"---
+
+4 more lines
+2 fewer lines; before #3  0 seconds ago
+['x', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+Already at newest change
+['Q', 'y', 'xx', 'Q']
+"---
+
+['a b c', 'a b c', 'd e fxxx | call feedkeys("ox\<Esc>", "xt") | call feedkeys("qqxq", "xt")', 'd e f']
+"---
+
+['a  bc', 'd e f']
+"---
+
+4 more lines
+Already at newest change
+E353: Nothing in register "
+4 more lines
+1 change; before #3  0 seconds ago
+['', '', 'x', '', 'abc abc abc', 'x', '', 'abc abc abc']
+"---
+
+Already at newest change
+['a b c', 'x', 'y', 'd e f', 'x']
+"---
+
+['a b c', 'xx', 'y']
+"---
+
+1 line less; before #5  0 seconds ago
+['	a b cx | >', 'd e fx | >yx']
+"---
+
+['A b cx', 'd E fx', 'd E fyxx']
+"---
+
+5 more lines
+5 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+['one two three', 'four five', 'six', 'seven eight nine', 'ten', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'ten']
+"---
+
+4 more lines
+1 change; before #3  0 seconds ago
+
+Already at newest change
+['	x', '', 'abc abc abc']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+
+['x']
+"---
+
+4 more lines
+Already at newest change
+
+['Ex', '', '', 'abc abc abc']
+"---
+
+5 more lines
+['	one two threex | %s/[ex]/E/g', 'four fivex | %s/[ex]/E/g', 'sixx | %s/[ex]/E/g', 'seven eight ninex | %s/[ex]/E/g', 'tenx | %s/[ex]/E/g']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+Pattern not found: [ex]
+E353: Nothing in register "
+['yx']
+"---
+
+1 line less; before #3  0 seconds ago
+Already at newest change
+['a b c', 'a b c']
+"---
+
+4 more lines
+1 change; before #5  0 seconds ago
+
+4 more lines
+['xZ', '', 'x', '', 'abc abc abc', '', 'abc abc abc']
+"---
+
+5 more lines
+5 more lines
+['noe two three', 'four five', 'x', 'y', 'one two three', 'four five', 'six', 'seven eight nine', 'xZten', 'xZten', 'six', 'seven eight nine', 'ten']
+"---
+
+E486: Pattern not found: [ex]
+
+['D E q', 'D E q', 'D E q']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+1 line less; before #2  0 seconds ago
+E353: Nothing in register "
+
+5 more lines
+['x', 'one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+
+['QXX', 'q', 'a b cxx']
+"---
+
+5 more lines
+1 change; before #3  0 seconds ago
+1 change; before #4  0 seconds ago
+
+5 more lines
+['onE two three', 'xx', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'x', 'onE two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+['zne two three', 'four five', 'seven eight nine', 'six', 'ten']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+['xxxxy']
+"---
+
+4 more lines
+
+3 changes; before #7  0 seconds ago
+['', 'xx', 'xxyyyyx', '', 'abc abc abc']
+"---
+
+4 more lines
+['x', 'x', 'x', '', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+E353: Nothing in register "
+['one two threex', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+['ne two three four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+4 more lines
+['x', '', 'x', '', 'abc abc abc', '', 'abc abc abc']
+"---
+
+5 more lines
+E353: Nothing in register "
+['ZnE two threE', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+2 fewer lines; before #4  0 seconds ago
+['']
+"---
+
+4 more lines
+['', '', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+1 change; before #6  0 seconds ago
+['xx | call feedkeys("2\<C-r>", "xt")', 'x | call feedkeys("2\<C-r>", "xt")']
+"---
+
+['Q']
+"---
+
+5 more lines
+7 substitutions on 4 lines
+['ONE TWO THREE', 'four fivE', 'siE', 'sEvEn Eight ninE', 'tEn', 'x', '	y']
+"---
+
+5 more lines
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', '']
+"---
+
+4 more lines
+['x', 'x', 'Q abc abc']
+"---
+
+4 more lines
+Already at newest change
+['xy', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+['', '', '', 'Q', 'abc abc abc']
+"---
+
+Already at newest change
+['	a b c', 'd e f']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+Already at oldest change
+['']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+1 change; before #2  0 seconds ago
+
+E16: Invalid range
+['a b cx', 'd e f']
+"---
+
+5 more lines
+E353: Nothing in register "
+1 change; before #4  0 seconds ago
+
+['one two three', '	xxx', '	xxx', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+
+Already at newest change
+1 change; before #3  0 seconds ago
+['one two three four five', 'x', 'y', 'six', 'seven eight nine', 'ten']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+
+E353: Nothing in register "
+['']
+"---
+
+5 more lines
+
+['four five', 'ne two three', '	ne two threex ne two threesix', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+5 changes; before #2  0 seconds ago
+['four five', 'one two three six', 'seven eight nine', 'ten']
+"---
+
+E16: Invalid range
+E16: Invalid range
+[' c d e f']
+"---
+
+1 change; before #2  0 seconds ago
+['A B C', 'd e f']
+"---
+
+4 more lines
+['', '', 'abc abc abc', 'x']
+"---
+
+5 more lines
+['x', 'one two threex | d | call feedkeys("k", "xt")', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+4 more lines; after #1  0 seconds ago
+2 more lines; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+1 change; before #6  0 seconds ago
+2 changes; before #4  0 seconds ago
+['ONE two threexy', 'four five', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+E486: Pattern not found: [ex]
+
+
+['xx', '', 'abc abc abc']
+"---
+
+4 more lines
+2 more lines; before #3  0 seconds ago
+['x', '', 'abc abc abc']
+"---
+
+4 more lines
+['x', 'abc abc abc']
+"---
+
+4 more lines
+1 change; before #2  0 seconds ago
+2 fewer lines; before #1  0 seconds ago
+['x', '', '']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+E353: Nothing in register "
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+Already at newest change
+4 more lines
+
+1 change; before #6  0 seconds ago
+['yxx | call feedkeys("Ox\<Esc>", "xt")', 'xx | call feedkeys("Ox\<Esc>", "xt")', 'yx | call feedkeys("Ox\<Esc>", "xt")', 'xx | call feedkeys("Ox\<Esc>", "xt")', 'x | call feedkeys("Ox\<Esc>", "xt")', 'abc abc abcx | call feedkeys("Ox\<Esc>", "xt")', '', 'x', '', 'xxxabc abc abC']
+"---
+
+4 more lines
+Already at newest change
+['xx | call feedkeys("2dd", "xt") abc abc abc']
+"---
+
+5 more lines
+1 more line; before #2  0 seconds ago
+
+
+['seven eight nine', 'ten']
+"---
+
+E353: Nothing in register "
+['	a xxxb c', '		q', '		xx', 'd e f']
+"---
+
+5 more lines
+5 substitutions on 5 lines
+['E']
+"---
+
+4 more lines
+3 changes; before #5  0 seconds ago
+['', 'xx | call feedkeys("gg", "xt")', 'x', 'y', '', 'abc abc abc']
+"---
+
+Already at newest change
+['a b c d E fx', 'a b cx', 'd E fx']
+"---
+
+5 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+['']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+1 line less; before #3  0 seconds ago
+['']
+"---
+
+E16: Invalid range
+['	d e fx | call feedkeys("", "xt")xx | %s/[ex]/E/g | call feedkeys("ox\<CR>y\<Esc>", "xt")', ' cx | call feedkeys("k", "xt")x | %s/[ex]/E/g | call feedkeys("ox\<CR>y\<Esc>", "xt"k)']
+"---
+
+4 more lines
+E353: Nothing in register "
+
+['x', 'x', '', 'abc abc abc']
+"---
+
+
+['a b cx | call feedkeys("j", "xt")', ' de fx | call feedkeys("j", "xt")x | call feedkeys("j", "xt")x | call feedkeys("j", "xt")x | call feedkeys("j", "xt")', 'a b c', 'd e fx']
+"---
+
+4 more lines
+E353: Nothing in register "
+['xxxxx', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+E353: Nothing in register "
+['xyx', '', 'abc abc abc']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+['', 'Q']
+"---
+
+4 more lines
+['', '', 'x', 'abc abc abc']
+"---
+
+4 more lines
+4 more lines
+['', '', 'x', '', 'abc abc abcyx x', 'abc abc abc']
+"---
+
+4 more lines
+1 change; before #4  0 seconds ago
+Already at newest change
+['', 'X', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+Already at newest change
+['	xx | undo | call feedkeys("2u", "xt"xxxx', '', '', 'abc abc abc']
+"---
+
+4 more lines
+5 fewer lines; before #1  0 seconds ago
+4 more lines
+5 fewer lines; before #3  0 seconds ago
+1 line less; before #4  0 seconds ago
+
+['', 'x']
+"---
+
+4 more lines
+1 change; before #5  0 seconds ago
+1 line less; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+Already at newest change
+1 more line; before #2  0 seconds ago
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+['', '	ex abc abc abcx']
+"---
+
+5 more lines
+
+['four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+
+
+['Exxxx', 'x', '', 'abc abc abc']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+E353: Nothing in register "
+E353: Nothing in register "
+1 changes; before #3  0 seconds ago
+['x']
+"---
+
+4 more lines
+['', 'xxx | call feedkeys("Ax\<Esc>u", "xt")', 'abc abc abc']
+"---
+
+4 more lines
+Already at newest change
+29 substitutions on 4 lines
+['E | > | call fEEdkEys("AE\<LEft>y\<Esc>", "Et")', 'EE | > | call fEEdkEys("AE\<LEft>y\<Esc>", "Et")', 'E | > | call fEEdkEys("AE\<LEft>y\<Esc>", "Et")', '	abc abc abcE | > | call fEEdkEys("AE\<LEft>y\<Esc>", "Et")']
+"---
+
+['x', 'a b cx', 'd e fx']
+"---
+
+5 more lines
+Already at newest change
+['x', 'six', 'seven eight nine', 'ten']
+"---
+
+['Q d e f']
+"---
+
+3 fewer lines; before #1  0 seconds ago
+E353: Nothing in register "
+['']
+"---
+
+1 more line; before #5  0 seconds ago
+['a b c d E f', 'a b c d E fxy']
+"---
+
+['	a b cd E f']
+"---
+
+5 more lines
+Already at newest change
+['ne two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenxyx']
+"---
+
+4 more lines
+
+['', '', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+8 changes; before #2  0 seconds ago
+
+['', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+
+2 changes; before #2  0 seconds ago
+['xy', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+Already at newest change
+
+['', 'abc abc abc']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+
+['', '', 'x']
+"---
+
+Already at newest change
+['a b c', 'd e f']
+"---
+
+5 more lines
+['four fivex', 'one two threex', 'four fivex', 'seven eight ninex', 'sixx', 'tenx', 'xx']
+"---
+
+4 more lines
+1 change; before #2  0 seconds ago
+1 line less; before #4  0 seconds ago
+['', 'abc abc abc']
+"---
+
+5 more lines
+['']
+"---
+
+5 more lines
+Already at newest change
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+['x', '', 'x', 'abc abc abc']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+['Q', 'x | %normal AX']
+"---
+
+E353: Nothing in register "
+Already at newest change
+['qd  e f']
+"---
+
+Already at newest change
+['d e f', 'Q', 'Q']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+Already at oldest change
+Already at oldest change
+Already at oldest change
+['']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+E353: Nothing in register "
+['']
+"---
+
+5 more lines
+Already at newest change
+['four fivexy', 'four fivexy', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+['xxxx', '', 'abc abc abc']
+"---
+
+4 more lines
+4 changes; before #2  0 seconds ago
+
+['x', 'abc abc abc']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+
+1 line less; before #2  0 seconds ago
+1 line less; before #3  0 seconds ago
+1 line less; before #4  0 seconds ago
+Already at oldest change
+['']
+"---
+
+E16: Invalid range
+['a b c', ' e f']
+"---
+
+4 more lines
+Already at newest change
+1 change; before #2  0 seconds ago
+Already at newest change
+Already at newest change
+1 change; before #4  0 seconds ago
+Already at newest change
+2 changes; before #5  0 seconds ago
+['', '', 'abc abc abc']
+"---
+
+5 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+
+Already at newest change
+E353: Nothing in register "
+1 change; before #2  0 seconds ago
+['a b cx', 'd e f']
+"---
+
+4 more lines
+Already at newest change
+Already at newest change
+
+E486: Pattern not found: [ex]
+['abc abc abc']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+
+['onE two thrEE', 'four fivE', 'siE']
+"---
+
+['a b c', 'd e fx | d', 'Q']
+"---
+
+E353: Nothing in register "
+2 fewer lines; before #1  0 seconds ago
+['xy']
+"---
+
+4 more lines
+Already at newest change
+1 change; before #3  0 seconds ago
+Already at newest change
+['Xx', '', 'abc abc abc']
+"---
+
+4 more lines
+['	Q', '	Q', '', 'abc abc abc']
+"---
+
+4 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+Already at newest change
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+
+3 fewer lines
+['tenx']
+"---
+
+5 more lines
+5 more lines
+E353: Nothing in register "
+
+1 change; before #6  0 seconds ago
+['one two threeYx', 'one two three', 'four five', 'six', 'seven eight nine', 'ten', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+Already at newest change
+['Qx', '', 'abc abc abc']
+"---
+
+1 change; before #4  0 seconds ago
+
+['a b cx', 'd e f']
+"---
+
+5 more lines
+['ONE TWO THREE', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+
+
+
+1 line less; before #8  0 seconds ago
+4 more lines
+['', 'abc abc abc', '', 'x', '', 'abc abc abc']
+"---
+
+
+1 line less; before #2  0 seconds ago
+E16: Invalid range
+1 more line; before #6  0 seconds ago
+['a b c', 'Z E f']
+"---
+
+4 more lines
+['', 'x', 'yx', 'x', '', 'abc abc abc']
+"---
+
+E16: Invalid range
+1 change; before #3  0 seconds ago
+1 more line; before #2  0 seconds ago
+2 fewer lines; before #1  0 seconds ago
+Pattern not found: [ex]
+['']
+"---
+
+4 more lines
+1 change; before #2  0 seconds ago
+E486: Pattern not found: [ex]
+4 fewer lines; before #1  0 seconds ago
+['yx']
+"---
+
+['a b c']
+"---
+
+5 more lines
+Already at newest change
+E353: Nothing in register "
+['one two three four fivex | call feedkeys("2u", "xt") | call feedkeys("qqAx\<Esc>q", "xt")', 'six', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+1 line less; before #4  0 seconds ago
+Already at newest change
+Already at newest change
+3 more lines; before #3  0 seconds ago
+['E', 'x', '', 'abc abc abc']
+"---
+
+E353: Nothing in register "
+0 changes; before #2  0 seconds ago
+['d E f']
+"---
+
+4 more lines
+['xxxx', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+1 line less; before #2  0 seconds ago
+
+['sixx', 'seven eight ninex', 'x', 'y']
+"---
+
+5 more lines
+3 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+5 more lines
+['onE two three', 'onE two threeyxx | m0 | j', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+Already at newest change
+E16: Invalid range
+['Q two threexy']
+"---
+
+5 more lines
+3 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+4 more lines
+Already at newest change
+E353: Nothing in register "
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+['four fivex | call feedkeys("yyp"Q "xt")', 'one two threex | call feedkeys("yyp", "xt")', 'seven eight ninex | call feedkeys("yyp", "xt")', 'sixx | call feedkeys("yyp", "xt")', 'tenx | call feedkeys("yyp", "xt")']
+"---
+
+E353: Nothing in register "
+
+['x']
+"---
+
+5 more lines
+10 substitutions on 5 lines
+['onE two thrEE', 'four fivE', 'siE']
+"---
+
+1 more line; before #4  0 seconds ago
+['Z b c', 'd e f']
+"---
+
+4 more lines
+Already at newest change
+
+1 change; before #3  0 seconds ago
+E486: Pattern not found: [ex]
+['', 'abc abc abc']
+"---
+
+5 more lines
+5 fewer lines; before #1  0 seconds ago
+5 more lines; after #1  0 seconds ago
+['one two threex', 'four fivex', 'sixx', 'seven eight ninex', 'tenx']
+"---
+
+Already at newest change
+1 change; before #3  0 seconds ago
+1 line less; before #7  0 seconds ago
+['a b cx | call feedkeys("u", "xt") | call feedkeys("J", "xt")']
+"---
+
+5 more lines
+['one two three', 'x', 'Q five', 'four five', 'seven eight nine', 'six', 'ten']
+"---
+
+5 more lines
+
+Already at newest change
+
+['ten', 'Q']
+"---
+
+['a b c', 'Zxxxxy', 'd e f']
+"---
+
+4 more lines
+1 change; before #5  0 seconds ago
+['', '', 'abc abc abc']
+"---
+
+4 more lines
+Pattern not found: [ex]
+
+['', 'Exx | call feedkeys("ccQ\<Esc>", "xt")', '', 'abc abc abc']
+"---
+
+4 more lines
+
+
+
+['e', '', 'abc abc abc']
+"---
+
+E16: Invalid range
+
+E353: Nothing in register "
+['a b c', 'd e fx | call feedkeys("~", "xt")xx']
+"---
+
+Already at newest change
+Already at newest change
+
+['a b c', 'a b c', 'Q', 'x', '']
+"---
+
+4 more lines
+['Z', '', 'abc abc abc']
+"---
+
+4 more lines
+['', 'xx', '	x', '	x', '	', 'abc abc abc']
+"---
+
+5 more lines
+3 fewer lines
+1 change; before #13  0 seconds ago
+['x four five', 'x', '']
+"---
+
+4 more lines
+['', '', 'x', 'abc abc abc']
+"---
+
+1 line less; before #4  0 seconds ago
+['']
+"---
+
+4 more lines
+['Zbc abc abc', 'Zbc abc abc']
+"---
+
+5 more lines
+5 more lines
+147 substitutions on 10 lines
+
+['onE two thrEEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'onE two thrEEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'four fivEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'siEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'sEvEn Eight ninEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'ETENEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'four fivEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'siEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")', 'sEvEn Eight ninEEE | call fEEdkEys(">>", "Et") | call fEEdkEys("D", "Et")']
+"---
+
+['a b cx | call feedkeys(".", "xt")', 'a b c', 'D e f', 'd e f']
+"---
+
+5 more lines
+Already at newest change
+E353: Nothing in register "
+E353: Nothing in register "
+['x one two threex | call feedkeys("rZ", "xt")', 'four fivex | call feedkeys("rZ", "xt")', 'sixx | call feedkeys("rZ", "xt")', 'seven eight ninex | call feedkeys("rZ", "xt")', 'tenx | call feedkeys("rZ", "xt")']
+"---
+
+4 more lines
+Already at newest change
+Pattern not found: [ex]
+['bc abc abc']
+"---
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1 change; before #4  0 seconds ago
+3 changes; before #2  0 seconds ago
+1 change; before #5  0 seconds ago
+2 fewer lines; before #1  0 seconds ago
+['']
+"---
+
+4 more lines
+4 more lines
+4 fewer lines; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+E353: Nothing in register "
+1 change; before #4  0 seconds ago
+['four five', 'one two three', 'seven eight nine', 'six', 'ten']
+"---
+
+
+1 change; before #2  0 seconds ago
+E353: Nothing in register "
+0 changes; before #4  0 seconds ago
+1 change; before #5  0 seconds ago
+['a b cx', 'd e fx']
+"---
+
+['		xA B C d e fx']
+"---
+
+
+1 change; before #4  0 seconds ago
+[' c', 'd e f']
+"---
+
+4 more lines
+4 fewer lines; before #1  0 seconds ago
+Already at oldest change
+Already at oldest change
+E353: Nothing in register "
+2 fewer lines; before #4  0 seconds ago
+['']
+"---
+
+4 fewer lines; before #1  0 seconds ago
+E353: Nothing in register "
+['']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+['four fivex', 'sixx', 'seven eight ninex', 'tenxxxx']
+"---
+
+4 more lines
+['x', 'xxyx', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+E353: Nothing in register "
+E353: Nothing in register "
+1 line less; before #7  0 seconds ago
+['x', '', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+1 change; after #2  0 seconds ago
+['four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+1 change; before #2  0 seconds ago
+['one two three', 'Q', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+Already at newest change
+1 line less; before #2  0 seconds ago
+
+Already at newest change
+['a b c', 'x', 'x']
+"---
+
+5 more lines
+1 change; before #3  0 seconds ago
+1 change; before #6  0 seconds ago
+['one two threeX four five sixxxx', 'seven eight nine', 'ten']
+"---
+
+4 more lines
+
+Already at newest change
+Already at newest change
+['x', 'xx', 'x']
+"---
+
+4 more lines
+
+1 change; before #3  0 seconds ago
+['abc abc abcx | call feedkeys("k", "xt") | normal Ax', 'x | call feedkeys("k", "xt") | normal Ax', 'x | call feedkeys("k", "xt") | normal Ax', 'xx | call feedkeys("k", "xt") | normal Ax']
+"---
+
+
+['']
+"---
+
+
+3 changes; before #2  0 seconds ago
+['a b c d e f']
+"---
+
+E486: Pattern not found: [ex]
+1 line less; before #1  0 seconds ago
+Already at newest change
+['z', '', 'x']
+"---
+
+4 more lines
+1 change; before #2  0 seconds ago
+['', 'x', '', 'abc abc abc']
+"---
+
+4 more lines
+['', 'Q abc abc']
+"---
+
+E16: Invalid range
+['Ea b c', 'd E f']
+"---
+
+1 change; before #3  0 seconds ago
+1 change; before #4  0 seconds ago
+1 change; before #7  0 seconds ago
+[' B C', 'd e f']
+"---
+
+5 more lines
+E353: Nothing in register "
+0 changes; before #2  0 seconds ago
+['one two three', 'four five', 'six', 'seven eight nine', 'ten']
+"---
+
+5 more lines
+Already at newest change
+['	yx']
+"---
+
+4 more lines
+Already at newest change
+2 fewer lines; before #3  0 seconds ago
+
+['', 'x', 'x', '', 'abc abc abc']
+"---
+
+5 more lines
+6 fewer lines; before #1  0 seconds ago
+Pattern not found: [ex]
+1 line less; before #4  0 seconds ago
+1 more line; after #4  0 seconds ago
+['x']
+"---
+
+1 change; before #3  0 seconds ago
+1 more line; before #4  0 seconds ago
+['A b cx | call feedkeys("3ix\<Esc>", "xt")', 'd e f']
+"---
+
+5 more lines
+
+2 more lines; before #4  0 seconds ago
+1 change; before #3  0 seconds ago
+2 fewer lines; after #4  0 seconds ago
+['six', 'seven eight nine', 'ten']
+"---
+
+['xx | sort | call feedkeys("dw", "xt")', 'a b c', 'd e fx | sort | call feedkeys("dw", "xt")xy']
+"---
+
+4 more lines
+['', 'Q abc abc']
+"---
+
+5 more lines
+[' Q', 'four five', 'six', 'seven eight nine', 'ten']
