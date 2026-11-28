@@ -60,10 +60,6 @@ pub(super) fn valid_mode(s: &str) -> bool {
     parse_mode(s).is_some()
 }
 
-pub(super) fn valid_options(s: &str) -> bool {
-    s.is_empty() || s.split(',').all(|o| matches!(o, "pum" | "tagfile" | "fuzzy"))
-}
-
 /// A key as written for `wildchar`: `<Tab>`, `<S-Tab>`, `<C-x>`, `<Esc>`, `<CR>`, `<Space>`, or its code.
 pub(super) fn parse_key(s: &str) -> Option<(KeyCode, bool)> {
     let ctrl_letter = |c: char| c.is_ascii_alphabetic().then(|| (KeyCode::Char(c.to_ascii_lowercase()), true));
@@ -88,6 +84,19 @@ pub(super) fn parse_key(s: &str) -> Option<(KeyCode, bool)> {
         1..=26 => ctrl_letter(char::from(b'a' + n as u8 - 1)),
         n => char::from_u32(n).filter(|c| !c.is_control()).map(|c| (KeyCode::Char(c), false)),
     }
+}
+
+/// `key_is` for the number 'wildchar' and 'wildcharm' hold: a char as `key_is` reads it, or a key with a code of its own
+/// (`<F1>`, `<Up>`, `<S-Tab>`, `<S-F1>`) with its modifiers.
+pub(super) fn key_is_num(n: i64, key: KeyEvent) -> bool {
+    if n >= 0 {
+        return key_is(&n.to_string(), key);
+    }
+    // `K_S_TAB` is what a terminal reports as BackTab.
+    if n == -17003 {
+        return key.code == KeyCode::BackTab;
+    }
+    super::script::key_event(n).is_some_and(|(code, mods)| key.code == code && key.modifiers & (KeyModifiers::SHIFT | KeyModifiers::CONTROL) == mods)
 }
 
 pub(super) fn key_is(spec: &str, key: KeyEvent) -> bool {
@@ -231,7 +240,7 @@ impl Editor {
             let name = name.trim_end_matches(['+', '-', '^']);
             let all: Vec<&str> = match name {
                 "background" | "bg" => vec!["dark", "light"],
-                "buftype" | "bt" => vec!["nofile"],
+                "buftype" | "bt" => vec!["acwrite", "help", "nofile", "nowrite", "prompt", "quickfix"],
                 "filetype" | "ft" => filetype::ALL.to_vec(),
                 "wildmode" | "wim" => MODE_WORDS.iter().copied().chain(["list:full", "list:longest", "longest:full"]).collect(),
                 "wildoptions" | "wop" => vec!["pum", "tagfile", "fuzzy"],
@@ -246,8 +255,8 @@ impl Editor {
             let items = filter(all.into_iter().map(String::from), &value[part_at..], fuzzy, false, false);
             return Cand { start, items };
         }
-        let mut names: Vec<String> = options::NAMES.iter().map(|n| n.0.to_string()).chain(["winfixheight", "winfixwidth", "fileformat"].map(String::from)).collect();
-        let flags: Vec<&str> = options::NAMES.iter().filter(|n| n.2).map(|n| n.0).chain(["winfixheight", "winfixwidth"]).collect();
+        let mut names: Vec<String> = options::NAMES.iter().map(|n| n.0.to_string()).chain(["fileformat"].map(String::from)).collect();
+        let flags: Vec<&str> = options::NAMES.iter().filter(|n| n.2).map(|n| n.0).collect();
         for (pre, on) in [("no", token.starts_with("no")), ("inv", token.starts_with("inv"))] {
             if on {
                 names.extend(flags.iter().map(|f| format!("{pre}{f}")));
@@ -517,7 +526,7 @@ impl Editor {
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         let typed = !self.replaying && self.macro_depth == 0;
         let o = &self.buf.opts;
-        let press = (typed && key_is(&o.wildchar, key)) || (!o.wildcharm.is_empty() && key_is(&o.wildcharm, key)) || key.code == KeyCode::BackTab;
+        let press = (typed && key_is_num(o.wildchar, key)) || (o.wildcharm != 0 && key_is_num(o.wildcharm, key)) || key.code == KeyCode::BackTab;
         if press {
             self.wild_press(key.code == KeyCode::BackTab);
             return true;
@@ -567,6 +576,25 @@ pub(super) fn list_rows(items: &[String], width: usize, rows: usize) -> Vec<Stri
 mod tests {
     use super::*;
 
+    /// A key with a code of its own as the number 'wildchar' holds, against the key the terminal reports.
+    #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+    #[test]
+    fn wildchar_keys_with_a_code_of_their_own() {
+        use super::super::options::string_to_key;
+        let k = |code, mods| KeyEvent::new(code, mods);
+        let none = KeyModifiers::NONE;
+        assert!(key_is_num(string_to_key("<F5>"), k(KeyCode::F(5), none)));
+        assert!(!key_is_num(string_to_key("<F5>"), k(KeyCode::F(6), none)));
+        assert!(key_is_num(string_to_key("<S-F5>"), k(KeyCode::F(5), KeyModifiers::SHIFT)));
+        assert!(!key_is_num(string_to_key("<S-F5>"), k(KeyCode::F(5), none)));
+        assert!(key_is_num(string_to_key("<C-Left>"), k(KeyCode::Left, KeyModifiers::CONTROL)));
+        assert!(key_is_num(string_to_key("<Up>"), k(KeyCode::Up, none)));
+        assert!(key_is_num(string_to_key("<S-Tab>"), k(KeyCode::BackTab, KeyModifiers::SHIFT)));
+        assert!(key_is_num(string_to_key("<Tab>"), k(KeyCode::Tab, none)));
+        assert!(key_is_num(string_to_key("<Del>"), k(KeyCode::Delete, none)));
+        assert_eq!(string_to_key("<M-a>"), 0, "a modifier that stays makes it no key");
+    }
+
     #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
     #[test]
     fn modes_keys_globs_and_prefixes() {
@@ -577,7 +605,6 @@ mod tests {
         assert_eq!(parse_mode("list:longest,list:full"), Some(vec![s(false, true, true), s(true, false, true)]));
         assert_eq!(parse_mode(""), Some(vec![Step::default()]));
         assert!(parse_mode("a,b,c,d,e").is_none() && parse_mode("fast").is_none());
-        assert!(valid_options("pum,tagfile,fuzzy") && valid_options("") && !valid_options("popup"));
         assert_eq!(parse_key("<Tab>"), Some((KeyCode::Tab, false)));
         assert_eq!(parse_key("<S-Tab>"), Some((KeyCode::BackTab, false)));
         assert_eq!(parse_key("<C-Z>"), Some((KeyCode::Char('z'), true)));

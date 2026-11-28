@@ -1,0 +1,2187 @@
+NVIM v0.12.6
+
+
+ 1
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0  g.txt
+"---
+
+
+
+1  h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1  
+"---
+
+
+E32: No file name
+xhello 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+ 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+"[No Name]" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+ 1 xhello
+"---
+
+
+ 1
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1
+"---
+
+
+ 1
+"---
+
+
+1 1
+  buftype=
+"---
+
+
+ 0
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+
+0
+"---
+
+
+
+1
+"---
+
+
+
+1
+"---
+
+
+
+0
+"---
+
+
+
+0  g.txt
+"---
+
+
+
+1  h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1  f.txt
+"---
+
+
+
+x 0
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+f.txt 1
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+"---
+
+
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+"f.txt" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+ 1 xhello
+"---
+
+
+ 1
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1
+"---
+
+
+ 1
+"---
+
+
+1 1
+  buftype=
+"---
+
+
+nofile 0
+"---
+
+
+nofile 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+0
+"---
+
+
+
+0
+"---
+
+
+E676: No matching autocommands for buftype=nofile buffer
+0 nofile g.txt
+"---
+
+
+
+0 nofile h.txt
+"---
+
+
+
+0  
+"---
+
+
+E32: No file name
+xhello 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+ 0
+"---
+
+
+"---
+
+
+  1 %a   "[Scratch]"                    line 1
+"---
+
+
+  1 %a   "[Scratch]"                    line 1
+"---
+
+
+"[Scratch]" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "[Scratch]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+nofile 0 xhello
+"---
+
+
+nofile 0
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+0
+"---
+
+
+nofile 0
+"---
+
+
+1 1
+  buftype=nofile
+"---
+
+
+nofile 0
+"---
+
+
+nofile 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E676: No matching autocommands for buftype=nofile buffer
+0 nofile g.txt
+"---
+
+
+
+0 nofile h.txt
+"---
+
+
+
+0  
+"---
+
+
+
+ 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+f.txt 0
+"---
+
+
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+"f.txt" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+nofile 0 xhello
+"---
+
+
+nofile 0
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+0
+"---
+
+
+nofile 0
+"---
+
+
+1 1
+  buftype=nofile
+"---
+
+
+nowrite 0
+"---
+
+
+nowrite 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+0
+"---
+
+
+
+0
+"---
+
+
+
+0 nowrite g.txt
+"---
+
+
+
+0 nowrite h.txt
+"---
+
+
+
+0  
+"---
+
+
+E32: No file name
+xhello 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+ 0
+"---
+
+
+"---
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+"[No Name]" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "[No Name]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+nowrite 0 xhello
+"---
+
+
+nowrite 0
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+0
+"---
+
+
+nowrite 0
+"---
+
+
+1 1
+  buftype=nowrite
+"---
+
+
+nowrite 0
+"---
+
+
+nowrite 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+
+0 nowrite g.txt
+"---
+
+
+
+0 nowrite h.txt
+"---
+
+
+
+0  
+"---
+
+
+
+x 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+f.txt 0
+"---
+
+
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+"f.txt" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+nowrite 0 xhello
+"---
+
+
+nowrite 0
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+0
+"---
+
+
+nowrite 0
+"---
+
+
+1 1
+  buftype=nowrite
+"---
+
+
+acwrite 1
+"---
+
+
+acwrite 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+1
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1 acwrite g.txt
+"---
+
+
+
+1 acwrite h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 acwrite 
+"---
+
+
+E32: No file name
+xhello 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+ 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+  1 %a + "[Scratch]"                    line 1
+"---
+
+
+  1 %a + "[Scratch]"                    line 1
+"---
+
+
+"[Scratch]" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "[Scratch]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+acwrite 1 xhello
+"---
+
+
+acwrite 1
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1
+"---
+
+
+acwrite 1
+"---
+
+
+1 1
+  buftype=acwrite
+"---
+
+
+acwrite 0
+"---
+
+
+acwrite 1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1
+"---
+
+
+
+1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+1 acwrite g.txt
+"---
+
+
+
+1 acwrite h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 acwrite f.txt
+"---
+
+
+
+x 0
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+f.txt 1
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+f.txt 1
+"---
+
+
+E676: No matching autocommands for buftype=acwrite buffer
+f.txt 1
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+"f.txt" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+acwrite 1 xhello
+"---
+
+
+acwrite 1
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1
+"---
+
+
+acwrite 1
+"---
+
+
+1 1
+  buftype=acwrite
+"---
+
+
+help 1
+"---
+
+
+help 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0 help g.txt
+"---
+
+
+
+1 help h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 help 
+"---
+
+
+E32: No file name
+xhello 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+ 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+"[No Name]" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+help 1 xhello
+"---
+
+
+help 1
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1
+"---
+
+
+help 1
+"---
+
+
+1 1
+  buftype=help
+"---
+
+
+help 0
+"---
+
+
+help 1
+"---
+
+
+
+0
+"---
+
+
+
+0
+"---
+
+
+
+1
+"---
+
+
+
+1
+"---
+
+
+
+0
+"---
+
+
+
+0 help g.txt
+"---
+
+
+
+1 help h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 help f.txt
+"---
+
+
+
+x 0
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+f.txt 1
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+"---
+
+
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+  1 %a + "f.txt"                        line 1
+"---
+
+
+"f.txt" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+help 1 xhello
+"---
+
+
+help 1
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1
+"---
+
+
+help 1
+"---
+
+
+1 1
+  buftype=help
+"---
+
+
+quickfix 1
+"---
+
+
+quickfix 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+
+0 quickfix g.txt
+"---
+
+
+
+1 quickfix h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 quickfix 
+"---
+
+
+E32: No file name
+xhello 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+ 1
+"---
+
+
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+E32: No file name
+ 1
+"---
+
+
+  1 %a + "[Location List]"              line 1
+"---
+
+
+  1 %a + "[Location List]"              line 1
+"---
+
+
+"[Location List]" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "[Location List]"              line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+quickfix 1 xhello
+"---
+
+
+quickfix 1
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1
+"---
+
+
+quickfix 1
+"---
+
+
+1 1
+  buftype=quickfix
+"---
+
+
+quickfix 0
+"---
+
+
+quickfix 1
+"---
+
+
+
+0
+"---
+
+
+
+0
+"---
+
+
+
+1
+"---
+
+
+
+1
+"---
+
+
+
+0
+"---
+
+
+
+0 quickfix g.txt
+"---
+
+
+
+1 quickfix h.txt
+"---
+
+
+E37: No write since last change (add ! to override)
+1 quickfix f.txt
+"---
+
+
+
+ 0
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+E89: No write since last change for buffer 1 (add ! to override)
+f.txt 1
+"---
+
+
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+
+"---
+
+
+"---
+
+
+  1 %a + "[Location List]"              line 1
+"---
+
+
+  1 %a + "[Location List]"              line 1
+"---
+
+
+"[Location List]" [Modified] 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h + "[Location List]"              line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+quickfix 1 xhello
+"---
+
+
+quickfix 1
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1
+"---
+
+
+quickfix 1
+"---
+
+
+1 1
+  buftype=quickfix
+"---
+
+
+prompt 0
+"---
+
+
+prompt 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E212: Can't open file for writing: no such file or directory
+0
+"---
+
+
+
+0
+"---
+
+
+E676: No matching autocommands for buftype=prompt buffer
+0 prompt g.txt
+"---
+
+
+
+0 prompt h.txt
+"---
+
+
+
+0  
+"---
+
+
+cannot :edit a prompt buffer
+hello 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+ 0
+"---
+
+
+"---
+
+
+  1 %a   "[Prompt]"                     line 1
+"---
+
+
+  1 %a   "[Prompt]"                     line 1
+"---
+
+
+"[Prompt]" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "[Prompt]"                     line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+prompt 0 hello
+"---
+
+
+prompt 0
+"---
+
+
+ 1
+"---
+
+
+E32: No file name
+1
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+0
+"---
+
+
+prompt 0
+"---
+
+
+1 1
+  buftype=prompt
+"---
+
+
+prompt 0
+"---
+
+
+prompt 0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+0
+"---
+
+
+
+0
+"---
+
+
+E676: No matching autocommands for buftype=prompt buffer
+0 prompt g.txt
+"---
+
+
+
+0 prompt h.txt
+"---
+
+
+
+0  
+"---
+
+
+cannot :edit a prompt buffer
+hello 0
+"---
+
+
+
+g.txt 0
+"---
+
+
+
+ 1
+"---
+
+
+"---
+
+
+E382: Cannot write, 'buftype' option is set
+f.txt 0
+"---
+
+
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+  1 %a   "f.txt"                        line 1
+"---
+
+
+"f.txt" 2 lines --50%--
+"---
+
+
+ 
+"---
+
+
+  1 #h   "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+prompt 0 hello
+"---
+
+
+prompt 0
+"---
+
+
+ 1
+"---
+
+
+
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+0
+"---
+
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+0
+"---
+
+
+prompt 0
+"---
+
+
+1 1
+  buftype=prompt
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+1
+"---
+
+E474: Invalid argument: bt=terminal
+
+0
+"---
+
+E474: Invalid argument: bt=terminal
+E212: Can't open file for writing: no such file or directory
+1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+1
+"---
+
+E474: Invalid argument: bt=terminal
+
+0  g.txt
+"---
+
+E474: Invalid argument: bt=terminal
+
+1  h.txt
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+1  
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+xhello 1
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E89: No write since last change for buffer 1 (add ! to override)
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+  1 %a + "[No Name]"                    line 1
+"---
+
+E474: Invalid argument: bt=terminal
+  1 %a + "[No Name]"                    line 1
+"---
+
+E474: Invalid argument: bt=terminal
+"[No Name]" [Modified] 2 lines --50%--
+"---
+
+E474: Invalid argument: bt=terminal
+ 
+"---
+
+E474: Invalid argument: bt=terminal
+  1 #h + "[No Name]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1 xhello
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+E32: No file name
+1
+"---
+
+E474: Invalid argument: bt=terminal
+2 fewer lines; before #1  0 seconds ago
+0
+"---
+
+E474: Invalid argument: bt=terminal
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+1 1
+  buftype=
+"---
+
+E474: Invalid argument: bt=terminal
+ 0
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+
+0
+"---
+
+E474: Invalid argument: bt=terminal
+
+0
+"---
+
+E474: Invalid argument: bt=terminal
+
+1
+"---
+
+E474: Invalid argument: bt=terminal
+
+1
+"---
+
+E474: Invalid argument: bt=terminal
+
+0
+"---
+
+E474: Invalid argument: bt=terminal
+
+0  g.txt
+"---
+
+E474: Invalid argument: bt=terminal
+
+1  h.txt
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+1  f.txt
+"---
+
+E474: Invalid argument: bt=terminal
+
+x 0
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+E474: Invalid argument: bt=terminal
+E89: No write since last change for buffer 1 (add ! to override)
+f.txt 1
+"---
+
+E474: Invalid argument: bt=terminal
+E37: No write since last change (add ! to override)
+f.txt 1
+"---
+
+E474: Invalid argument: bt=terminal
+"---
+
+E474: Invalid argument: bt=terminal
+"---
+
+E474: Invalid argument: bt=terminal
+  1 %a + "f.txt"                        line 1
+"---
+
+E474: Invalid argument: bt=terminal
+  1 %a + "f.txt"                        line 1
+"---
+
+E474: Invalid argument: bt=terminal
+"f.txt" [Modified] 2 lines --50%--
+"---
+
+E474: Invalid argument: bt=terminal
+ 
+"---
+
+E474: Invalid argument: bt=terminal
+  1 #h + "f.txt"                        line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1 xhello
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+
+0
+"---
+
+E474: Invalid argument: bt=terminal
+1 change; before #1  0 seconds ago
+0
+"---
+
+E474: Invalid argument: bt=terminal
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1
+"---
+
+E474: Invalid argument: bt=terminal
+ 1
+"---
+
+E474: Invalid argument: bt=terminal
+1 1
+  buftype=
+"---
+
+
+help
+"---
+
+
+nofile
+"---
+
+
+acwrite
+"---
+
+
+quickfix
+"---
+
+
+prompt
+"---
+
+E474: Invalid argument: bt=terminal
+
+"---
+
+E474: Invalid argument: bt=x
+
+"---
+
+E474: Invalid argument: bt=n
+
+"---
+
+E474: Invalid argument: bt=nofil
+
+"---
+
+
+nowrite
+"---
+
+
+
+"---
+
+
+help
+"---
+
+E474: Invalid argument: bt=help,nofile

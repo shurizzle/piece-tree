@@ -719,6 +719,10 @@ impl Editor {
         let mut w = Window::new(self.next_win, self.buf.id);
         // `win_copy_options`
         (w.opts, w.all_opts) = (self.win.opts.clone(), self.win.all_opts.clone());
+        // `copy_winopt` leaves 'winfixheight' and 'winfixwidth' out: a new window keeps its size to nobody.
+        for o in [&mut w.opts, &mut w.all_opts] {
+            (o.winfixheight, o.winfixwidth) = (false, false);
+        }
         // `win_init`: the new window has the alternate file of the old one.
         w.alt = self.win.alt;
         (w.line, w.col, w.want_col, w.want_set, w.top, w.off) = (self.win.line, self.win.col, self.win.want_col, self.win.want_set, self.win.top, self.mark_at(self.offset()));
@@ -848,32 +852,25 @@ impl Editor {
         self.layout_cur = None;
     }
 
-    /// `:set [no|inv]winfixheight` and `winfixwidth` (`wfh`, `wfw`) of the current window: it keeps
-    /// the size it has now. Returns what `name?` shows, or none when `tok` is another option.
-    pub(super) fn window_option(&mut self, tok: &str) -> Option<String> {
-        let query = tok.ends_with('?');
-        let bare = tok.trim_end_matches(['?', '!']);
-        let (name, mode) = if let Some(n) = bare.strip_prefix("no") {
-            (n, Some(false))
-        } else if let Some(n) = bare.strip_prefix("inv") {
-            (n, None)
-        } else {
-            (bare, Some(true))
-        };
-        let width = match name {
-            "winfixheight" | "wfh" => false,
-            "winfixwidth" | "wfw" => true,
-            _ => return None,
-        };
-        let rects = self.win_rects();
-        let size = rects.iter().find(|(id, _)| *id == self.win.id).map(|(_, r)| if width { r.w } else { r.h });
-        let slot = if width { &mut self.win.fixed_w } else { &mut self.win.fixed_h };
-        if !query {
-            let on = if tok.ends_with('!') { slot.is_none() } else { mode.unwrap_or(slot.is_none()) };
-            *slot = if on { size.or(*slot) } else { None };
+    /// `'winfixheight'` and `'winfixwidth'` of the windows against the size they keep (`Window::fixed_h`, `fixed_w`: the size the
+    /// layout gives them from then on, taken from `rects` when the option turns on). A size that goes with the option goes when it
+    /// turns off; the command-line window has one of its own.
+    pub(super) fn sync_winfix(&mut self, rects: &[(usize, Rect)]) {
+        let cmdwin = self.cmdwin.as_ref().map(|c| c.win);
+        for w in std::iter::once(&mut self.win).chain(self.windows.iter_mut()) {
+            let Some((_, r)) = rects.iter().find(|(id, _)| *id == w.id) else { continue };
+            let own = cmdwin == Some(w.id);
+            if w.opts.winfixheight {
+                w.fixed_h = w.fixed_h.or(Some(r.h));
+            } else if !own {
+                w.fixed_h = None;
+            }
+            if w.opts.winfixwidth {
+                w.fixed_w = w.fixed_w.or(Some(r.w));
+            } else {
+                w.fixed_w = None;
+            }
         }
-        let long = if width { "winfixwidth" } else { "winfixheight" };
-        Some(if slot.is_some() { long.into() } else { format!("no{long}") })
     }
 
     /// `:set cmdwinheight=N` resizes an open command-line window.
@@ -907,7 +904,7 @@ impl Editor {
     /// Whether windows have a status row, with `windows` of them (`laststatus`).
     pub(super) fn has_status(&self, windows: usize) -> bool {
         match self.buf.opts.laststatus {
-            0 => false,
+            n if n <= 0 => false,
             1 => windows > 1,
             _ => true,
         }

@@ -382,21 +382,21 @@ Where an option lives follows Neovim's scopes (`scope` in `options.lua`), each c
 - **Global** options (`copy_global`: `ignorecase`, `hlsearch`, `report`, the screen's, …) are one value for every buffer, a modeline sets them too (`share_global`). **Global-local** `scrolloff`: the global value is `Editor::global_opts.scrolloff`; a modeline gives the window its own (`WinOpts::scrolloff`), `:set scrolloff` sets the global one and clears the window's.
 - **Buffer** options (`tabstop`, `expandtab`, `shiftwidth`, `modeline`, …) are in `Buffer::opts`; a new buffer starts from `Editor::global_opts`, which `:set` and `:let &` also write (`filetype` and `buftype` never), a modeline does not.
 
-`:set name`, `:set noname`, `:set invname` / `name!` (toggle), `:set name=value`, `:set name?`; several per command; `:set` alone lists all. Errors: `Unknown option: <arg>`, `Invalid argument: <arg>`.
+`:set name`, `:set noname`, `:set invname` / `name!` (toggle), `:set name=value`, `:set name?`; several per command; `:set` alone lists the options that are not at their default (Neovim's layout), `:set all` all of them. Errors are Neovim's (`E518`, `E474`, `E521`, `E487`, `E488`, `E539`...). The defaults are Neovim's: a `~/.config/rim` init file that wants numbers, the cursor line, spaces for Tab and four columns says `set nu rnu cul et ts=4 sw=0 ls=1`.
 
 | Option | Short | Default | Meaning |
 |---|---|---|---|
-| `number` | `nu` | on | absolute line numbers |
-| `relativenumber` | `rnu` | on | distances from the cursor line; with `number`, the cursor line shows its absolute number, else `0` |
-| `cursorline` | `cul` | on | cursor line background |
+| `number` | `nu` | off | absolute line numbers |
+| `relativenumber` | `rnu` | off | distances from the cursor line; with `number`, the cursor line shows its absolute number, else `0` |
+| `cursorline` | `cul` | off | cursor line background |
 | `wrap` | | on | long lines continue on the next screen rows, as Neovim lays them out: the virtual column runs on over the line, so a Tab goes up to the next multiple of `tabstop` and may go over the edge into the next row, and a wide char that would start in the last cell of a row leaves a `>` there and is drawn on the next row; `nowrap` scrolls sideways |
-| `tabstop` | `ts` | 4 | tab width (1–9999), the width Tab inserts |
+| `tabstop` | `ts` | 8 | tab width (1–9999), the width Tab inserts |
 | `smarttab` | `sta` | on | Tab in an indent is a `shiftwidth` and Backspace there goes back one (Neovim's default; with `shiftwidth` equal to the tab width Tab is unchanged) |
 | `softtabstop` | `sts` | 0 | columns Tab and Backspace move by in Insert mode; 0 is off, negative is `shiftwidth` |
 | `varsofttabstop` | `vsts` | empty | list of stops for Tab and Backspace in Insert mode, as `vartabstop` |
 | `vartabstop` | `vts` | empty | list of tab stops (`4,8,2`: the columns between stops; the last repeats), used instead of `tabstop` when it is not empty or `0`; each value 1–9999; `+=`, `-=` and `^=` add or cut whole items and keep duplicates |
-| `expandtab` | `et` | on | Tab, `>`/`<` and `:retab` write spaces; off: tabs (then spaces) |
-| `shiftwidth` | `sw` | 0 | columns of one `>`/`<` shift (0–32); 0 is `tabstop` |
+| `expandtab` | `et` | off | Tab, `>`/`<` and `:retab` write spaces; off: tabs (then spaces) |
+| `shiftwidth` | `sw` | 8 | columns of one `>`/`<` shift (0 is `tabstop`) |
 | `list` | | off | a tab shows as `>` then spaces (same width), the line end as `$` |
 | `ignorecase` | `ic` | off | searches ignore case |
 | `smartcase` | `scs` | off | with `ignorecase`, a pattern holding an uppercase letter keeps case |
@@ -404,10 +404,10 @@ Where an option lives follows Neovim's scopes (`scope` in `options.lua`), each c
 | `incsearch` | `is` | on | preview and highlight the pattern being typed |
 | `scrolloff` | `so` | 0 | lines kept above and below the cursor (at most half the screen) |
 | `compactat` | | 10000 | after 1 s without keys (`main`: `event::poll`, once per quiet period), `Editor::idle` runs `:compact` when the text has more pieces than this, in Normal mode between commands; 0 disables it |
-| `laststatus` | `ls` | 1 | status row per window: 0 never, 1 only with several windows, 2 always |
+| `laststatus` | `ls` | 2 | status row per window: 0 never, 1 only with several windows, 2 always (any other number is stored as it is) |
 | `showmode` | `smd` | on | `-- INSERT --` and `recording @r` in the message row |
 | `showcmd` | `sc` | on | pending keys in the message row |
-| `messagesopt` | `mopt` | `hit-enter,history:500` | see Messages |
+| `messagesopt` | `mopt` | `hit-enter,history:500,progress:c` | see Messages |
 | `shortmess` | `shm` | `ltToOCF` | flags (`E539` for an unknown one, `+=`/`-=`/`^=` keep each flag once): `T` cuts the middle of a message (`...`) that does not fit the row and was shown by a Normal mode command (a command line scrolls instead), `t` cuts the start (`<`) of the `Ctrl+G` file message, `F` hides the file info of `:e`/`:r`, `a` is `rmlw`; the width is counted in grapheme clusters and the showcmd (and ruler) columns are left free, as `comp_col` does; the other flags are accepted and do nothing |
 | `more` | | on | pager for output taller than the screen |
 | `wildmenu` | `wmnu` | on | the menu while completing (Completion) |

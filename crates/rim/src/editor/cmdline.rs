@@ -377,7 +377,7 @@ impl Editor {
             KeyCode::Char('u') if ctrl => self.line_cut(0..pos),
             KeyCode::Esc => self.line_leave(),
             KeyCode::Char('c') if ctrl => self.line_leave(),
-            _ if !matches!(self.mode, Mode::Expr(_)) && super::wild::key_is(&self.buf.opts.cedit, key) => {
+            _ if !matches!(self.mode, Mode::Expr(_)) && !self.buf.opts.cedit.is_empty() && super::wild::key_is_num(super::options::string_to_key(&self.buf.opts.cedit), key) => {
                 let (text, pos) = (self.line_buf().clone(), self.line_pos);
                 self.open_cmdwin(if searching { if self.search_back { '?' } else { '/' } } else { ':' }, &text, pos);
             }

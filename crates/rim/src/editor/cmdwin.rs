@@ -50,13 +50,16 @@ impl Editor {
         let buf = self.new_scratch();
         let b = self.buffers.iter_mut().find(|b| b.id == buf).expect("just added");
         b.doc = Document::from_string(text);
-        (b.opts.nofile, b.title) = (true, Some("[Command Line]"));
+        (b.opts.buftype, b.title) = ("nofile".into(), Some("[Command Line]"));
         self.next_win += 1;
         let win = self.next_win;
         let mut w = Window::new(win, buf);
         // The window enters the history buffer: the buffer it came from is its alternate.
         w.alt = Some(self.buf.id);
         (w.opts, w.all_opts) = (self.win.opts.clone(), self.win.all_opts.clone());
+        for o in [&mut w.opts, &mut w.all_opts] {
+            (o.winfixheight, o.winfixwidth) = (false, false);
+        }
         // The status row is part of the height, when windows have one.
         // shortcut: the height stays what it was at opening, when windows can be resized
         w.fixed_h = Some(self.buf.opts.cmdwinheight + usize::from(self.buf.opts.laststatus != 0));

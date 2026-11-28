@@ -1757,6 +1757,23 @@ fn visual_replace_and_insert() {
     assert_eq!(text(&run("ab\nc", "VAX\x1b")), "Xab\nc");
 }
 
+/// The editor starts as Neovim does: no numbers, no cursor line, Tab is a Tab of eight columns, a status row for the only window.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn the_defaults_are_neovims() {
+    use super::options::{Options, WinOpts};
+    let mut e = ed("\tx\ny");
+    let defaults = Options::default();
+    let win = WinOpts::load(&defaults, None);
+    (e.buf.opts, e.global_opts, e.win.opts, e.win.all_opts) = (defaults.clone(), defaults, win.clone(), win);
+    let f = e.frame(20, 4);
+    assert_eq!(screen(&f)[..3], ["        x", "y", "[ /nonexistent/rim-te]"]);
+    assert_eq!(f.cursor_line, None);
+    // Tab inserts a Tab (after the indent 'autoindent' copies).
+    feed(&mut e, "A\x1bo\t\x1b");
+    assert_eq!(text(&e), "\tx\n\t\t\ny");
+}
+
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn set_options() {
@@ -1773,7 +1790,12 @@ fn set_options() {
     assert_eq!(e.msg(), "  tabstop=4");
     feed(&mut e, ":set foo\n");
     assert_eq!(e.msg(), "E518: Unknown option: foo");
-    assert!(run("a", ":set\n").msg().starts_with("  number\n  relativenumber\n  cursorline\n  tabstop=4"));
+    // A bare `:set` lists the options that are not at their default, in columns of 20.
+    assert_eq!(run("a", ":set all&\n:set\n").msg(), "--- Options ---");
+    assert_eq!(run("a", ":set all&\n:set ts=3 sw=5 ic\n:set\n").msg(), format!("--- Options ---\n{:<20}{:<20}{}", "  ignorecase", "  shiftwidth=5", "  tabstop=3"));
+    // `:setlocal` and `:setglobal` have a title of their own and skip what has no local value (`ignorecase`).
+    assert_eq!(run("a", ":set all&\n:set ts=3 sw=5 ic\n:setlocal\n").msg(), format!("--- Local option values ---\n{:<20}{}", "  shiftwidth=5", "  tabstop=3"));
+    assert_eq!(run("a", ":set all&\n:set ts=3 sw=5 ic\n:setglobal\n").msg(), format!("--- Global option values ---\n{:<20}{}", "  shiftwidth=5", "  tabstop=3"));
     // tabstop: display, Tab key and shifts.
     let mut e = run("\tx", ":set ts=2\n");
     assert_eq!(screen(&e.frame(20, 2))[0], "1   x");
@@ -3014,7 +3036,7 @@ fn multi_row_messages_wait_for_a_key() {
 #[test]
 fn messagesopt_sets_history_and_prompt() {
     let mut e = run("a", ":set mopt?\n");
-    assert_eq!(e.msg(), "  messagesopt=hit-enter,history:500");
+    assert_eq!(e.msg(), "  messagesopt=hit-enter,history:500,progress:c");
     feed(&mut e, ":set mopt=hit-enter,wait:50,history:2\n:set mopt?\n");
     assert_eq!(e.msg(), "  messagesopt=hit-enter,wait:50,history:2");
     for bad in ["history:3", "wait:x", "hit-enter,history:10001", "foo"] {
@@ -3024,16 +3046,16 @@ fn messagesopt_sets_history_and_prompt() {
     feed(&mut e, ":foo1\n:foo2\n:foo3\n");
     assert_eq!(e.msgs.list().lines().count(), 2);
     // Without `hit-enter` the rows show without a prompt and any key runs.
-    feed(&mut e, ":set mopt=wait:0\n:messages\n");
+    feed(&mut e, ":set mopt=wait:0,history:500\n:messages\n");
     let f = e.frame(40, 6);
     assert_eq!(screen(&f)[4..], ["E492: Not an editor command: foo2", "E492: Not an editor command: foo3"]);
     feed(&mut e, "\n");
     assert_eq!(e.msg(), "");
     // `wait:N`: the message goes away by itself once N ms passed (`main` polls for `message_wait`).
-    feed(&mut e, ":set mopt=wait:9000\n:messages\n");
+    feed(&mut e, ":set mopt=wait:9000,history:500\n:messages\n");
     e.frame(40, 6);
     assert!(e.message_wait().is_some_and(|d| d > std::time::Duration::from_secs(5)) && !e.expire_message());
-    feed(&mut e, ":set mopt=wait:0\n:messages\n");
+    feed(&mut e, ":set mopt=wait:0,history:500\n:messages\n");
     assert_eq!(e.message_wait(), None);
     e.frame(40, 6);
     assert!(e.expire_message() && e.msg().is_empty() && e.message_wait().is_none() && !e.expire_message());
@@ -3101,7 +3123,7 @@ fn poll_timeout_follows_the_message_deadline() {
     let mut e = run("a", ":foo\n:bar\n");
     // No expiring message: the base period, or none at all.
     assert_eq!((e.poll_timeout(None), e.poll_timeout(Some(s(1)))), (None, Some(s(1))));
-    feed(&mut e, ":set mopt=wait:5000\n:messages\n");
+    feed(&mut e, ":set mopt=wait:5000,history:500\n:messages\n");
     e.frame(40, 6);
     let t = e.poll_timeout(None).unwrap();
     assert!(t > s(4) && t <= s(5));
@@ -3397,7 +3419,7 @@ fn buffers_without_a_file() {
     // buftype=nofile: never modified, not written, `:q` does not ask.
     let mut e = ed("a");
     feed(&mut e, ":set bt=nofile\nix\x1b:w\n");
-    assert_eq!((e.is_dirty(), e.msg()), (false, "Cannot write, 'buftype' option is set"));
+    assert_eq!((e.is_dirty(), e.msg()), (false, "E382: Cannot write, 'buftype' option is set"));
     feed(&mut e, ":set bt?\n");
     assert_eq!(e.msg(), "  buftype=nofile");
     feed(&mut e, ":set bt=foo\n");
@@ -3516,7 +3538,7 @@ fn command_line_window_refuses_what_leaves_it() {
     feed(&mut e, "ifoo\x1b:s/foo/bar/\n");
     assert_eq!((text(&e).as_str(), e.is_dirty()), ("bar", false));
     feed(&mut e, ":w\n");
-    assert_eq!(e.msg(), "Cannot write, 'buftype' option is set");
+    assert_eq!(e.msg(), "E382: Cannot write, 'buftype' option is set");
     feed(&mut e, ":ls\n");
     assert_eq!(e.msg(), "  1 #a   \"/nonexistent/rim-test\"        line 1\n  2 %a   \"[Command Line]\"               line 1", "the history buffer is listed");
 }
@@ -3609,7 +3631,7 @@ fn winfixheight_winfixwidth_and_cmdwinheight_resize_open_windows() {
     assert_eq!(e.msg(), "nowinfixheight");
     heights(&mut e);
     feed(&mut e, ":set wfh\n:set winfixheight?\n");
-    assert_eq!(e.msg(), "winfixheight");
+    assert_eq!(e.msg(), "  winfixheight");
     // The fixed window keeps its 10 rows when another one is split off.
     feed(&mut e, ":sp\n");
     assert_eq!(heights(&mut e), [5, 10, 5]);
@@ -3619,7 +3641,7 @@ fn winfixheight_winfixwidth_and_cmdwinheight_resize_open_windows() {
     assert_eq!(e.msg(), "nowinfixheight");
     heights(&mut e);
     feed(&mut e, ":set wfw\n:set wfw?\n");
-    assert_eq!(e.msg(), "winfixwidth");
+    assert_eq!(e.msg(), "  winfixwidth");
     // `:set cwh=N` changes the height of an open command-line window.
     let mut e = ed("a");
     feed(&mut e, "q:");
@@ -3997,7 +4019,7 @@ fn wildmode_full_menu_and_keys() {
     tab(&mut e);
     feed(&mut e, "\n");
     assert_eq!(e.mode, Mode::Normal);
-    assert!(e.msg().contains("tabstop=4"), "{}", e.msg());
+    assert!(e.msg().starts_with("--- Options ---"), "{}", e.msg());
     // A single match is the completion: no menu, and the next Tab starts again.
     feed(&mut e, ":sor");
     tab(&mut e);
@@ -4097,7 +4119,7 @@ fn wildmode_steps_lists_and_keys_of_the_command_line() {
     feed(&mut e, "@c");
     assert_eq!(line(&e).0, "s", "wildchar does not in a macro");
     feed(&mut e, "\x1b:set wc=bad\n");
-    assert_eq!(e.msg(), "E474: Invalid argument: wc=bad");
+    assert_eq!(e.msg(), "E521: Number required after =: wc=bad");
     feed(&mut e, ":set wim=a,b,c,d,e\n");
     assert_eq!(e.msg(), "E474: Invalid argument: wim=a,b,c,d,e");
     feed(&mut e, ":set wop=popup\n");
@@ -4215,9 +4237,9 @@ fn equalalways_winheight_winwidth_and_the_least_sizes() {
     let mut e = ed(&lines(30));
     narrow(&mut e);
     sizes(&mut e, 31);
-    feed(&mut e, ":set wmh=3\n:sp\n\x17_");
+    feed(&mut e, ":set wh=3 wmh=3\n:sp\n\x17_");
     assert_eq!(sizes(&mut e, 31), [(31, 16), (31, 4)]);
-    feed(&mut e, ":set wmh=1 wmw=5\n:vs\n\x17|");
+    feed(&mut e, ":set wmh=1 wiw=5 wmw=5\n:vs\n\x17|");
     assert_eq!(sizes(&mut e, 31)[..2], [(25, 10), (5, 10)], "a split evens the heights out again");
     feed(&mut e, ":set wh=0\n");
     assert_eq!(e.msg(), "E487: Argument must be positive: wh=0");
@@ -4301,7 +4323,7 @@ fn mouse_clicks_drags_wheel_and_windows() {
     feed(&mut e, ":set mouse=a\n:set mouse?\n");
     assert_eq!((e.msg(), e.mouse_enabled()), ("  mouse=a", true));
     feed(&mut e, ":set mouse=z\n");
-    assert_eq!(e.msg(), "E474: Invalid argument: mouse=z");
+    assert_eq!(e.msg(), "E539: Illegal character <z>: mouse=z");
     // The wheel scrolls `mousescroll` lines, and the cursor stays on screen.
     let mut e = ed(&lines(30));
     e.frame(30, 8);
@@ -5538,7 +5560,7 @@ fn modelines_match_neovim() {
         (e.buf.opts.tabstop, e.buf.opts.shiftwidth, e.buf.opts.expandtab) = (8, 8, false);
         e.finish_start();
         let o = &e.buf.opts;
-        let got = (o.tabstop, o.shiftwidth, u8::from(o.expandtab), u8::from(o.modeline), o.modelines);
+        let got = (o.tabstop, o.shiftwidth, u8::from(o.expandtab), u8::from(o.modeline), o.modelines as usize);
         assert_eq!(got, want, "{text:?}");
         if let Some(err) = err {
             assert_eq!(e.msg(), err, "{text:?}");
@@ -5621,7 +5643,7 @@ fn modelines_stay_in_their_buffer() {
     assert_eq!((e.buf.opts.tabstop, e.buf.opts.filetype.as_str()), (3, "foo"));
     // `buftype` and `filetype` never become global.
     feed(&mut e, &format!(":set bt=nofile ft=bar\n:e {}\n", dir.join("D.txt").display()));
-    assert_eq!((e.buf.opts.nofile, e.buf.opts.filetype.as_str()), (false, "text"));
+    assert_eq!((e.buf.opts.buftype.as_str(), e.buf.opts.filetype.as_str()), ("", "text"));
     fs::remove_dir_all(&dir).unwrap();
 }
 

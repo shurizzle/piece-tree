@@ -72,7 +72,7 @@ fn find_modeline(b: &[u8]) -> Option<usize> {
 impl Editor {
     /// `do_modelines`: the modelines of the current buffer, in its first and then its last `modelines` lines.
     pub(super) fn do_modelines(&mut self) {
-        let mut nmlines = self.buf.opts.modelines;
+        let mut nmlines = usize::try_from(self.buf.opts.modelines).unwrap_or(0);
         if !self.buf.opts.modeline || nmlines == 0 {
             return;
         }
@@ -138,7 +138,10 @@ impl Editor {
             // Skips an empty "::".
             if s < e {
                 let arg = String::from_utf8_lossy(&buf[s..e]).into_owned();
-                if let Err(m) = self.set_cmd_in(&arg, true) {
+                self.opt_modeline = true;
+                let set = self.set_cmd_in(&arg, super::options::Scope::Local);
+                self.opt_modeline = false;
+                if let Err(m) = set {
                     self.error(m);
                     retval = false;
                     break;

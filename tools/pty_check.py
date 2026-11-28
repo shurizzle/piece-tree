@@ -18,10 +18,11 @@ import termios
 import time
 
 exe = sys.argv[1]
-path = sys.argv[2] if len(sys.argv) > 2 else tempfile.mkstemp()[1]
+# A short name: the status row (a window always has one, as in Neovim) shows `Ln N, Col N` after it, in 60 columns.
+path = sys.argv[2] if len(sys.argv) > 2 else tempfile.mkstemp(dir="/tmp")[1]
 # A home of its own, with a file under it: `:e ~/...` and `home_replace` need one, and the temp
-# directory of the machine is not under it here.
-home = tempfile.mkdtemp()
+# directory of the machine is not under it here. Short names: the status row has `Ln N, Col N` after the name.
+home = tempfile.mkdtemp(dir="/tmp")
 with open(os.path.join(home, ".rimpty"), "w") as f:
     f.write("RIMPTYOK\n")
 noeol = os.path.join(home, ".rimnoeol")
@@ -89,8 +90,9 @@ check("`:e ~/file` opens the file", b"RIMPTYOK" in pump(0.6))
 send(b"\x07")
 check("Ctrl+G shows the name with `~`", b"~/.rimpty" in pump(0.4))
 # The file ends with a line break: that is not a line of its own (Neovim's buffer has 1).
-send(b"G")
-check("a file ending with a newline has no extra line", b"Ln 1" in pump(0.4))
+send(b"G:redraw!\r")
+out = pump(0.6)
+check("a file ending with a newline has no extra line", b"Ln 1" in out and b"Ln 2" not in out)
 # `'fixendofline'` (default): a write ends the file with a line break even when it had none.
 send(b":e ~/.rimnoeol\r")
 pump(0.4)

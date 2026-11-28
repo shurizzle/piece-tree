@@ -404,6 +404,7 @@ impl Editor {
         self.screen_drawn = true;
         let mut rects = Vec::new();
         self.split.rects(area, &|id| self.fixed_size(id), self.win_mins(), &mut rects);
+        self.sync_winfix(&rects);
         let single = rects.len() == 1;
         // `laststatus`: a status row per window, never, only with several windows, or always.
         let has_status = self.has_status(rects.len());
@@ -573,7 +574,7 @@ impl Editor {
     /// of the frame; `cmd_start` is the first row of the command line.
     fn wild_draw(&mut self, w: usize, cmd_start: usize) -> Vec<(usize, usize, Vec<Span>)> {
         let o = &self.buf.opts;
-        let (pum, pumheight, pumwidth) = (o.wildoptions.split(',').any(|x| x == "pum"), o.pumheight, o.pumwidth);
+        let (pum, pumheight, pumwidth) = (o.wildoptions.split(',').any(|x| x == "pum"), usize::try_from(o.pumheight).unwrap_or(0), usize::try_from(o.pumwidth).unwrap_or(0));
         self.menu_hit.clear();
         let Mode::Command(line) = &self.mode else { return Vec::new() };
         let Some(wi) = self.wild.as_mut().filter(|wi| (wi.menu || wi.list) && cmd_start > 0) else { return Vec::new() };

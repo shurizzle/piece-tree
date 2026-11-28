@@ -2007,7 +2007,7 @@ fn f_bufname(e: &mut Editor, a: &[Value]) -> Value {
             }
         }
     };
-    let name = id.and_then(|id| e.buffer(id)).and_then(|b| b.path.as_ref().map(|_| b.name()));
+    let name = id.and_then(|id| e.buffer(id)).and_then(|b| b.path_name());
     Value::Str(name.unwrap_or_default().into())
 }
 

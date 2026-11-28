@@ -17,6 +17,7 @@ mod expr;
 mod funcs;
 mod heredoc;
 mod keycodes;
+mod keytable;
 
 #[cfg(test)]
 pub(in crate::editor) mod golden;
@@ -75,6 +76,8 @@ pub(in crate::editor) fn cmdline_argt(name: &str) -> u32 {
 }
 #[cfg(test)]
 pub(in crate::editor) use docmd::expand_env;
+pub(in crate::editor) use docmd::expand_env_opt;
+pub(in crate::editor) use keycodes::{key_event, key_has_name, option_key, special_key_name};
 pub(in crate::editor) use funcs::bsd_qsort;
 pub(in crate::editor) use evalvars::{full_name, isfname_table, strtoimax};
 pub(super) use value::{List, Lock, Value, str_to_int};

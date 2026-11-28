@@ -11,7 +11,7 @@ use std::{
 use crossterm::event::{KeyCode, KeyEvent};
 use piece_tree::{Edit, LineEnding, Text};
 
-use super::{graphemes::Tabs, options::{WinOpts, tabstop_set},  registers::{Reg, RegKind}, script::{AddrType, EXFLAG_LIST, EXFLAG_NR}, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self}, script, search::{self, Search}, substitute};
+use super::{graphemes::Tabs, options::{Scope, SetCtx, WinOpts, tabstop_set},  registers::{Reg, RegKind}, script::{AddrType, EXFLAG_LIST, EXFLAG_NR}, Editor, Kind, Mode, windows::Resize, graphemes, parse::{self}, script, search::{self, Search}, substitute};
 
 /// Start of a line address.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -220,9 +220,10 @@ impl Editor {
 
     /// Runs `f` on the global options, which `filetype` and `buftype` never reach (`noglob` in Neovim).
     pub(super) fn on_global(&mut self, f: impl FnOnce(&mut super::options::Options)) {
-        let (ft, nofile, ro, bh) = (self.global_opts.filetype.clone(), self.global_opts.nofile, self.global_opts.readonly, self.global_opts.bufhidden.clone());
+        let (ft, bt, ro, bh) = (self.global_opts.filetype.clone(), self.global_opts.buftype.clone(), self.global_opts.readonly, self.global_opts.bufhidden.clone());
         f(&mut self.global_opts);
-        (self.global_opts.filetype, self.global_opts.nofile, self.global_opts.readonly, self.global_opts.bufhidden) = (ft, nofile, ro, bh);
+        self.global_opts.touched.clear();
+        (self.global_opts.filetype, self.global_opts.buftype, self.global_opts.readonly, self.global_opts.bufhidden) = (ft, bt, ro, bh);
     }
 
     /// The options of global scope are one value for every buffer, and for the buffers to come (`copy_global`).
@@ -235,6 +236,7 @@ impl Editor {
 
     /// Before an option is read or set: the scratch fields of `buf.opts` that stand for the document and window.
     pub(super) fn opts_in(&mut self) {
+        self.buf.opts.touched.clear();
         self.ff_in();
         self.win_in();
     }
@@ -253,17 +255,20 @@ impl Editor {
             new.scrolloff = local.then_some(self.buf.opts.scrolloff);
         }
         if !local {
-            self.win.all_opts = WinOpts { scrolloff: None, ..new.clone() };
+            // The global value of a window option is written for the options the command named.
+            let touched = std::mem::take(&mut self.buf.opts.touched);
+            self.win.all_opts.take_named(&new, &touched);
         }
+        self.buf.opts.touched.clear();
         self.win.opts = new;
     }
 
     /// Before an option is read or set: `opts.fileformat` takes the line ending of the document.
     pub(super) fn ff_in(&mut self) {
         self.buf.opts.fileformat = ff_name(self.buf.doc.eol()).into();
-        let (modified, differs) = (self.buf.modified, self.buf.ff_differs());
+        let (modified, differs, dirty) = (self.buf.modified, self.buf.ff_differs(), self.buf.is_dirty());
         let o = &mut self.buf.opts;
-        (o.modified, o.ff_changed, o.modified_set) = (modified, differs, false);
+        (o.modified, o.ff_changed, o.modified_set, o.dirty) = (modified, differs, false, dirty);
     }
 
     /// After an option was set: the document takes `opts.fileformat` (`did_set_fileformat`).
@@ -279,12 +284,16 @@ impl Editor {
         // `:set modified` and `:set nomodified` (`did_set_modified`): `nomodified` is `save_file_ff()` too.
         if mem::take(&mut self.buf.opts.modified_set) {
             self.buf.modified = self.buf.opts.modified;
+            self.buf.modified_was_set = self.buf.opts.modified;
             if !self.buf.modified {
                 self.buf.save_file_ff();
             }
         }
     }
 }
+
+/// `bt_dontwrite_msg`.
+pub(super) const BT_DONTWRITE: &str = "E382: Cannot write, 'buftype' option is set";
 
 fn ff_name(eol: LineEnding) -> &'static str {
     match eol {
@@ -683,7 +692,10 @@ impl Editor {
             }
             _ if abbr(n, "w", "write") => self.write_cmd(r, bang, a),
             // `ex_update`: the same as `:w` when the buffer is changed.
-            _ if abbr(n, "up", "update") => if self.buf.is_dirty() { self.write_cmd(r, bang, a) } else { Ok(()) },
+            _ if abbr(n, "up", "update") => {
+                // `ex_update`: a file that is gone is written again too.
+                if self.buf.is_dirty() || (!self.buf.opts.bt_nofilename() && self.buf.path.as_ref().is_some_and(|p| !p.exists())) { self.write_cmd(r, bang, a) } else { Ok(()) }
+            }
             _ if abbr(n, "q", "quit") => {
                 let wnr = self.window_arg(r);
                 return self.quit(bang, false, wnr);
@@ -779,6 +791,7 @@ impl Editor {
                 self.info_rows(rows);
                 Ok(())
             }
+            _ if abbr(n, "e", "edit") && a.is_empty() && self.buf.opts.buftype.starts_with('p') => Err("cannot :edit a prompt buffer".into()),
             _ if abbr(n, "e", "edit") && a.is_empty() => {
                 self.wait_saves();
                 self.set_jump();
@@ -813,9 +826,9 @@ impl Editor {
                 self.redraw_cmd();
                 Ok(())
             }
-            _ if abbr(n, "se", "set") => self.set_cmd(a),
-            _ if abbr(n, "setl", "setlocal") => self.set_cmd_in(a, true),
-            _ if abbr(n, "setg", "setglobal") => self.setglobal_cmd(a),
+            _ if abbr(n, "se", "set") => self.set_cmd(arg),
+            _ if abbr(n, "setl", "setlocal") => self.set_cmd_in(arg, Scope::Local),
+            _ if abbr(n, "setg", "setglobal") => self.setglobal_cmd(arg),
             _ if abbr(n, "d", "delete") => self.delete_yank(r, false),
             _ if abbr(n, "y", "yank") => self.delete_yank(r, true),
             _ if abbr(n, "m", "move") => self.move_lines(r, a),
@@ -1046,12 +1059,12 @@ impl Editor {
 
     /// `:set`: the options of the buffer and the global values new buffers start from.
     pub(super) fn set_cmd(&mut self, arg: &str) -> Result<(), String> {
-        self.set_cmd_in(arg, false)
+        self.set_cmd_in(arg, Scope::Both)
     }
 
     /// `:setglobal`: the global value only (`OPT_GLOBAL`): what a new buffer or window gets, the values of this buffer and window stay.
     pub(super) fn setglobal_cmd(&mut self, arg: &str) -> Result<(), String> {
-        self.with_global_scope(|e| e.set_cmd_in(arg, false))
+        self.with_global_scope(|e| e.set_cmd_in(arg, Scope::Global))
     }
 
     /// Runs `f` and keeps only the global values it set: the options of global scope are one value for everybody, a local-scope
@@ -1087,45 +1100,52 @@ impl Editor {
 
     /// `do_set` with `OPT_LOCAL` when `local` (a modeline): only the buffer's value changes, except for the options
     /// of global scope (`share_global`).
-    pub(super) fn set_cmd_in(&mut self, arg: &str, local: bool) -> Result<(), String> {
-        let (mut shown, mut rest) = (Vec::new(), Vec::new());
-        for tok in arg.split_whitespace() {
-            match self.window_option(tok) {
-                Some(s) => shown.push(s),
-                None => rest.push(tok),
-            }
+    pub(super) fn set_cmd_in(&mut self, arg: &str, scope: Scope) -> Result<(), String> {
+        let local = scope == Scope::Local;
+        let mut shown = Vec::new();
+        self.opts_in();
+        let args = arg.to_string();
+        // The global values, window options included, for `opt<` and for `:setglobal` to list.
+        let mut global = self.global_opts.clone();
+        self.win.all_opts.store(&mut global, self.global_opts.scrolloff);
+        let ctx = SetCtx { modeline: self.opt_modeline, cols: self.cols, scope };
+        let (text, err) = self.buf.opts.set_all_from(&args, Some(&global), ctx);
+        // `tabstop_set` gives its message before the one of the option.
+        if let Some(m) = self.buf.opts.first_error.take() {
+            self.error(m);
         }
-        if !rest.is_empty() || arg.is_empty() {
-            self.opts_in();
-            let args = rest.join(" ");
-            let (text, err) = self.buf.opts.set_all_from(&args, Some(&self.global_opts));
-            // `tabstop_set` gives its message before the one of the option.
-            if let Some(m) = self.buf.opts.first_error.take() {
-                self.error(m);
-            }
-            self.ff_out();
-            self.win_out(local, super::options::Options::names_scrolloff(&args));
-            if !local {
-                self.on_global(|g| {
-                    // `opt<` copies the global value to the local one: for the global options it changes nothing.
-                    let same = g.clone();
-                    let _ = g.set_all_from(&args, Some(&same));
-                    g.first_error = None;
-                });
-            }
-            self.share_global();
-            shown.push(text);
-            self.sync_cmdwin_height();
-            shown.retain(|s| !s.is_empty());
-            // What was shown before the error stays.
-            if !shown.is_empty() || err.is_none() {
-                self.info(shown.join("\n"));
-            }
-            return err.map_or(Ok(()), Err);
+        self.ff_out();
+        self.win_out(local, super::options::Options::names_scrolloff(&args));
+        if !local {
+            self.on_global(|g| {
+                // `opt<` copies the global value to the local one: for the global options it changes nothing.
+                let same = g.clone();
+                let _ = g.set_all_from(&args, Some(&same), SetCtx::default());
+                g.first_error = None;
+            });
         }
+        self.share_global();
+        // A window that keeps its size (`winfixheight`) is laid out as it is now.
+        let rects = self.win_rects();
+        self.sync_winfix(&rects);
+        shown.push(text);
+        self.sync_cmdwin_height();
         shown.retain(|s| !s.is_empty());
-        self.info(shown.join("\n"));
-        Ok(())
+        // What was shown before the error stays.
+        if !shown.is_empty() || err.is_none() {
+            self.show_set(shown);
+        }
+        err.map_or(Ok(()), Err)
+    }
+
+    /// What `:set` shows: a list (`showoptions`, whose text starts with the line break before its title) takes rows as `:ls` does.
+    fn show_set(&mut self, shown: Vec<String>) {
+        let text = shown.join("\n");
+        if text.starts_with('\n') {
+            self.info_rows(text);
+        } else {
+            self.info(text);
+        }
     }
 
     /// `ex_operators` for `:d` and `:y`: the register and the count come from `do_one_cmd` (`Prefix`).
@@ -2000,28 +2020,35 @@ impl Editor {
     /// `:w`, `:w!`, `:[range]w[!] file`, `:w >> file`. Writing to another file leaves the buffer's
     /// file and modified state alone; an existing other file needs `!`.
     fn write_cmd(&mut self, r: Option<&LineRange>, bang: bool, arg: &str) -> Result<(), String> {
-        if self.buf.opts.nofile && arg.trim().is_empty() {
-            return Err("Cannot write, 'buftype' option is set".into());
-        }
         let (append, file) = match arg.strip_prefix(">>") {
             Some(f) => (true, f.trim()),
             None => (false, arg),
         };
+        // `do_write`: writing the current file (no name, or the name of the buffer) is not allowed for `nofile`, `nowrite` and
+        // `prompt` buffers.
+        if (file.is_empty() || self.buf.path.as_ref() == Some(&super::fname(file))) && self.buf.opts.bt_dontwrite() {
+            return Err(BT_DONTWRITE.into());
+        }
         if file.is_empty() && self.buf.path.is_none() {
             return Err("E32: No file name".into());
         }
         let path = if file.is_empty() { self.buf.path.clone().expect("checked above") } else { super::fname(file) };
         // A buffer without a name takes the one it is written to, like vim.
-        if self.buf.path.is_none() && r.is_none() && !append {
+        // `buf_write`: an unnamed buffer takes the name it is written to ('cpoptions' `F`), but not one whose name is no file name.
+        if self.buf.path.is_none() && r.is_none() && !append && !self.buf.opts.bt_nofilename() {
             if !bang && path.exists() {
                 return Err("E13: File exists (add ! to override)".into());
             }
             self.buf.path = Some(path);
             self.buf.opts.filetype = self.buf.path.as_deref().map_or("", super::filetype::detect).into();
-            self.save(false);
+            self.save_other(false);
             return Ok(());
         }
         let own = self.buf.path.as_ref() == Some(&path);
+        // `buf_write`: the file of an `acwrite` (or `nofile`, `prompt`) buffer is written by autocommands only, and there are none.
+        if own && self.buf.opts.bt_nofilename() {
+            return Err(self.no_autocmds());
+        }
         // `do_write`: another name becomes the alternate file (`setaltfname`) before anything can fail.
         if !own && !file.is_empty() {
             let found = self.buffers.iter().find(|b| b.path.as_deref().is_some_and(|p| super::buffers::same_file(p, &path))).map(|b| b.id);
@@ -2050,6 +2077,10 @@ impl Editor {
         if !own && !append && !bang && path.exists() {
             return Err("E13: File exists (add ! to override)".into());
         }
+        // `buf_write`: appending needs the file, `!` creates it.
+        if append && !bang && !path.exists() {
+            return Err("E212: Can't open file for writing: no such file or directory".into());
+        }
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text();
         // The lines of the range without their last break: `write_atomic` ends the file with one.
@@ -2065,6 +2096,11 @@ impl Editor {
         Ok(())
     }
 
+    /// `e_no_matching_autocommands_for_buftype_str_buffer`.
+    fn no_autocmds(&self) -> String {
+        format!("E676: No matching autocommands for buftype={} buffer", self.buf.opts.buftype)
+    }
+
     /// `:sav[!] file`: writes the buffer there and edits that file from now on.
     fn save_as(&mut self, bang: bool, file: &str) -> Result<(), String> {
         if file.is_empty() {
@@ -2075,7 +2111,20 @@ impl Editor {
             return Err("E13: File exists (add ! to override)".into());
         }
         let old = (self.buf.path.replace(path), self.buf.sfname.replace(file.to_string()));
-        if !self.save(true) {
+        // The names are exchanged before `buf_write`: the buffer now writes its own file.
+        if self.buf.opts.bt_nofilename() {
+            let m = self.no_autocmds();
+            let old_path = old.0.clone();
+            if let Some(p) = old_path {
+                let id = self.buflist_add_path(p);
+                if let Some(b) = self.buffer_mut(id) {
+                    b.sfname = old.1.clone();
+                }
+                self.win.alt = Some(id);
+            }
+            return Err(m);
+        }
+        if !self.save_other(true) {
             (self.buf.path, self.buf.sfname) = old;
         } else if let (Some(old_path), old_sfname) = old {
             // `do_write` of `:saveas` exchanges the names of the current and the alternate buffer: the old name is the alternate

@@ -3,6 +3,7 @@
 //! `K_SPECIAL ...` (function keys, `<BS>`, `<Del>`, a modifier that stays such as `<M-a>`) gives `Key::Special`.
 
 use super::expr::vim_str2nr;
+use super::keytable::{KEY_NAMES, MODIFIER_KEYS};
 
 #[derive(Debug, PartialEq)]
 pub(super) enum Key {
@@ -29,205 +30,16 @@ fn name_to_mod_mask(c: u8) -> u32 {
     }
 }
 
-/// The names of `keycodes.lua`, lower case (the lookup ignores case), with the character when the key is one.
-const NAMES: &[(&str, Option<char>)] = &[
-    ("space", Some(' ')),
-    ("tab", Some('\t')),
-    ("nl", Some('\n')),
-    ("newline", Some('\n')),
-    ("linefeed", Some('\n')),
-    ("lf", Some('\n')),
-    ("cr", Some('\r')),
-    ("return", Some('\r')),
-    ("enter", Some('\r')),
-    ("bs", None),
-    ("backspace", None),
-    ("esc", Some('\u{1b}')),
-    ("escape", Some('\u{1b}')),
-    ("csi", Some('\u{9b}')),
-    ("bar", Some('|')),
-    ("bslash", Some('\\')),
-    ("del", None),
-    ("delete", None),
-    ("kdel", None),
-    ("kpperiod", None),
-    ("up", None),
-    ("down", None),
-    ("left", None),
-    ("right", None),
-    ("xup", None),
-    ("xdown", None),
-    ("xleft", None),
-    ("xright", None),
-    ("kup", None),
-    ("kp8", None),
-    ("kdown", None),
-    ("kp2", None),
-    ("kleft", None),
-    ("kp4", None),
-    ("kright", None),
-    ("kp6", None),
-    ("f1", None),
-    ("f2", None),
-    ("f3", None),
-    ("f4", None),
-    ("f5", None),
-    ("f6", None),
-    ("f7", None),
-    ("f8", None),
-    ("f9", None),
-    ("f10", None),
-    ("f11", None),
-    ("f12", None),
-    ("f13", None),
-    ("f14", None),
-    ("f15", None),
-    ("f16", None),
-    ("f17", None),
-    ("f18", None),
-    ("f19", None),
-    ("f20", None),
-    ("f21", None),
-    ("f22", None),
-    ("f23", None),
-    ("f24", None),
-    ("f25", None),
-    ("f26", None),
-    ("f27", None),
-    ("f28", None),
-    ("f29", None),
-    ("f30", None),
-    ("f31", None),
-    ("f32", None),
-    ("f33", None),
-    ("f34", None),
-    ("f35", None),
-    ("f36", None),
-    ("f37", None),
-    ("f38", None),
-    ("f39", None),
-    ("f40", None),
-    ("f41", None),
-    ("f42", None),
-    ("f43", None),
-    ("f44", None),
-    ("f45", None),
-    ("f46", None),
-    ("f47", None),
-    ("f48", None),
-    ("f49", None),
-    ("f50", None),
-    ("f51", None),
-    ("f52", None),
-    ("f53", None),
-    ("f54", None),
-    ("f55", None),
-    ("f56", None),
-    ("f57", None),
-    ("f58", None),
-    ("f59", None),
-    ("f60", None),
-    ("f61", None),
-    ("f62", None),
-    ("f63", None),
-    ("xf1", None),
-    ("xf2", None),
-    ("xf3", None),
-    ("xf4", None),
-    ("help", None),
-    ("undo", None),
-    ("find", None),
-    ("select", None),
-    ("insert", None),
-    ("ins", None),
-    ("kinsert", None),
-    ("kp0", None),
-    ("home", None),
-    ("khome", None),
-    ("kp7", None),
-    ("xhome", None),
-    ("zhome", None),
-    ("end", None),
-    ("kend", None),
-    ("kp1", None),
-    ("xend", None),
-    ("zend", None),
-    ("pageup", None),
-    ("pagedown", None),
-    ("kpageup", None),
-    ("kp9", None),
-    ("kpagedown", None),
-    ("kp3", None),
-    ("korigin", None),
-    ("kp5", None),
-    ("kplus", None),
-    ("kpplus", None),
-    ("kminus", None),
-    ("kpminus", None),
-    ("kdivide", None),
-    ("kpdiv", None),
-    ("kmultiply", None),
-    ("kpmult", None),
-    ("kenter", None),
-    ("kpenter", None),
-    ("kpoint", None),
-    ("kcomma", None),
-    ("kpcomma", None),
-    ("kequal", None),
-    ("kpequals", None),
-    ("k0", None),
-    ("k1", None),
-    ("k2", None),
-    ("k3", None),
-    ("k4", None),
-    ("k5", None),
-    ("k6", None),
-    ("k7", None),
-    ("k8", None),
-    ("k9", None),
-    ("lt", Some('<')),
-    ("mouse", None),
-    ("leftmouse", None),
-    ("leftmousenm", None),
-    ("leftdrag", None),
-    ("leftrelease", None),
-    ("leftreleasenm", None),
-    ("mousemove", None),
-    ("middlemouse", None),
-    ("middledrag", None),
-    ("middlerelease", None),
-    ("rightmouse", None),
-    ("rightdrag", None),
-    ("rightrelease", None),
-    ("scrollwheelup", None),
-    ("scrollwheeldown", None),
-    ("scrollwheelright", None),
-    ("scrollwheelleft", None),
-    ("mousedown", None),
-    ("mouseup", None),
-    ("x1mouse", None),
-    ("x1drag", None),
-    ("x1release", None),
-    ("x2mouse", None),
-    ("x2drag", None),
-    ("x2release", None),
-    ("drop", None),
-    ("nul", None),
-    ("snr", None),
-    ("plug", None),
-    ("ignore", None),
-    ("cmd", None),
-];
-
-/// `get_special_key_code`: the key of the name at the start of `name`, `None` when there is none.
+/// `get_special_key_code`: the key of the name at the start of `name` (`keycodes.lua`, any case): a char, or `Some(None)` for a
+/// key with a code of its own; `None` when there is no such name.
 fn get_special_key_code(name: &str) -> Option<Option<char>> {
     let b = name.as_bytes();
     if b.starts_with(b"t_") && b.len() > 3 {
         return Some(None);
     }
     let len = b.iter().take_while(|&&c| ascii_isident(c)).count();
-    let name = name[..len].to_ascii_lowercase();
-    NAMES.iter().find(|(n, _)| *n == name).map(|&(_, c)| c)
+    let name = &name[..len];
+    KEY_NAMES.iter().find(|(n, _, _)| n.eq_ignore_ascii_case(name)).map(|&(_, k, _)| u32::try_from(k).ok().and_then(char::from_u32))
 }
 
 fn ascii_isident(c: u8) -> bool {
@@ -347,6 +159,163 @@ pub(super) fn find_special_key(src: &str, simplify: bool) -> Result<Option<(Key,
     ch = c;
     // A modifier that is left (`<M-a>`, `<C-Space>`) is written as bytes before the key.
     Ok(Some((if mods == 0 { Key::Char(ch) } else { Key::Special }, end_of_name)))
+}
+
+/// `K_S_TAB` and `K_ZERO`.
+const K_S_TAB: i32 = -17003;
+
+/// `find_special_key_in_table`: the name `get_special_key_name` gives to key `c` (an alternative name is never used).
+fn table_name(c: i32) -> Option<&'static str> {
+    KEY_NAMES.iter().find(|&&(_, k, alt)| k == c && !alt).map(|&(n, _, _)| n)
+}
+
+/// `simplify_key`: a key with a modifier that has a code of its own (`<S-F1>`, `<C-Left>`) loses the modifier.
+fn simplify_key(key: i32, mods: &mut u32) -> i32 {
+    if *mods & (SHIFT | CTRL) == 0 {
+        return key;
+    }
+    // TAB is a special case.
+    if key == 9 && *mods & SHIFT != 0 {
+        *mods &= !SHIFT;
+        return K_S_TAB;
+    }
+    for &(mask, with, without) in MODIFIER_KEYS {
+        if key == without && *mods & mask != 0 {
+            *mods &= !mask;
+            return with;
+        }
+    }
+    key
+}
+
+/// `unsimplify_key`, the inverse of `simplify_key`.
+fn unsimplify_key(c: i32, mods: &mut u32) -> i32 {
+    if c >= 0 {
+        return c;
+    }
+    for &(mask, with, without) in MODIFIER_KEYS {
+        if c == with {
+            *mods |= mask;
+            return without;
+        }
+    }
+    c
+}
+
+/// `find_key_len` of `string_to_key`: `<name>` as the number Neovim gives the key (a char, or the code of a key of its own), with
+/// the length of the name; a modifier that stays (`<M-a>`, `<C-F1>`) makes it no key.
+pub(in crate::editor) fn option_key(arg: &str) -> Option<(i64, usize)> {
+    let (key, len) = match find_special_key(arg, true) {
+        Ok(Some(found)) => found,
+        _ => return None,
+    };
+    if let Key::Char(c) = key {
+        return Some((i64::from(u32::from(c)), len));
+    }
+    // A key with a code of its own: the modifiers in front of the name, then the name.
+    let inner = arg[..len].trim_start_matches('<').trim_end_matches('>');
+    let inner = inner.strip_prefix('*').unwrap_or(inner).as_bytes();
+    let (mut mods, mut i) = (0, 0);
+    while i + 1 < inner.len() && inner[i + 1] == b'-' && name_to_mod_mask(inner[i]) != 0 {
+        mods |= name_to_mod_mask(inner[i]);
+        i += 2;
+    }
+    let number = match get_special_key_code(std::str::from_utf8(&inner[i..]).ok()?)? {
+        Some(c) => c as i32,
+        None => KEY_NAMES.iter().find(|(n, _, _)| n.as_bytes().eq_ignore_ascii_case(&inner[i..])).map(|&(_, k, _)| k)?,
+    };
+    let number = simplify_key(number, &mut mods);
+    (mods == 0).then_some((i64::from(number), len))
+}
+
+/// Whether `option_value2string` writes the key of 'wildchar' by its name: a key with a code of its own, or one in the table.
+pub(in crate::editor) fn key_has_name(n: i64) -> bool {
+    n < 0 || i32::try_from(n).ok().and_then(table_name).is_some()
+}
+
+/// `get_special_key_name(c, 0)`: `<Tab>`, `<S-F1>`, `<C-Left>`, `<t_xx>` for a key that has no name here.
+pub(in crate::editor) fn special_key_name(c: i64) -> String {
+    let mut c = i32::try_from(c).unwrap_or(0);
+    let mut mods = 0;
+    // A key that stands for a normal character.
+    if c < 0 && (-c) & 0xff == 242 {
+        c = ((-c) >> 8) & 0xff;
+    }
+    c = unsimplify_key(c, &mut mods);
+    let table = table_name(c);
+    if c > 0 && c < 0x80 && table.is_none() && c < i32::from(b' ') {
+        c += i32::from(b'@');
+        mods |= CTRL;
+    }
+    let mut out = String::from("<");
+    // `mod_mask_table`: Alt, Meta, Ctrl, Shift.
+    for (mask, letter) in [(ALT, 'M'), (0x10, 'T'), (CTRL, 'C'), (SHIFT, 'S')] {
+        if mods & mask == mask {
+            out.push(letter);
+            out.push('-');
+        }
+    }
+    match table {
+        Some(name) => out.push_str(name),
+        None if c < 0 => {
+            // `<t_xx>` with the two bytes of the code: the string ends at a NUL one.
+            let bytes = [u8::try_from(-c & 0xff).unwrap_or(0), u8::try_from((-c >> 8) & 0xff).unwrap_or(0)];
+            out.push_str("t_");
+            // The bytes are text when they are UTF-8 and `<xx>` (what `transchar_byte` writes) when they are not.
+            let mut rest: &[u8] = &bytes[..bytes.iter().take_while(|&&b| b != 0).count()];
+            while !rest.is_empty() {
+                match std::str::from_utf8(rest) {
+                    Ok(s) => {
+                        out.push_str(s);
+                        break;
+                    }
+                    Err(e) => {
+                        out.push_str(std::str::from_utf8(&rest[..e.valid_up_to()]).unwrap_or_default());
+                        let bad = e.error_len().unwrap_or(rest.len() - e.valid_up_to());
+                        for b in &rest[e.valid_up_to()..e.valid_up_to() + bad] {
+                            out.push_str(&format!("<{b:02x}>"));
+                        }
+                        rest = &rest[e.valid_up_to() + bad..];
+                    }
+                }
+            }
+        }
+        None => {
+            let ch = u32::try_from(c).ok().and_then(char::from_u32).unwrap_or('\0');
+            out.push_str(&if (' '..='~').contains(&ch) || u32::from(ch) > 0x7f { ch.to_string() } else { format!("^{}", char::from((ch as u8) ^ 0x40)) });
+        }
+    }
+    // The `>` goes after the NUL of an unknown key, so it is not part of the string then.
+    if !(table.is_none() && c < 0 && (-c >> 8) & 0xff == 0) {
+        out.push('>');
+    }
+    out
+}
+
+/// The key a number of 'wildchar' is, as the terminal reports it: the code and the modifiers (`None` for a key rim never gets).
+pub(in crate::editor) fn key_event(n: i64) -> Option<(crossterm::event::KeyCode, crossterm::event::KeyModifiers)> {
+    use crossterm::event::{KeyCode, KeyModifiers};
+    let mut mods = 0;
+    let base = unsimplify_key(i32::try_from(n).ok()?, &mut mods);
+    let name = table_name(base)?;
+    let code = match name.to_ascii_lowercase().as_str() {
+        "up" | "xup" | "kup" => KeyCode::Up,
+        "down" | "xdown" | "kdown" => KeyCode::Down,
+        "left" | "xleft" | "kleft" => KeyCode::Left,
+        "right" | "xright" | "kright" => KeyCode::Right,
+        "home" | "xhome" | "zhome" | "khome" => KeyCode::Home,
+        "end" | "xend" | "zend" | "kend" => KeyCode::End,
+        "pageup" | "kpageup" => KeyCode::PageUp,
+        "pagedown" | "kpagedown" => KeyCode::PageDown,
+        "insert" | "kinsert" => KeyCode::Insert,
+        "del" | "kdel" => KeyCode::Delete,
+        "bs" => KeyCode::Backspace,
+        "tab" => KeyCode::Tab,
+        "kenter" => KeyCode::Enter,
+        f => KeyCode::F(f.strip_prefix('f').or_else(|| f.strip_prefix("xf"))?.parse().ok()?),
+    };
+    let modifiers = [(SHIFT, KeyModifiers::SHIFT), (CTRL, KeyModifiers::CONTROL)].iter().filter(|(m, _)| mods & m != 0).fold(KeyModifiers::NONE, |a, (_, k)| a | *k);
+    Some((code, modifiers))
 }
 
 #[cfg(test)]

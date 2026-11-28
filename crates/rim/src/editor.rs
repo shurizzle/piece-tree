@@ -434,6 +434,8 @@ pub struct Editor {
     tick_skip: bool,
     /// `OPT_LOCAL`: an option is being set from `&l:`.
     opt_local: bool,
+    /// A modeline is being applied (`OPT_MODELINE`): `all` is no word of `:set` then.
+    opt_modeline: bool,
     /// The window that was current when a layout change is being worked out (`layout_changed`).
     layout_cur: Option<usize>,
     /// Where the command's last edit happened, for the change list.
@@ -492,8 +494,8 @@ impl Editor {
     /// An editor on `doc`, without a file (`[No Name]`) when `path` is none.
     pub fn with_path(doc: Document, path: Option<PathBuf>) -> Self {
         let mut e = Self {
-            buf: Buffer::new(1, doc, path, Options::default()).for_window(FIRST_WIN_ID).first_in_window(),
-            global_opts: Options::default(),
+            buf: Buffer::new(1, doc, path, Options::start()).for_window(FIRST_WIN_ID).first_in_window(),
+            global_opts: Options::start(),
             win: Window::new(FIRST_WIN_ID, 1),
             vars: Default::default(),
             tab_vars: Default::default(),
@@ -581,6 +583,7 @@ impl Editor {
             typed_batch: false,
             tick_skip: false,
             opt_local: false,
+            opt_modeline: false,
             layout_cur: None,
             change_off: None,
             insert_pending: None,
@@ -3022,8 +3025,8 @@ impl Editor {
         let o = &b.opts;
         let flags = format!(
             "{}{}{}{}",
-            if b.notedited && !o.nofile { "[Not edited]" } else { "" },
-            if b.new_file && !o.nofile { "[New]" } else { "" },
+            if b.notedited && !o.bt_dontwrite() { "[Not edited]" } else { "" },
+            if b.new_file && !o.bt_dontwrite() { "[New]" } else { "" },
             if b.read_error { "[Read errors]" } else { "" },
             if o.readonly { if o.shortmess('r') { "[RO]" } else { "[readonly]" } } else { "" },
         );
@@ -3482,7 +3485,8 @@ impl Editor {
         let was_unloaded = self.buf.unloaded;
         self.buf.unloaded = false;
         let Some(path) = self.buf.path.clone() else { return self.error("E32: No file name") };
-        match read_doc(&path) {
+        // `READ_NOFILE`: a buffer that is not a file does not read its name.
+        match if self.buf.opts.bt_nofileread() { Ok((Document::new(""), true, false)) } else { read_doc(&path) } {
             Ok((doc, endofline, had_bytes)) => {
                 self.buf.opts.endofline = endofline;
                 let lc = self.line_count();
@@ -3574,6 +3578,11 @@ impl Editor {
     /// Writes the current buffer on a thread; with `wait`, waits and returns false on failure.
     fn save(&mut self, wait: bool) -> bool {
         self.save_buffer(self.buf.id, wait)
+    }
+
+    /// `save` of a buffer that is written under a name that is not its own yet.
+    fn save_other(&mut self, wait: bool) -> bool {
+        self.save_buffer_in(self.buf.id, wait, false)
     }
 }
 

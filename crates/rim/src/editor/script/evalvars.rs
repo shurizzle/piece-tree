@@ -590,7 +590,7 @@ impl Editor {
         let (mut valid, mut tilde_file, mut skip_mod, mut escaped) = (VALID_HEAD | VALID_PATH, false, false, false);
         #[allow(unused_assignments)]
         let mut result = String::new();
-        let name_of = |b: &crate::editor::buffers::Buffer| b.path.as_ref().map(|_| b.name());
+        let name_of = |b: &crate::editor::buffers::Buffer| b.path_name();
         match idx {
             // `<cword>`, `<cWORD>`, `<cexpr>`
             2..=4 => {

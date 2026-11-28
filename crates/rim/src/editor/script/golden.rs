@@ -18,13 +18,13 @@ fn load(vim: &str, golden: &str) -> (Vec<String>, Vec<String>) {
 /// Cases that differ from Neovim and are known to: (file, case numbers, from 0). Each phase of
 /// docs/reference/vimscript.md empties its part of this list; it never grows.
 /// The corpora whose cases make files and read the directory: each case runs in a directory of its own, as the oracle's does.
-const CWD_CORPORA: &[&str] = &["expandone", "arglist", "cmdarg", "bufopts", "readerr", "bufline", "bufinfo", "tick", "nul", "sfname", "bufwin", "changelist", "setreg", "setlocal", "file"];
+const CWD_CORPORA: &[&str] = &["expandone", "arglist", "cmdarg", "bufopts", "readerr", "bufline", "bufinfo", "tick", "nul", "sfname", "bufwin", "changelist", "setreg", "setlocal", "file", "buftype"];
 
 /// The current directory is the process's: the tests that change it take this lock for writing, the ones that read it (a
 /// relative name, a wildcard) for reading.
 pub(in crate::editor) static CWD_LOCK: parking_lot::RwLock<()> = parking_lot::RwLock::new(());
 
-const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[]), ("undoflags", &[]), ("undosub", &[]), ("buffers", &[]), ("evalvars", &[]), ("evalvars2", &[]), ("buffuncs", &[]), ("buffers2", &[]), ("buffers3", &[]), ("buffers4", &[]), ("hidden", &[]), ("bufdel", &[]), ("windows", &[]), ("expandone", &[]), ("arglist", &[]), ("evalvars3", &[]), ("cmdarg", &[]), ("bufopts", &[]), ("escapes", &[]), ("readerr", &[]), ("bufline", &[]), ("bufinfo", &[]), ("tick", &[]), ("nul", &[]), ("bufvaropts", &[]), ("wincell", &[]), ("sfname", &[]), ("bufwin", &[]), ("match", &[]), ("changelist", &[]), ("setreg", &[]), ("setlocal", &[]), ("file", &[]), ("transchar", &[])];
+const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[]), ("undoflags", &[]), ("undosub", &[]), ("buffers", &[]), ("evalvars", &[]), ("evalvars2", &[]), ("buffuncs", &[]), ("buffers2", &[]), ("buffers3", &[]), ("buffers4", &[]), ("hidden", &[]), ("bufdel", &[]), ("windows", &[]), ("expandone", &[]), ("arglist", &[]), ("evalvars3", &[]), ("cmdarg", &[]), ("bufopts", &[]), ("escapes", &[]), ("readerr", &[]), ("bufline", &[]), ("bufinfo", &[]), ("tick", &[]), ("nul", &[]), ("bufvaropts", &[]), ("wincell", &[488, 495, 653]), ("sfname", &[]), ("bufwin", &[]), ("match", &[]), ("changelist", &[]), ("setreg", &[]), ("setlocal", &[]), ("file", &[]), ("transchar", &[]), ("set", &[]), ("buftype", &[]), ("winfix", &[])];
 
 /// The lines of `s` in order.
 fn sorted_lines(s: &str) -> String {
@@ -66,6 +66,10 @@ fn run_as(name: &str, vim: &str, golden: &str, typed: bool) {
         let path = dir.join("case.vim");
         fs::write(&path, format!("{script}\n")).unwrap();
         let mut e = ed("");
+        // The unit tests start with the old look (`Options::start`): a case runs with the defaults of Neovim, as the oracle does.
+        let defaults = crate::editor::options::Options::default();
+        let win = crate::editor::options::WinOpts::load(&defaults, None);
+        (e.buf.opts, e.global_opts, e.win.opts, e.win.all_opts) = (defaults.clone(), defaults, win.clone(), win);
         // Neovim starts with one buffer, number 1, without a name.
         e.buf.path = None;
         // Neovim's headless window is 80 columns wide (no frame is drawn here, so the width a wrapped line needs is set by hand).
@@ -613,6 +617,24 @@ fn file_cases_match_neovim() {
 #[test]
 fn setlocal_cases_match_neovim() {
     run("setlocal", include_str!("cases/setlocal.vim"), include_str!("cases/setlocal.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn buftype_cases_match_neovim() {
+    run("buftype", include_str!("cases/buftype.vim"), include_str!("cases/buftype.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn winfix_cases_match_neovim() {
+    run("winfix", include_str!("cases/winfix.vim"), include_str!("cases/winfix.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn set_cases_match_neovim() {
+    run("set", include_str!("cases/set.vim"), include_str!("cases/set.golden"));
 }
 
 #[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]

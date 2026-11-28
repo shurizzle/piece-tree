@@ -75,6 +75,8 @@ pub(super) struct Buffer {
     /// `b_changed` (`'modified'`): set by an edit, cleared by a write, `:e!` and `:set nomodified`; undo and redo
     /// put it back from the header's `UH_CHANGED` (`undo.rs`).
     pub modified: bool,
+    /// `b_modified_was_set`: `:set modified` was the last word on the flag (a `prompt` buffer counts as changed only then).
+    pub modified_was_set: bool,
     /// `b_start_ffc` (`save_file_ff`): the line ending when the file was read or written; a different one is a change too
     /// (`file_ff_differs`).
     pub start_eol: LineEnding,
@@ -133,6 +135,7 @@ impl Buffer {
         Self {
             id,
             modified: false,
+            modified_was_set: false,
             start_eol: doc.eol(),
             start_endofline: opts.endofline,
             loaded: doc.text().clone(),
@@ -241,14 +244,37 @@ impl Buffer {
         !self.unloaded && (self.doc.eol() != self.start_eol || ((self.opts.binary || !self.opts.fixendofline) && self.opts.endofline != self.start_endofline))
     }
 
-    /// A `buftype=nofile` buffer is never modified.
+    /// `bufIsChanged`: a `nofile` or `nowrite` buffer is never changed, a `prompt` one only when it was said so.
     pub fn is_dirty(&self) -> bool {
-        !self.opts.nofile && (self.modified || self.ff_differs())
+        if self.opts.buftype.starts_with('p') {
+            return self.modified_was_set;
+        }
+        !self.opts.bt_dontwrite() && (self.modified || self.ff_differs())
+    }
+
+    /// `buf_spname` for a buffer without a name: `[Scratch]` for the types whose name is no file name, `[Prompt]`, the lists of
+    /// `quickfix`, else `[No Name]`.
+    fn special_name(&self) -> String {
+        match self.opts.buftype.as_bytes().first() {
+            Some(b'q') => "[Location List]",
+            Some(b'p') => "[Prompt]",
+            _ if self.opts.bt_nofilename() => "[Scratch]",
+            _ => "[No Name]",
+        }
+        .into()
+    }
+
+    /// `b_fname`: the name of the file as typed (or shortened), none for a buffer without one.
+    pub fn path_name(&self) -> Option<String> {
+        self.path.as_ref().map(|p| self.sfname.clone().unwrap_or_else(|| shorten_fname(p)))
     }
 
     /// The file name as shown to the user.
     pub fn name(&self) -> String {
-        self.path.as_ref().map_or_else(|| self.title.unwrap_or("[No Name]").into(), |p| self.sfname.clone().unwrap_or_else(|| shorten_fname(p)))
+        if self.opts.buftype.starts_with('q') {
+            return self.special_name();
+        }
+        self.path_name().unwrap_or_else(|| self.title.map_or_else(|| self.special_name(), String::from))
     }
 }
 
@@ -494,7 +520,8 @@ impl Editor {
         if !self.buf.unloaded {
             return;
         }
-        match self.buf.path.clone().map(|p| read_doc(&p)) {
+        let nofileread = self.buf.opts.bt_nofileread();
+        match self.buf.path.clone().map(|p| if nofileread { Ok((Document::new(""), true, false)) } else { read_doc(&p) }) {
             Some(Ok((doc, endofline, had_bytes))) => {
                 self.buf.load(doc, endofline, had_bytes);
                 self.dir_message();
@@ -585,7 +612,10 @@ impl Editor {
         if leave {
             self.save_winopts(self.buffers[i].id, self.win.id, self.win.opts.clone(), (self.win.line + 1, self.win.col));
         }
+        // 'winfixheight' and 'winfixwidth' belong to the window, not to the buffer it shows.
+        let fixed = (self.win.opts.winfixheight, self.win.opts.winfixwidth);
         self.win.opts = self.get_winopts(self.win.id, id);
+        (self.win.opts.winfixheight, self.win.opts.winfixwidth) = fixed;
         self.win.reset_view();
         (self.win.line, self.win.col) = self.pos_of(self.buf.doc.text().floor_char_boundary(self.buf.last));
         self.clamp_normal();
@@ -960,9 +990,20 @@ impl Editor {
     /// Starts writing buffer `id` on a thread, after any running write of the same file; with
     /// `wait`, also waits for it. Returns false when a write that was waited for failed.
     pub(super) fn save_buffer(&mut self, id: usize, wait: bool) -> bool {
+        self.save_buffer_in(id, wait, true)
+    }
+
+    /// `save_buffer`; `check_bt` is false when the buffer is written under another name (`do_write` with `other`), which a
+    /// `nofile`, `nowrite` or `prompt` buffer may do.
+    pub(super) fn save_buffer_in(&mut self, id: usize, wait: bool, check_bt: bool) -> bool {
         let b = self.buffer(id).expect("save a known buffer");
-        if b.opts.nofile {
-            self.error("Cannot write, 'buftype' option is set");
+        if check_bt && b.opts.bt_dontwrite() {
+            self.error(super::ex::BT_DONTWRITE);
+            return false;
+        }
+        if check_bt && b.opts.bt_nofilename() && b.path.is_some() {
+            let m = format!("E676: No matching autocommands for buftype={} buffer", b.opts.buftype);
+            self.error(m);
             return false;
         }
         let Some(path) = b.path.clone() else {
