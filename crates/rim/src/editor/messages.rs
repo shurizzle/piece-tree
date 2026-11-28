@@ -523,7 +523,7 @@ impl Editor {
             return;
         }
         // `v:errmsg` gets the message, shown or not (`:silent!`).
-        self.vim_vars.borrow_mut().insert("errmsg".to_string().into(), super::script::Value::Str(text.clone().into()));
+        self.vim_vars.borrow_mut().insert("errmsg".into(), super::script::Value::Str(text.as_str().into()));
         self.scripts.called_emsg += 1;
         let keep = self.buf.opts.msg_history;
         // `:silent!`: the error is only written to a redirection, and does not end the line.

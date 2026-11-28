@@ -3,7 +3,7 @@
 //! offset into the text of the command, as in `expr.rs`; a message that C prints with `%s` from a pointer into the
 //! command line goes on to the end of it (`tail`).
 
-use std::rc::Rc;
+use super::value::RcStr;
 use dumpster::unsync::Gc;
 
 use super::{
@@ -47,7 +47,7 @@ pub(super) enum NameLen {
 /// `lval_T`: the name (none when it could not be made) and the place.
 #[derive(Debug)]
 pub(super) struct Lval {
-    pub name: Option<Rc<str>>,
+    pub name: Option<RcStr>,
     pub place: Place,
     /// The lock of the value the lvalue stands in (`ll_tv->v_lock`): of the variable, or of the item reached last.
     pub tv_lock: Lock,
@@ -619,7 +619,7 @@ impl Editor {
                     self.mod_op(&cur, rettv, op)
                 };
                 if let Some(v) = new {
-                    self.vars(scope).borrow_mut().insert(n.to_string().into(), v);
+                    self.vars(scope).borrow_mut().insert(n.into(), v);
                 }
             }
             Place::Range { list, first, last, empty2 } => {

@@ -151,11 +151,11 @@ pub(super) fn init() -> DictMap {
     let mut m = DictMap::new();
     for &(name, t, _) in VIMVARS {
         if let Some(v) = default_of(t) {
-            m.insert(name.to_string().into(), v);
+            m.insert(name.into(), v);
         }
     }
     let nr = |m: &mut DictMap, k: &str, n: i64| {
-        m.insert(k.to_string().into(), Value::Int(n));
+        m.insert(k.into(), Value::Int(n));
     };
     // What depends on the host and the run: the locale (`LC_ALL`, then the category, then `LANG`, as `setlocale` reads
     // them), the program, the start time and the arguments.
@@ -163,13 +163,13 @@ pub(super) fn init() -> DictMap {
         ["LC_ALL", cat, "LANG"].iter().find_map(|k| std::env::var(k).ok().filter(|v| !v.is_empty())).unwrap_or_else(|| "C".into())
     };
     for (k, cat) in [("lang", "LC_MESSAGES"), ("ctype", "LC_CTYPE"), ("collate", "LC_COLLATE"), ("lc_time", "LC_TIME")] {
-        m.insert(k.to_string().into(), Value::Str(locale(cat).into()));
+        m.insert(k.into(), Value::Str(locale(cat).into()));
     }
     m.insert("progname".into(), Value::Str("rim".into()));
     // Miri's isolation has neither the path of the executable nor the real time.
     #[cfg(not(miri))]
     if let Ok(exe) = std::env::current_exe() {
-        m.insert("progpath".into(), Value::Str(exe.to_string_lossy().into_owned().into()));
+        m.insert("progpath".into(), Value::Str(exe.to_string_lossy().into()));
     }
     m.insert("startreason".into(), Value::Str("normal".into()));
     #[cfg(not(miri))]

@@ -594,3 +594,79 @@ fn from_utf8_error_is_an_error() {
     assert!(as_error.source().is_none());
     assert_eq!(format!("{err:?}"), "FromUtf8Error { bytes: [255], error: Utf8Error { valid_up_to: 0, error_len: Some(1) } }");
 }
+
+#[test]
+fn rc_compares_orders_and_hashes_like_its_value() {
+    let a: Rc<str> = "abc".into();
+    let b: Rc<str> = "abc".into();
+    let c: Rc<str> = "abd".into();
+    assert_eq!(a, b);
+    assert_ne!(a, c);
+    assert!(a < c);
+    assert_eq!(a.cmp(&c), Ordering::Less);
+    assert_eq!(a.partial_cmp(&b), Some(Ordering::Equal));
+    let hash = |v: &dyn Fn(&mut DefaultHasher)| {
+        let mut h = DefaultHasher::new();
+        v(&mut h);
+        h.finish()
+    };
+    assert_eq!(hash(&|h| a.hash(h)), hash(&|h| "abc".hash(h)));
+}
+
+#[test]
+fn rc_str_key_is_found_by_str() {
+    let mut m: std::collections::HashMap<Rc<str>, i32> = std::collections::HashMap::new();
+    m.insert("k".into(), 1);
+    assert_eq!(m.get("k"), Some(&1));
+    let k: Rc<str> = "k".into();
+    let r: &str = k.as_ref();
+    assert_eq!(r, "k");
+}
+
+#[test]
+fn rc_formats_and_defaults() {
+    let a: Rc<str> = "hé".into();
+    assert_eq!(format!("{a} {a:?}"), "hé \"hé\"");
+    let d: Rc<str> = Rc::default();
+    assert_eq!(&*d, "");
+}
+
+#[test]
+fn rc_str_from_owned_strings() {
+    let s: Rc<str> = String::from("héllo").into();
+    assert_eq!(&*s, "héllo");
+    let b: Rc<str> = Box::<str>::from("héllo").into();
+    assert_eq!(&*b, "héllo");
+    let c: Rc<str> = Cow::Borrowed("héllo").into();
+    assert_eq!(&*c, "héllo");
+}
+
+#[test]
+fn rc_format_builds_in_place() {
+    assert_eq!(&*format(format_args!("plain")), "plain");
+    let n = 42;
+    assert_eq!(&*format(format_args!("<lambda>{n}-é")), "<lambda>42-é");
+}
+
+#[test]
+fn lossy_decoding_matches_string() {
+    let cases: [&[u8]; 9] = [
+        b"",
+        b"plain",
+        "h\u{e9}llo".as_bytes(),
+        b"\xff",
+        b"h\xff",
+        b"a\xe2\x82",
+        b"\xf0\x9f\x92x\xc3\xa9\xfe\xfe",
+        b"\xc0\xaf\xe0\x80\x80ok",
+        b"\xed\xa0\x80z",
+    ];
+    for v in cases {
+        let want = String::from_utf8_lossy(v);
+        assert_eq!(&*Rc::<str>::from_utf8_lossy(v), &*want);
+        assert_eq!(&*RcString::from_utf8_lossy_owned(v.to_vec()), &*want);
+        let err = RcString::from_utf8(vec![0xff].into_iter().chain(v.iter().copied()).collect()).unwrap_err();
+        let want = String::from_utf8_lossy(err.as_bytes()).into_owned();
+        assert_eq!(&*err.into_utf8_lossy(), want);
+    }
+}

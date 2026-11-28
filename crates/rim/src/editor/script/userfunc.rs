@@ -1,6 +1,7 @@
 //! User functions, first part: defining, listing and deleting them (`:function`, `:endfunction`, `:delfunction` of
 //! `eval/userfunc.c`). Calling them comes next.
 
+use super::value::RcStr;
 use std::{collections::HashMap, rc::Rc};
 
 use super::{
@@ -37,8 +38,8 @@ pub(super) const TFN_DICT: u32 = 1 << 5;
 /// A user function (`ufunc_T`).
 pub(in crate::editor) struct UFunc {
     /// `uf_name`, as shown: a script-local one is `<SNR>1_Name`.
-    pub name: Rc<str>,
-    pub args: Vec<Rc<str>>,
+    pub name: RcStr,
+    pub args: Vec<RcStr>,
     /// The default values of the last arguments (`uf_def_args`).
     pub def_args: Vec<String>,
     pub varargs: bool,
@@ -63,7 +64,7 @@ pub(in crate::editor) struct UFunc {
 
 /// The arguments of a function head.
 pub(super) struct FuncArgs {
-    pub args: Vec<Rc<str>>,
+    pub args: Vec<RcStr>,
     pub def_args: Vec<String>,
     pub varargs: bool,
 }
@@ -73,17 +74,17 @@ pub(super) struct FuncArgs {
 pub(in crate::editor) struct FuncDict {
     pub dict: Option<super::value::Dict>,
     /// The key to add (`fd_newkey`).
-    pub newkey: Option<Rc<str>>,
+    pub newkey: Option<RcStr>,
     /// The key of the item that exists (`fd_di`).
-    pub key: Option<Rc<str>>,
+    pub key: Option<RcStr>,
 }
 
 /// What `:function` found before the body: the pieces that the definition needs once the lines are read.
 pub(super) struct FuncDef {
     /// `eap->arg`, for the message of a locked Dictionary.
     arg: String,
-    name: Option<Rc<str>>,
-    args: Vec<Rc<str>>,
+    name: Option<RcStr>,
+    args: Vec<RcStr>,
     def_args: Vec<String>,
     varargs: bool,
     flags: u8,
@@ -175,7 +176,7 @@ impl Editor {
 
     /// `trans_function_name`: the name of the function at `s[*p..]`, the script ones translated (`s:F` is
     /// `<SNR>1_F`); `*p` moves behind it. None for an error (given unless `skip`).
-    pub(super) fn trans_function_name(&mut self, s: &str, p: &mut usize, skip: bool, flags: u32) -> Option<Rc<str>> {
+    pub(super) fn trans_function_name(&mut self, s: &str, p: &mut usize, skip: bool, flags: u32) -> Option<RcStr> {
         let mut start = *p;
         let lead = eval_fname_script(&s[start..]);
         if lead > 2 {
@@ -288,17 +289,17 @@ impl Editor {
             return None;
         }
         *p = end;
-        Some(format!("{prefix}{name_part}").into())
+        Some(crate::rc::format(format_args!("{prefix}{name_part}")))
     }
 
     /// `save_function_name`: `trans_function_name`, except that a lambda is returned as it is.
-    pub(super) fn save_function_name(&mut self, s: &str, p: &mut usize, skip: bool, flags: u32) -> Option<Rc<str>> {
+    pub(super) fn save_function_name(&mut self, s: &str, p: &mut usize, skip: bool, flags: u32) -> Option<RcStr> {
         if s[*p..].starts_with("<lambda>") {
             let mut q = *p + 8;
             while at(s, q).is_ascii_digit() {
                 q += 1;
             }
-            let name: Rc<str> = s[*p..q].into();
+            let name: RcStr = s[*p..q].into();
             *p = q;
             return Some(name);
         }
@@ -306,7 +307,7 @@ impl Editor {
     }
 
     /// `one_function_arg`: the end of one argument name at `s[arg..]`, or `arg` when something is wrong.
-    fn one_function_arg(&mut self, s: &str, arg: usize, newargs: Option<&mut Vec<Rc<str>>>, skip: bool) -> usize {
+    fn one_function_arg(&mut self, s: &str, arg: usize, newargs: Option<&mut Vec<RcStr>>, skip: bool) -> usize {
         let mut p = arg;
         while at(s, p).is_ascii_alphanumeric() || at(s, p) == b'_' {
             p += 1;
@@ -752,7 +753,7 @@ impl Editor {
                     return;
                 }
                 self.scripts.last_dict_func += 1;
-                let n: Rc<str> = self.scripts.last_dict_func.to_string().into();
+                let n: RcStr = crate::rc::format(format_args!("{}", self.scripts.last_dict_func));
                 flags |= FC_DICT;
                 let key = fudi.newkey.clone().or(fudi.key.clone()).unwrap_or_default();
                 dict.borrow_mut().insert(key, Value::Func(n.clone()));
@@ -875,7 +876,7 @@ impl Editor {
 
     /// `list_functions`: all of them, or the ones whose name matches `pat`.
     fn list_functions(&mut self, pat: Option<&str>) {
-        let mut names: Vec<Rc<str>> = self.scripts.funcs.keys().cloned().collect();
+        let mut names: Vec<RcStr> = self.scripts.funcs.keys().cloned().collect();
         names.sort();
         let mut lines = String::new();
         for n in names {
@@ -1019,7 +1020,7 @@ pub(in crate::editor) struct PendingFunc {
 }
 
 /// The functions of the editor.
-pub(super) type Funcs = HashMap<Rc<str>, Rc<UFunc>>;
+pub(super) type Funcs = HashMap<RcStr, Rc<UFunc>>;
 
 /// A running call of a user function (`funccall_T`).
 pub(in crate::editor) struct FuncCall {
@@ -1069,7 +1070,7 @@ impl Editor {
             let name = match &f {
                 Value::Func(n) => n.clone(),
                 Value::Partial(p) => p.name.clone(),
-                _ => Rc::from(""),
+                _ => RcStr::from(""),
             };
             return Some(if builtin_function(&name) { super::funcs::known(&name) } else { self.find_func(&name).is_some() });
         }
@@ -1172,7 +1173,7 @@ impl Editor {
                 if noargs {
                     break;
                 }
-                a_vars.borrow_mut().insert_fixed((i - named + 1).to_string().into(), args[i].clone(), Lock::Fixed);
+                a_vars.borrow_mut().insert_fixed(crate::rc::format(format_args!("{}", i - named + 1)), args[i].clone(), Lock::Fixed);
             }
         }
         let idx = self.scripts.calls.len();
@@ -1312,7 +1313,7 @@ impl Editor {
 
 impl super::docmd::Frame {
     /// The entry for a call of the function `name` (`estack_push_ufunc`).
-    pub(super) fn function(name: Rc<str>) -> Self {
+    pub(super) fn function(name: RcStr) -> Self {
         super::docmd::Frame::new_func(name)
     }
 }
@@ -1373,7 +1374,7 @@ impl Editor {
     /// `function()` and `funcref()` (`common_function`).
     pub(super) fn common_function(&mut self, a: &[Value], is_funcref: bool) -> Value {
         let fail = Value::Int(0);
-        let (mut s, use_string, arg_pt): (Option<Rc<str>>, bool, Option<super::value::Gc<super::value::Partial>>) = match &a[0] {
+        let (mut s, use_string, arg_pt): (Option<RcStr>, bool, Option<super::value::Gc<super::value::Partial>>) = match &a[0] {
             Value::Func(n) => (Some(n.clone()), false, None),
             Value::Partial(p) => (Some(p.name.clone()), false, Some(p.clone())),
             v => (Some(self.tv_str(v).into()), true, None),
@@ -1410,7 +1411,7 @@ impl Editor {
                 self.error("E81: Using <SID> not in a script context");
                 return fail;
             }
-            format!("<SNR>{}_{}", self.scripts.cur, &s[if s.starts_with('s') { 2 } else { 5 }..]).into()
+            crate::rc::format(format_args!("<SNR>{}_{}", self.scripts.cur, &s[if s.starts_with('s') { 2 } else { 5 }..]))
         } else {
             s.clone()
         };
@@ -1599,7 +1600,7 @@ impl Editor {
             return Ok(Some(Value::None));
         }
         self.scripts.last_lambda += 1;
-        let name: Rc<str> = format!("<lambda>{}", self.scripts.last_lambda).into();
+        let name: RcStr = crate::rc::format(format_args!("<lambda>{}", self.scripts.last_lambda));
         let body = format!("return {}", &s[start..end]);
         let mut flags = 0;
         if !body[7..].contains("a:") {

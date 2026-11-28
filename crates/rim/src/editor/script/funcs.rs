@@ -3,7 +3,9 @@
 //! function set another one first), then evaluation goes on: so a function here gives its message with
 //! `Editor::error` and returns that value, it does not fail the expression. The arity is `eval.lua`'s.
 
-use std::{cmp::Ordering, collections::HashMap, rc::Rc, sync::LazyLock};
+use super::value::RcStr;
+use crate::rc::RcString;
+use std::{cmp::Ordering, collections::HashMap, sync::LazyLock};
 
 use dumpster::unsync::Gc;
 use piece_tree::{Regex, Text};
@@ -503,7 +505,7 @@ fn f_nr2char(e: &mut Editor, a: &[Value]) -> Value {
     // A NUL ends a C string: nr2char(0) is empty. A surrogate is no UTF-8 (U+FFFD).
     Value::Str(match num {
         0 => String::new().into(),
-        n => char::from_u32(n as u32).unwrap_or('\u{fffd}').to_string().into(),
+        n => RcStr::from(&*char::from_u32(n as u32).unwrap_or('\u{fffd}').encode_utf8(&mut [0; 4])),
     })
 }
 
@@ -693,7 +695,7 @@ fn f_dict2list(e: &mut Editor, a: &[Value], what: Dict2List) -> Value {
 /// `items()` of a String or a List (a Dictionary is `f_dict2list`).
 fn items_of(e: &mut Editor, v: &Value) -> Value {
     match v {
-        Value::Str(s) => Value::list(graphemes::iter(s).enumerate().map(|(i, c)| Value::list(vec![int(i as i64), Value::Str(c.to_string().into())])).collect()),
+        Value::Str(s) => Value::list(graphemes::iter(s).enumerate().map(|(i, c)| Value::list(vec![int(i as i64), Value::Str(c.into())])).collect()),
         Value::List(l) => Value::list(l.borrow().iter().enumerate().map(|(i, x)| Value::list(vec![int(i as i64), x.clone()])).collect()),
         _ => {
             e.error("E1225: List, Dictionary, Blob or String required for argument 1");
@@ -921,7 +923,7 @@ fn f_extend(e: &mut Editor, a: &[Value]) -> Value {
                 }
                 action = s;
             }
-            let add: Vec<(Rc<str>, Value)> = d2.borrow().iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+            let add: Vec<(RcStr, Value)> = d2.borrow().iter().map(|(k, v)| (k.clone(), v.clone())).collect();
             for (k, v) in add {
                 let exists = d1.borrow().contains_key(&k);
                 if !exists || action == "force" {
@@ -1111,7 +1113,7 @@ fn f_repeat(e: &mut Editor, a: &[Value]) -> Value {
 
 fn f_reverse(e: &mut Editor, a: &[Value]) -> Value {
     match &a[0] {
-        Value::Str(s) => Value::Str(graphemes::iter(s).collect::<Vec<_>>().into_iter().rev().collect::<String>().into()),
+        Value::Str(s) => Value::Str(graphemes::iter(s).collect::<Vec<_>>().into_iter().rev().collect::<RcString>().into()),
         Value::List(l) => {
             if list_locked(e, l, "reverse() argument") {
                 return int(0);
@@ -1489,7 +1491,7 @@ fn do_sort_uniq(e: &mut Editor, a: &[Value], sort: bool) -> Value {
 
 fn f_escape(e: &mut Editor, a: &[Value]) -> Value {
     let (s, chars) = (e.tv_str(&a[0]), e.tv_str(&a[1]));
-    let mut out = String::with_capacity(s.len());
+    let mut out = RcString::with_capacity(s.len());
     for c in s.chars() {
         // Only a single-byte char is escaped (`vim_strsave_escaped` copies a multibyte one as it is).
         if c.len_utf8() == 1 && chars.contains(c) {
@@ -1648,7 +1650,7 @@ fn f_strpart(e: &mut Editor, a: &[Value]) -> Value {
         len = off as i64 - n;
     }
     let (from, to) = (n as usize, (n.saturating_add(len) as usize).min(p.len()));
-    Value::Str(String::from_utf8_lossy(&p.as_bytes()[from..to]).into_owned().into())
+    Value::Str(RcStr::from_utf8_lossy(&p.as_bytes()[from..to]))
 }
 
 fn f_tr(e: &mut Editor, a: &[Value]) -> Value {
@@ -1658,7 +1660,7 @@ fn f_tr(e: &mut Editor, a: &[Value]) -> Value {
     let (fc, tc): (Vec<char>, Vec<char>) = (from.chars().collect(), to.chars().collect());
     // `from` and `to` must hold the same number of chars; that is checked once, at the first char that is not in
     // `from`, and a char found in a part of `from` that `to` lacks is an error at once.
-    let mut out = String::new();
+    let mut out = RcString::new();
     let mut first = true;
     for c in in_str.chars() {
         let mut cp = c;
@@ -1713,7 +1715,7 @@ fn f_trim(e: &mut Editor, a: &[Value]) -> Value {
     if dir == 0 || dir == 2 {
         s = s.trim_end_matches(strip);
     }
-    Value::Str(s.to_string().into())
+    Value::Str(s.into())
 }
 
 fn f_split(e: &mut Editor, a: &[Value]) -> Value {
@@ -1755,7 +1757,7 @@ fn f_split(e: &mut Editor, a: &[Value]) -> Value {
         let m = if pos >= text.len() { None } else { t.find_from(&re, pos + col) };
         let end = m.as_ref().map_or(text.len(), |m| m.start);
         if keepempty || end > pos || (!out.is_empty() && pos < text.len() && m.as_ref().is_some_and(|m| end < m.end)) {
-            out.push(Value::Str(text[pos..end].to_string().into()));
+            out.push(Value::Str(text[pos..end].into()));
         }
         let Some(m) = m else { break };
         col = if m.end > pos {
@@ -1879,7 +1881,7 @@ fn find_some_match(e: &mut Editor, a: &[Value], kind: SomeMatch) -> Value {
                     }
                     SomeMatch::Str => match &list {
                         Some(_) => cur,
-                        None => Value::Str(s[m.clone()].to_string().into()),
+                        None => Value::Str(s[m.clone()].into()),
                     },
                     SomeMatch::Match | SomeMatch::End => match &list {
                         Some(_) => int(li as i64),
@@ -2263,26 +2265,31 @@ fn f_substitute(e: &mut Editor, a: &[Value]) -> Value {
     let flags = e.str_chk(&a[3]);
     let rep = e.str_chk(&a[2]);
     let (Some(text), Some(pat), Some(rep), Some(flags)) = (text, pat, rep, flags) else { return Value::Str(String::new().into()) };
-    Value::Str(substitute_str(e, &text, &pat, &rep, &flags).into())
+    Value::Str(substitute_str(e, &text, &pat, &rep, &flags))
 }
 
 /// `do_string_sub`: `text` with the first match of `pat` (every one with `g` in `flags`) replaced; an invalid pattern is
 /// `E383` and gives an empty String.
-pub(super) fn substitute_str(e: &mut Editor, text: &str, pat: &str, rep: &str, flags: &str) -> String {
+pub(super) fn substitute_str(e: &mut Editor, text: &str, pat: &str, rep: &str, flags: &str) -> RcStr {
     let re = match Regex::new(pat) {
         Ok(r) => r,
         Err(_) => {
             e.error(format!("E383: Invalid search string: {pat}"));
-            return String::new();
+            return RcStr::default();
         }
     };
     let t = Text::from(text);
     if flags.contains('g') {
         let (new, _) = t.replace_all(&re, rep);
-        new.slice(0..new.len()).into_owned()
+        // Chunks go straight into the `Rc<str>` buffer: no intermediate `String`.
+        let mut out = RcString::with_capacity(new.len());
+        for c in new.chunks() {
+            out.push_str(c);
+        }
+        out.into()
     } else {
         match t.find_from(&re, 0).and_then(|m| t.replacement_at(&re, m.start, rep)) {
-            Some((m, new)) => format!("{}{new}{}", &text[..m.start], &text[m.end..]),
+            Some((m, new)) => crate::rc::format(format_args!("{}{new}{}", &text[..m.start], &text[m.end..])),
             None => text.into(),
         }
     }
@@ -2383,7 +2390,7 @@ fn filter_map(e: &mut Editor, a: &[Value], kind: FilterMap) -> Value {
     let what = format!("{func_name} argument");
     let result = match &a[0] {
         Value::Dict(d) => {
-            let items: Vec<(Rc<str>, Value)> = d.borrow().iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+            let items: Vec<(RcStr, Value)> = d.borrow().iter().map(|(k, v)| (k.clone(), v.clone())).collect();
             let mut out = DictMap::new();
             let blocked = kind == FilterMap::Filter && dict_locked(e, d, &what);
             let items = if blocked { Vec::new() } else { items };
@@ -2472,10 +2479,10 @@ fn filter_map(e: &mut Editor, a: &[Value], kind: FilterMap) -> Value {
         }
         _ => {
             let s = e.tv_str(&a[0]);
-            let mut out = String::new();
+            let mut out = RcString::new();
             for (idx, g) in graphemes::iter(&s).enumerate() {
                 e.vim_vars.borrow_mut().insert("key".into(), int(idx as i64));
-                let r = filter_map_one(e, &Value::Str(g.to_string().into()), expr, kind);
+                let r = filter_map_one(e, &Value::Str(g.into()), expr, kind);
                 e.vim_vars.borrow_mut().remove("key");
                 let Some((new, rem)) = r else { break };
                 if e.scripts.did_emsg {
@@ -2998,7 +3005,7 @@ fn f_getreg(e: &mut Editor, a: &[Value]) -> Value {
         if matches!(r.kind, crate::editor::registers::RegKind::Line) && lines.last() == Some(&"") {
             lines.pop();
         }
-        return Value::list(lines.into_iter().map(|l| Value::Str(l.to_string().into())).collect());
+        return Value::list(lines.into_iter().map(|l| Value::Str(l.into())).collect());
     }
     Value::Str(reg.map_or_else(String::new, |r| r.text).into())
 }
@@ -3053,7 +3060,7 @@ fn f_getregtype(e: &mut Editor, a: &[Value]) -> Value {
     Value::Str(match e.reg(regname).map(|r| r.kind) {
         Some(RegKind::Line) => "V".into(),
         Some(RegKind::Char) => "v".into(),
-        Some(RegKind::Block(w)) => format!("\x16{}", w.wrapping_add(1)).into(),
+        Some(RegKind::Block(w)) => crate::rc::format(format_args!("\x16{}", w.wrapping_add(1))),
         None => "".into(),
     })
 }

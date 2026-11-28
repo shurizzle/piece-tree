@@ -3,7 +3,7 @@
 //! allocation is already the one `Rc<str>` wants.
 
 use std::alloc::{handle_alloc_error, Allocator, Global, Layout};
-use std::borrow::Cow;
+use std::borrow::{Borrow, Cow};
 use std::cell::Cell;
 use std::cmp::Ordering;
 use std::convert::Infallible;
@@ -93,6 +93,22 @@ impl<A: Allocator> Rc<str, A> {
     }
 }
 
+impl<A: Allocator + Default> Rc<str, A> {
+    /// The text of `v`, replacing the invalid sequences with `U+FFFD`: one allocation, whether `v`
+    /// is valid or not.
+    pub fn from_utf8_lossy(v: &[u8]) -> Self {
+        match str::from_utf8(v) {
+            Ok(s) => Self::from_str_in(s, A::default()),
+            Err(_) => {
+                // Slack for the replacement chars; the conversion shrinks what is left over.
+                let mut out = RcString::with_capacity_in(v.len() + 2, A::default());
+                out.push_utf8_lossy(v);
+                out.into()
+            }
+        }
+    }
+}
+
 impl<A: Allocator + Default> From<&str> for Rc<str, A> {
     fn from(s: &str) -> Self {
         Self::from_str_in(s, A::default())
@@ -146,6 +162,97 @@ impl<T: ?Sized, A: Allocator> Drop for Rc<T, A> {
     }
 }
 
+impl<T: ?Sized + PartialEq, A: Allocator> PartialEq for Rc<T, A> {
+    fn eq(&self, other: &Self) -> bool {
+        **self == **other
+    }
+}
+
+impl<T: ?Sized + Eq, A: Allocator> Eq for Rc<T, A> {}
+
+impl<T: ?Sized + PartialOrd, A: Allocator> PartialOrd for Rc<T, A> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        (**self).partial_cmp(&**other)
+    }
+}
+
+impl<T: ?Sized + Ord, A: Allocator> Ord for Rc<T, A> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (**self).cmp(&**other)
+    }
+}
+
+impl<T: ?Sized + Hash, A: Allocator> Hash for Rc<T, A> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (**self).hash(state);
+    }
+}
+
+// Lets a `HashMap<Rc<str>, _>` be queried with a `&str`.
+impl<T: ?Sized, A: Allocator> Borrow<T> for Rc<T, A> {
+    fn borrow(&self) -> &T {
+        self
+    }
+}
+
+impl<T: ?Sized, A: Allocator> AsRef<T> for Rc<T, A> {
+    fn as_ref(&self) -> &T {
+        self
+    }
+}
+
+impl<T: ?Sized + fmt::Debug, A: Allocator> fmt::Debug for Rc<T, A> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&**self, f)
+    }
+}
+
+impl<T: ?Sized + fmt::Display, A: Allocator> fmt::Display for Rc<T, A> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&**self, f)
+    }
+}
+
+impl<A: Allocator + Default> Default for Rc<str, A> {
+    fn default() -> Self {
+        Self::from_str_in("", A::default())
+    }
+}
+
+// These three copy the text, like `std`'s; they keep call sites that already own a string
+// compiling. Build into a `RcString` instead when the text is made here.
+impl<A: Allocator + Default> From<String> for Rc<str, A> {
+    fn from(s: String) -> Self {
+        Self::from_str_in(&s, A::default())
+    }
+}
+
+impl<A: Allocator + Default> From<Box<str>> for Rc<str, A> {
+    fn from(s: Box<str>) -> Self {
+        Self::from_str_in(&s, A::default())
+    }
+}
+
+impl<A: Allocator + Default> From<Cow<'_, str>> for Rc<str, A> {
+    fn from(s: Cow<'_, str>) -> Self {
+        Self::from_str_in(&s, A::default())
+    }
+}
+
+/// `format!` that builds a `Rc<str>` through a `RcString`: the text is never copied into a second
+/// allocation, only the final resize of the buffer can move it.
+pub fn format(args: fmt::Arguments<'_>) -> Rc<str> {
+    match args.as_str() {
+        Some(s) => Rc::from(s),
+        None => {
+            let mut out = RcString::new();
+            // Writing to a `RcString` never fails.
+            let _ = fmt::Write::write_fmt(&mut out, args);
+            out.into()
+        }
+    }
+}
+
 /// The layout of the box of a `RcString`, and where its bytes start.
 ///
 /// The box is the one `Rc<str>` of the same length would have, so a conversion that fills the
@@ -173,6 +280,17 @@ pub struct RcString<A: Allocator = Global> {
 }
 
 impl<A: Allocator> RcString<A> {
+    /// Appends `v`, each invalid sequence replaced by one `U+FFFD`: what `String::from_utf8_lossy`
+    /// does, written into this buffer instead of a `String`.
+    fn push_utf8_lossy(&mut self, v: &[u8]) {
+        for chunk in v.utf8_chunks() {
+            self.push_str(chunk.valid());
+            if !chunk.invalid().is_empty() {
+                self.push('\u{FFFD}');
+            }
+        }
+    }
+
     /// An empty `RcString` with room for `cap` bytes, allocated with `alloc`.
     pub fn with_capacity_in(cap: usize, alloc: A) -> Self {
         let (layout, offset) = string_layout(cap).expect("size overflow");
@@ -609,7 +727,9 @@ impl RcString {
 
     /// A copy of `v`, with the invalid sequences replaced by `U+FFFD`.
     pub fn from_utf8_lossy_owned(v: Vec<u8>) -> Self {
-        Self::from(String::from_utf8_lossy(&v).as_ref())
+        let mut out = Self::with_capacity(v.len());
+        out.push_utf8_lossy(&v);
+        out
     }
 
     /// A copy of `bytes`, which must be UTF-8.
@@ -1220,7 +1340,7 @@ impl FromUtf8Error {
 
     /// The bytes as a string, with the invalid sequences replaced by `U+FFFD`.
     pub fn into_utf8_lossy(self) -> RcString {
-        RcString::from(String::from_utf8_lossy(&self.bytes).as_ref())
+        RcString::from_utf8_lossy_owned(self.bytes)
     }
 
     /// What is wrong with the bytes.

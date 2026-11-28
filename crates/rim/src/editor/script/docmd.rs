@@ -4,7 +4,8 @@
 //! Not ported yet, with the commands that need them: reading further lines for a command
 //! (`get_loop_line`, `:function`, `:append`), `:try` and exceptions, `:silent`.
 
-use std::{collections::HashMap, fs, path::PathBuf, rc::Rc};
+use super::value::RcStr;
+use std::{collections::HashMap, fs, path::PathBuf};
 
 use super::{
     Res, Vars,
@@ -30,7 +31,7 @@ pub(super) struct SourceCookie {
 
 impl Frame {
     /// The report of an exception that was thrown at `name` (`estack_push(ETYPE_EXCEPT, ..)`).
-    pub(super) fn except(name: Rc<str>, lnum: usize) -> Self {
+    pub(super) fn except(name: RcStr, lnum: usize) -> Self {
         Frame { kind: FrameKind::Except, name, lnum, cookie: SourceCookie::new("") }
     }
 
@@ -40,7 +41,7 @@ impl Frame {
     }
 
     /// A call of the function `name` (`estack_push_ufunc` with line 1).
-    pub(super) fn new_func(name: Rc<str>) -> Self {
+    pub(super) fn new_func(name: RcStr) -> Self {
         Frame { kind: FrameKind::Func, name, lnum: 1, cookie: SourceCookie::new("") }
     }
 }
@@ -160,7 +161,7 @@ pub(in crate::editor) enum FrameKind {
 
 pub(in crate::editor) struct Frame {
     pub(super) kind: FrameKind,
-    pub(super) name: Rc<str>,
+    pub(super) name: RcStr,
     /// The line being executed (`SOURCING_LNUM`); of an entry below the top, the line that sourced
     /// the next.
     pub(super) lnum: usize,
@@ -297,7 +298,7 @@ pub(in crate::editor) struct State {
     /// A command asked to quit.
     pub quitting: bool,
     /// `last_sourcing_name` and `last_sourcing_lnum` of `message.c`.
-    pub(super) last_name: Option<Rc<str>>,
+    pub(super) last_name: Option<RcStr>,
     last_lnum: usize,
 }
 

@@ -1,6 +1,6 @@
 //! Vimscript values: the types, their text and `string()` form, number parsing and formatting.
 
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{cell::RefCell, collections::HashMap};
 
 pub(in crate::editor) use dumpster::unsync::Gc;
 use dumpster::Trace;
@@ -13,7 +13,17 @@ use crate::string_builder::StringBuilder;
 pub(in crate::editor) type List = Gc<RefCell<ListData>>;
 pub(in crate::editor) type Dict = Gc<RefCell<DictData>>;
 /// Values by key, as a Dictionary is built from and copied to.
-pub(in crate::editor) type DictMap = HashMap<Rc<str>, Value>;
+pub(in crate::editor) type RcStr = crate::rc::Rc<str>;
+
+// SAFETY: a `str` owns no `Gc`, so there is nothing to visit (dumpster does the same for
+// `std::rc::Rc<str>`).
+unsafe impl<V: dumpster::Visitor> dumpster::TraceWith<V> for RcStr {
+    fn accept(&self, _: &mut V) -> Result<(), ()> {
+        Ok(())
+    }
+}
+
+pub(in crate::editor) type DictMap = HashMap<RcStr, Value>;
 
 /// `VarLockStatus`: `:lockvar` sets `Locked`, `Fixed` is what a built-in variable or a `v:` Dictionary has.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Trace)]
@@ -148,8 +158,8 @@ impl std::ops::Index<&str> for DictData {
 }
 
 impl<'a> IntoIterator for &'a DictData {
-    type Item = (&'a Rc<str>, &'a Value);
-    type IntoIter = std::iter::Map<std::collections::hash_map::Iter<'a, Rc<str>, DictItem>, fn((&'a Rc<str>, &'a DictItem)) -> (&'a Rc<str>, &'a Value)>;
+    type Item = (&'a RcStr, &'a Value);
+    type IntoIter = std::iter::Map<std::collections::hash_map::Iter<'a, RcStr, DictItem>, fn((&'a RcStr, &'a DictItem)) -> (&'a RcStr, &'a Value)>;
     fn into_iter(self) -> Self::IntoIter {
         self.map.iter().map(|(k, i)| (k, &i.tv))
     }
@@ -173,7 +183,7 @@ impl DictItem {
 #[derive(Clone, Default, Trace)]
 pub(in crate::editor) struct DictData {
     pub lock: Lock,
-    pub map: HashMap<Rc<str>, DictItem>,
+    pub map: HashMap<RcStr, DictItem>,
 }
 
 impl DictData {
@@ -198,7 +208,7 @@ impl DictData {
     }
 
     /// Sets the value of an item, keeping its lock and flags, or adds an unlocked one.
-    pub fn insert(&mut self, k: Rc<str>, v: Value) -> Option<Value> {
+    pub fn insert(&mut self, k: RcStr, v: Value) -> Option<Value> {
         match self.map.get_mut(&k) {
             Some(i) => Some(std::mem::replace(&mut i.tv, v)),
             None => {
@@ -212,11 +222,11 @@ impl DictData {
         self.map.remove(k).map(|i| i.tv)
     }
 
-    pub fn keys(&self) -> impl Iterator<Item = &Rc<str>> {
+    pub fn keys(&self) -> impl Iterator<Item = &RcStr> {
         self.map.keys()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&Rc<str>, &Value)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&RcStr, &Value)> {
         self.map.iter().map(|(k, i)| (k, &i.tv))
     }
 
@@ -225,7 +235,7 @@ impl DictData {
     }
 
     /// `DI_FLAGS_RO | DI_FLAGS_FIX` item with the lock `lock`: what `a:` variables, `l:self` and `v:` ones are.
-    pub fn insert_fixed(&mut self, k: Rc<str>, v: Value, lock: Lock) {
+    pub fn insert_fixed(&mut self, k: RcStr, v: Value, lock: Lock) {
         self.map.insert(k, DictItem { tv: v, lock, flags: DI_RO | DI_FIX });
     }
 
@@ -245,7 +255,7 @@ pub(in crate::editor) enum Enc {
 pub(in crate::editor) enum Value {
     Int(i64),
     Float(f64),
-    Str(Rc<str>),
+    Str(RcStr),
     /// `v:true` and `v:false`.
     Bool(bool),
     /// `v:null` and `v:none`.
@@ -253,7 +263,7 @@ pub(in crate::editor) enum Value {
     List(List),
     Dict(Dict),
     /// A Funcref by name (`VAR_FUNC`): a builtin, a user function by its (translated) name, or a lambda.
-    Func(Rc<str>),
+    Func(RcStr),
     /// A function with arguments and/or a Dictionary bound, or a `funcref()` (`VAR_PARTIAL`).
     Partial(Gc<Partial>),
 }
@@ -262,7 +272,7 @@ pub(in crate::editor) enum Value {
 #[derive(Trace)]
 pub(in crate::editor) struct Partial {
     /// The name of the function (`pt_name`); for a `funcref()` the name it had when it was made.
-    pub name: Rc<str>,
+    pub name: RcStr,
     /// `funcref()`: the function itself, by its number in `State::func_ids`, so that a redefinition does not change it.
     pub func_id: Option<usize>,
     /// The arguments given first to every call (`pt_argv`).
@@ -412,7 +422,7 @@ impl Value {
                     Value::Dict(d) => {
                         out.push('{');
                         let d = d.borrow();
-                        let mut keys: Vec<&Rc<str>> = d.keys().collect();
+                        let mut keys: Vec<&RcStr> = d.keys().collect();
                         keys.sort();
                         for (i, k) in keys.into_iter().enumerate() {
                             let x = d.get(k).expect("a key");

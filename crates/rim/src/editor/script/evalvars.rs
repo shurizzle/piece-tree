@@ -52,6 +52,13 @@ impl Fname {
         (self.len, self.start, self.s) = (s.len(), 0, s);
     }
 
+    /// Like `set`, reusing the buffer.
+    fn set_str(&mut self, s: &str) {
+        self.s.clear();
+        self.s.push_str(s);
+        (self.len, self.start) = (s.len(), 0);
+    }
+
     fn cur(&self) -> &str {
         &self.s[self.start..self.start + self.len]
     }
@@ -271,7 +278,7 @@ pub(in crate::editor) fn full_name(fname: &str, force: bool) -> String {
 
 impl Editor {
     /// `do_string_sub` of one `:s?pat?sub?` modifier, with the flags `g` or none.
-    fn modify_sub(&mut self, text: &str, pat: &str, sub: &str, global: bool) -> String {
+    fn modify_sub(&mut self, text: &str, pat: &str, sub: &str, global: bool) -> super::value::RcStr {
         super::funcs::substitute_str(self, text, pat, sub, if global { "g" } else { "" })
     }
 
@@ -411,7 +418,7 @@ impl Editor {
                             *used = src.len() - rest.len() + p2 + sep.len_utf8();
                             let text = f.cur().to_string();
                             let new = self.modify_sub(&text, pat, sub, global);
-                            f.set(new);
+                            f.set_str(&new);
                             done = true;
                         }
                     }

@@ -4,6 +4,7 @@
 //! `next_for_item` of `eval.c`. The `:try` parts (`CSF_TRY`, pending actions) come with
 //! exceptions.
 
+use super::value::RcStr;
 use super::{List, Res, Value, cmdline::skipwhite};
 use crate::editor::{Editor, graphemes};
 
@@ -55,7 +56,7 @@ enum ForSource {
     /// then NULL.
     List(List, std::rc::Rc<std::cell::Cell<usize>>),
     /// The chars of a String, with the byte index of the next one.
-    Str(std::rc::Rc<str>, usize),
+    Str(RcStr, usize),
 }
 
 pub(in crate::editor) struct Cstack {
@@ -305,7 +306,7 @@ impl Editor {
                 self.scripts.for_watch.push((dumpster::unsync::Gc::as_ptr(&l) as usize, std::rc::Rc::downgrade(&next)));
                 ForSource::List(l, next)
             }
-            Ok(Value::Str(s)) => ForSource::Str(s.to_string().into(), 0),
+            Ok(Value::Str(s)) => ForSource::Str(s.clone(), 0),
             Ok(_) => {
                 self.error("E1098: String, List or Blob required");
                 return None;
@@ -332,7 +333,7 @@ impl Editor {
             ForSource::Str(s, at) => {
                 let Some(g) = graphemes::iter(&s[*at..]).next() else { return false };
                 *at += g.len();
-                Value::Str(g.to_string().into())
+                Value::Str(g.into())
             }
         };
         self.scripts.arg_rest.clear();

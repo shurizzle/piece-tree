@@ -5,8 +5,9 @@
 //!
 //! A position is a byte offset into the text (`*arg` in C); `at` gives 0 past the end, the NUL.
 
+use crate::rc::RcString;
 use super::value::DictMap;
-use std::rc::Rc;
+use super::value::RcStr;
 use std::cmp::Ordering;
 
 
@@ -716,7 +717,7 @@ impl Editor {
         if !ev {
             return Ok(Value::None);
         }
-        let mut out = String::new();
+        let mut out = RcString::new();
         let mut i = start + 1;
         while i < q {
             let c = s[i..].chars().next().expect("a char");
@@ -796,7 +797,7 @@ impl Editor {
     fn eval_lit_string(&mut self, s: &str, p: &mut usize, ev: bool) -> R<Value> {
         let start = *p;
         let mut q = start + 1;
-        let mut out = String::new();
+        let mut out = RcString::new();
         while q < s.len() {
             if at(s, q) == b'\'' {
                 if at(s, q + 1) != b'\'' {
@@ -867,7 +868,7 @@ impl Editor {
                 if *p == from {
                     return Err(Fail::Silent);
                 }
-                let k = Value::Str(s[from..*p].to_string().into());
+                let k = Value::Str(s[from..*p].into());
                 *p = skipwhite(s, *p);
                 k
             } else {
@@ -1097,7 +1098,7 @@ impl Editor {
         let name = match f {
             Value::Func(n) => n.clone(),
             Value::Partial(pt) => pt.name.clone(),
-            _ => Rc::from(""),
+            _ => RcStr::from(""),
         };
         if !ok {
             return Err(if !ev || self.aborting() {
@@ -1243,7 +1244,7 @@ impl Editor {
                     &bytes[n1 as usize..=n1 as usize]
                 };
                 // Deliberate difference: strings are always valid UTF-8, a cut inside a multibyte char gives U+FFFD where Neovim gives the bare bytes
-                Ok(Value::Str(String::from_utf8_lossy(out).into_owned().into()))
+                Ok(Value::Str(RcStr::from_utf8_lossy(out)))
             }
             Value::List(l) => {
                 let l = l.borrow();
@@ -1369,7 +1370,7 @@ impl Editor {
         let parts = |v: &Value| match v {
             Value::Func(n) => (n.clone(), None, Vec::new()),
             Value::Partial(p) => (p.name.clone(), p.dict.clone(), p.args.clone()),
-            _ => (Rc::from(""), None, Vec::new()),
+            _ => (RcStr::from(""), None, Vec::new()),
         };
         let ((n1, d1, a1), (n2, d2, a2)) = (parts(a), parts(b));
         if n1 != n2 {

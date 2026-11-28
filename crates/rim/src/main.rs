@@ -1,10 +1,7 @@
 //! Minimal vim-like terminal editor on top of `piece-tree`.
 
 mod editor;
-// shortcut: unused until script values move to rc::Rc, wire in or delete when the swap starts
-#[allow(dead_code)]
 mod rc;
-#[allow(dead_code)]
 mod string_builder;
 
 use std::{

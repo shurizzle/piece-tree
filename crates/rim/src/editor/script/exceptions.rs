@@ -2,6 +2,7 @@
 //! (`ex_eval.c`). An error under an active `:try` is thrown after the command that failed has returned, as
 //! `Vim(cmd):E123: text`; one that no `:catch` takes is given at the end.
 
+use super::value::RcStr;
 use std::{cell::RefCell, rc::Rc};
 
 use super::{
@@ -30,10 +31,10 @@ pub(in crate::editor) struct Msg {
 
 /// An exception (`except_T`).
 pub(in crate::editor) struct Except {
-    pub value: Rc<str>,
+    pub value: RcStr,
     pub kind: ExKind,
     pub messages: Vec<Msg>,
-    pub throw_name: Rc<str>,
+    pub throw_name: RcStr,
     pub throw_lnum: usize,
 }
 
@@ -216,7 +217,7 @@ impl Editor {
                 };
                 (e.value.clone(), point)
             }
-            None => (Rc::from(""), String::new()),
+            None => (RcStr::from(""), String::new()),
         };
         let mut v = self.vim_vars.borrow_mut();
         v.insert("exception".into(), Value::Str(value));

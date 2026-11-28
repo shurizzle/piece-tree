@@ -32,6 +32,7 @@ use super::{
     Editor,
     messages::{Level, trans},
 };
+use value::RcStr;
 pub(super) use docmd::{Frame, State};
 
 /// The `v:` dictionary at start.
@@ -139,7 +140,7 @@ impl Editor {
 
     /// `find_var`: the Dictionary that holds the variable `name` and its key (a closure sees the variables of the calls
     /// it was made in, `find_var_in_scoped_ht`).
-    pub(super) fn find_item(&self, name: &str) -> Option<(value::Dict, std::rc::Rc<str>)> {
+    pub(super) fn find_item(&self, name: &str) -> Option<(value::Dict, RcStr)> {
         let (scope, n) = self.scope_of(name);
         if n.is_empty() {
             return None;
@@ -252,7 +253,7 @@ impl Editor {
             let mut sc = self.scripts.calls.last().and_then(|c| c.func.scoped.clone());
             while let Some(s) = sc {
                 if s.l_vars.borrow().contains_key(n) {
-                    s.l_vars.borrow_mut().insert(n.to_string().into(), value);
+                    s.l_vars.borrow_mut().insert(n.into(), value);
                     return Ok(());
                 }
                 sc = s.parent.clone();
@@ -365,7 +366,7 @@ impl Editor {
     /// `list_hashtable_vars`: the variables of a scope, in the order of the names (the map's own is arbitrary).
     fn hashtable_lines(&self, scope: Scope, prefix: &str, out: &mut Vec<String>) {
         let dict = self.vars(scope).borrow();
-        let mut vars: Vec<(&std::rc::Rc<str>, &Value)> = dict.iter().collect();
+        let mut vars: Vec<(&RcStr, &Value)> = dict.iter().collect();
         vars.sort_by_key(|&(k, _)| k);
         // `empty` is false for `s:` and `v:`: a String that was never set (NULL) is not listed. rim has no NULL
         // String, so an empty one in `v:` stands for it.
@@ -770,7 +771,7 @@ impl Editor {
             Value::Dict(d) if !shared => {
                 d.borrow_mut().lock.change(lock);
                 if !(0..=1).contains(&deep) {
-                    let keys: Vec<std::rc::Rc<str>> = d.borrow().keys().cloned().collect();
+                    let keys: Vec<RcStr> = d.borrow().keys().cloned().collect();
                     for k in keys {
                         let Some((child, mut s, sh)) = d.borrow().map.get(&*k).map(|it| { let sh = it.tv.is_shared(); (it.tv.clone(), it.lock, sh) }) else { continue };
                         self.item_lock_in(&mut s, &child, deep - 1, lock, check.map(|_| sh), recurse + 1);
