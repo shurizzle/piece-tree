@@ -51,7 +51,7 @@ rim [file | -]...
 - Non-UTF-8 file → empty 'readonly' buffer with `[Permission Denied]` when entered (Neovim reads it as bytes). A directory is an empty buffer. A file named after the first one on the command line is read when it is entered, not at the start.
 - The line ending is detected per file; `:set ff=unix|dos|mac` changes it.
 - At startup the terminal background is queried (`terminal-colorsaurus`, before raw mode); a light one selects the light highlight defaults (`background=light`). Errors or no answer → dark.
-- Then the init file `$XDG_CONFIG_HOME/rim/init` (or `~/.config/rim/init`) is sourced, if it exists: a Vimscript file, so any command, `|`, `if`/`while`/`for`, `\` continuation lines and `"` comments work (see [vimscript.md](vimscript.md)). Errors are reported on the message line as in Neovim (`Error in {file}:` `line    2:` `E492: Not an editor command: map x y`); what follows an error in a block is skipped, the other lines run. Files after the first copy the options.
+- Then the init file `$XDG_CONFIG_HOME/rim/init.vim` (or `~/.config/rim/init.vim`) is sourced, if it exists: a Vimscript file, so any command, `|`, `if`/`while`/`for`, `\` continuation lines and `"` comments work (see [vimscript.md](vimscript.md)). Errors are reported on the message line as in Neovim (`Error in {file}:` `line    2:` `E492: Not an editor command: map x y`); what follows an error in a block is skipped, the other lines run. Files after the first copy the options.
 
 ## Modes
 

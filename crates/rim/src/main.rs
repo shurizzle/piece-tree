@@ -65,7 +65,7 @@ fn run() -> io::Result<()> {
     // After the background, so `set bg=` wins; before the other files, which copy the options.
     if let Some(dir) = env::var_os("XDG_CONFIG_HOME").map(PathBuf::from).or_else(|| env::var_os("HOME").map(|h| PathBuf::from(h).join(".config"))) {
         editor.set_runtime(dir.join("rim"));
-        editor.load_init(&dir.join("rim").join("init"));
+        editor.load_init(&dir.join("rim").join("init.vim"));
     }
     editor.open_rest(args, &mut stdin)?;
     editor.finish_start();
