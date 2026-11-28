@@ -792,7 +792,9 @@ impl Editor {
             b'&' => {
                 // ":let &option = expr": Set option value.
                 let mut q = p + 1;
+                let mut scope = ' ';
                 if matches!(at(s, q), b'g' | b'l') && at(s, q + 1) == b':' {
+                    scope = at(s, q) as char;
                     q += 2;
                 }
                 let from = q;
@@ -806,7 +808,13 @@ impl Editor {
                 if unexpected(self, q) {
                     return None;
                 }
-                match self.let_option(&s[from..q], opc, tv) {
+                let name = &s[from..q];
+                let r = match scope {
+                    'g' => self.with_global_scope(|e| e.let_option(name, opc, tv)),
+                    'l' => self.with_local_scope(|e| e.let_option(name, opc, tv)),
+                    _ => self.let_option(name, opc, tv),
+                };
+                match r {
                     Err(m) => {
                         // An empty message was given already (`tv_to_optval`).
                         if !m.is_empty() {

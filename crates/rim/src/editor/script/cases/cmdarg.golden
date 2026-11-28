@@ -1,0 +1,366 @@
+NVIM v0.12.6
+
+3 1 f.x 1 three
+
+  1 %a   "f.x"                          line 3
+"---
+
+5 1 f.x 1 five
+
+  1 %a   "f.x"                          line 5
+"---
+
+5 1 f.x 1 five
+
+  1 %a   "f.x"                          line 5
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+1 1 f.x 1 0ne
+
+  1 %a + "f.x"                          line 1
+"---
+
+1
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+5 1 f.x 1 ive
+
+  1 %a + "f.x"                          line 5
+"---
+
+two a
+5
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+5 1 f.x 1 five
+
+  1 %a   "f.x"                          line 5
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x g.x 1 
+
+  1 %a   "f.x g.x"                      line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++ff=foo
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+3 1 f.x 1 three
+
+  1 %a   "f.x"                          line 3
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++bi f.x
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++bad=xx
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++bad f.x
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++foo f.x
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++ f.x
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    5:
+E474: Invalid argument: e ++ff f.x
+1 1  1 
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+3 1 f.x 2 three
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 3
+"---
+
+2 1 f.x 2 two a
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 2 two a
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 2 two a
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 2 two a
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2 #h   "g.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2 #h   "g.x"                          line 1
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2 #h   "g.x"                          line 1
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2 #h   "g.x"                          line 1
+"---
+
+2 1 g.x 1 beta
+
+  1 #h   "f.x"                          line 1
+  2 %a   "g.x"                          line 2
+"---
+
+Error in {file}:
+line    5:
+E492: Not an editor command: nosuchcmd
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+1 1 f.x 1 onE
+
+  1 %a + "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+Error in {file}:
+line    5:
+E488: Trailing characters: +2:  b9 +2
+1 1 g.x 1 alpha
+
+  1 #h   "f.x"                          line 1
+  2 %a   "g.x"                          line 1
+"---
+
+2 1 f.x 2 two a
+
+  1 %a   "f.x"                          line 2
+  2 #a   "g.x"                          line 1
+"---
+
+2 1 g.x 1 beta
+
+  1 #h   "f.x"                          line 1
+  2 %a   "g.x"                          line 2
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2      "g.x"                          line 0
+"---
+
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+"---
+
+3 1 f.x 1 three
+
+  1 %a   "f.x"                          line 3
+  2      "g.x"                          line 0
+"---
+
+2 1 g.x 1 beta
+
+  1 #h   "f.x"                          line 1
+  2 %a   "g.x"                          line 2
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2      "g.x"                          line 0
+"---
+
+2 1 f.x 1 two a
+
+  1 %a   "f.x"                          line 2
+  2      "g.x"                          line 0
+"---
+
+1 1 h.x 1 x
+
+  1 #h   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3 %a   "h.x"                          line 1
+"---
+
+Error in {file}:
+line    5:
+E164: Cannot go before first file
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+Error in {file}:
+line    5:
+E164: Cannot go before first file
+1 1 f.x 1 one
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0

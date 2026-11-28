@@ -3,9 +3,14 @@
 //! `:unlet`, `:echo` and friends.
 
 mod append;
-mod cmdline;
+mod bufinfo;
+mod setreg;
+mod bufline;
+pub(super) mod cmdline;
 mod cstack;
 mod docmd;
+mod evalvars;
+pub(in crate::editor) mod expand;
 mod exceptions;
 mod exnames;
 mod expr;
@@ -14,7 +19,7 @@ mod heredoc;
 mod keycodes;
 
 #[cfg(test)]
-mod golden;
+pub(in crate::editor) mod golden;
 mod lval;
 mod typval;
 mod userfunc;
@@ -67,8 +72,11 @@ pub(in crate::editor) use cmdline::parse_prefix;
 pub(in crate::editor) fn cmdline_argt(name: &str) -> u32 {
     cmdline::lookup(name).map_or(0, |d| d.argt)
 }
+#[cfg(test)]
 pub(in crate::editor) use docmd::expand_env;
-pub(super) use value::{List, Value, str_to_int};
+pub(in crate::editor) use funcs::bsd_qsort;
+pub(in crate::editor) use evalvars::{full_name, isfname_table, strtoimax};
+pub(super) use value::{List, Lock, Value, str_to_int};
 
 type Res<T> = Result<T, String>;
 
@@ -115,7 +123,10 @@ impl Editor {
     fn vars(&self, scope: Scope) -> &Vars {
         match scope {
             Scope::Global => &self.vars,
-            Scope::Buffer => &self.buf.vars,
+            Scope::Buffer => {
+                self.buf.sync_tick();
+                &self.buf.vars
+            }
             Scope::Window => &self.win.vars,
             Scope::Tab => &self.tab_vars,
             // Outside a function there is no `l:` and `a:`: an empty dictionary stands for them.
@@ -335,7 +346,7 @@ impl Editor {
 
     /// `:let` alone: `list_glob_vars`, `list_buf_vars`, `list_win_vars`, `list_tab_vars`, `list_script_vars` (only in a
     /// sourced script), `list_vim_vars`: one message, each variable on its row.
-    // shortcut: `b:changedtick` is not there (rim keeps no change counter); the `v:` variables are rim's table, with the values it has, and a `v:` String that is empty is taken for a NULL one (not listed)
+    // the `v:` variables are rim's table, with the values it has, and a `v:` String that is empty is taken for a NULL one (not listed)
     fn list_all_vars(&mut self) {
         let mut lines = Vec::new();
         for (scope, prefix) in [(Scope::Global, ""), (Scope::Buffer, "b:"), (Scope::Window, "w:"), (Scope::Tab, "t:"), (Scope::Script, "s:"), (Scope::Vim, "v:")] {
@@ -490,14 +501,14 @@ impl Editor {
                 if kind == OptKind::Flag {
                     self.buf.opts.set_flag(name, n != 0);
                     self.ff_out();
-                    self.win_out(false, scrolloff);
+                    self.win_out(self.opt_local, scrolloff);
                     self.on_global(|g| g.set_flag(name, n != 0));
                     self.share_global();
                     Ok(None)
                 } else {
                     self.on_global(|g| { let _ = g.set_number(name, n); });
                     let r = self.buf.opts.set_number(name, n).err().map(String::from);
-                    self.win_out(false, scrolloff);
+                    self.win_out(self.opt_local, scrolloff);
                     self.share_global();
                     Ok(r)
                 }

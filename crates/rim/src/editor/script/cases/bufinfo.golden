@@ -1,0 +1,881 @@
+NVIM v0.12.6
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+"---
+
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+"---
+
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+Error in {file}[9]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+bufnr changed changedtick command hidden lastused linecount listed lnum loaded name variables windows
+"---
+
+"---
+
+"---
+
+Error in {file}:
+line    5:
+E745: Expected a Number or a String, List found
+"---
+
+Error in {file}:
+line    9:
+E745: Expected a Number or a String, List found
+"---
+
+Error in {file}:
+line    5:
+E805: Expected a Number or a String, Float found
+"---
+
+Error in {file}:
+line    9:
+E805: Expected a Number or a String, Float found
+"---
+
+1
+['changedtick']
+['changedtick', 'foo']
+1
+"---
+
+3
+3 1
+"---
+
+
+bar
+"---
+
+
+bar
+"---
+
+
+['changedtick', 'foo']
+"---
+
+
+5
+"---
+
+
+
+"---
+
+
+d
+"---
+
+
+7
+"---
+
+
+3
+"---
+
+
+baz
+"---
+
+
+d
+"---
+
+
+baz
+"---
+
+
+bar
+"---
+
+
+Error in {file}:
+line   12:
+E730: Using a List as a String
+
+"---
+
+
+Error in {file}:
+line   12:
+E745: Expected a Number or a String, List found
+
+"---
+
+
+Error in {file}:
+line   12:
+E118: Too many arguments for function: getbufvar
+"---
+
+
+Error in {file}:
+line   12:
+E119: Not enough arguments for function: getbufvar
+"---
+
+
+0
+"---
+
+
+unix
+"---
+
+
+unix
+"---
+
+
+
+"---
+
+1  7 7 0 1 0  unix
+7 1
+"---
+
+ 1 7 7 0 1 0  unix
+7 1
+"---
+
+ [1] 7 7 0 1 0  unix
+7 1
+"---
+
+  7 7 0 1 0  unix
+7 1
+"---
+
+  3 7 0 1 0  unix
+3 1
+"---
+
+  7 3 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E521: Number required: &ts = 'x'
+  7 7 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E355: Unknown option: nosuch
+  7 7 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E461: Illegal variable name: b:
+  7 7 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E745: Expected a Number or a String, List found
+  7 7 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E730: Using a List as a String
+  7 7 0 1 0  unix
+7 1
+"---
+
+  7 7 1 1 0  unix
+7 1
+"---
+
+  7 7 0 0 0  unix
+7 1
+"---
+
+  7 7 0 1 0  dos
+7 1
+"---
+
+  7 7 0 1 0 wipe unix
+7 1
+"---
+
+  7 7 0 1 1  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E46: Cannot change read-only variable "b:changedtick"
+  7 7 0 1 0  unix
+7 1
+"---
+
+Error in {file}:
+line    6:
+E119: Not enough arguments for function: setbufvar
+  7 7 0 1 0  unix
+7 1
+"---
+
+4
+5
+6
+7
+12 12 12
+"---
+
+4
+5
+6
+"---
+
+1
+2
+"---
+
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "h.x"                          line 0
+"---
+
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "g.x"                          line 0
+"---
+
+1
+1 0 0 0
+
+  1 %a   "f.x"                          line 1
+"---
+
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "[No Name]"                    line 0
+"---
+
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "[No Name]"                    line 0
+"---
+
+2 2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "h.x"                          line 0
+"---
+
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "nosuch/x"                     line 0
+"---
+
+Error in {file}:
+line    4:
+E730: Using a List as a String
+2
+2 0 0 1
+
+  1 %a   "f.x"                          line 1
+  2u     "[No Name]"                    line 0
+"---
+
+Error in {file}:
+line    4:
+E119: Not enough arguments for function: bufadd
+1 0 0 0
+
+  1 %a   "f.x"                          line 1
+"---
+
+1 ['alpha', 'beta'] 1
+
+  1 %a   "f.x"                          line 1
+  2  h   "g.x"                          line 0
+"---
+
+1 ['alpha', 'beta'] 1
+
+  1 %a   "f.x"                          line 1
+  2  h   "g.x"                          line 0
+"---
+
+Error in {file}:
+line    5:
+E158: Invalid buffer name: 9
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+Error in {file}:
+line    5:
+E158: Invalid buffer name: nosuch
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+Error in {file}:
+line    5:
+E730: Using a List as a String
+E158: Invalid buffer name: 
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+"---
+
+1 ['alpha', 'beta'] 1
+
+  1 %a   "f.x"                          line 1
+  2  h   "g.x"                          line 0
+"---
+
+0 [] 1
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3u h   "nosuch.x"                     line 0
+"---
+
+['Z', 'beta'] 1
+
+  1 %a   "f.x"                          line 1
+  2  h + "g.x"                          line 0
+"---
+
+Error in {file}[4]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[6]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+{'foo': 1}
+"---
+
+Error in {file}[4]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[6]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+{'foo': 1}
+"---
+
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[6]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+{'foo': 1}
+"---
+
+Error in {file}[4]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[5]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[6]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+"---
+
+Error in {file}[7]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+E116: Invalid arguments for function string
+botline bufnr height leftcol loclist quickfix status_height tabnr terminal textoff topline variables width winbar wincol winid winnr winrow
+{'foo': 1}
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+{'foo': 1}
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+{'foo': 1}
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+"---
+
+{'foo': 1}
+"---
+
+Error in {file}:
+line    4:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    5:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    6:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    7:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    7:
+E745: Using a List as a Number
+"---
+
+Error in {file}:
+line    7:
+E745: Using a List as a Number
+{'foo': 1}
+"---
+
+Error in {file}[2]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[4]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[4]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[5]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[2]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[4]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[2]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>1:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[3]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff
+"---
+
+Error in {file}[2]..function <lambda>2:
+line    1:
+E121: Undefined variable: d
+topline botline height width textoff

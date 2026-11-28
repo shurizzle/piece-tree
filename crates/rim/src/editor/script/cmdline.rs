@@ -38,6 +38,14 @@ pub(super) const XFILE: u32 = 1 << 10;
 pub(super) const ZEROR: u32 = 1 << 11;
 /// A buffer name or number.
 pub(super) const BUFNAME: u32 = 1 << 12;
+/// An unlisted buffer may be named too.
+pub(super) const BUFUNL: u32 = 1 << 13;
+/// One file name only (`EX_NOSPC`): a blank is part of the name.
+pub(super) const NOSPC: u32 = 1 << 14;
+/// A `+cmd` argument may come first (`EX_CMDARG`).
+pub(super) const CMDARG: u32 = 1 << 15;
+/// `++opt=val` arguments may come first (`EX_ARGOPT`).
+pub(super) const ARGOPT: u32 = 1 << 16;
 
 /// A command of rim: its shortest abbreviation, its name, and its flags.
 pub(super) struct CmdDef {
@@ -52,33 +60,72 @@ const fn c(_short: &'static str, long: &'static str, argt: u32) -> CmdDef {
 
 /// Flags as in `ex_cmds.lua` (v0.12.6); `stats` and `compact` are rim's own, taken as `:nohlsearch`.
 pub(super) const CMDS: &[CmdDef] = &[
-    c("w", "write", RANGE | BANG | XFILE | TRLBAR),
-    c("wq", "wq", RANGE | BANG | XFILE | TRLBAR),
-    c("x", "xit", RANGE | BANG | XFILE | TRLBAR),
-    c("wqa", "wqall", BANG | XFILE | TRLBAR),
+    c("w", "write", RANGE | BANG | XFILE | NOSPC | ARGOPT | TRLBAR),
+    c("up", "update", RANGE | BANG | XFILE | NOSPC | ARGOPT | TRLBAR),
+    c("wq", "wq", RANGE | BANG | XFILE | NOSPC | ARGOPT | TRLBAR),
+    c("x", "xit", RANGE | BANG | XFILE | NOSPC | ARGOPT | TRLBAR),
+    c("wqa", "wqall", BANG | XFILE | NOSPC | TRLBAR),
     c("xa", "xall", BANG | TRLBAR),
     c("q", "quit", BANG | RANGE | COUNT | TRLBAR),
     c("qa", "qall", BANG | TRLBAR),
     c("quita", "quitall", BANG | TRLBAR),
     c("clo", "close", BANG | RANGE | COUNT | TRLBAR),
+    c("hid", "hide", BANG | RANGE | COUNT | EXTRA | TRLBAR),
+    c("cd", "cd", BANG | XFILE | NOSPC | TRLBAR),
+    c("chd", "chdir", BANG | XFILE | NOSPC | TRLBAR),
+    c("lc", "lcd", BANG | XFILE | NOSPC | TRLBAR),
+    c("lch", "lchdir", BANG | XFILE | NOSPC | TRLBAR),
+    c("tcd", "tcd", BANG | XFILE | NOSPC | TRLBAR),
+    c("tch", "tchdir", BANG | XFILE | NOSPC | TRLBAR),
+    c("pw", "pwd", TRLBAR),
+    c("ar", "args", BANG | XFILE | EXTRA | CMDARG | ARGOPT | TRLBAR),
+    c("arga", "argadd", BANG | RANGE | ZEROR | XFILE | EXTRA | TRLBAR),
+    c("argd", "argdelete", BANG | RANGE | XFILE | EXTRA | TRLBAR),
+    c("arge", "argedit", BANG | NEEDARG | RANGE | ZEROR | XFILE | EXTRA | CMDARG | ARGOPT | TRLBAR),
+    c("argu", "argument", BANG | RANGE | COUNT | EXTRA | CMDARG | ARGOPT | TRLBAR),
+    c("n", "next", RANGE | BANG | XFILE | EXTRA | CMDARG | ARGOPT | TRLBAR),
+    c("prev", "previous", EXTRA | RANGE | COUNT | BANG | CMDARG | ARGOPT | TRLBAR),
+    c("N", "Next", EXTRA | RANGE | COUNT | BANG | CMDARG | ARGOPT | TRLBAR),
+    c("fir", "first", EXTRA | BANG | CMDARG | ARGOPT | TRLBAR),
+    c("la", "last", EXTRA | BANG | CMDARG | ARGOPT | TRLBAR),
+    c("rew", "rewind", EXTRA | BANG | CMDARG | ARGOPT | TRLBAR),
+    c("winc", "wincmd", NEEDARG | EXTRA | RANGE | COUNT | TRLBAR),
     c("on", "only", BANG | RANGE | COUNT | TRLBAR),
     c("dig", "digraphs", BANG | EXTRA | TRLBAR),
     c("res", "resize", RANGE | EXTRA | TRLBAR),
     c("vert", "vertical", NEEDARG | EXTRA | NOTRLCOM),
     c("ene", "enew", BANG | TRLBAR),
-    c("new", "new", BANG | XFILE | RANGE | TRLBAR),
-    c("vne", "vnew", BANG | XFILE | RANGE | TRLBAR),
-    c("sp", "split", BANG | XFILE | RANGE | TRLBAR),
-    c("vs", "vsplit", BANG | XFILE | RANGE | TRLBAR),
-    c("e", "edit", BANG | XFILE | TRLBAR),
-    c("bn", "bnext", BANG | RANGE | COUNT | TRLBAR),
-    c("bp", "bprevious", BANG | RANGE | COUNT | TRLBAR),
-    c("bN", "bNext", BANG | RANGE | COUNT | TRLBAR),
-    c("b", "buffer", BANG | RANGE | BUFNAME | COUNT | EXTRA | TRLBAR),
+    c("new", "new", BANG | XFILE | NOSPC | RANGE | CMDARG | ARGOPT | TRLBAR),
+    c("vne", "vnew", BANG | XFILE | NOSPC | RANGE | CMDARG | ARGOPT | TRLBAR),
+    c("sp", "split", BANG | XFILE | NOSPC | RANGE | CMDARG | ARGOPT | TRLBAR),
+    c("vs", "vsplit", BANG | XFILE | NOSPC | RANGE | CMDARG | ARGOPT | TRLBAR),
+    c("e", "edit", BANG | XFILE | NOSPC | CMDARG | ARGOPT | TRLBAR),
+    c("redr", "redraw", BANG | TRLBAR),
+    c("f", "file", RANGE | ZEROR | BANG | XFILE | NOSPC | TRLBAR),
+    c("bad", "badd", NEEDARG | XFILE | NOSPC | TRLBAR),
+    c("balt", "balt", NEEDARG | XFILE | NOSPC | TRLBAR),
+    c("bn", "bnext", BANG | RANGE | COUNT | CMDARG | TRLBAR),
+    c("bp", "bprevious", BANG | RANGE | COUNT | CMDARG | TRLBAR),
+    c("bN", "bNext", BANG | RANGE | COUNT | CMDARG | TRLBAR),
+    c("br", "brewind", BANG | RANGE | CMDARG | TRLBAR),
+    c("bf", "bfirst", BANG | RANGE | CMDARG | TRLBAR),
+    c("bl", "blast", BANG | RANGE | CMDARG | TRLBAR),
+    c("bm", "bmodified", BANG | RANGE | COUNT | CMDARG | TRLBAR),
+    c("b", "buffer", BANG | RANGE | BUFNAME | BUFUNL | COUNT | EXTRA | CMDARG | TRLBAR),
+    c("sb", "sbuffer", BANG | RANGE | BUFNAME | BUFUNL | COUNT | EXTRA | CMDARG | TRLBAR),
+    c("sbn", "sbnext", RANGE | COUNT | CMDARG | TRLBAR),
+    c("sbp", "sbprevious", RANGE | COUNT | CMDARG | TRLBAR),
+    c("sbN", "sbNext", RANGE | COUNT | CMDARG | TRLBAR),
+    c("sbr", "sbrewind", CMDARG | TRLBAR),
+    c("sbf", "sbfirst", CMDARG | TRLBAR),
+    c("sbl", "sblast", CMDARG | TRLBAR),
+    c("sbm", "sbmodified", RANGE | COUNT | CMDARG | TRLBAR),
     c("ls", "ls", BANG | EXTRA | TRLBAR),
     c("buffers", "buffers", BANG | EXTRA | TRLBAR),
     c("files", "files", BANG | EXTRA | TRLBAR),
     c("bd", "bdelete", BANG | RANGE | BUFNAME | COUNT | EXTRA | TRLBAR),
+    c("bw", "bwipeout", BANG | RANGE | BUFNAME | BUFUNL | COUNT | EXTRA | TRLBAR),
+    c("bun", "bunload", BANG | RANGE | BUFNAME | COUNT | EXTRA | TRLBAR),
     c("syn", "syntax", EXTRA | NOTRLCOM),
     c("hi", "highlight", BANG | EXTRA | TRLBAR),
     c("noh", "nohlsearch", TRLBAR),
@@ -91,6 +138,8 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("u", "undo", BANG | RANGE | COUNT | ZEROR | TRLBAR),
     c("red", "redo", TRLBAR),
     c("se", "set", BANG | TRLBAR | EXTRA),
+    c("setl", "setlocal", BANG | TRLBAR | EXTRA),
+    c("setg", "setglobal", BANG | TRLBAR | EXTRA),
     c("d", "delete", RANGE | REGSTR | COUNT | TRLBAR),
     c("y", "yank", RANGE | REGSTR | COUNT | TRLBAR),
     c("m", "move", RANGE | EXTRA | TRLBAR),
@@ -115,8 +164,8 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("~", "~", RANGE | EXTRA),
     c("g", "global", RANGE | BANG | EXTRA),
     c("v", "vglobal", RANGE | EXTRA),
-    c("r", "read", BANG | RANGE | ZEROR | XFILE | TRLBAR),
-    c("sav", "saveas", BANG | XFILE | TRLBAR),
+    c("r", "read", BANG | RANGE | ZEROR | XFILE | NOSPC | ARGOPT | TRLBAR),
+    c("sav", "saveas", BANG | XFILE | NOSPC | TRLBAR),
     c("ret", "retab", TRLBAR | RANGE | BANG | EXTRA),
     c("stats", "stats", TRLBAR),
     c("compact", "compact", TRLBAR),
@@ -135,14 +184,14 @@ pub(super) const CMDS: &[CmdDef] = &[
     c("lockv", "lockvar", BANG | EXTRA | NEEDARG),
     c("unlo", "unlockvar", BANG | EXTRA | NEEDARG),
     c("ec", "echo", EXTRA | NOTRLCOM),
-    c("redi", "redir", BANG | XFILE | EXTRA | TRLBAR),
+    c("redi", "redir", BANG | XFILE | NOSPC | EXTRA | TRLBAR),
     c("echon", "echon", EXTRA | NOTRLCOM),
     c("echom", "echomsg", EXTRA | NOTRLCOM),
     c("echoe", "echoerr", EXTRA | NOTRLCOM),
     c("exe", "execute", EXTRA | NOTRLCOM),
     c("cal", "call", RANGE | NEEDARG | EXTRA | NOTRLCOM),
     c("defe", "defer", NEEDARG | EXTRA | NOTRLCOM),
-    c("so", "source", RANGE | BANG | XFILE | TRLBAR),
+    c("so", "source", RANGE | BANG | XFILE | NOSPC | TRLBAR),
     c("if", "if", EXTRA | NOTRLCOM),
     c("elsei", "elseif", EXTRA | NOTRLCOM),
     c("el", "else", TRLBAR),
@@ -211,14 +260,84 @@ pub(super) fn cmd_exists(name: &str) -> i64 {
 
 /// What the numbers before the command count (`addr_type` of `ex_cmds.lua`).
 pub(super) fn addr_type(long: &str) -> super::range::AddrType {
-    use super::range::AddrType::{Buffers, Lines, None, Other, Windows};
+    use super::range::AddrType::{Arguments, Buffers, Lines, LoadedBuffers, None, Other, Windows};
     match long {
-        "quit" | "close" | "only" => Windows,
-        "resize" | "new" | "vnew" | "split" | "vsplit" | "bnext" | "bprevious" | "bNext" | "messages" | "goto" | "undo" => Other,
-        "buffer" | "bdelete" => Buffers,
+        "quit" | "close" | "only" | "hide" => Windows,
+        "argadd" | "argdelete" | "argedit" | "argument" => Arguments,
+        "file" | "resize" | "wincmd" | "next" | "previous" | "Next" | "new" | "vnew" | "split" | "vsplit" | "bnext" | "bprevious" | "bNext" | "bmodified" | "sbnext" | "sbprevious" | "sbNext" | "sbmodified" | "brewind" | "bfirst" | "blast" | "messages" | "goto" | "undo" => Other,
+        "buffer" | "sbuffer" | "bdelete" | "bwipeout" => Buffers,
+        "bunload" => LoadedBuffers,
         "write" | "wq" | "xit" | "append" | "insert" | "change" | "delete" | "yank" | "move" | "t" | "copy" | ">" | "<" | "join" | "print" | "put" | "number" | "#" | "list" | "k" | "mark" | "=" | "normal" | "sort" | "global" | "vglobal" | "read" | "retab" | "call" | "source" | "substitute" | "&" | "&&" | "~" => Lines,
         _ => None,
     }
+}
+
+/// `getargcmd`: a `+cmd` at the start of `arg`, and what is left after it: the command (`$` for a bare `+`) with the
+/// backslashes before a blank or a backslash taken out.
+pub(in crate::editor) fn getargcmd(arg: &str) -> (Option<String>, &str) {
+    let Some(r) = arg.strip_prefix('+') else { return (None, arg) };
+    if r.is_empty() || r.starts_with([' ', '\t']) {
+        return (Some("$".into()), skipwhite(r));
+    }
+    let b = r.as_bytes();
+    let (mut out, mut i) = (String::new(), 0);
+    while i < b.len() && !b[i].is_ascii_whitespace() {
+        if b[i] == b'\\' && i + 1 < b.len() {
+            i += 1;
+        }
+        let l = r[i..].chars().next().map_or(1, char::len_utf8);
+        out.push_str(&r[i..i + l]);
+        i += l;
+    }
+    (Some(out), skipwhite(&r[i..]))
+}
+
+/// `getargopt`: one `++opt` or `++opt=val` at the start of `arg` and what is left; none for one that is not valid. The forced
+/// 'fileformat', 'fileencoding', 'binary', `++bad` and `++p` are checked and then not applied.
+// shortcut: `++ff`, `++enc`, `++bin`, `++nobin`, `++bad` and `++p` are read and validated but do not change how a file is read or written
+pub(super) fn getargopt(arg: &str) -> Result<&str, Option<usize>> {
+    let a = &arg[2..];
+    let alpha = |s: &str| s.as_bytes().first().is_some_and(u8::is_ascii_alphabetic);
+    if a.starts_with("bin") || a.starts_with("nobin") {
+        let r = a.strip_prefix("no").unwrap_or(a);
+        // `checkforcmd(&arg, "binary", 3)`.
+        let i = "binary".bytes().zip(r.bytes()).take_while(|(x, y)| x == y).count();
+        return if i >= 3 && !r.as_bytes().get(i).is_some_and(u8::is_ascii_alphabetic) { Ok(skipwhite(&r[i..])) } else { Err(None) };
+    }
+    if a.starts_with("edit") && !alpha(&a[4..]) {
+        return Ok(skipwhite(&a[4..]));
+    }
+    if a.starts_with('p') && !alpha(&a[1..]) {
+        return Ok(skipwhite(&a[1..]));
+    }
+    let (kind, r) = if let Some(r) = a.strip_prefix("fileformat") {
+        ('f', r)
+    } else if let Some(r) = a.strip_prefix("ff") {
+        ('f', r)
+    } else if let Some(r) = a.strip_prefix("encoding") {
+        ('e', r)
+    } else if let Some(r) = a.strip_prefix("enc") {
+        ('e', r)
+    } else if let Some(r) = a.strip_prefix("bad") {
+        ('b', r)
+    } else {
+        return Err(None);
+    };
+    let v = r.strip_prefix('=').ok_or(None)?;
+    let i = v.find(|c: char| c.is_ascii_whitespace()).unwrap_or(v.len());
+    let val = &v[..i];
+    let ok = match kind {
+        'f' => matches!(val, "unix" | "dos" | "mac"),
+        'b' => val.eq_ignore_ascii_case("keep") || val.eq_ignore_ascii_case("drop") || val.chars().count() == 1,
+        _ => true,
+    };
+    // The line is cut after the value for the message.
+    if ok { Ok(skipwhite(&v[i..])) } else { Err(Some(arg.len() - v.len() + i)) }
+}
+
+/// The commands of the buffer list (`ex_buffer` and its relatives): their `+cmd` runs also when going to the buffer failed.
+pub(super) fn is_buffer_cmd(long: &str) -> bool {
+    matches!(long, "buffer" | "sbuffer" | "bnext" | "bprevious" | "bNext" | "brewind" | "bfirst" | "blast" | "bmodified" | "sbnext" | "sbprevious" | "sbNext" | "sbrewind" | "sbfirst" | "sblast" | "sbmodified")
 }
 
 /// The command `name` stands for when rim has it.
@@ -238,6 +357,8 @@ pub(super) struct Mods {
     pub errsilent: bool,
     pub unsilent: bool,
     pub vertical: bool,
+    /// `:hide cmd` (`CMOD_HIDE`): a buffer the command leaves stays loaded.
+    pub hide: bool,
 }
 
 /// `parse_command_modifiers`: what is left of `text` after the modifiers, or where the line goes on
@@ -272,7 +393,15 @@ pub(super) fn parse_modifiers(text: &str) -> Result<(&str, Mods), Option<&str>> 
             Some(b'c') => check(start, "confirm", 4),
             Some(b'k') => check(start, "keepmarks", 3).or_else(|| check(start, "keepalt", 5)).or_else(|| check(start, "keeppatterns", 5)).or_else(|| check(start, "keepjumps", 5)),
             // `:filter {pat} cmd` is not supported: it is then no modifier, as when it has no pattern.
-            Some(b'h') => check(start, "horizontal", 3).or_else(|| if p == start { check(p, "hide", 3).filter(|&n| !ends_excmd(text.as_bytes().get(n).copied())) } else { None }),
+            Some(b'h') => check(start, "horizontal", 3).or_else(|| {
+                if p == start {
+                    let n = check(p, "hide", 3).filter(|&n| !ends_excmd(text.as_bytes().get(n).copied()))?;
+                    mods.hide = true;
+                    Some(n)
+                } else {
+                    None
+                }
+            }),
             Some(b'l') => check(start, "lockmarks", 3).or_else(|| check(start, "leftabove", 5)),
             Some(b'n') => check(start, "noautocmd", 3).or_else(|| check(start, "noswapfile", 3)),
             Some(b'r') => check(start, "rightbelow", 6),

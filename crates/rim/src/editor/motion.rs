@@ -136,52 +136,9 @@ impl Editor {
     /// one in the line, else the non-blank text; its start column, and whether it is an identifier (a word of class 2: `*` then
     /// matches it as a whole word). A word ends where the class of its chars changes (`日本語abc` is two).
     pub(super) fn word_under_cursor(&self) -> Option<(String, usize, bool)> {
-        use super::wordclass::class;
         let line = self.buf.doc.text().line(self.win.line);
-        let cls = |b: usize| line[b..].chars().next().map_or(0, class);
-        let startb = self.line_byte(self.win.line, self.win.col);
-        let (mut b, mut this_class) = (startb, 0);
-        let mut pass = 0;
-        while pass < 2 {
-            // 1. Skip to the start of the identifier (pass 0) or of any non-blank text (pass 1).
-            b = startb;
-            while b < line.len() {
-                this_class = cls(b);
-                if this_class != 0 && (pass == 1 || this_class != 1) {
-                    break;
-                }
-                b = graphemes::next(&line, b);
-            }
-            // 2. Back up to the start: while the class stays the same (pass 0), or up to a blank (pass 1, as `FIND_IDENT` is set: the
-            // class must stay the same too).
-            this_class = if b < line.len() { cls(b) } else { 0 };
-            while b > 0 && this_class != 0 {
-                let prev = graphemes::prev(&line, b);
-                if this_class != cls(prev) {
-                    break;
-                }
-                b = prev;
-            }
-            // An identifier found, or any text wanted and it is not one: stop at the first pass that found a word.
-            this_class = this_class.min(2);
-            if this_class == 2 {
-                break;
-            }
-            pass += 1;
-        }
-        let pass = pass.min(1);
-        if b >= line.len() || (pass == 0 && this_class != 2) {
-            return None;
-        }
-        // 3. The end: where the class changes (pass 0) or at a blank (pass 1).
-        let first = cls(b);
-        let mut end = b;
-        while end < line.len() && (if pass == 0 { cls(end) == first } else { cls(end) != 0 }) {
-            end = graphemes::next(&line, end);
-        }
-        let col = graphemes::col_of(&line, b);
-        // `vim_iswordp`: a word char starts it.
-        Some((line[b..end].to_string(), col, first >= 2))
+        let (b, end, ident) = find_ident_at(&line, self.line_byte(self.win.line, self.win.col), FIND_IDENT | FIND_STRING)?;
+        Some((line[b..end].to_string(), graphemes::col_of(&line, b), ident))
     }
 
     /// Byte offset of mark `m`, kept inside the text and on a char boundary (undo does not move marks).
@@ -570,4 +527,93 @@ impl Editor {
         };
         search::find_forward(text, re, cur, next)
     }
+}
+
+/// `find_ident_at_pos` flags.
+pub(super) const FIND_IDENT: u8 = 1;
+pub(super) const FIND_STRING: u8 = 2;
+pub(super) const FIND_EVAL: u8 = 4;
+
+/// `find_is_eval_item`: a char that belongs to a C expression (`s.var`, `s->var`, `a[x]`) while `FIND_EVAL` walks the line;
+/// `col` moves one more char for the two-char `->`.
+fn find_is_eval_item(line: &str, col: &mut usize, bn: &mut i32, backward: bool) -> bool {
+    let b = line.as_bytes();
+    let at = |i: usize| b.get(i).copied().unwrap_or(0);
+    let p = *col;
+    if (at(p) == b']' && backward) || (at(p) == b'[' && !backward) {
+        *bn += 1;
+    }
+    if *bn > 0 {
+        if (at(p) == b'[' && backward) || (at(p) == b']' && !backward) {
+            *bn -= 1;
+        }
+        return true;
+    }
+    if at(p) == b'.' {
+        return true;
+    }
+    let (gt, minus) = if backward { (at(p), p.checked_sub(1).map_or(0, at)) } else { (at(p + 1), at(p)) };
+    if gt == b'>' && minus == b'-' {
+        if backward {
+            *col -= 1;
+        } else {
+            *col += 1;
+        }
+        return true;
+    }
+    false
+}
+
+/// `find_ident_at_pos`: the text at or after byte `startb` of `line`: `(start, end, is_identifier)`. `FIND_IDENT` looks for an
+/// identifier first, `FIND_STRING` for any non-blank text after that, `FIND_EVAL` takes what a C expression is made of.
+/// None where Neovim gives `E348`/`E349` (`FIND_STRING` set or not).
+pub(super) fn find_ident_at(line: &str, startb: usize, find: u8) -> Option<(usize, usize, bool)> {
+    use super::wordclass::class;
+    let eval = find & FIND_EVAL != 0;
+    let at = |i: usize| line.as_bytes().get(i).copied().unwrap_or(0);
+    let cls = |b: usize| line.get(b..).and_then(|t| t.chars().next()).map_or(0, class);
+    let (mut col, mut this_class) = (0, 0);
+    let mut bn;
+    let mut i = if find & FIND_IDENT != 0 { 0 } else { 1 };
+    while i < 2 {
+        // 1. Skip to the start of the identifier (pass 0) or of any non-blank text (pass 1).
+        col = startb;
+        while col < line.len() {
+            if eval && at(col) == b']' {
+                break;
+            }
+            this_class = cls(col);
+            if this_class != 0 && (i == 1 || this_class != 1) {
+                break;
+            }
+            col = graphemes::next(line, col);
+        }
+        // 2. Back up to the start; the class of the char found decides.
+        bn = i32::from(at(col) == b']');
+        this_class = if eval && at(col) == b']' { class('a') } else { cls(col) };
+        while col > 0 && this_class != 0 {
+            let mut prevcol = graphemes::prev(line, col);
+            let prev_class = cls(prevcol);
+            if this_class != prev_class && (i == 0 || prev_class == 0 || find & FIND_IDENT != 0) && (!eval || prevcol == 0 || !find_is_eval_item(line, &mut prevcol, &mut bn, true)) {
+                break;
+            }
+            col = prevcol;
+        }
+        this_class = this_class.min(2);
+        if find & FIND_STRING == 0 || this_class == 2 {
+            break;
+        }
+        i += 1;
+    }
+    if col >= line.len() || (i == 0 && this_class != 2) {
+        return None;
+    }
+    // 3. The end: where the class changes (pass 0) or at a blank.
+    let start = col;
+    let (mut bn, first) = (0, cls(start));
+    let mut end = start;
+    while end < line.len() && (if i == 0 { cls(end) == first } else { cls(end) != 0 } || (eval && end <= startb && find_is_eval_item(line, &mut end, &mut bn, false))) {
+        end = graphemes::next(line, end);
+    }
+    Some((start, end, first >= 2))
 }

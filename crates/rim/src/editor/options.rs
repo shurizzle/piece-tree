@@ -21,6 +21,16 @@ pub(super) struct Options {
     /// repeats; empty: every `tabstop`).
     pub vartabstop: String,
     pub vts_array: Vec<usize>,
+    /// `'isfname'` (global): the chars a file name is made of.
+    pub isfname: String,
+    /// `'shell'` and `'suffixes'` (global).
+    pub shell: String,
+    pub suffixes: String,
+    /// `'splitbelow'` and `'splitright'` (global): where a new window goes, and which neighbour a closed one gives its room to.
+    pub splitbelow: bool,
+    pub splitright: bool,
+    /// `'hidden'` (global): a buffer that leaves its last window stays loaded.
+    pub hidden: bool,
     /// `'smarttab'` (global): Tab and Backspace in an indent work by `shiftwidth`.
     pub smarttab: bool,
     /// `'softtabstop'`: Tab and Backspace in Insert mode move by this many columns (0: off, negative: `shiftwidth`).
@@ -78,6 +88,12 @@ pub(super) struct Options {
     pub msg_history: usize,
     /// `shortmess`: flags that shorten messages (`T`: cut the middle of a long one, `t`: the start of a file message).
     pub shortmess: String,
+    /// `'modifiable'`: the text can be changed (`E21` otherwise).
+    pub modifiable: bool,
+    /// `'readonly'`: writing the file needs `!` (`E45`); a change warns once (`W10`).
+    pub readonly: bool,
+    /// `'bufhidden'`: what happens when the buffer is no longer in a window: `hide`, `unload`, `delete`, `wipe`, or the default.
+    pub bufhidden: String,
     /// `buftype=nofile`: the buffer is never modified and cannot be written.
     pub nofile: bool,
     /// Output taller than the screen waits in a pager (`-- More --`) instead of showing its last rows.
@@ -89,6 +105,8 @@ pub(super) struct Options {
     pub wildmenu: bool,
     pub wildmode: String,
     pub wildoptions: String,
+    /// `'jumpoptions'` (global): `clean` is the one that is read (`:bdelete`); `stack` and `view` are kept as set.
+    pub jumpoptions: String,
     pub wildignore: String,
     pub wildignorecase: bool,
     pub wildchar: String,
@@ -138,6 +156,12 @@ impl Default for Options {
             vts_array: Vec::new(),
             first_error: None,
             smarttab: true,
+            hidden: true,
+            isfname: "@,48-57,/,.,-,_,+,,,#,$,%,~,=".into(),
+            shell: std::env::var("SHELL").ok().filter(|s| !s.is_empty()).unwrap_or_else(|| "sh".into()),
+            suffixes: ".bak,~,.o,.h,.info,.swp,.obj".into(),
+            splitbelow: false,
+            splitright: false,
             softtabstop: 0,
             undolevels: 1000,
             undoreload: 10000,
@@ -167,11 +191,15 @@ impl Default for Options {
             msg_history: 500,
             shortmess: "ltToOCF".into(),
             nofile: false,
+            modifiable: true,
+            readonly: false,
+            bufhidden: String::new(),
             more: true,
             cmdwinheight: 7,
             wildmenu: true,
             wildmode: "full".into(),
             wildoptions: "pum,tagfile".into(),
+            jumpoptions: "clean".into(),
             wildignore: String::new(),
             wildignorecase: false,
             wildchar: "<Tab>".into(),
@@ -256,6 +284,15 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("tabstop", Some("ts"), false),
     ("vartabstop", Some("vts"), false),
     ("smarttab", Some("sta"), true),
+    ("hidden", Some("hid"), true),
+    ("modifiable", Some("ma"), true),
+    ("readonly", Some("ro"), true),
+    ("bufhidden", Some("bh"), false),
+    ("isfname", Some("isf"), false),
+    ("shell", Some("sh"), false),
+    ("suffixes", Some("su"), false),
+    ("splitbelow", Some("sb"), true),
+    ("splitright", Some("spr"), true),
     ("softtabstop", Some("sts"), false),
     ("undolevels", Some("ul"), false),
     ("undoreload", Some("ur"), false),
@@ -285,6 +322,7 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("wildmenu", Some("wmnu"), true),
     ("wildmode", Some("wim"), false),
     ("wildoptions", Some("wop"), false),
+    ("jumpoptions", Some("jop"), false),
     ("wildignore", Some("wig"), false),
     ("wildignorecase", Some("wic"), true),
     ("wildchar", Some("wc"), false),
@@ -343,10 +381,14 @@ impl Options {
         (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
         to.shortmess = self.shortmess.clone();
         to.smarttab = self.smarttab;
+        to.hidden = self.hidden;
+        (to.shell, to.suffixes, to.isfname) = (self.shell.clone(), self.suffixes.clone(), self.isfname.clone());
+        (to.splitbelow, to.splitright) = (self.splitbelow, self.splitright);
         to.undoreload = self.undoreload;
         to.cmdwinheight = self.cmdwinheight;
         to.more = self.more;
         (to.wildmenu, to.wildmode, to.wildoptions) = (self.wildmenu, self.wildmode.clone(), self.wildoptions.clone());
+        to.jumpoptions = self.jumpoptions.clone();
         (to.wildignore, to.wildignorecase) = (self.wildignore.clone(), self.wildignorecase);
         (to.wildchar, to.wildcharm, to.pumheight, to.pumwidth) = (self.wildchar.clone(), self.wildcharm.clone(), self.pumheight, self.pumwidth);
         to.cedit = self.cedit.clone();
@@ -539,6 +581,11 @@ impl Options {
             "wrap" => Some(&mut self.wrap),
             "expandtab" => Some(&mut self.expandtab),
             "smarttab" => Some(&mut self.smarttab),
+            "hidden" => Some(&mut self.hidden),
+            "modifiable" => Some(&mut self.modifiable),
+            "readonly" => Some(&mut self.readonly),
+            "splitbelow" => Some(&mut self.splitbelow),
+            "splitright" => Some(&mut self.splitright),
             "list" => Some(&mut self.list),
             "ignorecase" => Some(&mut self.ignorecase),
             "smartcase" => Some(&mut self.smartcase),
@@ -570,6 +617,11 @@ impl Options {
             "wrap" => on(self.wrap, name),
             "expandtab" => on(self.expandtab, name),
             "smarttab" => on(self.smarttab, name),
+            "hidden" => on(self.hidden, name),
+            "modifiable" => on(self.modifiable, name),
+            "readonly" => on(self.readonly, name),
+            "splitbelow" => on(self.splitbelow, name),
+            "splitright" => on(self.splitright, name),
             "softtabstop" => format!("softtabstop={}", self.softtabstop),
             "undolevels" => format!("undolevels={}", self.undolevels),
             "undoreload" => format!("undoreload={}", self.undoreload),
@@ -601,6 +653,11 @@ impl Options {
             "fileformat" => format!("fileformat={}", self.fileformat),
             "wildmode" => format!("wildmode={}", self.wildmode),
             "wildoptions" => format!("wildoptions={}", self.wildoptions),
+            "jumpoptions" => format!("jumpoptions={}", self.jumpoptions),
+            "shell" => format!("shell={}", self.shell),
+            "bufhidden" => format!("bufhidden={}", self.bufhidden),
+            "isfname" => format!("isfname={}", self.isfname),
+            "suffixes" => format!("suffixes={}", self.suffixes),
             "shortmess" => format!("shortmess={}", self.shortmess),
             "wildignore" => format!("wildignore={}", self.wildignore),
             "wildchar" => format!("wildchar={}", self.wildchar),
@@ -681,6 +738,11 @@ impl Options {
                 self.shortmess = value.to_string();
             }
             "wildmode" => self.wildmode = super::wild::valid_mode(value).then(|| value.to_string()).ok_or_else(invalid)?,
+            "shell" => self.shell = value.to_string(),
+            "bufhidden" => self.bufhidden = matches!(value, "" | "hide" | "unload" | "delete" | "wipe").then(|| value.to_string()).ok_or_else(invalid)?,
+            "isfname" => self.isfname = super::script::isfname_table(value).is_some().then(|| value.to_string()).ok_or_else(invalid)?,
+            "suffixes" => self.suffixes = value.to_string(),
+            "jumpoptions" => self.jumpoptions = value.split(',').all(|o| matches!(o, "" | "stack" | "view" | "clean")).then(|| value.to_string()).ok_or_else(invalid)?,
             "wildoptions" => self.wildoptions = super::wild::valid_options(value).then(|| value.to_string()).ok_or_else(invalid)?,
             "wildignore" => self.wildignore = value.to_string(),
             "wildchar" | "wildcharm" => {
@@ -844,7 +906,7 @@ impl Options {
             Op::None => value.to_string(),
             _ => {
                 // A comma-separated option adds and removes items; the others join and cut text.
-                let comma = matches!(name, "wildmode" | "wildoptions" | "wildignore" | "messagesopt");
+                let comma = matches!(name, "wildmode" | "wildoptions" | "wildignore" | "messagesopt" | "jumpoptions" | "suffixes");
                 let items: Vec<&str> = old.split(',').filter(|s| !s.is_empty()).collect();
                 // `'vartabstop'` is a comma list that keeps duplicates: `+=` and `^=` always add, `-=` takes the first match.
                 if matches!(name, "vartabstop" | "varsofttabstop") {

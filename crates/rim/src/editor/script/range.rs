@@ -15,6 +15,10 @@ pub(in crate::editor) enum AddrType {
     Other,
     Windows,
     Buffers,
+    /// `ADDR_ARGUMENTS`: the entries of the argument list.
+    Arguments,
+    /// `ADDR_LOADED_BUFFERS`: the numbers of the buffers that are loaded (`:bunload`).
+    LoadedBuffers,
     None,
 }
 
@@ -52,7 +56,8 @@ impl Editor {
                 self.split.leaves(&mut ids);
                 (ids.iter().position(|&i| i == self.win.id).map_or(1, |p| p as i64 + 1), ids.len().max(1) as i64)
             }
-            AddrType::Buffers => (self.buf.id as i64, self.next_buf as i64),
+            AddrType::Buffers | AddrType::LoadedBuffers => (self.buf.id as i64, self.next_buf as i64),
+            AddrType::Arguments => ((self.win.arg_idx as i64 + 1).min(self.arglist.len() as i64), self.arglist.len() as i64),
             _ => (self.win.line as i64 + 1, self.line_count() as i64),
         }
     }
@@ -80,7 +85,7 @@ impl Editor {
                     if matches!(t, AddrType::None) {
                         return Err(addr_error(t));
                     }
-                    lnum = Some(self.addr_context(t).1);
+                    lnum = Some(if matches!(t, AddrType::Buffers | AddrType::LoadedBuffers) { self.buffer_bounds(t).1 } else { self.addr_context(t).1 });
                 }
                 Some(b'\'') => {
                     pos += 1;
@@ -169,7 +174,7 @@ impl Editor {
                     Some(l) => l,
                     None => match t {
                         AddrType::Lines | AddrType::Other => cur,
-                        AddrType::Windows | AddrType::Buffers => self.addr_context(t).0,
+                        AddrType::Windows | AddrType::Buffers | AddrType::LoadedBuffers | AddrType::Arguments => self.addr_context(t).0,
                         AddrType::None => 0,
                     },
                 };
@@ -190,7 +195,10 @@ impl Editor {
                 } else {
                     1
                 };
-                lnum = Some(if sign == b'-' {
+                lnum = Some(if matches!(t, AddrType::Buffers | AddrType::LoadedBuffers) {
+                    // `compute_buffer_local_count`: the buffer `n` places further in the list.
+                    self.buffer_local_count(t, base, if sign == b'-' { -n } else { n })
+                } else if sign == b'-' {
                     base - n
                 } else {
                     if base >= 0 && n >= i64::from(i32::MAX) - base {
@@ -208,7 +216,13 @@ impl Editor {
 
     /// `parse_cmd_address`: `a,b`, `a;b`, `%`, `*` and chains of them; `text` starts at the range.
     pub(super) fn parse_cmd_address(&mut self, text: &str, t: AddrType, skip: bool) -> Result<Range, String> {
-        let default = |s: &Self| -> i64 { if t == AddrType::None { 0 } else { s.addr_context(t).0.min(s.line_count() as i64).max(if matches!(t, AddrType::Lines | AddrType::Other) { s.win.line as i64 + 1 } else { 0 }) } };
+        let default = |s: &Self| -> i64 {
+            match t {
+                AddrType::None => 0,
+                AddrType::Lines | AddrType::Other => s.addr_context(t).0.min(s.line_count() as i64).max(s.win.line as i64 + 1),
+                _ => s.addr_context(t).0,
+            }
+        };
         // The loop runs at least once, so `line1` is always set from `line2` before it is read.
         #[allow(unused_assignments)]
         let mut line1 = 0i64;
@@ -236,10 +250,8 @@ impl Editor {
                             line1 = 1;
                             line2 = self.line_count() as i64;
                         }
-                        AddrType::Buffers => {
-                            line1 = 1;
-                            line2 = self.next_buf as i64;
-                        }
+                        AddrType::Buffers | AddrType::LoadedBuffers => (line1, line2) = self.buffer_bounds(t),
+                        AddrType::Arguments => (line1, line2) = (1, self.arglist.len() as i64),
                         _ => return Err("E16: Invalid range".into()),
                     }
                     count += 1;
@@ -292,7 +304,9 @@ impl Editor {
             let bad = match t {
                 AddrType::Lines => r.line2 > self.line_count() as i64,
                 AddrType::Buffers => r.line1 < 1 || r.line2 > last,
+                AddrType::LoadedBuffers => self.buffer_bounds(t) == (0, 0) || r.line1 < self.buffer_bounds(t).0 || r.line2 > self.buffer_bounds(t).1,
                 AddrType::Windows => r.line2 > last,
+                AddrType::Arguments => r.line2 > last + i64::from(last == 0),
                 _ => false,
             };
             if bad {

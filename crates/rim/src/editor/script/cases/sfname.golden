@@ -1,0 +1,36 @@
+NVIM v0.12.6
+
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp68zwiy0a/f.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp68zwiy0a/f.x 1
+
+  1 %a   "/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp68zwiy0a/f.x" line 1
+"---
+
+./d/g.x ./d/g.x
+./d/g.x 1
+./d/g.x 1
+"---
+
+d//g.x
+d
+"---
+
+g.x g.x
+g.x 1
+d/g.x
+"---
+
+ ./f.x
+['./f.x'] ./f.x
+"---
+
+./f.x ./f.x
+./h.x ./f.x
+./h.x ./w.x
+"---
+
+./f.x
+./nosuch
+
+  1 %a   "[No Name]"                    line 1
+  2u     "./f.x"                        line 0
+  3u     "./nosuch"                     line 0

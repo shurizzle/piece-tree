@@ -17,7 +17,14 @@ fn load(vim: &str, golden: &str) -> (Vec<String>, Vec<String>) {
 
 /// Cases that differ from Neovim and are known to: (file, case numbers, from 0). Each phase of
 /// docs/reference/vimscript.md empties its part of this list; it never grows.
-const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[]), ("undoflags", &[]), ("undosub", &[])];
+/// The corpora whose cases make files and read the directory: each case runs in a directory of its own, as the oracle's does.
+const CWD_CORPORA: &[&str] = &["expandone", "arglist", "cmdarg", "bufopts", "readerr", "bufline", "bufinfo", "tick", "nul", "sfname", "bufwin", "changelist", "setreg", "setlocal", "file"];
+
+/// The current directory is the process's: the tests that change it take this lock for writing, the ones that read it (a
+/// relative name, a wildcard) for reading.
+pub(in crate::editor) static CWD_LOCK: parking_lot::RwLock<()> = parking_lot::RwLock::new(());
+
+const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[]), ("undoflags", &[]), ("undosub", &[]), ("buffers", &[]), ("evalvars", &[]), ("evalvars2", &[]), ("buffuncs", &[]), ("buffers2", &[]), ("buffers3", &[]), ("buffers4", &[]), ("hidden", &[]), ("bufdel", &[]), ("windows", &[]), ("expandone", &[]), ("arglist", &[]), ("evalvars3", &[]), ("cmdarg", &[]), ("bufopts", &[]), ("escapes", &[]), ("readerr", &[]), ("bufline", &[]), ("bufinfo", &[]), ("tick", &[]), ("nul", &[]), ("bufvaropts", &[]), ("wincell", &[]), ("sfname", &[]), ("bufwin", &[]), ("match", &[]), ("changelist", &[]), ("setreg", &[]), ("setlocal", &[]), ("file", &[]), ("transchar", &[])];
 
 /// The lines of `s` in order.
 fn sorted_lines(s: &str) -> String {
@@ -41,20 +48,31 @@ fn run_as(name: &str, vim: &str, golden: &str, typed: bool) {
     // A sourced file is named by its real directory.
     let dir = fs::canonicalize(&dir).unwrap();
     let mut bad = Vec::new();
+    let uses_cwd = CWD_CORPORA.contains(&name);
+    let (_write, _read) = if uses_cwd { (Some(CWD_LOCK.write()), None) } else { (None, Some(CWD_LOCK.read())) };
+    let old_cwd = uses_cwd.then(|| std::env::current_dir().expect("a current directory"));
+    let mut case_root = std::path::PathBuf::new();
+    let tmp_dir = regex::Regex::new(r"(/private)?/var/folders/[^/\s]+/[^/\s]+/T/tmp[0-9A-Za-z_]+").expect("valid");
     for (i, (script, want)) in scripts.iter().zip(&outs).enumerate() {
+        if uses_cwd {
+            let here = dir.join(format!("c{i}"));
+            fs::create_dir_all(&here).unwrap();
+            std::env::set_current_dir(&here).unwrap();
+            case_root = std::env::current_dir().expect("a current directory");
+        }
         if std::env::var_os("RIM_GOLDEN_TRACE").is_some() {
             eprintln!("case {i}");
         }
         let path = dir.join("case.vim");
         fs::write(&path, format!("{script}\n")).unwrap();
         let mut e = ed("");
-        // Neovim's buffer has no name.
-        e.command("enew");
+        // Neovim starts with one buffer, number 1, without a name.
+        e.buf.path = None;
         // Neovim's headless window is 80 columns wide (no frame is drawn here, so the width a wrapped line needs is set by hand).
         e.win.text_w = 80;
         e.headless = true;
         // Neovim starts in its first buffer: nothing is alternate.
-        e.alt = None;
+        e.win.alt = None;
         e.msgs.redir = Some(String::new());
         if typed {
             for line in script.lines().filter(|l| !l.trim().is_empty()) {
@@ -85,7 +103,16 @@ fn run_as(name: &str, vim: &str, golden: &str, typed: bool) {
         } else {
             e.command(&format!("source {}", path.display()));
         }
-        let got = e.msgs.redir.take().unwrap().replace(&path.display().to_string(), "{file}");
+        // A write runs on a thread: it ends before the directory of the case goes.
+        e.wait_saves();
+        let mut got = e.msgs.redir.take().unwrap().replace(&path.display().to_string(), "{file}");
+        let mut want = want.clone();
+        if uses_cwd {
+            // The directory of the case is `TMP` on both sides: its name is a made-up one.
+            got = got.replace(&case_root.display().to_string(), "TMP");
+            want = tmp_dir.replace_all(&want, "TMP").into_owned();
+        }
+        let want = &want;
         // `"unordered` first: the output is a set of lines (a `:let` listing walks a `HashMap`, whose order is arbitrary).
         // An undo message says how long ago the change was made, which the recording and the run do not share.
         let age = |t: &str| regex::Regex::new(r"\d+ seconds? ago").expect("valid").replace_all(t, "N seconds ago").into_owned();
@@ -94,6 +121,9 @@ fn run_as(name: &str, vim: &str, golden: &str, typed: bool) {
         // message row: `msg_didout`); `undo.typed` has such messages in every case, so its blank lines are not compared.
         let blanks = |t: String| if name == "undo.typed" { t.lines().filter(|l| !l.is_empty()).collect::<Vec<_>>().join("\n") } else { t };
         let (got, want) = (blanks(got), blanks(want));
+        // Headless Neovim writes the `:`, `/` or `?` of a command-line window it opens to its output; that is the terminal, not a message.
+        let prompt = |t: String| if name == "buffers3" { t.lines().filter(|l| !matches!(*l, ":" | "/" | "?")).collect::<Vec<_>>().join("\n") } else { t };
+        let (got, want) = (prompt(got), prompt(want));
         let (got, want) = if script.starts_with("\"unordered\n") { (sorted_lines(&got), sorted_lines(&want)) } else { (got, want) };
         let want = &want;
         if got != *want && !known.contains(&i) {
@@ -102,6 +132,9 @@ fn run_as(name: &str, vim: &str, golden: &str, typed: bool) {
         if got == *want && known.contains(&i) {
             bad.push(format!("case {i} now matches: remove it from KNOWN"));
         }
+    }
+    if let Some(old) = old_cwd {
+        std::env::set_current_dir(old).unwrap();
     }
     fs::remove_dir_all(&dir).unwrap();
     assert!(bad.is_empty(), "{name}: {} cases differ from Neovim\n\n{}", bad.len(), bad.join("\n\n"));
@@ -466,6 +499,192 @@ fn block3_cases_match_neovim() {
 #[test]
 fn insarrow_typed_cases_match_neovim() {
     run_as("insarrow.typed", include_str!("cases/insarrow.typed.vim"), include_str!("cases/insarrow.typed.golden"), true);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn buffers_cases_match_neovim() {
+    run("buffers", include_str!("cases/buffers.vim"), include_str!("cases/buffers.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn evalvars_cases_match_neovim() {
+    run("evalvars", include_str!("cases/evalvars.vim"), include_str!("cases/evalvars.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn evalvars2_cases_match_neovim() {
+    run("evalvars2", include_str!("cases/evalvars2.vim"), include_str!("cases/evalvars2.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn buffuncs_cases_match_neovim() {
+    run("buffuncs", include_str!("cases/buffuncs.vim"), include_str!("cases/buffuncs.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn buffers2_cases_match_neovim() {
+    run("buffers2", include_str!("cases/buffers2.vim"), include_str!("cases/buffers2.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn buffers3_cases_match_neovim() {
+    run("buffers3", include_str!("cases/buffers3.vim"), include_str!("cases/buffers3.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn buffers4_cases_match_neovim() {
+    run("buffers4", include_str!("cases/buffers4.vim"), include_str!("cases/buffers4.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn hidden_cases_match_neovim() {
+    run("hidden", include_str!("cases/hidden.vim"), include_str!("cases/hidden.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn bufdel_cases_match_neovim() {
+    run("bufdel", include_str!("cases/bufdel.vim"), include_str!("cases/bufdel.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn windows_cases_match_neovim() {
+    run("windows", include_str!("cases/windows.vim"), include_str!("cases/windows.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn expandone_cases_match_neovim() {
+    run("expandone", include_str!("cases/expandone.vim"), include_str!("cases/expandone.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn arglist_cases_match_neovim() {
+    run("arglist", include_str!("cases/arglist.vim"), include_str!("cases/arglist.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn evalvars3_cases_match_neovim() {
+    run("evalvars3", include_str!("cases/evalvars3.vim"), include_str!("cases/evalvars3.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn escapes_cases_match_neovim() {
+    run("escapes", include_str!("cases/escapes.vim"), include_str!("cases/escapes.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn wincell_cases_match_neovim() {
+    run("wincell", include_str!("cases/wincell.vim"), include_str!("cases/wincell.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn bufvaropts_cases_match_neovim() {
+    run("bufvaropts", include_str!("cases/bufvaropts.vim"), include_str!("cases/bufvaropts.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn transchar_cases_match_neovim() {
+    run("transchar", include_str!("cases/transchar.vim"), include_str!("cases/transchar.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn file_cases_match_neovim() {
+    run("file", include_str!("cases/file.vim"), include_str!("cases/file.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn setlocal_cases_match_neovim() {
+    run("setlocal", include_str!("cases/setlocal.vim"), include_str!("cases/setlocal.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn setreg_cases_match_neovim() {
+    run("setreg", include_str!("cases/setreg.vim"), include_str!("cases/setreg.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn changelist_cases_match_neovim() {
+    run("changelist", include_str!("cases/changelist.vim"), include_str!("cases/changelist.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn match_cases_match_neovim() {
+    run("match", include_str!("cases/match.vim"), include_str!("cases/match.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn bufwin_cases_match_neovim() {
+    run("bufwin", include_str!("cases/bufwin.vim"), include_str!("cases/bufwin.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn sfname_cases_match_neovim() {
+    run("sfname", include_str!("cases/sfname.vim"), include_str!("cases/sfname.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn nul_cases_match_neovim() {
+    run("nul", include_str!("cases/nul.vim"), include_str!("cases/nul.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn tick_cases_match_neovim() {
+    run("tick", include_str!("cases/tick.vim"), include_str!("cases/tick.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn bufinfo_cases_match_neovim() {
+    run("bufinfo", include_str!("cases/bufinfo.vim"), include_str!("cases/bufinfo.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn bufline_cases_match_neovim() {
+    run("bufline", include_str!("cases/bufline.vim"), include_str!("cases/bufline.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn readerr_cases_match_neovim() {
+    run("readerr", include_str!("cases/readerr.vim"), include_str!("cases/readerr.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn bufopts_cases_match_neovim() {
+    run("bufopts", include_str!("cases/bufopts.vim"), include_str!("cases/bufopts.golden"));
+}
+
+#[cfg_attr(miri, ignore = "reads and writes files; safe editor logic")]
+#[test]
+fn cmdarg_cases_match_neovim() {
+    run("cmdarg", include_str!("cases/cmdarg.vim"), include_str!("cases/cmdarg.golden"));
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]

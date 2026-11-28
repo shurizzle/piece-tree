@@ -1,0 +1,475 @@
+NVIM v0.12.6
+
+'*.x' ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x']
+'*' ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d2', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d2', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d2', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d2', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x']
+'?.x' ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x']
+'[ab].x' ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x']
+'{a,b}.x' ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x'] ['t/a.x', 't/b.x']
+'{a,c}.*' ['t/a.x', 't/c.y'] ['t/a.x', 't/c.y'] ['t/a.x', 't/c.y'] ['t/a.x', 't/c.y']
+"---
+
+'d*/*.x' ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x']
+'**/*.x' ['t/$d.x', 't/a.x', 't/b.x', 't/d1/e.x', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/d1/e.x', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/d1/e.x', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/d1/e.x', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x']
+'**' ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x']
+'*/' ['t/d1/', 't/d2/'] ['t/d1/', 't/d2/'] ['t/d1/', 't/d2/'] ['t/d1/', 't/d2/']
+'.*' ['t/.', 't/..', 't/.dot.x', 't/.hid'] ['t/.', 't/..', 't/.dot.x', 't/.hid'] ['t/.', 't/..', 't/.dot.x', 't/.hid'] ['t/.', 't/..', 't/.dot.x', 't/.hid']
+'nosuch*' ['t/nosuch*'] ['t/nosuch*'] [] []
+"---
+
+'nosuch' ['t/nosuch'] ['t/nosuch'] [] []
+'a.x' ['t/a.x'] ['t/a.x'] ['t/a.x'] ['t/a.x']
+'a.X' ['t/a.X'] ['t/a.X'] ['t/a.X'] ['t/a.X']
+'A.*' ['t/a.x'] ['t/a.x'] ['t/a.x'] ['t/a.x']
+'sp*' ['t/sp ace.x'] ['t/sp ace.x'] ['t/sp ace.x'] ['t/sp ace.x']
+'\*.x' ['t/*.x'] ['t/*.x'] [] []
+"---
+
+'a\ .x' ['t/a .x'] ['t/a .x'] [] []
+'[' ['t/['] ['t/['] [] []
+'*[' ['t/*['] ['t/*['] [] []
+'a.x*' ['t/a.x'] ['t/a.x'] ['t/a.x'] ['t/a.x']
+'{'
+Error in {file}:
+line   16:
+E220: Missing }. ['t/{']
+E220: Missing }. ['t/{']
+E220: Missing }. []
+E220: Missing }. []
+'d1' ['t/d1'] ['t/d1'] ['t/d1'] ['t/d1']
+"---
+
+'d1/' ['t/d1/'] ['t/d1/'] ['t/d1/'] ['t/d1/']
+'d?' ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2']
+'*.*' ['t/$d.x', 't/a.x', 't/abc.txt', 't/b.x', 't/c.y', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/abc.txt', 't/b.x', 't/c.y', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x'] ['t/$d.x', 't/a.x', 't/abc.txt', 't/b.x', 't/c.y', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/abc.txt', 't/b.x', 't/c.y', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x']
+'*x' ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x']
+'a*' ['t/a.x', 't/ab', 't/abc.txt', 't/a~'] ['t/a.x', 't/ab', 't/abc.txt', 't/a~'] ['t/a.x', 't/ab', 't/abc.txt', 't/a~'] ['t/a.x', 't/ab', 't/abc.txt', 't/a~']
+'*~' ['t/a~', 't/k.x~'] ['t/a~', 't/k.x~'] ['t/a~', 't/k.x~'] ['t/a~', 't/k.x~']
+"---
+
+'*.{x,y}' ['t/[br].x', 't/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/c.y'] ['t/[br].x', 't/$d.x', 't/a.x', 't/b.x', 't/q{1}.x', 't/sp ace.x', 't/c.y'] ['t/$d.x', 't/a.x', 't/b.x', 't/c.y', 't/q{1}.x', 't/sp ace.x', 't/[br].x'] ['t/$d.x', 't/a.x', 't/b.x', 't/c.y', 't/q{1}.x', 't/sp ace.x', 't/[br].x']
+'{x,y}' ['t/x', 't/y'] ['t/x', 't/y'] [] []
+'{a,nosuch}.x' ['t/a.x', 't/nosuch.x'] ['t/a.x', 't/nosuch.x'] ['t/a.x'] ['t/a.x']
+'d1/*' ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x']
+'d1/../*.x' ['t/d1/../$d.x', 't/d1/../a.x', 't/d1/../b.x', 't/d1/../q{1}.x', 't/d1/../sp ace.x', 't/d1/../[br].x'] ['t/d1/../$d.x', 't/d1/../a.x', 't/d1/../b.x', 't/d1/../q{1}.x', 't/d1/../sp ace.x', 't/d1/../[br].x'] ['t/d1/../$d.x', 't/d1/../a.x', 't/d1/../b.x', 't/d1/../q{1}.x', 't/d1/../sp ace.x', 't/d1/../[br].x'] ['t/d1/../$d.x', 't/d1/../a.x', 't/d1/../b.x', 't/d1/../q{1}.x', 't/d1/../sp ace.x', 't/d1/../[br].x']
+'./*.x' ['t/./$d.x', 't/./a.x', 't/./b.x', 't/./q{1}.x', 't/./sp ace.x', 't/./[br].x'] ['t/./$d.x', 't/./a.x', 't/./b.x', 't/./q{1}.x', 't/./sp ace.x', 't/./[br].x'] ['t/./$d.x', 't/./a.x', 't/./b.x', 't/./q{1}.x', 't/./sp ace.x', 't/./[br].x'] ['t/./$d.x', 't/./a.x', 't/./b.x', 't/./q{1}.x', 't/./sp ace.x', 't/./[br].x']
+"---
+
+'../t/*.x' ['t/../t/$d.x', 't/../t/a.x', 't/../t/b.x', 't/../t/q{1}.x', 't/../t/sp ace.x', 't/../t/[br].x'] ['t/../t/$d.x', 't/../t/a.x', 't/../t/b.x', 't/../t/q{1}.x', 't/../t/sp ace.x', 't/../t/[br].x'] ['t/../t/$d.x', 't/../t/a.x', 't/../t/b.x', 't/../t/q{1}.x', 't/../t/sp ace.x', 't/../t/[br].x'] ['t/../t/$d.x', 't/../t/a.x', 't/../t/b.x', 't/../t/q{1}.x', 't/../t/sp ace.x', 't/../t/[br].x']
+'**/e.x' ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x']
+'**/z.x' ['t/**/z.x'] ['t/**/z.x'] [] []
+'.hid/*' ['t/.hid/z.x'] ['t/.hid/z.x'] ['t/.hid/z.x'] ['t/.hid/z.x']
+'*.h' ['t/m.h'] ['t/m.h'] ['t/m.h'] ['t/m.h']
+'*.o' ['t/n.o'] ['t/n.o'] ['t/n.o'] ['t/n.o']
+"---
+
+'*bak' ['t/z.bak'] ['t/z.bak'] ['t/z.bak'] ['t/z.bak']
+'a.*' ['t/a.x'] ['t/a.x'] ['t/a.x'] ['t/a.x']
+'abc*' ['t/abc.txt'] ['t/abc.txt'] ['t/abc.txt'] ['t/abc.txt']
+'ab*' ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt']
+'{ab,abc.txt}' ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt'] ['t/ab', 't/abc.txt']
+'$d.x' ['t/.x'] ['t/.x'] [] []
+"---
+
+'\$d.x' ['t/$d.x'] ['t/$d.x'] ['t/$d.x'] ['t/$d.x']
+'[br].x' ['t/b.x'] ['t/b.x'] ['t/b.x'] ['t/b.x']
+'\[br].x' ['t/[br].x'] ['t/[br].x'] ['t/[br].x'] ['t/[br].x']
+'q{1}.x' ['t/q{1}.x'] ['t/q{1}.x'] [] []
+'q\{1\}.x' ['t/q{1}.x'] ['t/q{1}.x'] ['t/q{1}.x'] ['t/q{1}.x']
+'*.x ' ['t/*.x '] ['t/*.x '] [] []
+"---
+
+'`echo a.x b.x`' ['t/a.x', 'b.x'] ['t/a.x', 'b.x'] ['t/a.x'] ['t/a.x']
+'`=["a.x","b.x"]`' ['t/'] ['t/'] ['t/'] ['t/']
+'`=1+1`' ['t/'] ['t/'] ['t/'] ['t/']
+'`echo`' ['t/'] ['t/'] ['t/'] ['t/']
+'a.x`echo`' ['t/a.x'] ['t/a.x'] ['t/a.x'] ['t/a.x']
+'"a.x"' ['t/"a.x"'] ['t/"a.x"'] [] []
+"---
+
+'''a.x''' ['t/''a.x'''] ['t/''a.x'''] [] []
+'a.x b.x' ['t/a.x b.x'] ['t/a.x b.x'] [] []
+'~' ['t/~'] ['t/~'] [] []
+'~/' ['t/~/'] ['t/~/'] [] []
+'$HOME/*nosuch' ['t//Users/domenico/*nosuch'] ['t//Users/domenico/*nosuch'] [] []
+'$NOSUCH_Y' ['t/'] ['t/'] ['t/'] ['t/']
+"---
+
+'$NOSUCH_Y/a.x' ['t//a.x'] ['t//a.x'] ['t//a.x'] ['t//a.x']
+'${HOME}' ['t/${HOME}'] ['t/${HOME}'] [] []
+'*/*' ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x'] ['t/d1/e.x', 't/d2/f.x']
+'*/*/*' ['t/*/*/*'] ['t/*/*/*'] [] []
+'d*' ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2']
+'D1' ['t/D1'] ['t/D1'] ['t/D1'] ['t/D1']
+"---
+
+'D*' ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2'] ['t/d1', 't/d2']
+'**/*' ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/q{1}.x', 't/sp ace.x', 't/[br].x', 't/a~', 't/k.x~', 't/m.h', 't/n.o', 't/z.bak'] ['t/$d.x', 't/a.x', 't/ab', 't/abc.txt', 't/a~', 't/b.x', 't/c.y', 't/d1', 't/d1/e.x', 't/d2', 't/d2/f.x', 't/k.x~', 't/m.h', 't/n.o', 't/q{1}.x', 't/sp ace.x', 't/z.bak', 't/[br].x']
+'d1/**' ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x']
+'d1/**/*.x' ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x'] ['t/d1/e.x']
+"---
+
+'t/$d.x
+t/a.x
+t/b.x
+t/q{1}.x
+t/sp ace.x
+t/[br].x'
+'t/$d.x
+t/a.x
+t/b.x
+t/q{1}.x
+t/sp ace.x
+t/[br].x'
+'t/$d.x
+t/a.x
+t/b.x
+t/q{1}.x
+t/sp ace.x
+t/[br].x'
+''
+'t/*.zzz'
+'t/$d.x
+t/a.x
+t/b.x
+t/q{1}.x
+t/sp ace.x
+t/[br].x'
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/a.x"                        line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/abc.txt"                    line 1
+"---
+
+
+  1 %a   "t/nosuch*"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/d1/e.x"                     line 1
+"---
+
+
+  1 %a   "t/d1/e.x"                     line 1
+"---
+
+
+  1 %a   "t/d1/e.x"                     line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/d1/e.x"                     line 1
+"---
+
+
+  1 %a   "t/sp ace.x"                   line 1
+"---
+
+
+  1 %a   "t/c.y"                        line 1
+"---
+
+
+  1 %a   "t/z.bak"                      line 1
+"---
+
+
+  1 %a   "t/z.bak"                      line 1
+"---
+
+
+  1 %a   "t/m.h"                        line 1
+"---
+
+
+  1 %a   "t/m.h"                        line 1
+"---
+
+
+  1 %a   "t/a~"                         line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/k.x~"                       line 1
+"---
+
+
+  1 %a   "t/*.x"                        line 1
+"---
+
+
+  1 %a   "t/.x"                         line 1
+"---
+
+
+  1 %a   "t/a .x"                       line 1
+"---
+
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "t/a.x"                        line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/nosuch"                     line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/d1/e.x"                     line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/.hid/z.x"                   line 1
+"---
+
+
+  1 %a   "t/a.x"                        line 1
+"---
+
+
+  1 %a   "t/.x"                         line 1
+"---
+
+Error in {file}:
+line    7:
+E77: Too many file names
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "t/["                          line 1
+"---
+
+Error in {file}:
+line    7:
+E220: Missing }.
+
+  1 %a   "t/{"                          line 1
+"---
+
+
+  1 %a   "t/*["                         line 1
+"---
+
+t ['']
+ 
+"---
+
+d1 ['']
+ 
+"---
+
+t ['']
+ 
+"---
+
+TOP ['']
+ 
+"---
+
+Error in {file}:
+line    5:
+E186: No previous directory
+TOP ['']
+ 
+"---
+
+Error in {file}:
+line    5:
+E344: Can't find directory "nosuch" in cdpath
+E472: Command failed
+TOP ['']
+ 
+"---
+
+Error in {file}:
+line    5:
+E344: Can't find directory "t/a.x" in cdpath
+E472: Command failed
+TOP ['']
+ 
+"---
+
+TOP ['']
+ 
+"---
+
+d1 ['']
+ 
+"---
+
+d1 ['/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp0dk9cwb3/t/a.x']
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp0dk9cwb3/t/a.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp0dk9cwb3/t/a.x
+"---
+
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpwa8jazos/t/a.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpwa8jazos/t/a.x
+d1 ['/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpwa8jazos/t/a.x']
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpwa8jazos/t/a.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpwa8jazos/t/a.x
+"---
+
+a.x a.x a.x
+t ['a.x']
+a.x a.x
+"---
+
+
+  1 #h   "a.x"                          line 1
+  2 %a   "d1/e.x"                       line 1
+t ['a.x', 'd1/e.x']
+d1/e.x a.x
+"---
+
+
+  1 #h   "/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpn1qucle5/t/a.x" line 1
+  2 %a   "e.x"                          line 1
+d1 ['/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpn1qucle5/t/a.x', 'e.x']
+e.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpn1qucle5/t/a.x
+"---
+
+d1 ['']
+ 
+"---
+
+t ['']
+ 
+"---
+
+t ['']
+ 
+"---
+
+t ['']
+ 
+"---
+
+d1 ['']
+ 
+"---
+
+domenico ['']
+ 
+"---
+
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpirrqj4g8/t
+t ['']
+ 
+"---
+
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp1xhi3u1c/t/d1
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmp1xhi3u1c/t
+t ['']
+ 
+"---
+
+/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpyg_wq_br/t/a.x e.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpyg_wq_br/t/a.x
+d1 ['/private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpyg_wq_br/t/a.x', 'e.x']
+e.x /private/var/folders/mf/r3078y510ln41f38_dv60ngr0000gr/T/tmpyg_wq_br/t/a.x

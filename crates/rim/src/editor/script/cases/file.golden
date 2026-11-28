@@ -1,0 +1,1236 @@
+NVIM v0.12.6
+
+
+
+"[No Name]" [Not edited] --No lines in buffer--
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+k.x  1
+
+  1 %a   "k.x"                          line 1
+"---
+
+
+Error in {file}:
+line    3:
+E474: Invalid argument
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+nosuch/q  1
+
+  1 %a   "nosuch/q"                     line 1
+"---
+
+
+d/  1
+
+  1 %a   "d/"                           line 1
+"---
+
+
+./f.x  1
+
+  1 %a   "./f.x"                        line 1
+"---
+
+
+k.x l.x  1
+
+  1 %a   "k.x l.x"                      line 1
+"---
+
+
+Error in {file}:
+line    3:
+E474: Invalid argument
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a   "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a   "nosuch/q"                     line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+d/ f.x 2
+
+  1 %a   "d/"                           line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a   "./f.x"                        line 1
+"---
+
+
+k.x l.x f.x 2
+
+  1 %a   "k.x l.x"                      line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"f.x" [Modified] 3 lines --33%--
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+"f.x" [Modified] 3 lines --33%--
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+"[No Name]" [Modified][Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a + "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a + "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a + "nosuch/q"                     line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+d/ f.x 2
+
+  1 %a + "d/"                           line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a + "./f.x"                        line 1
+"---
+
+
+/Users/domenico/zz f.x 2
+
+  1 %a + "~/zz"                         line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --100%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 3
+"---
+
+
+
+"f.x" 3 lines --100%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 3
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 3
+"---
+
+
+k.x f.x 2
+
+  1 %a   "k.x"                          line 3
+  2u#    "f.x"                          line 3
+"---
+
+
+./k.x f.x 2
+
+  1 %a   "./k.x"                        line 3
+  2u#    "f.x"                          line 3
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 3
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a   "nosuch/q"                     line 3
+  2u#    "f.x"                          line 3
+"---
+
+
+d/ f.x 2
+
+  1 %a   "d/"                           line 3
+  2u#    "f.x"                          line 3
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a   "./f.x"                        line 3
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 3
+"---
+
+
+/Users/domenico/zz f.x 2
+
+  1 %a   "~/zz"                         line 3
+  2u#    "f.x"                          line 3
+"---
+
+
+"nosuch.x" [New] --No lines in buffer--
+nosuch.x nosuch.x 1
+
+  1 %a   "nosuch.x"                     line 1
+"---
+
+
+
+"nosuch.x" [New] --No lines in buffer--
+nosuch.x nosuch.x 1
+
+  1 %a   "nosuch.x"                     line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+nosuch.x nosuch.x 1
+
+  1 %a   "nosuch.x"                     line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+nosuch.x nosuch.x 1
+
+  1 %a   "nosuch.x"                     line 1
+"---
+
+
+./k.x nosuch.x 2
+
+  1 %a   "./k.x"                        line 1
+  2u#    "nosuch.x"                     line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+nosuch.x nosuch.x 1
+
+  1 %a   "nosuch.x"                     line 1
+"---
+
+
+./f.x nosuch.x 2
+
+  1 %a   "./f.x"                        line 1
+  2u#    "nosuch.x"                     line 1
+"---
+
+
+1
+k.x nosuch.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "nosuch.x"                     line 1
+"---
+
+
+
+"[No Name]" [Not edited][readonly] 3 lines --33%--
+ f.x 2
+
+  1 %a=  "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a=  "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a=  "nosuch/q"                     line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a-  "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a-  "f.x"                          line 1
+"---
+
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a-  "[No Name]"                    line 1
+  2u# -  "f.x"                          line 1
+"---
+
+
+./k.x f.x 2
+
+  1 %a-  "./k.x"                        line 1
+  2u# -  "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a-  "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a-  "./f.x"                        line 1
+"---
+
+
+1
+k.x f.x 2
+
+  1 %a-  "k.x"                          line 1
+  2u# -  "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] --No lines in buffer--
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+nosuch/q nosuch/q 1
+
+  1 %a   "nosuch/q"                     line 1
+"---
+
+
+k.x l.x k.x l.x 1
+
+  1 %a   "k.x l.x"                      line 1
+"---
+
+
+1
+k.x k.x 1
+
+  1 %a   "k.x"                          line 1
+"---
+
+
+Error in {file}:
+line    4:
+E474: Invalid argument
+  1
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+"[No Name]" [Modified] 1 line --100%--
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+
+"[No Name]" [Modified] 1 line --100%--
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+"[No Name]" [Modified][Not edited] 1 line --100%--
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+
+"[No Name]" [Modified][Not edited] 1 line --100%--
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+k.x k.x 1
+
+  1 %a + "k.x"                          line 1
+"---
+
+
+./k.x ./k.x 1
+
+  1 %a + "./k.x"                        line 1
+"---
+
+
+k.x k.x 1
+
+  1 %a + "k.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+  1
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+nosuch/q nosuch/q 1
+
+  1 %a + "nosuch/q"                     line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a + "./f.x"                        line 1
+"---
+
+
+k.x l.x k.x l.x 1
+
+  1 %a + "k.x l.x"                      line 1
+"---
+
+
+1
+k.x k.x 1
+
+  1 %a + "k.x"                          line 1
+"---
+
+
+/Users/domenico/zz /Users/domenico/zz 1
+
+  1 %a + "~/zz"                         line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x g.x 2
+
+  1 #h   "g.x"                          line 1
+  2 %a   "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x g.x 2
+
+  1 #h   "g.x"                          line 1
+  2 %a   "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 3
+
+  1  h   "g.x"                          line 1
+  2 %a   "[No Name]"                    line 1
+  3u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x g.x 2
+
+  1 #h   "g.x"                          line 1
+  2 %a   "f.x"                          line 1
+"---
+
+
+k.x f.x 3
+
+  1  h   "g.x"                          line 1
+  2 %a   "k.x"                          line 1
+  3u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x g.x 2
+
+  1 #h   "g.x"                          line 1
+  2 %a   "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 2
+
+  1  h   "g.x"                          line 1
+  2 %a   "./f.x"                        line 1
+"---
+
+
+k.x l.x f.x 3
+
+  1  h   "g.x"                          line 1
+  2 %a   "k.x l.x"                      line 1
+  3u#    "f.x"                          line 1
+"---
+
+
+/Users/domenico/zz f.x 3
+
+  1  h   "g.x"                          line 1
+  2 %a   "~/zz"                         line 1
+  3u#    "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a   "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a   "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a   "./f.x"                        line 1
+"---
+
+
+1
+k.x f.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"f.x" [+] 3 lines --33%--
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+
+"f.x" [+] 3 lines --33%--
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+
+"[No Name]" [+][Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a + "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+./k.x f.x 2
+
+  1 %a + "./k.x"                        line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a + "nosuch/q"                     line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+./f.x ./f.x 1
+
+  1 %a + "./f.x"                        line 1
+"---
+
+
+k.x l.x f.x 2
+
+  1 %a + "k.x l.x"                      line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+/Users/domenico/zz f.x 2
+
+  1 %a + "~/zz"                         line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"f.x" [RO] 3 lines --33%--
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+
+"f.x" [RO] 3 lines --33%--
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a=  "f.x"                          line 1
+"---
+
+
+./k.x f.x 2
+
+  1 %a=  "./k.x"                        line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+nosuch/q f.x 2
+
+  1 %a=  "nosuch/q"                     line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+d/ f.x 2
+
+  1 %a=  "d/"                           line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+1
+k.x f.x 2
+
+  1 %a=  "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"f.x" 3 lines --33%--
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 3 lines --33%--
+ f.x 2
+
+  1 %a   "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a   "f.x"                          line 1
+"---
+
+
+d/ f.x 2
+
+  1 %a   "d/"                           line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+1
+k.x f.x 2
+
+  1 %a   "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+/Users/domenico/zz f.x 2
+
+  1 %a   "~/zz"                         line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+
+"f.x" [Modified] --No lines in buffer--
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+
+"[No Name]" [Modified][Not edited] --No lines in buffer--
+ f.x 2
+
+  1 %a + "[No Name]"                    line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a + "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+k.x f.x 2
+
+  1 %a + "k.x"                          line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+Error in {file}:
+line    6:
+E474: Invalid argument
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+f.x f.x 1
+
+  1 %a + "f.x"                          line 1
+"---
+
+
+k.x l.x f.x 2
+
+  1 %a + "k.x l.x"                      line 1
+  2u#    "f.x"                          line 1
+"---
+
+
+"n.x" [Not edited] --No lines in buffer--
+n.x  2
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "n.x"                          line 1
+"---
+
+
+"n.x" [Not edited] --No lines in buffer--
+n.x  2
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "n.x"                          line 1
+"---
+
+
+
+"n.x" [Not edited] --No lines in buffer--
+n.x  2
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "n.x"                          line 1
+"---
+
+
+k.x n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "k.x"                          line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+k.x n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "k.x"                          line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+f.x n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "f.x"                          line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+nosuch/q n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "nosuch/q"                     line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+./f.x n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "./f.x"                        line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+k.x l.x n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "k.x l.x"                      line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+n.x  2
+
+  1 #a   "[No Name]"                    line 1
+  2 %a   "n.x"                          line 1
+"---
+
+
+/Users/domenico/zz n.x 3
+
+  1  a   "[No Name]"                    line 1
+  2 %a   "~/zz"                         line 1
+  3u#    "n.x"                          line 1
+"---
+
+
+"g.x" 1 line --100%--
+g.x f.x 2
+
+  1 #a   "f.x"                          line 0
+  2 %a   "g.x"                          line 1
+"---
+
+
+"[No Name]" [Not edited] 1 line --100%--
+ g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "[No Name]"                    line 1
+  3u#    "g.x"                          line 1
+"---
+
+
+
+"[No Name]" [Not edited] 1 line --100%--
+ g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "[No Name]"                    line 1
+  3u#    "g.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+g.x f.x 2
+
+  1 #a   "f.x"                          line 0
+  2 %a   "g.x"                          line 1
+"---
+
+
+k.x g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "k.x"                          line 1
+  3u#    "g.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+g.x f.x 2
+
+  1 #a   "f.x"                          line 0
+  2 %a   "g.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+g.x f.x 2
+
+  1 #a   "f.x"                          line 0
+  2 %a   "g.x"                          line 1
+"---
+
+
+d/ g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "d/"                           line 1
+  3u#    "g.x"                          line 1
+"---
+
+
+k.x l.x g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "k.x l.x"                      line 1
+  3u#    "g.x"                          line 1
+"---
+
+
+Error in {file}:
+line    5:
+E474: Invalid argument
+g.x f.x 2
+
+  1 #a   "f.x"                          line 0
+  2 %a   "g.x"                          line 1
+"---
+
+
+/Users/domenico/zz g.x 3
+
+  1  a   "f.x"                          line 0
+  2 %a   "~/zz"                         line 1
+  3u#    "g.x"                          line 1
+"---
+
+f.x
+f.x
+
+  1 #h   "k.x"                          line 1
+  2 %a   "f.x"                          line 1

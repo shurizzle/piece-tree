@@ -1,0 +1,1082 @@
+NVIM v0.12.6
+
+0
+['X', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['one', 'X', 'three', 'four'] 1 1 1 1 2 4
+"---
+
+0
+['one', 'two', 'three', 'X'] 1 1 1 1 4 4
+"---
+
+0
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['one', 'two', 'three', 'X'] 1 1 1 1 4 4
+"---
+
+0
+['X', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['a', 'b', 'three', 'four'] 1 1 1 1 2 4
+"---
+
+0
+['one', 'two', 'a', 'b', 'c'] 1 1 1 1 5 5
+"---
+
+0
+['one', 'two', 'three', 'a', 'b', 'c'] 1 1 1 1 5 6
+"---
+
+0
+['one', 'two', 'three', 'four', 'a', 'b'] 1 1 1 1 5 6
+"---
+
+0
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['12', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['1', '2.5', 'x', 'four'] 1 1 1 1 3 4
+"---
+
+0
+['', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['{}', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['[1]', 'x', 'three', 'four'] 1 1 1 1 2 4
+"---
+
+0
+['v:true', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['v:null', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['é日', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+0
+['S', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+Error in {file}:
+line    4:
+E805: Using a Float as a Number
+0
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['one', 'a	b', 'three', 'four'] 1 1 1 1 2 4
+"---
+
+0
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+0
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+0
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+0
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+0
+['one', 'two', 'a', 'b', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+0
+['a', 'b', 'c', 'one', 'two', 'three', 'four'] 4 1 1 1 1 7
+"---
+
+0
+['one', 'two', 'three', 'four', 'a', 'b'] 1 1 1 1 5 6
+"---
+
+0
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['one', '', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+0
+['one', 'two', '12', 'three', 'four'] 1 1 1 1 3 5
+"---
+
+0
+['y', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+0
+['one', 'two', '1', '[2]', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+0
+['one', 'v:null', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['one', 'two', 'a', 'b', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['XYZ', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+['one', 'a', 'b', 'four'] 1 1 1 1 3 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['one', 'two', 'a', 'b', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['XYZ', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 1G
+['one', 'a', 'b', 'four'] 1 1 1 1 3 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['one', 'two', 'a', 'b', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['XYZ', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+['one', 'a', 'b', 'four'] 1 1 1 1 3 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['one', 'X', 'two', 'three', 'four'] 1 1 1 1 2 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['one', 'two', 'a', 'b', 'three', 'four'] 1 1 1 1 3 6
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['one', 'two', 'three', 'four', 'X'] 1 1 1 1 5 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['XYZ', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G$
+['one', 'a', 'b', 'four'] 1 1 1 1 3 4
+"---
+
+1
+1 change; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 1 1 0 0 1 4
+1 change; after #1  0 seconds ago
+['X', 'two', 'three', 'four'] 1 1 1 1 1 4
+"---
+
+2 changes; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 1 1 0 0 1 4
+"---
+
+1
+2 fewer lines; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 3 1 0 0 3 4
+2 more lines; after #1  0 seconds ago
+['one', 'two', 'a', 'b', 'three', 'four'] 3 1 1 1 3 6
+"---
+
+2 fewer lines; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 1 1 0 0 3 4
+"---
+
+1
+3 changes; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 1 1 0 0 1 4
+3 changes; after #1  0 seconds ago
+['a', 'b', 'c', 'four'] 1 1 1 1 3 4
+"---
+
+3 changes; before #1  0 seconds ago
+['one', 'two', 'three', 'four'] 1 1 0 0 1 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 2G
+2
+['X', 'one', 'two', 'three', 'four'] 2 1 1 1 1 5
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 3G
+1 1
+['one', 'two', 'X', 'four'] 1 1 1 1 3 4
+"---
+
+Error in {file}:
+line    4:
+E492: Not an editor command: 4G
+1
+['one', 'x', 'y', 'two', 'three', 'four'] 1 1 1 1 2 6
+"---
+
+Error in {file}:
+line    5:
+E21: Cannot make changes, 'modifiable' is off
+1
+line    6:
+E21: Cannot make changes, 'modifiable' is off
+1
+['one', 'two', 'three', 'four'] 1 1 0 0 0 4
+"---
+
+0
+['a', '']
+2
+"---
+
+0
+['', 'a']
+"---
+
+0
+['a']
+"---
+
+0
+['', 'a']
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['X', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['X', 'beta'] 1 1 1 1 1 2
+"---
+
+
+0
+['X', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['X', 'beta']
+['X', 'beta'] 1 1 1 1 1 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta', 'X'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['alpha', 'beta', 'X'] 1 1 1 1 3 3
+"---
+
+
+0
+['alpha', 'beta', 'X']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta', 'X']
+['alpha', 'beta', 'X'] 1 1 1 1 3 3
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'a', 'b', 'c'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['alpha', 'a', 'b', 'c'] 1 1 1 1 3 4
+"---
+
+
+0
+['alpha', 'a', 'b', 'c']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'a', 'b', 'c']
+['alpha', 'a', 'b', 'c'] 1 1 1 1 3 4
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['X', 'alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['X', 'alpha', 'beta'] 2 1 1 1 1 3
+"---
+
+
+0
+['X', 'alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 2
+"---
+
+
+0
+['X', 'alpha', 'beta']
+['X', 'alpha', 'beta'] 2 1 1 1 1 3
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta', 'x', 'y'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['alpha', 'beta', 'x', 'y'] 1 1 1 1 3 4
+"---
+
+
+0
+['alpha', 'beta', 'x', 'y']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta', 'x', 'y']
+['alpha', 'beta', 'x', 'y'] 1 1 1 1 3 4
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta', 'X'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['alpha', 'beta', 'X'] 1 1 1 1 3 3
+"---
+
+
+0
+['alpha', 'beta', 'X']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta', 'X']
+['alpha', 'beta', 'X'] 1 1 1 1 3 3
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['N', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['N', 'beta'] 1 1 1 1 1 2
+"---
+
+
+0
+['N', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['N', 'beta']
+['N', 'beta'] 1 1 1 1 1 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+0
+[] ['N', 'two', 'three', 'four']
+
+  1 %a + "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta'] 2 1 1
+
+  1 %a + "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+0
+['alpha', 'beta']
+1 1
+
+  1 %a + "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+0
+[] ['N', 'two', 'three', 'four']
+
+  1 %a + "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta'] 2 1 1
+
+  1 %a + "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+0
+['alpha', 'beta']
+1 1
+
+  1 %a + "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'N'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['alpha', 'N'] 1 1 1 1 2 2
+"---
+
+
+0
+['alpha', 'N']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'N']
+['alpha', 'N'] 1 1 1 1 2 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+1
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+1
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+1
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['N', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a + "g.x"                          line 0
+['N', 'beta'] 1 1 1 1 1 2
+"---
+
+
+0
+['N', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h + "g.x"                          line 1
+"---
+
+
+0
+['N', 'beta']
+['N', 'beta'] 1 1 1 1 1 2
+"---
+
+1
+[] ['one', 'two', 'three', 'four']
+
+  1 %a   "f.x"                          line 1
+  2      "g.x"                          line 0
+  3      "h.x"                          line 0
+"---
+
+0
+['alpha', 'beta'] 2 1 0
+
+  1 %a   "f.x"                          line 1
+  2 #a   "g.x"                          line 0
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+
+0
+['alpha', 'beta']
+1 0
+
+  1 %a   "f.x"                          line 1
+  2 #h   "g.x"                          line 1
+"---
+
+
+0
+['alpha', 'beta']
+['alpha', 'beta'] 1 1 0 0 0 2
+"---
+
+['one']
+"---
+
+['one', 'two']
+"---
+
+['one', 'two', 'three', 'four']
+"---
+
+[]
+"---
+
+[]
+"---
+
+['four']
+"---
+
+['two', 'three', 'four']
+"---
+
+['three', 'four']
+"---
+
+[]
+"---
+
+[]
+"---
+
+['one', 'two', 'three', 'four']
+"---
+
+[]
+"---
+
+Error in {file}:
+line    5:
+E745: Expected a Number or a String, List found
+0
+"---
+
+[]
+"---
+
+Error in {file}:
+line    5:
+E728: Using a Dictionary as a Number
+0
+"---
+
+one
+"---
+
+four
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+Error in {file}:
+line    5:
+E118: Too many arguments for function: getbufoneline
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: getbufline
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: getbufline
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: setline
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: setline
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: append
+"---
+
+Error in {file}:
+line    5:
+E119: Not enough arguments for function: setbufline
+"---
+
+Error in {file}:
+line    5:
+E118: Too many arguments for function: getbufline
+"---
+
+['one', 'two']
+"---
+
+['one', 'two']
+"---
+
+['one', 'two']
+"---
+
+['one', 'two']

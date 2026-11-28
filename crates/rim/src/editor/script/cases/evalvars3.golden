@@ -1,0 +1,209 @@
+NVIM v0.12.6
+
+1
+3 1
+1
+5 3
+3 1
+1
+5 3
+"---
+
+2
+4
+"---
+
+2
+"---
+
+2
+3
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a!b''' '''a!b''' '''a!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a
+b''' '''a
+b''' '''a
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a!b''' '''a!b''' '''a!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a
+b''' '''a
+b''' '''a
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a!b''' '''a!b''' '''a!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a
+b''' '''a
+b''' '''a
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a\!b''' '''a\!b''' '''a\!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a\
+b''' '''a\
+b''' '''a\
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a!b''' '''a!b''' '''a!b'''
+'''a\\b''' '''a\\b''' '''a\\b'''
+'''a
+b''' '''a
+b''' '''a
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a!b''' '''a!b''' '''a!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a
+b''' '''a
+b''' '''a
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+'''a b''' '''a b''' '''a b'''
+'''a''\''''b''' '''a''\''''b''' '''a''\''''b'''
+'''a\!b''' '''a\!b''' '''a\!b'''
+'''a\b''' '''a\b''' '''a\b'''
+'''a\
+b''' '''a\
+b''' '''a\
+b'''
+'''''' '''''' ''''''
+'''x''' '''x''' '''x'''
+"---
+
+['ok ']
+"---
+
+['ok @,48-57,/,.']
+"---
+
+['ok @,48-57,/,.,-,_,+,,,#,$,%,~,=,:']
+"---
+
+['ok a-z']
+"---
+
+['ok ^a-z']
+"---
+
+['ok @,^@']
+"---
+
+['Vim(set):E474: Invalid argument: isfname=1-300']
+"---
+
+['Vim(set):E474: Invalid argument: isfname=x-a']
+"---
+
+['Vim(set):E474: Invalid argument: isfname=@,']
+"---
+
+['Vim(set):E474: Invalid argument: isfname=abc,']
+"---
+
+['ok 200-255']
+"---
+
+['ok @-@']
+"---
+
+['ok ^/']
+"---
+
+['ok 65-90,a-z,/']
+"---
+
+['ok =,^=']
+"---
+
+['file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', '12', '12', '12', 'and', 'and', 'and', 'and', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', '']
+"---
+
+['a=b,c', 'a=b,c', 'a=b,c', 'a=b,c', 'a=b,c', 'd', 'd']
+"---
+
+['x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z']
+"---
+
+['http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', '80/x', '80/x', '80/x', '80/x', '80/x']
+"---
+
+['é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'x', 'x']
+"---
+
+['file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', '12', '12', '12', 'and', 'and', 'and', 'and', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', '']
+"---
+
+['a', 'b', 'b', 'c', 'c', 'd', 'd']
+"---
+
+['x', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z']
+"---
+
+['http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', '80/x', '80/x', '80/x', '80/x', '80/x']
+"---
+
+['é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'x', 'x']
+"---
+
+['file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'file.txt:12', 'and', 'and', 'and', 'and', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', '']
+"---
+
+['a', 'b', 'b', 'c', 'c', 'd', 'd']
+"---
+
+['x', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z', '/tmp/y.z']
+"---
+
+['http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x']
+"---
+
+['é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'x', 'x']
+"---
+
+['file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', 'file.txt', '12', '12', '12', 'and', 'and', 'and', 'and', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', 'path/to/f.c', '']
+"---
+
+['a=b,c', 'a=b,c', 'a=b,c', 'a=b,c', 'a=b,c', 'd', 'd']
+"---
+
+['x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z', 'x=/tmp/y.z']
+"---
+
+['http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', 'http://example.com:80/x', '80/x', '80/x', '80/x', '80/x', '80/x']
+"---
+
+['é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'é/ü.txt', 'x', 'x']

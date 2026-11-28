@@ -303,6 +303,8 @@ impl Editor {
         (self.win.line, self.win.col) = op.start;
         // `op_delete`, block mode.
         self.u_save_lines(op.start.0, op.end.0);
+        // One `changed_lines` for the whole block.
+        let tick0 = self.buf.changedtick;
         let (text, width) = self.block_text(&op);
         self.store_reg(text, RegKind::Block(width), false);
         let start_b = self.line_byte(op.start.0, op.start.1);
@@ -333,6 +335,7 @@ impl Editor {
         self.set_op_marks_bytes((op.start.0, sb), (op.end.0, start_b));
         let off = self.offset();
         self.set_dot(off);
+        self.buf.changedtick = tick0 + 1;
         op.start.1 = self.win.col;
         op
     }

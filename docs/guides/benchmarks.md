@@ -816,3 +816,31 @@ A copy of `HEAD` (9775ae4) and the working tree, both `cargo test --release -p r
 - **Kept: `curswant` taken when used in Insert mode.** `update_curswant` read the line up to the cursor at every key (`cell_range`, `byte_of`: O(column)), so typing in a long line was quadratic: 25 ms for 3000 chars. In Insert mode it is now taken only by `move_vertical` (Neovim sets `w_set_curswant` and takes the value when a command uses it). 25.2 to 4.6 ms.
 - **Still slower than HEAD, not fixed:** the Normal frame (+50%: `Cells` and `row_spans` lay out every char of a line with a Tab, where HEAD had the plain ASCII path), typing in a long line (+40%: what else a key does per char, not profiled) and the block shift (`shift_block` builds the new line with `String`s). The block operators are otherwise as fast as HEAD's or faster. Profile with samply before changing any of them.
 
+
+## `b_last_used`: a clock read after every Normal mode key (rim)
+
+`Editor::key` stores the time in `b_last_used` after each key in Normal mode, as Neovim's `normal_redraw` does at every pass of its
+loop (`:ls t` sorts by it). Kept: it is the rule of the C code, and it costs little. `cargo test --release -p rim -- --ignored
+--nocapture key_clock_cost`, min of 7 runs of 200000 keys on the Apple M1 Pro: **1073 ns per Normal key, 23 ns for the clock read**
+(`SystemTime::now`), 2.1 % of a key. Rejected: reading the clock once per frame (a coarse tick): it would save those 23 ns but a
+key typed between two frames would be stamped with the time of the last frame, and `:ls t` of two buffers used inside one frame
+would tie where Neovim does not. No A/B against a copy of the previous commit was needed: the call is the only difference and its
+cost is measured on its own.
+
+## rim: scanning text into clusters after `^A` and `<80>` became 2 and 4 cells (2026-11-28)
+
+`complex`/`maybe_lead`/`maybe_char` (graphemes.rs) now call the control bytes (below 0x20 but Tab, 0x7f), U+0080-U+009F (lead C2, second
+byte below A0) and U+200B-U+200F, U+202A-U+202E, U+2060-U+206F "not simple", so each is a cluster of its own with `transchar`'s width.
+`cargo test --release -p rim -- --ignored --nocapture grapheme_scan_cost`, min of 7 runs, Apple M1 Pro, ns per char
+(`graphemes::cells` over 160 KB of text), the old predicates against the new ones:
+
+| text | before | after |
+|---|---|---|
+| ASCII | 3.0 | 3.0 |
+| Latin (é, 2-byte lead C3) | 3.8 | 3.8 |
+| Latin-1 punctuation (£ ° ¿, lead C2) | 3.6 | 4.85 |
+| CJK | 8.7 | 8.9 |
+
+Kept: ASCII, Latin and CJK are the same within noise. Text with U+00A0-U+00BF pays 1.2 ns per char because C2 can no longer be in the "never
+complex" lead set of tier 1 (its second byte decides), so a block holding one goes to tier 2. Rejected: nothing else was tried; narrowing
+tier 1 to `C2 80-9F` needs the second byte and loses the single compare.

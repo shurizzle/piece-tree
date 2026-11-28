@@ -112,7 +112,21 @@ pump(0.3)
 # A `~user` there is no user for: the wildcard expansion Neovim does says `E79`.
 send(b":e ~rim_no_such_user_pty/x\r")
 check("`:e ~nosuchuser/x` says E79", b"E79: Cannot expand wildcards" in pump(0.6))
-send(b":q!\r")
+# A file that cannot be read is told when it is entered, a directory is an empty buffer: neither ends the editor.
+noperm = os.path.join(home, "noperm")
+open(noperm, "w").write("secret\n")
+os.chmod(noperm, 0)
+if os.geteuid() != 0:
+    send(b":e " + noperm.encode() + b"\r")
+    check("an unreadable file says [Permission Denied]", b"[Permission Denied]" in pump(0.6))
+os.chmod(noperm, 0o644)
+send(b":set shortmess-=F\r:e " + home.encode() + b"\r")
+check("a directory says it is one", b"is a directory" in pump(0.6))
+# A control char is drawn as `^A`, as Neovim does.
+send(b":call setline(1, \"a\\x01b\")\r")
+check("a control char is drawn as ^A", b"a^Ab" in pump(0.6))
+# `:q!` refuses while a hidden buffer has changes (`E162`), as Neovim does: `:qa!` leaves.
+send(b":qa!\r")
 check("reporting off at exit", off in pump(0.5))
 shutil.rmtree(home, ignore_errors=True)
 sys.exit(1 if failures else 0)

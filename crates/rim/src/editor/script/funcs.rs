@@ -42,23 +42,54 @@ const FUNCS: &[Func] = &[
     func("deepcopy", 1, 2, f_deepcopy),
     func("empty", 1, 1, f_empty),
     func("escape", 2, 2, f_escape),
+    func("fnameescape", 1, 1, f_fnameescape),
     func("eval", 1, 1, f_eval),
     func("execute", 1, 2, f_execute),
     func("exists", 1, 1, f_exists),
     func("exp", 1, 1, |e, a| float_op(e, a, f64::exp)),
+    func("expand", 1, 3, f_expand),
     func("extend", 2, 3, f_extend),
     func("flatten", 1, 2, f_flatten),
     func("filter", 2, 2, |e, a| filter_map(e, a, FilterMap::Filter)),
     func("feedkeys", 1, 2, f_feedkeys),
     func("float2nr", 1, 1, f_float2nr),
+    func("fnamemodify", 2, 2, f_fnamemodify),
+    func("glob", 1, 4, f_glob),
+    func("getcwd", 0, 2, |_, _| Value::Str(std::env::current_dir().map(|d| d.to_string_lossy().into_owned()).unwrap_or_default().into())),
+    func("argc", 0, 1, |e, _| int(e.arglist_len() as i64)),
+    func("argidx", 0, 0, |e, _| int(e.win.arg_idx as i64)),
+    func("argv", 0, 2, f_argv),
+    func("filereadable", 1, 1, f_filereadable),
+    func("isdirectory", 1, 1, |e, a| int(i64::from(std::path::Path::new(&e.tv_str(&a[0])).is_dir()))),
+    func("mkdir", 1, 3, f_mkdir),
+    func("writefile", 2, 3, f_writefile),
     func("foreach", 2, 2, |e, a| filter_map(e, a, FilterMap::Foreach)),
     func("floor", 1, 1, |e, a| float_op(e, a, f64::floor)),
+    func("bufexists", 1, 1, f_bufexists),
+    func("buflisted", 1, 1, f_buflisted),
+    func("bufloaded", 1, 1, f_bufloaded),
+    func("bufname", 0, 1, f_bufname),
+    func("bufnr", 0, 2, f_bufnr),
     func("call", 2, 3, |e, a| e.f_call_func(a)),
     func("function", 1, 3, |e, a| e.common_function(a, false)),
     func("funcref", 1, 3, |e, a| e.common_function(a, true)),
     func("garbagecollect", 0, 1, f_garbagecollect),
     func("get", 2, 3, f_get),
     func("getline", 1, 2, f_getline),
+    func("bufadd", 1, 1, super::bufinfo::f_bufadd),
+    func("bufload", 1, 1, super::bufinfo::f_bufload),
+    func("getbufvar", 2, 3, super::bufinfo::f_getbufvar),
+    func("setbufvar", 3, 3, super::bufinfo::f_setbufvar),
+    func("getbufinfo", 0, 1, super::bufinfo::f_getbufinfo),
+    func("getwininfo", 0, 1, super::bufinfo::f_getwininfo),
+    func("setline", 2, 2, super::bufline::f_setline),
+    func("append", 2, 2, super::bufline::f_append),
+    func("deletebufline", 2, 3, super::bufline::f_deletebufline),
+    func("setbufline", 3, 3, super::bufline::f_setbufline),
+    func("appendbufline", 3, 3, super::bufline::f_appendbufline),
+    func("getbufline", 2, 3, super::bufline::f_getbufline),
+    func("getbufoneline", 2, 2, super::bufline::f_getbufoneline),
+    func("shellescape", 1, 2, f_shellescape),
     func("getreg", 0, 3, f_getreg),
     func("getregtype", 0, 1, f_getregtype),
     func("has", 1, 1, f_has),
@@ -73,7 +104,15 @@ const FUNCS: &[Func] = &[
     func("line", 1, 2, f_line),
     func("log", 1, 1, |e, a| float_op(e, a, f64::ln)),
     func("log10", 1, 1, |e, a| float_op(e, a, f64::log10)),
+    func("getchangelist", 0, 1, f_getchangelist),
+    func("setreg", 2, 3, super::setreg::f_setreg),
+    func("strdisplaywidth", 1, 2, f_strdisplaywidth),
+    func("strwidth", 1, 1, f_strwidth),
+    func("match", 2, 4, f_match),
+    func("matchend", 2, 4, f_matchend),
+    func("matchlist", 2, 4, f_matchlist),
     func("matchstr", 2, 4, f_matchstr),
+    func("matchstrpos", 2, 4, f_matchstrpos),
     func("map", 2, 2, |e, a| filter_map(e, a, FilterMap::Map)),
     func("mapnew", 2, 2, |e, a| filter_map(e, a, FilterMap::Mapnew)),
     func("max", 1, 1, |e, a| max_min(e, &a[0], true)),
@@ -113,6 +152,12 @@ const FUNCS: &[Func] = &[
     func("changenr", 0, 0, f_changenr),
     func("getpos", 1, 1, f_getpos),
     func("setpos", 2, 2, f_setpos),
+    func("win_getid", 0, 2, f_win_getid),
+    func("win_gotoid", 1, 1, f_win_gotoid),
+    func("winbufnr", 1, 1, f_winbufnr),
+    func("bufwinid", 1, 1, |e, a| buf_win_common(e, a, false)),
+    func("bufwinnr", 1, 1, |e, a| buf_win_common(e, a, true)),
+    func("winnr", 0, 1, f_winnr),
     func("visualmode", 0, 1, f_visualmode),
     func("undotree", 0, 1, f_undotree),
 ];
@@ -235,7 +280,7 @@ impl Editor {
     }
 }
 
-fn int(n: i64) -> Value {
+pub(super) fn int(n: i64) -> Value {
     Value::Int(n)
 }
 
@@ -1251,7 +1296,7 @@ fn item_compare(e: &mut Editor, info: &mut SortInfo, a: &Value, b: &Value) -> Or
 /// checked against the comparison sequences Neovim made for 230 lists of 2 to 200 items. `a` holds item indexes and
 /// `cmp` gets two of them.
 // shortcut: this is macOS's algorithm; glibc (Linux) sorts with a merge sort and compares in another order
-fn bsd_qsort(a: &mut [usize], cmp: &mut dyn FnMut(usize, usize) -> Ordering) {
+pub(in crate::editor) fn bsd_qsort(a: &mut [usize], cmp: &mut dyn FnMut(usize, usize) -> Ordering) {
     fn insertion(a: &mut [usize], lo: usize, n: usize, cmp: &mut dyn FnMut(usize, usize) -> Ordering, limit: Option<usize>) -> bool {
         let mut swaps = 0;
         for pm in lo + 1..lo + n {
@@ -1453,6 +1498,23 @@ fn f_escape(e: &mut Editor, a: &[Value]) -> Value {
         out.push(c);
     }
     Value::Str(out.into())
+}
+
+fn f_fnameescape(e: &mut Editor, a: &[Value]) -> Value {
+    let s = e.tv_str(&a[0]);
+    Value::Str(e.fname_escape(&s).into())
+}
+
+fn f_shellescape(e: &mut Editor, a: &[Value]) -> Value {
+    let s = e.tv_str(&a[0]);
+    // `non_zero_arg`: a number that is not 0, or a string that is not empty.
+    let special = a.get(1).is_some_and(|v| match v {
+        Value::Int(n) => *n != 0,
+        Value::Bool(b) => *b,
+        Value::Str(s) => !s.is_empty(),
+        _ => false,
+    });
+    Value::Str(e.shell_escape(&s, special, special).into())
 }
 
 fn strcase_save(s: &str, upper: bool) -> String {
@@ -1707,37 +1769,68 @@ fn f_split(e: &mut Editor, a: &[Value]) -> Value {
     Value::list(out)
 }
 
-fn f_matchstr(e: &mut Editor, a: &[Value]) -> Value {
+/// What `find_some_match` returns.
+#[derive(Clone, Copy, PartialEq)]
+enum SomeMatch {
+    Match,
+    End,
+    Str,
+    List,
+    StrPos,
+}
+
+/// The value a failing `find_some_match` gives.
+fn some_match_none(kind: SomeMatch, list_arg: bool) -> Value {
+    match kind {
+        SomeMatch::Match | SomeMatch::End => int(-1),
+        SomeMatch::Str => Value::Str(String::new().into()),
+        SomeMatch::List => Value::list(Vec::new()),
+        SomeMatch::StrPos => {
+            let mut v = vec![Value::Str(String::new().into())];
+            if list_arg {
+                v.push(int(-1));
+            }
+            v.extend([int(-1), int(-1)]);
+            Value::list(v)
+        }
+    }
+}
+
+/// `find_some_match`: `match()`, `matchend()`, `matchstr()`, `matchlist()` and `matchstrpos()` of a String or a List.
+fn find_some_match(e: &mut Editor, a: &[Value], kind: SomeMatch) -> Value {
     let (list, text): (Option<Vec<Value>>, String) = match &a[0] {
         Value::List(l) => (Some(l.borrow().to_vec()), String::new()),
         v => (None, e.tv_str(v)),
     };
-    let Some(pat) = e.str_chk(&a[1]) else { return Value::Str(String::new().into()) };
+    let none = some_match_none(kind, list.is_some());
+    let Some(pat) = e.str_chk(&a[1]) else { return none };
     let ic = e.buf.opts.ignorecase;
     let re = match Regex::new(&if ic { format!("(?i){pat}") } else { pat.clone() }) {
         Ok(r) => r,
         Err(_) => {
             e.error(format!("E383: Invalid search string: {pat}"));
-            return Value::Str(String::new().into());
+            return none;
         }
     };
     let mut nth = 1i64;
     let mut startcol = 0usize;
     let (mut s, mut len) = (text.clone(), text.len() as i64);
+    // `str - expr`: where the part that is looked at starts in the String.
+    let mut base = 0usize;
     let mut li = 0usize;
     if let Some(sa) = a.get(2) {
-        let Some(mut start) = e.nr_chk(sa) else { return Value::Str(String::new().into()) };
+        let Some(mut start) = e.nr_chk(sa) else { return none };
         if let Some(l) = &list {
             match list_find(l.len(), start) {
                 Some(k) => li = k,
-                None => return Value::Str(String::new().into()),
+                None => return none,
             }
         } else {
             if start < 0 {
                 start = 0;
             }
             if start > len {
-                return Value::Str(String::new().into());
+                return none;
             }
             // With a count the matches before `start` are ignored, else the start of the string is skipped.
             if a.len() > 3 {
@@ -1745,18 +1838,19 @@ fn f_matchstr(e: &mut Editor, a: &[Value]) -> Value {
             } else {
                 s = text.get(start as usize..).unwrap_or_default().to_string();
                 len -= start;
+                base = start as usize;
             }
         }
         if let Some(c) = a.get(3) {
             match e.nr_chk(c) {
                 Some(n) => nth = n,
-                None => return Value::Str(String::new().into()),
+                None => return none,
             }
         }
     }
     loop {
         let cur = if let Some(l) = &list {
-            let Some(item) = l.get(li) else { return Value::Str(String::new().into()) };
+            let Some(item) = l.get(li) else { return none };
             s = item.echo();
             len = s.len() as i64;
             item.clone()
@@ -1768,24 +1862,399 @@ fn f_matchstr(e: &mut Editor, a: &[Value]) -> Value {
         if let Some(m) = &m {
             nth -= 1;
             if nth <= 0 {
-                return match &list {
-                    Some(_) => cur,
-                    None => Value::Str(s[m.clone()].to_string().into()),
+                let off = if list.is_some() { 0 } else { base };
+                return match kind {
+                    SomeMatch::StrPos => {
+                        let mut v = vec![Value::Str(s[m.clone()].to_string().into())];
+                        if list.is_some() {
+                            v.push(int(li as i64));
+                        }
+                        v.extend([int((m.start + off) as i64), int((m.end + off) as i64)]);
+                        Value::list(v)
+                    }
+                    SomeMatch::List => {
+                        // `\0` to `\9`: a group that did not take part is an empty String.
+                        let groups = (0..10).map(|i| Value::Str(t.replacement_at(&re, m.start, &format!("${{{i}}}")).map_or_else(String::new, |(_, g)| g).into()));
+                        Value::list(groups.collect())
+                    }
+                    SomeMatch::Str => match &list {
+                        Some(_) => cur,
+                        None => Value::Str(s[m.clone()].to_string().into()),
+                    },
+                    SomeMatch::Match | SomeMatch::End => match &list {
+                        Some(_) => int(li as i64),
+                        None => int(((if kind == SomeMatch::Match { m.start } else { m.end }) + off) as i64),
+                    },
                 };
             }
         }
         if list.is_none() && m.is_none() {
-            return Value::Str(String::new().into());
+            return none;
         }
         if list.is_some() {
             li += 1;
         } else if let Some(m) = &m {
             startcol = m.start + s[m.start..].chars().next().map_or(1, char::len_utf8);
             if startcol as i64 > len || startcol <= m.start {
-                return Value::Str(String::new().into());
+                return none;
             }
         }
     }
+}
+
+/// `getchangelist([buf])`: `[changelist, index]`.
+fn f_getchangelist(e: &mut Editor, a: &[Value]) -> Value {
+    let buf = match a.first() {
+        None => Some(e.buf.id),
+        Some(v) => {
+            // `tv_get_number` gives the message of a wrong type, `tv_get_buf` none.
+            e.nr(v);
+            e.tv_get_buf(v)
+        }
+    };
+    let Some(id) = buf else { return Value::list(Vec::new()) };
+    let Some(b) = e.buffer(id) else { return Value::list(Vec::new()) };
+    // The index of the current window is kept for the current buffer only; another one reports the length of its list.
+    let idx = if id == e.buf.id { b.change_idx.min(b.changes.len()) } else { b.changes.len() };
+    let items: Vec<Value> = b
+        .changes
+        .iter()
+        .map(|m| {
+            let mut d = DictMap::new();
+            d.insert("lnum".into(), int(m.line as i64 + 1));
+            d.insert("col".into(), int(m.col as i64));
+            d.insert("coladd".into(), int(0));
+            Value::dict(d)
+        })
+        .collect();
+    Value::list(vec![Value::list(items), int(idx as i64)])
+}
+
+/// `strdisplaywidth(str [, col])`: the cells `str` takes when it starts at screen column `col`, a Tab up to its stop.
+fn f_strdisplaywidth(e: &mut Editor, a: &[Value]) -> Value {
+    let s = e.tv_str(&a[0]);
+    let col = a.get(1).map_or(0, |v| e.nr(v));
+    // `linetabsize_col(col, s) - col`; a negative column is taken as it is by the tab stops.
+    let start = col.max(0) as usize;
+    let end = graphemes::cells(&s, 0, start, e.buf.opts.tabs(), usize::MAX, usize::MAX).last().map_or(start, |c| c.end());
+    int(end as i64 - start as i64)
+}
+
+/// `strwidth(str)`: `mb_string2cells`, a Tab and a control char are one cell.
+fn f_strwidth(e: &mut Editor, a: &[Value]) -> Value {
+    let s = e.tv_str(&a[0]);
+    int(graphemes::count_cells(&s) as i64)
+}
+
+fn f_matchstr(e: &mut Editor, a: &[Value]) -> Value {
+    find_some_match(e, a, SomeMatch::Str)
+}
+
+fn f_match(e: &mut Editor, a: &[Value]) -> Value {
+    find_some_match(e, a, SomeMatch::Match)
+}
+
+fn f_matchend(e: &mut Editor, a: &[Value]) -> Value {
+    find_some_match(e, a, SomeMatch::End)
+}
+
+fn f_matchlist(e: &mut Editor, a: &[Value]) -> Value {
+    find_some_match(e, a, SomeMatch::List)
+}
+
+fn f_matchstrpos(e: &mut Editor, a: &[Value]) -> Value {
+    find_some_match(e, a, SomeMatch::StrPos)
+}
+
+/// `tv_check_str_or_nr`.
+pub(super) fn check_str_or_nr(e: &mut Editor, v: &Value) -> bool {
+    let msg = match v {
+        Value::Int(_) | Value::Str(_) => return true,
+        Value::Float(_) => "E805: Expected a Number or a String, Float found",
+        Value::Func(_) | Value::Partial(_) => "E703: Expected a Number or a String, Funcref found",
+        Value::List(_) => "E745: Expected a Number or a String, List found",
+        Value::Dict(_) => "E728: Expected a Number or a String, Dictionary found",
+        Value::Bool(_) => "E5299: Expected a Number or a String, Boolean found",
+        Value::None => "E5300: Expected a Number or a String",
+    };
+    e.error(msg);
+    false
+}
+
+fn f_bufexists(e: &mut Editor, a: &[Value]) -> Value {
+    int(i64::from(e.find_buffer(&a[0]).is_some()))
+}
+
+fn f_buflisted(e: &mut Editor, a: &[Value]) -> Value {
+    int(i64::from(e.find_buffer(&a[0]).and_then(|id| e.buffer(id)).is_some_and(|b| b.listed)))
+}
+
+fn f_bufloaded(e: &mut Editor, a: &[Value]) -> Value {
+    int(i64::from(e.find_buffer(&a[0]).and_then(|id| e.buffer(id)).is_some_and(|b| !b.unloaded)))
+}
+
+/// `f_bufname`: the name of the buffer as it was given (`b_fname`); none for a buffer without a file.
+fn f_bufname(e: &mut Editor, a: &[Value]) -> Value {
+    let id = match a.first() {
+        None => Some(e.buf.id),
+        Some(v) => {
+            if !check_str_or_nr(e, v) {
+                None
+            } else {
+                e.tv_get_buf(v)
+            }
+        }
+    };
+    let name = id.and_then(|id| e.buffer(id)).and_then(|b| b.path.as_ref().map(|_| b.name()));
+    Value::Str(name.unwrap_or_default().into())
+}
+
+/// `f_bufnr`: the number of the buffer, -1 when there is none; a second argument that is not zero adds it as an unlisted one.
+fn f_bufnr(e: &mut Editor, a: &[Value]) -> Value {
+    let found = match a.first() {
+        None => Some(e.buf.id),
+        Some(v) => {
+            if !check_str_or_nr(e, v) {
+                return int(-1);
+            }
+            e.tv_get_buf(v)
+        }
+    };
+    if found.is_none() && a.len() > 1 && let (Some(n), Some(name)) = (e.nr_chk(&a[1]), e.str_chk(&a[0])) && n != 0 {
+        return int(e.buflist_add(&name) as i64);
+    }
+    int(found.map_or(-1, |id| id as i64))
+}
+
+/// `get_winnr` for the current tab page.
+fn f_winnr(e: &mut Editor, a: &[Value]) -> Value {
+    let ids = e.window_ids();
+    let pos = |id: usize| ids.iter().position(|&w| w == id).map_or(0, |i| i as i64 + 1);
+    let Some(v) = a.first() else { return int(pos(e.win.id)) };
+    let Some(arg) = e.str_chk(v) else { return int(0) };
+    let twin = match arg.as_str() {
+        "$" => *ids.last().expect("a window"),
+        "#" => match e.prevwin.filter(|p| ids.contains(p)) {
+            Some(p) => p,
+            None => return int(0),
+        },
+        _ => {
+            // `strtol`: the count; where no digits were taken the string stays as it is.
+            let (n, at) = super::evalvars::strtoimax(&arg, 0);
+            let count = i64::from(n.map_or(-1, |n| n as i32)).max(1) as usize;
+            let rest = &arg[at..];
+            if !matches!(rest, "j" | "k" | "h" | "l") {
+                e.error(format!("E15: Invalid expression: \"{arg}\""));
+                return int(0);
+            }
+            e.win_neighbor(e.win.id, rest.chars().next().expect("one letter"), count)
+        }
+    };
+    int(pos(twin))
+}
+
+/// `win_getid([win])`: the window id of window number `win`.
+fn f_win_getid(e: &mut Editor, a: &[Value]) -> Value {
+    let Some(v) = a.first() else { return int(e.win.id as i64) };
+    let nr = e.nr(v) as i32;
+    if nr <= 0 {
+        return int(0);
+    }
+    // A second argument is a tab page: there is only the first.
+    if let Some(t) = a.get(1)
+        && e.nr(t) as i32 != 1
+    {
+        return int(-1);
+    }
+    int(e.window_ids().get(nr as usize - 1).map_or(0, |&id| id as i64))
+}
+
+/// `win_gotoid(id)`: 1 when the window was entered.
+fn f_win_gotoid(e: &mut Editor, a: &[Value]) -> Value {
+    let id = e.nr(&a[0]) as i32;
+    if id as usize == e.win.id && id > 0 {
+        return int(1);
+    }
+    match usize::try_from(id).ok().filter(|i| e.window_ids().contains(i)) {
+        Some(w) => {
+            e.win_enter(w);
+            int(1)
+        }
+        None => int(0),
+    }
+}
+
+/// `winbufnr(nr)`: the number of the buffer in the window, -1 when there is none.
+fn f_winbufnr(e: &mut Editor, a: &[Value]) -> Value {
+    match find_win_by_nr_or_id(e, &a[0]) {
+        Some(id) => int(if id == e.win.id { e.buf.id as i64 } else { e.windows.iter().find(|w| w.id == id).map_or(-1, |w| w.buf as i64) }),
+        None => int(-1),
+    }
+}
+
+/// `buf_win_common`: `bufwinnr()` and `bufwinid()`, the first window that shows the buffer.
+fn buf_win_common(e: &mut Editor, a: &[Value], get_nr: bool) -> Value {
+    if !check_str_or_nr(e, &a[0]) {
+        return int(-1);
+    }
+    let Some(buf) = e.tv_get_buf(&a[0]) else { return int(-1) };
+    for (i, id) in e.window_ids().into_iter().enumerate() {
+        let shown = if id == e.win.id { e.buf.id } else { e.windows.iter().find(|w| w.id == id).map_or(0, |w| w.buf) };
+        if shown == buf {
+            return int(if get_nr { i as i64 + 1 } else { id as i64 });
+        }
+    }
+    int(-1)
+}
+
+/// `expand()`: a string that starts with `%`, `#` or `<` is a special string of the command line (errors are not given), any
+/// other one is expanded as a file name (`ExpandOne`): `~`, `$VAR`, wildcards, `{a,b}`, `` `cmd` ``; a name that is not found
+/// is kept. With a non-zero second argument 'wildignore' and 'suffixes' do nothing.
+fn f_expand(e: &mut Editor, a: &[Value]) -> Value {
+    let mut list = false;
+    if a.len() > 2 && e.nr_chk(&a[2]).is_some_and(|n| n != 0) {
+        list = true;
+    }
+    let s = e.tv_str(&a[0]);
+    let found: Vec<String> = if s.starts_with(['%', '#', '<']) {
+        match e.eval_vars(&s, 0, false) {
+            super::evalvars::Vars::Repl { text, .. } => vec![text],
+            _ => vec![],
+        }
+    } else {
+        let keep_all = match a.get(1) {
+            Some(v) => match e.nr_chk(v) {
+                Some(n) => n != 0,
+                None => return if list { Value::list(vec![]) } else { Value::Str(String::new().into()) },
+            },
+            None => false,
+        };
+        e.expand_files_list(&s, keep_all, true)
+    };
+    if list { Value::list(found.into_iter().map(|t| Value::Str(t.into())).collect()) } else if s.starts_with(['%', '#', '<']) { Value::Str(found.into_iter().next().unwrap_or_default().into()) } else { Value::Str(found.join("\n").into()) }
+}
+
+/// `argv([idx])`: the list of names, or the name at `idx` (empty when there is none).
+fn f_argv(e: &mut Editor, a: &[Value]) -> Value {
+    let names = e.arg_names();
+    match a.first() {
+        None => Value::list(names.into_iter().map(|n| Value::Str(n.into())).collect()),
+        Some(v) => {
+            let i = e.nr(v);
+            // -1 is the whole list.
+            if i == -1 {
+                return Value::list(names.into_iter().map(|n| Value::Str(n.into())).collect());
+            }
+            Value::Str(usize::try_from(i).ok().and_then(|i| names.get(i).cloned()).unwrap_or_default().into())
+        }
+    }
+}
+
+fn f_filereadable(e: &mut Editor, a: &[Value]) -> Value {
+    let p = e.tv_str(&a[0]);
+    let path = std::path::Path::new(&p);
+    int(i64::from(!p.is_empty() && !path.is_dir() && std::fs::File::open(path).is_ok()))
+}
+
+/// The text of an OS error as `os_strerror` gives it.
+fn os_strerror(err: &std::io::Error) -> String {
+    let s = err.to_string();
+    s.split(" (os error").next().unwrap_or(&s).to_string()
+}
+
+/// `mkdir({name} [, {flags} [, {prot}]])`: 1 when the directory was made; `p` makes the parents too.
+// shortcut: no `D` and `R` (deleted when the function ends), no protection mode, when `:defer` and `fs` take them
+fn f_mkdir(e: &mut Editor, a: &[Value]) -> Value {
+    let dir = e.tv_str(&a[0]);
+    if dir.is_empty() {
+        return int(0);
+    }
+    let dir = if dir.len() > 1 { dir.trim_end_matches('/').to_string() } else { dir };
+    let flags = a.get(1).map(|v| e.tv_str(v)).unwrap_or_default();
+    let r = if flags.contains('p') { std::fs::create_dir_all(&dir) } else { std::fs::create_dir(&dir) };
+    match r {
+        Ok(()) => int(1),
+        // `p` ends with the directory existing: nothing to say.
+        Err(err) if flags.contains('p') && std::path::Path::new(&dir).is_dir() => {
+            let _ = err;
+            int(1)
+        }
+        Err(err) => {
+            e.error(format!("E739: Cannot create directory: {dir}: {}", os_strerror(&err)));
+            int(0)
+        }
+    }
+}
+
+/// `writefile({list}, {fname} [, {flags}])`: 0 when it worked, -1 when not. Flags `b` (no line break after the last line), `a`
+/// (append), `s` and `S` (fsync, no-op), `p` (parents).
+// shortcut: a Blob and the flag `D` are not taken, when Blobs exist
+fn f_writefile(e: &mut Editor, a: &[Value]) -> Value {
+    let Value::List(l) = &a[0] else {
+        e.error("E475: Invalid argument: writefile() first argument must be a List or a Blob");
+        return int(-1);
+    };
+    let items = l.borrow().to_vec();
+    for it in &items {
+        if !check_str_or_nr(e, it) {
+            return int(-1);
+        }
+    }
+    let (mut binary, mut append, mut mkdir_p) = (false, false, false);
+    if let Some(f) = a.get(2) {
+        let Some(flags) = e.str_chk(f) else { return int(-1) };
+        for (i, c) in flags.char_indices() {
+            match c {
+                'b' => binary = true,
+                'a' => append = true,
+                's' | 'S' => {}
+                'p' => mkdir_p = true,
+                _ => {
+                    e.error(format!("E5060: Unknown flag: {}", &flags[i..]));
+                    return int(-1);
+                }
+            }
+        }
+    }
+    let Some(fname) = e.str_chk(&a[1]) else { return int(-1) };
+    if fname.is_empty() {
+        e.error("E482: Can't open file with an empty name");
+        return int(-1);
+    }
+    if mkdir_p && let Some(parent) = std::path::Path::new(&fname).parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let mut text = String::new();
+    for (i, it) in items.iter().enumerate() {
+        // A NUL in a line is written as a line break.
+        text.push_str(&e.tv_str(it).replace('\n', "\0"));
+        if !binary || i + 1 < items.len() {
+            text.push('\n');
+        }
+    }
+    let file = std::fs::OpenOptions::new().write(true).create(true).append(append).truncate(!append).open(&fname);
+    match file.and_then(|mut f| std::io::Write::write_all(&mut f, text.as_bytes())) {
+        Ok(()) => int(0),
+        Err(err) => {
+            e.error(format!("E482: Can't open file {fname} for writing: {}", os_strerror(&err)));
+            int(-1)
+        }
+    }
+}
+
+/// `glob({expr} [, {nosuf} [, {list} [, {alllinks}]]])`: the files that exist and match.
+fn f_glob(e: &mut Editor, a: &[Value]) -> Value {
+    let flag = |e: &mut Editor, i: usize| a.get(i).is_some_and(|v| e.nr_chk(v).is_some_and(|n| n != 0));
+    let (nosuf, list, alllinks) = (flag(e, 1), flag(e, 2), flag(e, 3));
+    let s = e.tv_str(&a[0]);
+    let found = e.expand_glob(&s, nosuf, alllinks);
+    if list { Value::list(found.into_iter().map(|t| Value::Str(t.into())).collect()) } else { Value::Str(found.join("\n").into()) }
+}
+
+/// `fnamemodify()`.
+fn f_fnamemodify(e: &mut Editor, a: &[Value]) -> Value {
+    let (Some(name), Some(mods)) = (e.str_chk(&a[0]), e.str_chk(&a[1])) else { return Value::Str(String::new().into()) };
+    Value::Str(e.fnamemodify(&name, &mods).into())
 }
 
 fn f_substitute(e: &mut Editor, a: &[Value]) -> Value {
@@ -1794,23 +2263,29 @@ fn f_substitute(e: &mut Editor, a: &[Value]) -> Value {
     let flags = e.str_chk(&a[3]);
     let rep = e.str_chk(&a[2]);
     let (Some(text), Some(pat), Some(rep), Some(flags)) = (text, pat, rep, flags) else { return Value::Str(String::new().into()) };
-    let re = match Regex::new(&pat) {
+    Value::Str(substitute_str(e, &text, &pat, &rep, &flags).into())
+}
+
+/// `do_string_sub`: `text` with the first match of `pat` (every one with `g` in `flags`) replaced; an invalid pattern is
+/// `E383` and gives an empty String.
+pub(super) fn substitute_str(e: &mut Editor, text: &str, pat: &str, rep: &str, flags: &str) -> String {
+    let re = match Regex::new(pat) {
         Ok(r) => r,
         Err(_) => {
             e.error(format!("E383: Invalid search string: {pat}"));
-            return Value::Str(String::new().into());
+            return String::new();
         }
     };
-    let t = Text::from(text.as_str());
-    Value::Str(if flags.contains('g') {
-        let (new, _) = t.replace_all(&re, &rep);
-        new.slice(0..new.len()).into_owned().into()
+    let t = Text::from(text);
+    if flags.contains('g') {
+        let (new, _) = t.replace_all(&re, rep);
+        new.slice(0..new.len()).into_owned()
     } else {
-        match t.find_from(&re, 0).and_then(|m| t.replacement_at(&re, m.start, &rep)) {
-            Some((m, new)) => format!("{}{new}{}", &text[..m.start], &text[m.end..]).into(),
+        match t.find_from(&re, 0).and_then(|m| t.replacement_at(&re, m.start, rep)) {
+            Some((m, new)) => format!("{}{new}{}", &text[..m.start], &text[m.end..]),
             None => text.into(),
         }
-    })
+    }
 }
 
 // ---- filter(), map(), mapnew(), foreach() ----------------------------------------------------------
@@ -2213,7 +2688,7 @@ fn var2fpos(e: &mut Editor, v: &Value, dollar_lnum: bool, winid: Option<usize>) 
     None
 }
 
-fn tv_get_lnum(e: &mut Editor, v: &Value) -> i64 {
+pub(super) fn tv_get_lnum(e: &mut Editor, v: &Value) -> i64 {
     let before = e.scripts.emsg_count;
     // `(linenr_T)tv_get_number_chk(tv, NULL)`: 32 bits, -1 after an error.
     let n = i64::from(e.nr_chk(v).unwrap_or(-1) as i32);
@@ -2231,7 +2706,8 @@ fn f_getline(e: &mut Editor, a: &[Value]) -> Value {
         Some(b) => (tv_get_lnum(e, b), true),
     };
     let count = e.line_count() as i64;
-    let line = |e: &Editor, n: i64| e.buf.doc.text().line(n as usize - 1).into_owned();
+    // A NUL of the buffer is a line break to a script (`ml_get` stores NL for it).
+    let line = |e: &Editor, n: i64| e.buf.doc.text().line(n as usize - 1).replace('\0', "\n");
     if start < 0 || end < start {
         return if retlist { Value::list(Vec::new()) } else { Value::Str(String::new().into()) };
     }
@@ -2577,7 +3053,7 @@ fn f_getregtype(e: &mut Editor, a: &[Value]) -> Value {
     Value::Str(match e.reg(regname).map(|r| r.kind) {
         Some(RegKind::Line) => "V".into(),
         Some(RegKind::Char) => "v".into(),
-        Some(RegKind::Block(w)) => format!("\x16{}", w + 1).into(),
+        Some(RegKind::Block(w)) => format!("\x16{}", w.wrapping_add(1)).into(),
         None => "".into(),
     })
 }

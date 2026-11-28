@@ -1,0 +1,1279 @@
+NVIM v0.12.6
+
+bufnr() 1
+bufnr("%") 1
+bufnr("#") -1
+bufnr("$") 1
+bufnr("") 1
+bufnr(0) -1
+bufnr(1) 1
+bufnr(2) -1
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") -1
+bufnr("b") -1
+bufnr("/nonexistent/a") -1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") -1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 1
+bufname() ''
+bufname("%") ''
+bufname("#") ''
+bufname("$") ''
+bufname("") ''
+bufname(0) ''
+bufname(1) ''
+bufname(2) ''
+bufname(3) ''
+bufname(99) ''
+bufname("a") ''
+bufname("b") ''
+bufname("/nonexistent/a") ''
+bufname("xyz") ''
+bufexists(0) 0
+bufexists(1) 1
+bufexists(2) 0
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 0
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 0
+buflisted(1) 1
+buflisted(2) 0
+buflisted(3) 0
+buflisted("/nonexistent/a") 0
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 0
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 0
+winnr() 1
+winnr("$") 1
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 1
+bufname("") ''
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 1
+bufnr("%") 1
+bufnr("#") 1
+bufnr("$") 1
+bufnr("") 1
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) -1
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") -1
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") 1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") 1
+bufnr("/") 1
+bufnr("c") -1
+bufnr("[ab]") 1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 1
+bufname() '/nonexistent/a'
+bufname("%") '/nonexistent/a'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/a'
+bufname("") '/nonexistent/a'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) ''
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") ''
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 0
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 0
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 0
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 1
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 1
+bufname("") '/nonexistent/a'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 2
+bufnr("%") 2
+bufnr("#") 1
+bufnr("$") 2
+bufnr("") 2
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 2
+bufname() '/nonexistent/b'
+bufname("%") '/nonexistent/b'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/b'
+bufname("") '/nonexistent/b'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 1
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 2
+bufname("") '/nonexistent/b'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 3
+bufnr("%") 3
+bufnr("#") 2
+bufnr("$") 3
+bufnr("") 3
+bufnr(0) 2
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) 3
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 3
+bufname() ''
+bufname("%") ''
+bufname("#") '/nonexistent/b'
+bufname("$") ''
+bufname("") ''
+bufname(0) '/nonexistent/b'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 1
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 1
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 1
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 3
+bufname("") ''
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 2
+bufnr("%") 2
+bufnr("#") 1
+bufnr("$") 2
+bufnr("") 2
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 2
+bufname() '/nonexistent/b'
+bufname("%") '/nonexistent/b'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/b'
+bufname("") '/nonexistent/b'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 2
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 2
+bufname("") '/nonexistent/b'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 2
+bufnr("%") 2
+bufnr("#") 1
+bufnr("$") 2
+bufnr("") 2
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 2
+bufname() '/nonexistent/b'
+bufname("%") '/nonexistent/b'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/b'
+bufname("") '/nonexistent/b'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 3
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 2
+bufname("") '/nonexistent/b'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+
+bufnr() 1
+bufnr("%") 1
+bufnr("#") 2
+bufnr("$") 2
+bufnr("") 1
+bufnr(0) 2
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 1
+bufname() '/nonexistent/a'
+bufname("%") '/nonexistent/a'
+bufname("#") '/nonexistent/b'
+bufname("$") '/nonexistent/b'
+bufname("") '/nonexistent/a'
+bufname(0) '/nonexistent/b'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 3
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 1
+bufname("") '/nonexistent/a'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 2
+bufnr("%") 2
+bufnr("#") 1
+bufnr("$") 2
+bufnr("") 2
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") 2
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") -1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") -1
+bufnr("/") -1
+bufnr("c") -1
+bufnr("[ab]") -1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 2
+bufname() '/nonexistent/b'
+bufname("%") '/nonexistent/b'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/b'
+bufname("") '/nonexistent/b'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/b'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") '/nonexistent/b'
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 1
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 1
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 3
+winnr("$") 3
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 2
+bufname("") '/nonexistent/b'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+"---
+
+bufnr() 1
+bufnr("%") 1
+bufnr("#") 1
+bufnr("$") 2
+bufnr("") 1
+bufnr(0) 1
+bufnr(1) 1
+bufnr(2) 2
+bufnr(3) -1
+bufnr(-1) -1
+bufnr("a") 1
+bufnr("b") -1
+bufnr("/nonexistent/a") 1
+bufnr("nonexistent") 1
+bufnr("xyz") -1
+bufnr("a$") 1
+bufnr("^/non") 1
+bufnr("/") 1
+bufnr("c") 2
+bufnr("[ab]") 1
+bufnr("nosuch", 0) -1
+bufnr("nosuch", "x") -1
+bufnr("nosuch", [])
+bufnr("nosuch", []) Vim(echo):E745: Using a List as a Number
+bufnr("nosuch", 1.5)
+bufnr("nosuch", 1.5) Vim(echo):E805: Using a Float as a Number
+bufnr("", []) 1
+bufname() '/nonexistent/a'
+bufname("%") '/nonexistent/a'
+bufname("#") '/nonexistent/a'
+bufname("$") '/nonexistent/c'
+bufname("") '/nonexistent/a'
+bufname(0) '/nonexistent/a'
+bufname(1) '/nonexistent/a'
+bufname(2) '/nonexistent/c'
+bufname(3) ''
+bufname(99) ''
+bufname("a") '/nonexistent/a'
+bufname("b") ''
+bufname("/nonexistent/a") '/nonexistent/a'
+bufname("xyz") ''
+bufexists(0) 1
+bufexists(1) 1
+bufexists(2) 1
+bufexists(3) 0
+bufexists(99) 0
+bufexists("") 0
+bufexists("%") 0
+bufexists("#") 0
+bufexists("$") 0
+bufexists("a") 0
+bufexists("/nonexistent/a") 1
+bufexists("/nonexistent/../nonexistent/a") 0
+buflisted(0) 1
+buflisted(1) 1
+buflisted(2) 0
+buflisted(3) 0
+buflisted("/nonexistent/a") 1
+buflisted("nosuch") 0
+bufloaded(1) 1
+bufloaded(2) 0
+bufloaded(99) 0
+bufloaded("/nonexistent/a") 1
+winnr() 1
+winnr("$") 1
+winnr("x")
+winnr("x") Vim(echo):E15: Invalid expression: "x"
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""
+winnr(1)
+winnr(1) Vim(echo):E15: Invalid expression: "1"
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+winnr(" j")
+winnr(" j") Vim(echo):E15: Invalid expression: " j"
+winnr("1 j")
+winnr("1 j") Vim(echo):E15: Invalid expression: "1 j"
+bufnr([])
+bufnr([]) Vim(echo):E745: Expected a Number or a String, List found
+bufname([])
+bufname([]) Vim(echo):E745: Expected a Number or a String, List found
+bufexists([]) 0
+buflisted([]) 0
+bufloaded([]) 0
+winnr([])
+winnr([]) Vim(echo):E730: Using a List as a String
+bufnr({})
+bufnr({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufname({})
+bufname({}) Vim(echo):E728: Expected a Number or a String, Dictionary found
+bufexists({}) 0
+buflisted({}) 0
+bufloaded({}) 0
+winnr({})
+winnr({}) Vim(echo):E731: Using a Dictionary as a String
+bufnr(1.5)
+bufnr(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufname(1.5)
+bufname(1.5) Vim(echo):E805: Expected a Number or a String, Float found
+bufexists(1.5) 0
+buflisted(1.5) 0
+bufloaded(1.5) 0
+winnr(1.5)
+winnr(1.5) Vim(echo):E15: Invalid expression: "1.5"
+bufnr(v:null)
+bufnr(v:null) Vim(echo):E5300: Expected a Number or a String
+bufname(v:null)
+bufname(v:null) Vim(echo):E5300: Expected a Number or a String
+bufexists(v:null) 0
+buflisted(v:null) 0
+bufloaded(v:null) 0
+winnr(v:null)
+winnr(v:null) Vim(echo):E15: Invalid expression: "v:null"
+bufnr(v:true)
+bufnr(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufname(v:true)
+bufname(v:true) Vim(echo):E5299: Expected a Number or a String, Boolean found
+bufexists(v:true) 0
+buflisted(v:true) 0
+bufloaded(v:true) 0
+winnr(v:true)
+winnr(v:true) Vim(echo):E15: Invalid expression: "v:true"
+bufnr(function("tr"))
+bufnr(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufname(function("tr"))
+bufname(function("tr")) Vim(echo):E703: Expected a Number or a String, Funcref found
+bufexists(function("tr")) 0
+buflisted(function("tr")) 0
+bufloaded(function("tr")) 0
+winnr(function("tr"))
+winnr(function("tr")) Vim(echo):E729: Using a Funcref as a String
+bufnr("") 1
+bufname("") '/nonexistent/a'
+bufexists("") 0
+buflisted("") 0
+bufloaded("") 0
+winnr("")
+winnr("") Vim(echo):E15: Invalid expression: ""

@@ -5,6 +5,8 @@
 
 mod block;
 mod bufarg;
+mod arglist;
+mod bufdel;
 mod buffers;
 mod changemarks;
 mod collate;
@@ -173,10 +175,10 @@ pub(super) fn short_name(name: &str, home: &str) -> String {
     }
 }
 
-/// A file name an ex command takes: `~` at the start and `$VAR`/`${VAR}` anywhere expanded, like
-/// `expand_filename()`; what the environment does not have stays as written.
+/// A file name an ex command takes, made a full name: `expand_filename` has expanded `~`, `$VAR`, wildcards and the backslashes already.
 pub(super) fn fname(arg: &str) -> PathBuf {
-    PathBuf::from(script::expand_env(arg))
+    // `fname_expand`: the buffer holds the full name; what is shown is the one under the current directory (`shorten_fname`).
+    PathBuf::from(script::full_name(arg, false))
 }
 
 /// Loads `path` (missing file → empty): the document, `'endofline'` (the file ended with a line break;
@@ -185,6 +187,8 @@ pub fn read_doc(path: &Path) -> io::Result<(Document, bool, bool)> {
     let content = match fs::read_to_string(path) {
         Ok(s) => s,
         Err(e) if e.kind() == io::ErrorKind::NotFound => String::new(),
+        // `readfile`: a directory is an empty buffer, `filemess` says so where the file is entered.
+        Err(_) if path.is_dir() => String::new(),
         Err(e) => return Err(e),
     };
     let (had_bytes, endofline) = (!content.is_empty(), content.is_empty() || content.ends_with(['\n', '\r']));
@@ -274,7 +278,6 @@ pub struct Editor {
     next_buf: usize,
     next_win: usize,
     /// Buffer `Ctrl+^` goes back to.
-    alt: Option<usize>,
     /// `:w` writes running on threads.
     saves: Vec<buffers::Saving>,
     /// Window area and cursor cell of the last frame, for `Ctrl+W hjkl`.
@@ -282,6 +285,12 @@ pub struct Editor {
     /// Columns of the terminal as the last frame had them (80 before the first): where a message is cut to fit the row.
     cols: usize,
     cursor_cell: (usize, usize),
+    /// `prevwin`: the window the current one was entered from (`Ctrl+W p`, `winnr('#')`).
+    prevwin: Option<usize>,
+    /// The directory before the last `:cd` (`:cd -`).
+    prev_dir: Option<String>,
+    /// The argument list (`global_alist`).
+    arglist: Vec<arglist::ArgEntry>,
     msgs: messages::Messages,
     mode: Mode,
     /// Visual-mode selection end opposite the cursor.
@@ -409,6 +418,12 @@ pub struct Editor {
     /// The last key was a printable ASCII char of a run `insertchar` took from the typeahead in one go: the chars after the
     /// first of the run do not go through the Insert mode loop, so a space among them is not `inserted_space`.
     typed_batch: bool,
+    /// The next edit is the continuation of a batch of typed chars: `b:changedtick` counts the batch once.
+    tick_skip: bool,
+    /// `OPT_LOCAL`: an option is being set from `&l:`.
+    opt_local: bool,
+    /// The window that was current when a layout change is being worked out (`layout_changed`).
+    layout_cur: Option<usize>,
     /// Where the command's last edit happened, for the change list.
     change_off: Option<usize>,
     /// Insert mode waits for the register of `Ctrl+R` (`'r'`) or the key of `Ctrl+V` (`'v'`).
@@ -465,7 +480,7 @@ impl Editor {
     /// An editor on `doc`, without a file (`[No Name]`) when `path` is none.
     pub fn with_path(doc: Document, path: Option<PathBuf>) -> Self {
         let mut e = Self {
-            buf: Buffer::new(1, doc, path, Options::default()).for_window(FIRST_WIN_ID),
+            buf: Buffer::new(1, doc, path, Options::default()).for_window(FIRST_WIN_ID).first_in_window(),
             global_opts: Options::default(),
             win: Window::new(FIRST_WIN_ID, 1),
             vars: Default::default(),
@@ -478,11 +493,13 @@ impl Editor {
             split: windows::Split::Win(FIRST_WIN_ID),
             next_buf: 1,
             next_win: FIRST_WIN_ID,
-            alt: None,
             saves: Vec::new(),
-            screen: windows::Rect { x: 0, y: 0, w: 1, h: 1 },
+            screen: windows::Rect { x: 0, y: 0, w: 80, h: 23 },
             cols: 80,
             cursor_cell: (0, 0),
+            prevwin: None,
+            prev_dir: None,
+            arglist: Vec::new(),
             msgs: messages::Messages::default(),
             mode: Mode::Normal,
             anchor: (0, 0),
@@ -550,6 +567,9 @@ impl Editor {
             flush_typeahead: false,
             peek_key: None,
             typed_batch: false,
+            tick_skip: false,
+            opt_local: false,
+            layout_cur: None,
             change_off: None,
             insert_pending: None,
             insert_one: None,
@@ -579,10 +599,21 @@ impl Editor {
     }
 
     pub fn open(path: PathBuf) -> io::Result<Self> {
-        let (doc, endofline, had_bytes) = read_doc(&path)?;
+        let (doc, endofline, had_bytes, denied) = match read_doc(&path) {
+            Ok((d, e, h)) => (d, e, h, false),
+            Err(_) => (Document::new(""), true, false, true),
+        };
+        // `shorten_fnames(false)` at the start only shortens an absolute name: a relative one stays as typed.
+        let typed = (!path.is_absolute()).then(|| path.display().to_string());
         let mut e = Self::new(doc, path);
+        e.buf.sfname = typed;
+        if denied {
+            e.denied_message();
+        }
+        e.dir_message();
         (e.buf.opts.endofline, e.buf.empty_at_open) = (endofline, !had_bytes);
         e.buf.save_file_ff();
+        e.arglist.push(arglist::ArgEntry { fname: e.buf.name(), fnum: 1 });
         Ok(e)
     }
 
@@ -633,6 +664,15 @@ impl Editor {
     /// Register `name` for reading: `+`/`*` ask the terminal (linewise when the text ends with a
     /// line break), with an error message when it does not answer.
     fn reg(&mut self, name: char) -> Option<Reg> {
+        // `=`: the expression that `setreg()` set, evaluated now (`get_expr_line`).
+        if name == '=' && let Some(expr) = self.regs.expr_line.clone() {
+            let v = self.eval(&expr).ok()?;
+            let text = match &v {
+                script::Value::List(l) => l.borrow().iter().map(|i| format!("{}\n", i.echo())).collect(),
+                v => v.echo(),
+            };
+            return Some(Reg { text, kind: RegKind::Char });
+        }
         // `/`: the last search pattern.
         if name == '/' {
             return self.last_search.as_ref().map(|s| Reg { text: s.pat.clone(), kind: RegKind::Char });
@@ -640,7 +680,7 @@ impl Editor {
         // `get_spec_reg`: the file name, the alternate file name and the last command line.
         let special = match name {
             '%' => self.buf.path.as_ref().map(|p| p.display().to_string()),
-            '#' => self.alt.and_then(|id| self.buffer(id)).and_then(|b| b.path.as_ref().map(|p| p.display().to_string())),
+            '#' => self.win.alt.and_then(|id| self.buffer(id)).and_then(|b| b.path.as_ref().map(|p| p.display().to_string())),
             ':' => self.last_cmdline().map(str::to_string),
             _ => None,
         };
@@ -898,12 +938,18 @@ impl Editor {
     /// Runs one `Document` edit inside the command's group and moves the marks with it.
     #[track_caller]
     fn edit<R>(&mut self, f: impl FnOnce(&mut Document) -> R) -> R {
+        // 'nomodifiable': `u_save` has refused (`E21`), the change is made on a copy that goes.
+        if !self.buf.opts.modifiable {
+            let t = self.buf.doc.text();
+            return f(&mut Document::from_string(t.slice(0..t.len()).into_owned()));
+        }
         // Every change is announced by a `u_save*` call (as in Neovim), which opens the undo step.
         debug_assert!(!self.buf.undo.synced, "an edit without u_save at {}", std::panic::Location::caller());
         let before = self.buf.doc.text().clone();
         let r = f(&mut self.buf.doc);
         // `changed()`: a command that rewrites a line with the same text modifies the buffer too.
         self.buf.modified = true;
+        self.buf.changedtick += u64::from(!mem::take(&mut self.tick_skip));
         if !self.buf.doc.text().is_empty() {
             self.buf.undo.empty = false;
         }
@@ -1178,6 +1224,12 @@ impl Editor {
         let was_expr = matches!(self.mode, Mode::Expr(_));
         let in_visual = matches!(self.mode, Mode::Visual(_));
         let more = self.key_inner(key);
+        // `normal_redraw`: the buffer was used when a Normal mode command ended.
+        // Neovim reads the clock at every pass of its Normal mode loop (once per key too), which this is; 23 ns against about 1 us
+        // for a key (docs/guides/benchmarks.md, `key_clock_cost`)
+        if matches!(self.mode, Mode::Normal) {
+            self.buf.last_used = undo::now();
+        }
         // `nv_esc` and the operators: leaving Visual mode takes the column wanted from the cursor again.
         if in_visual && !matches!(self.mode, Mode::Visual(_)) {
             self.win.want_set = true;
@@ -1671,6 +1723,11 @@ impl Editor {
 
     /// Starts Insert mode; `Insstart` is where it began.
     fn enter_insert(&mut self) {
+        // `edit()`: Insert mode needs a buffer that can be changed.
+        if !self.buf.opts.modifiable {
+            self.error("E21: Cannot make changes, 'modifiable' is off");
+            return;
+        }
         self.mode = Mode::Insert;
         self.ins_need_undo = true;
         self.ins_batch = false;
@@ -1791,7 +1848,10 @@ impl Editor {
             let changed = self.buf.doc.text().slice(range.clone()) != s;
             // `op_tilde`.
             self.u_save_lines(a.0, b.0);
+            let tick = self.buf.changedtick;
             self.edit_replace(range, &s);
+            // `changed_lines` only when a char changed.
+            self.buf.changedtick = tick + u64::from(changed);
             self.set_op_marks(start_off, end);
             if changed {
                 self.set_dot(start_off);
@@ -1835,6 +1895,7 @@ impl Editor {
         if !empty_change {
             self.store_reg(yanked, if kind == Kind::Linewise { RegKind::Line } else { RegKind::Char }, op == 'y');
         }
+        let tick0 = self.buf.changedtick;
         match (op, kind) {
             ('y', Kind::Linewise) => {
                 // The cursor goes to where the operator started (`oap->start`).
@@ -1872,6 +1933,8 @@ impl Editor {
                     self.u_clearline();
                 }
                 self.mark_adjust(a.0 + 1, b.0 - a.0, None, -((b.0 - a.0) as isize));
+                // `del_lines` of the lines after the first, then `truncate_line`.
+                self.buf.changedtick = tick0 + if b.0 > a.0 { 2 } else { 1 };
                 // `truncate_line` is a change (`changed_bytes`) also when the line has nothing past its indent.
                 let off = self.mark_off(a.0, graphemes::count(&indent));
                 self.set_dot(off);
@@ -1891,6 +1954,11 @@ impl Editor {
                     self.marks_chardel = true;
                     self.edit_delete(range);
                     self.marks_chardel = false;
+                    // Over line breaks: `truncate_line`, `del_lines` of the lines between (when there are any), `del_bytes` and
+                    // `do_join` (two); within a line one `del_bytes`.
+                    if a.0 != b.0 {
+                        self.buf.changedtick = tick0 + 3 + u64::from(b.0 - a.0 > 1) + 1;
+                    }
                 }
                 self.win.line = a.0;
                 self.set_col(a.1);
@@ -1970,6 +2038,7 @@ impl Editor {
         let mut col = self.win.col;
         let mut any = false;
         // `op_shift`.
+        let tick = self.buf.changedtick;
         self.u_save_lines(first, last);
         for l in first..=last {
             let line = self.buf.doc.text().line(l);
@@ -1992,6 +2061,8 @@ impl Editor {
         let _ = any;
         let off = self.mark_off(first, 0);
         self.set_dot(off);
+        // `changed_lines` is the one change `op_shift` makes, whatever the number of lines it rewrote.
+        self.buf.changedtick = tick + 1;
         // `op_shift`: `'[` is where the operator started, `']` the last char of the last line.
         let (s, e) = (self.mark_off(first, start_col), self.last_char_off(last));
         self.set_op_marks(s, e);
@@ -2028,6 +2099,8 @@ impl Editor {
 
     fn join(&mut self, times: usize, spaces: bool) {
         let first = self.win.line;
+        // `do_join`: `changed_lines` for the joined line and `deleted_lines_mark` for the ones gone, however many.
+        let tick = self.buf.changedtick;
         // `do_join`: the lines joined are saved.
         self.u_save_lines(first, (first + times).min(self.line_count() - 1));
         let first_len = self.buf.doc.text().line(first).len();
@@ -2061,6 +2134,7 @@ impl Editor {
             self.put_mark('.', first + 1, 0);
             self.add_change();
             self.dot_set = true;
+            self.buf.changedtick = tick + 2;
         } else if times == 0 {
             // `do_join` of one line (`3J` on the last line): the cursor goes to the column where "the last join" would be, 0.
             self.set_col(0);
@@ -2083,8 +2157,10 @@ impl Editor {
         }
         if reg.is_none() && self.msgs.seq == seq {
             // `do_put` saves the cursor line before it looks at what the register holds.
-            self.u_save(self.win.line + 1, self.win.line + 2);
-            self.error(format!("E353: Nothing in register {name}"));
+            // A buffer that is not 'modifiable' stops at the `E21` of that save.
+            if self.u_save(self.win.line + 1, self.win.line + 2) {
+                self.error(format!("E353: Nothing in register {name}"));
+            }
         }
         reg
     }
@@ -2484,11 +2560,14 @@ impl Editor {
                 // A run of typed chars is one change for Neovim (`'.` is where it began); Replace mode changes one by one.
                 let (off, first) = (self.offset(), self.replacing.is_some() || !self.ins_batch);
                 self.ins_batch = self.replacing.is_none();
+                // A char taken from the typeahead with the one before it is part of one `ins_str`: one `changed_bytes`.
+                self.tick_skip = self.typed_batch && c.is_ascii() && !c.is_ascii_control() && c != '\x7f' && self.replacing.is_none();
                 if self.replacing.is_some() {
                     self.replace_char(c);
                 } else {
                     self.insert(c.encode_utf8(&mut [0; 4]));
                 }
+                self.tick_skip = false;
                 // `insertchar` takes a run of printable ASCII chars from the typeahead at once (not in Replace mode): only the first
                 // of them is a key of the Insert mode loop.
                 let printable = c.is_ascii() && !c.is_ascii_control() && c != '\x7f';
@@ -2922,15 +3001,23 @@ impl Editor {
         self.msg_may_trunc(self.file_info_whole())
     }
 
+    /// `fileinfo(false, false, true)`: the whole text of the message of `Ctrl+G`, `:file` and a file read.
     fn file_info_whole(&self) -> String {
         let lines = self.line_count();
         let name = short_name(&self.buf.name(), &std::env::var("HOME").unwrap_or_default());
-        format!(
-            "\"{name}\"{} {lines} line{} --{}%--",
-            if self.is_dirty() { " [Modified]" } else { "" },
-            if lines == 1 { "" } else { "s" },
-            (self.win.line + 1) * 100 / lines,
-        )
+        let b = &self.buf;
+        let dirty = self.is_dirty();
+        let o = &b.opts;
+        let flags = format!(
+            "{}{}{}{}",
+            if b.notedited && !o.nofile { "[Not edited]" } else { "" },
+            if b.new_file && !o.nofile { "[New]" } else { "" },
+            if b.read_error { "[Read errors]" } else { "" },
+            if o.readonly { if o.shortmess('r') { "[RO]" } else { "[readonly]" } } else { "" },
+        );
+        let state = if dirty { if o.shortmess('m') { " [+]" } else { " [Modified]" } } else { " " };
+        let tail = if b.ml_empty() { "--No lines in buffer--".to_string() } else { format!("{lines} line{} --{}%--", if lines == 1 { "" } else { "s" }, (self.win.line + 1) * 100 / lines) };
+        format!("\"{name}\"{state}{flags}{}{tail}", if dirty || !flags.is_empty() || o.readonly { " " } else { "" })
     }
 
     /// `g Ctrl+G`: cursor position against the text's totals (columns and chars from the
@@ -3137,6 +3224,11 @@ impl Editor {
         }
         // The saves `do_sub` makes, line by line, before the text changes.
         let plan = if virt { self.buf.doc.plan_replace_eol(&search.re, &s.rep, pick) } else { self.buf.doc.plan_replace(&search.re, &s.rep, pick) };
+        // `u_save` of the first match refuses (`E21`) and `do_sub` stops there, with no `E486`.
+        if !plan.edits().is_empty() && !self.buf.opts.modifiable {
+            self.error("E21: Cannot make changes, 'modifiable' is off");
+            return;
+        }
         if !plan.edits().is_empty() {
             // `do_sub`: `setpcmark()` at the first match, with the cursor where the command found it.
             self.set_jump();
@@ -3373,6 +3465,10 @@ impl Editor {
 
     /// `:e`/`:e!`: replaces the buffer with the file on disk; history starts over.
     fn reload(&mut self) {
+        // `ml_open` and `unchanged()` each count once: a reload is two ticks, whatever the edits below made.
+        let tick = self.buf.changedtick;
+        let was_unloaded = self.buf.unloaded;
+        self.buf.unloaded = false;
         let Some(path) = self.buf.path.clone() else { return self.error("E32: No file name") };
         match read_doc(&path) {
             Ok((doc, endofline, had_bytes)) => {
@@ -3403,6 +3499,7 @@ impl Editor {
                 self.buf.save_file_ff();
                 (self.buf.loaded, self.buf.empty_at_open) = (self.buf.doc.text().clone(), !had_bytes);
                 self.changed = false;
+                self.buf.changedtick = tick + if was_unloaded { 0 } else { 2 };
                 self.clamp();
                 self.do_modelines();
                 // `:e`/`:e!` give the file info unless `'shortmess'` has `F`, as opening does.

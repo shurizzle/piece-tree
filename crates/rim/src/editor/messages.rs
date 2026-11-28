@@ -75,7 +75,7 @@ pub(super) fn utf_printable(c: u32) -> bool {
 }
 
 /// `vim_strsize`: the cells of `s`, a grapheme cluster at a time.
-fn cells(s: &str) -> usize {
+pub(super) fn cells(s: &str) -> usize {
     graphemes::iter(s).map(|g| graphemes::width(g, 1)).sum()
 }
 
@@ -345,6 +345,19 @@ impl Editor {
         // `:silent`: nothing is shown (a redirection still gets it, Neovim's does not: a difference).
         if self.scripts.msg_silent == 0 {
             self.msgs.show(Level::Info, text, keep);
+        }
+    }
+
+    /// A list whose every row starts with a line break (`msg_putchar('\n')`, `:ls`): the capture adds the first break itself.
+    pub(super) fn info_rows(&mut self, rows: String) {
+        let keep = self.buf.opts.msg_history;
+        if rows.is_empty() {
+            return;
+        }
+        let rows = rows[1..].to_string();
+        self.capture_msg(&rows, false);
+        if self.scripts.msg_silent == 0 {
+            self.msgs.show(Level::Info, rows, keep);
         }
     }
 

@@ -179,6 +179,7 @@ pub(super) fn abbr(name: &str, short: &str, long: &str) -> bool {
 const CMDWIN_REFUSES: &[(&str, &str)] = &[
     ("e", "edit"),
     ("ene", "enew"),
+    ("hid", "hide"),
     ("new", "new"),
     ("vne", "vnew"),
     ("sp", "split"),
@@ -205,11 +206,23 @@ pub(super) const FILE_COMMANDS: &[(&str, &str)] =
     &[("e", "edit"), ("sp", "split"), ("vs", "vsplit"), ("r", "read"), ("w", "write"), ("sav", "saveas"), ("wq", "wq"), ("x", "xit")];
 
 impl Editor {
+    /// `ex_splitview`: when `:split file` worked, the window it came from has the new buffer as its alternate file.
+    fn old_window_alt(&mut self, old: usize, arg: &str) {
+        let cur = self.buf.id;
+        if !arg.is_empty() && old != self.win.id && self.window_ids().contains(&old) {
+            self.with_window(old, |e| {
+                if e.buf.id != cur {
+                    e.win.alt = Some(cur);
+                }
+            });
+        }
+    }
+
     /// Runs `f` on the global options, which `filetype` and `buftype` never reach (`noglob` in Neovim).
     pub(super) fn on_global(&mut self, f: impl FnOnce(&mut super::options::Options)) {
-        let (ft, nofile) = (self.global_opts.filetype.clone(), self.global_opts.nofile);
+        let (ft, nofile, ro, bh) = (self.global_opts.filetype.clone(), self.global_opts.nofile, self.global_opts.readonly, self.global_opts.bufhidden.clone());
         f(&mut self.global_opts);
-        (self.global_opts.filetype, self.global_opts.nofile) = (ft, nofile);
+        (self.global_opts.filetype, self.global_opts.nofile, self.global_opts.readonly, self.global_opts.bufhidden) = (ft, nofile, ro, bh);
     }
 
     /// The options of global scope are one value for every buffer, and for the buffers to come (`copy_global`).
@@ -661,19 +674,62 @@ impl Editor {
                 if !ok {
                     return true;
                 }
-                return self.quit(false, false);
+                return self.quit(false, false, None);
             }
             "wqa" | "wqal" | "wqall" | "xa" | "xal" | "xall" => {
                 let dirty: Vec<usize> = [&self.buf].into_iter().chain(&self.buffers).filter(|b| b.is_dirty()).map(|b| b.id).collect();
                 let ok = dirty.into_iter().all(|id| self.save_buffer(id, true));
-                return !ok || self.quit(false, true);
+                return !ok || self.quit(false, true, None);
             }
             _ if abbr(n, "w", "write") => self.write_cmd(r, bang, a),
-            _ if abbr(n, "q", "quit") => return self.quit(bang, false),
-            _ if abbr(n, "qa", "qall") || abbr(n, "quita", "quitall") => return self.quit(bang, true),
-            _ if abbr(n, "clo", "close") => self.close_window(),
+            // `ex_update`: the same as `:w` when the buffer is changed.
+            _ if abbr(n, "up", "update") => if self.buf.is_dirty() { self.write_cmd(r, bang, a) } else { Ok(()) },
+            _ if abbr(n, "q", "quit") => {
+                let wnr = self.window_arg(r);
+                return self.quit(bang, false, wnr);
+            }
+            _ if abbr(n, "qa", "qall") || abbr(n, "quita", "quitall") => return self.quit(bang, true, None),
+            _ if abbr(n, "clo", "close") => {
+                let wnr = self.window_arg(r);
+                self.ex_close(bang, wnr)
+            }
+            _ if abbr(n, "cd", "cd") || abbr(n, "chd", "chdir") || abbr(n, "lc", "lcd") || abbr(n, "lch", "lchdir") || abbr(n, "tcd", "tcd") || abbr(n, "tch", "tchdir") => self.cd_cmd(a),
+            _ if abbr(n, "pw", "pwd") => {
+                match std::env::current_dir() {
+                    Ok(cwd) => {
+                        self.info(cwd.display().to_string());
+                        Ok(())
+                    }
+                    Err(e) => Err(format!("E187: Unknown: {e}")),
+                }
+            }
+            _ if abbr(n, "winc", "wincmd") => {
+                // `ex_wincmd`: one char; the range or count is the count of the window command.
+                let count = self.window_arg(r);
+                let mut cs = a.chars();
+                match (cs.next(), cs.next()) {
+                    (Some(c), None) => {
+                        self.window_cmd(c, count);
+                        Ok(())
+                    }
+                    (Some(_), Some(_)) => Err("E474: Invalid argument".into()),
+                    (None, _) => Err("E471: Argument required".into()),
+                }
+            }
+            _ if abbr(n, "hid", "hide") => {
+                let wnr = self.window_arg(r);
+                self.ex_hide(wnr);
+                Ok(())
+            }
             _ if abbr(n, "on", "only") => {
-                self.only_window();
+                // `win_goto` the window named, then close the others.
+                if let Some(n) = self.window_arg(r) {
+                    let id = self.window_by_number(Some(n));
+                    if id != self.win.id {
+                        self.win_enter(id);
+                    }
+                }
+                self.only_window(bang, true);
                 Ok(())
             }
             "let" => self.let_cmd(a, false),
@@ -700,32 +756,32 @@ impl Editor {
             _ if abbr(n, "res", "resize") => self.resize_cmd(false, a),
             _ if abbr(n, "vert", "vertical") => self.vertical_cmd(a),
             _ if abbr(n, "ene", "enew") => {
-                self.enew();
-                Ok(())
+                let hide = self.buf_hide();
+                self.enew(bang, hide, false)
             }
             _ if abbr(n, "new", "new") || abbr(n, "vne", "vnew") => {
+                let old = self.win.id;
                 self.split_window(n.starts_with('v'));
-                self.enew();
-                Ok(())
+                let r = if a.is_empty() { self.enew(bang, true, true) } else { self.edit_file(a, bang, false) };
+                self.old_window_alt(old, a);
+                r
             }
             _ if abbr(n, "sp", "split") || abbr(n, "vs", "vsplit") => {
+                let old = self.win.id;
                 self.split_window(n.starts_with('v'));
-                if a.is_empty() { Ok(()) } else { self.edit_file(a, bang, false) }
+                let r = if a.is_empty() { Ok(()) } else { self.edit_file(a, bang, false) };
+                self.old_window_alt(old, a);
+                r
             }
             _ if abbr(n, "e", "edit") && !a.is_empty() => self.edit_file(a, bang, true),
-            _ if abbr(n, "bn", "bnext") || abbr(n, "bp", "bprevious") || abbr(n, "bN", "bNext") => {
-                let count = if a.is_empty() { Ok(1) } else { a.parse().map_err(|_| format!("Invalid count: {a}")) };
-                count.map(|k| self.cycle_buffer(if n.starts_with("bn") { 1 } else { -1 }, k))
-            }
-            _ if abbr(n, "b", "buffer") && a.is_empty() => Ok(()),
-            _ if abbr(n, "b", "buffer") => self.goto_buffer(a),
             _ if abbr(n, "ls", "ls") || abbr(n, "buffers", "buffers") || abbr(n, "files", "files") => {
-                self.info(self.list_buffers());
+                let rows = self.list_buffers(bang, a);
+                self.info_rows(rows);
                 Ok(())
             }
-            _ if abbr(n, "bd", "bdelete") => self.delete_buffer(bang, a),
             _ if abbr(n, "e", "edit") && a.is_empty() => {
                 self.wait_saves();
+                self.set_jump();
                 if !bang && self.is_dirty() {
                     Err(DIRTY.into())
                 } else {
@@ -753,7 +809,13 @@ impl Editor {
                 self.time_travel(long, bang, a);
                 Ok(())
             }
+            _ if abbr(n, "redr", "redraw") => {
+                self.redraw_cmd();
+                Ok(())
+            }
             _ if abbr(n, "se", "set") => self.set_cmd(a),
+            _ if abbr(n, "setl", "setlocal") => self.set_cmd_in(a, true),
+            _ if abbr(n, "setg", "setglobal") => self.setglobal_cmd(a),
             _ if abbr(n, "d", "delete") => self.delete_yank(r, false),
             _ if abbr(n, "y", "yank") => self.delete_yank(r, true),
             _ if abbr(n, "m", "move") => self.move_lines(r, a),
@@ -969,13 +1031,14 @@ impl Editor {
             _ if abbr(sub, "res", "resize") => self.resize_cmd(true, rest),
             _ if self.cmdwin_refuses() => Ok(()),
             _ if abbr(sub, "sp", "split") => {
+                // The modifier leaves the file name to be expanded here.
+                let rest = &self.expand_filename(rest, true)?;
                 self.split_window(true);
                 if rest.is_empty() { Ok(()) } else { self.edit_file(rest, false, false) }
             }
             _ if abbr(sub, "new", "new") => {
                 self.split_window(true);
-                self.enew();
-                Ok(())
+                self.enew(false, true, true)
             }
             _ => Err(format!("Not an editor command: vertical {arg}")),
         }
@@ -984,6 +1047,42 @@ impl Editor {
     /// `:set`: the options of the buffer and the global values new buffers start from.
     pub(super) fn set_cmd(&mut self, arg: &str) -> Result<(), String> {
         self.set_cmd_in(arg, false)
+    }
+
+    /// `:setglobal`: the global value only (`OPT_GLOBAL`): what a new buffer or window gets, the values of this buffer and window stay.
+    pub(super) fn setglobal_cmd(&mut self, arg: &str) -> Result<(), String> {
+        self.with_global_scope(|e| e.set_cmd_in(arg, false))
+    }
+
+    /// Runs `f` and keeps only the global values it set: the options of global scope are one value for everybody, a local-scope
+    /// option goes back to its local value (the buffer's and the window's).
+    pub(super) fn with_global_scope<R>(&mut self, f: impl FnOnce(&mut Self) -> R) -> R {
+        let (buf_opts, win_opts) = (self.buf.opts.clone(), self.win.opts.clone());
+        let r = f(self);
+        let changed = std::mem::replace(&mut self.buf.opts, buf_opts);
+        changed.copy_global(&mut self.buf.opts);
+        self.win.opts = win_opts;
+        r
+    }
+
+    /// Runs `f` and keeps only the local values it set (`OPT_LOCAL`): what a new buffer or window gets stays, but for the options
+    /// of global scope.
+    pub(super) fn with_local_scope<R>(&mut self, f: impl FnOnce(&mut Self) -> R) -> R {
+        let (global, all) = (self.global_opts.clone(), self.win.all_opts.clone());
+        self.opt_local = true;
+        let r = f(self);
+        self.opt_local = false;
+        let changed = std::mem::replace(&mut self.global_opts, global);
+        changed.copy_global(&mut self.global_opts);
+        self.win.all_opts = all;
+        r
+    }
+
+    /// The global value of an option (`&g:name`).
+    pub(super) fn global_option(&mut self, name: &str) -> Option<script::Value> {
+        let mut g = self.global_opts.clone();
+        self.win.all_opts.store(&mut g, self.global_opts.scrolloff);
+        g.lookup(name)
     }
 
     /// `do_set` with `OPT_LOCAL` when `local` (a modeline): only the buffer's value changes, except for the options
@@ -1162,6 +1261,8 @@ impl Editor {
             let (so, eo, dof) = (self.mark_off(s, 0), self.mark_off(en, 0), self.mark_off(dot, 0));
             self.set_op_marks(so, eo);
             self.set_dot(dof);
+            // `do_move`: `appended_lines_mark`, `deleted_lines_mark` and the `changed_lines` of the range: one tick beyond the two edits.
+            self.buf.changedtick += 1;
         }
         // `do_move`: a message over 'report' lines (a `:global` stays quiet).
         if moves && n > self.buf.opts.report && !self.scripts.global_busy {
@@ -1278,7 +1379,7 @@ impl Editor {
         // `get_spec_reg` with `errmsg`: what a register that has no value says.
         let none = match name {
             '%' if self.buf.path.is_none() => Some("E32: No file name"),
-            '#' if self.alt.and_then(|id| self.buffer(id)).and_then(|b| b.path.as_ref()).is_none() => Some("E23: No alternate file"),
+            '#' if self.win.alt.and_then(|id| self.buffer(id)).and_then(|b| b.path.as_ref()).is_none() => Some("E23: No alternate file"),
             '/' if self.last_search.is_none() => Some("E35: No previous regular expression"),
             ':' if self.last_cmdline().is_none() => Some("E30: No previous command line"),
             _ => None,
@@ -1777,24 +1878,120 @@ impl Editor {
         Ok(())
     }
 
+    /// The window number a `:close`, `:hide`, `:only` or `:quit` has: the count, or the range.
+    fn window_arg(&self, r: Option<&LineRange>) -> Option<usize> {
+        self.scripts.ea.count.or_else(|| match r.map(|r| &r.last.as_ref().unwrap_or(&r.first).base) {
+            Some(Base::Line(n)) => Some(*n),
+            _ => None,
+        })
+    }
+
+    /// `:cd`, `:chdir`, `:lcd`, `:lchdir`, `:tcd`, `:tchdir` (`ex_cd`, `do_chdir`): `-` is the directory before, none is the home.
+    // shortcut: 'cdpath' is not used and the directory is the process's, not the window's or the tab page's, when the scopes exist
+    fn cd_cmd(&mut self, arg: &str) -> Result<(), String> {
+        let old = std::env::current_dir().map(|d| d.display().to_string()).unwrap_or_default();
+        let target = if arg.is_empty() {
+            std::env::var("HOME").unwrap_or_default()
+        } else if arg == "-" {
+            match &self.prev_dir {
+                Some(p) => p.clone(),
+                None => {
+                    self.error("E186: No previous directory");
+                    return Ok(());
+                }
+            }
+        } else {
+            arg.to_string()
+        };
+        if !std::path::Path::new(&target).is_dir() {
+            // `find_directory_in_path` says so, then `changedir_func` fails.
+            self.error(format!("E344: Can't find directory \"{target}\" in cdpath"));
+            self.error("E472: Command failed");
+            return Ok(());
+        }
+        if std::env::set_current_dir(&target).is_err() {
+            self.error("E472: Command failed");
+            return Ok(());
+        }
+        if std::env::current_dir().map(|d| d.display().to_string()).unwrap_or_default() != old {
+            self.prev_dir = Some(old);
+        }
+        // `shorten_fnames(true)`: every name is the full one under the new directory from now on.
+        self.buf.sfname = None;
+        for b in &mut self.buffers {
+            b.sfname = None;
+        }
+        // A command typed shows the directory.
+        if self.key_typed {
+            let cwd = std::env::current_dir().map(|d| d.display().to_string()).unwrap_or_default();
+            self.info(cwd);
+        }
+        Ok(())
+    }
+
     /// `:q` (`all`: `:qa`): closes the window, or quits on the last one (every one with `all`)
     /// unless a buffer is modified and not `bang`. Returns false to quit.
-    fn quit(&mut self, bang: bool, all: bool) -> bool {
+    fn quit(&mut self, bang: bool, all: bool, wnr: Option<usize>) -> bool {
         // In the command-line window `:q` only closes it.
         if self.cmdwin.is_some() {
             self.close_cmdwin();
             return true;
         }
         if !all && self.window_ids().len() > 1 {
-            self.close_window().expect("more than one window");
+            // `ex_quit`: a changed buffer that is not hidden and in no other window refuses (`check_changed`); `!` unloads it.
+            let id = self.window_by_number(wnr);
+            let buf = if id == self.win.id { self.buf.id } else { self.windows.iter().find(|w| w.id == id).map_or(self.buf.id, |w| w.buf) };
+            let nwindows = usize::from(self.win.buf == buf) + self.windows.iter().filter(|w| w.buf == buf).count();
+            if !self.buf_hide() && !bang && nwindows <= 1 && self.buffer(buf).is_some_and(super::buffers::Buffer::is_dirty) {
+                self.error(DIRTY);
+                return true;
+            }
+            let free = !self.buf_hide() || bang;
+            if let Err(m) = self.win_close(id, free) {
+                self.error(m);
+            }
             return true;
         }
         // A `:w` still running makes its buffer clean when it ends.
         self.wait_saves();
-        match self.dirty_buffer().filter(|_| !bang) {
-            Some(b) if b.id == self.buf.id => self.error(DIRTY),
-            Some(b) => self.error(format!("No write since last change for buffer {} \"{}\" (add ! to override)", b.id, b.name())),
-            None => return false,
+        if all {
+            // `ex_quitall`: `!` quits, else every changed buffer has to be written.
+            return !bang && self.check_changed_any(false, false);
+        }
+        // `ex_quit` on the last window: the buffer shown refuses when it is not hidden, then any buffer that is changed.
+        if !self.buf_hide() && !bang && self.buf.is_dirty() {
+            self.error(DIRTY);
+            return true;
+        }
+        self.check_changed_any(bang, true)
+    }
+
+    /// `check_changed_any(hidden, unload)`: the first changed buffer (the current one, those in windows, the rest by number;
+    /// with `hidden` only the ones no window shows) is named by `E37` and `E162`, and shown in the current window. True then.
+    fn check_changed_any(&mut self, hidden: bool, unload: bool) -> bool {
+        let mut order: Vec<usize> = vec![self.buf.id];
+        order.extend(self.window_ids().into_iter().filter(|&w| w != self.win.id).filter_map(|w| self.windows.iter().find(|x| x.id == w).map(|x| x.buf)));
+        order.extend(self.all_buffers().iter().map(|b| b.id));
+        let mut seen = Vec::new();
+        order.retain(|id| !seen.contains(id) && { seen.push(*id); true });
+        let found = order.into_iter().find(|&id| {
+            let shown = usize::from(self.win.buf == id) + self.windows.iter().filter(|w| w.buf == id).count();
+            (!hidden || shown == 0) && self.buffer(id).is_some_and(super::buffers::Buffer::is_dirty)
+        });
+        let Some(id) = found else { return false };
+        self.error("E37: No write since last change");
+        let name = self.buffer(id).map_or_else(String::new, |b| b.name());
+        self.error(format!("E162: No write since last change for buffer \"{name}\""));
+        // The buffer is opened in the current window (a window that shows it gets the cursor first).
+        if id != self.buf.id {
+            if let Some(w) = self.windows.iter().find(|w| w.buf == id).map(|w| w.id) {
+                self.win_enter(w);
+            } else {
+                let prev = self.buf.id;
+                self.set_jump();
+                self.switch_buffer(id);
+                self.unload_if_unused(prev, unload);
+            }
         }
         true
     }
@@ -1816,7 +2013,7 @@ impl Editor {
         // A buffer without a name takes the one it is written to, like vim.
         if self.buf.path.is_none() && r.is_none() && !append {
             if !bang && path.exists() {
-                return Err("File exists (add ! to override)".into());
+                return Err("E13: File exists (add ! to override)".into());
             }
             self.buf.path = Some(path);
             self.buf.opts.filetype = self.buf.path.as_deref().map_or("", super::filetype::detect).into();
@@ -1824,6 +2021,24 @@ impl Editor {
             return Ok(());
         }
         let own = self.buf.path.as_ref() == Some(&path);
+        // `do_write`: another name becomes the alternate file (`setaltfname`) before anything can fail.
+        if !own && !file.is_empty() {
+            let found = self.buffers.iter().find(|b| b.path.as_deref().is_some_and(|p| super::buffers::same_file(p, &path))).map(|b| b.id);
+            let id = found.unwrap_or_else(|| {
+                // `setaltfname(.., 1)`: a buffer made here has line 1 in its window info.
+                let id = self.buflist_add_path(path.clone());
+                self.set_sfname(id, file);
+                if let Some(w) = self.buffers.iter_mut().find(|b| b.id == id).and_then(|b| b.wininfo.first_mut()) {
+                    w.lnum = 1;
+                }
+                id
+            });
+            self.win.alt = Some(id);
+        }
+        // `check_readonly`: the file of a 'readonly' buffer is not written without `!`.
+        if own && self.buf.opts.readonly && !bang {
+            return Err("E45: 'readonly' option is set (add ! to override)".into());
+        }
         if r.is_none() && own && !append {
             self.save(false);
             return Ok(());
@@ -1832,7 +2047,7 @@ impl Editor {
             return Err("E140: Use ! to write partial buffer".into());
         }
         if !own && !append && !bang && path.exists() {
-            return Err("File exists (add ! to override)".into());
+            return Err("E13: File exists (add ! to override)".into());
         }
         let (a, b) = self.range0(r, true)?;
         let text = self.buf.doc.text();
@@ -1856,11 +2071,19 @@ impl Editor {
         }
         let path = super::fname(file);
         if !bang && self.buf.path.as_ref() != Some(&path) && path.exists() {
-            return Err("File exists (add ! to override)".into());
+            return Err("E13: File exists (add ! to override)".into());
         }
-        let old = self.buf.path.replace(path);
+        let old = (self.buf.path.replace(path), self.buf.sfname.replace(file.to_string()));
         if !self.save(true) {
-            self.buf.path = old;
+            (self.buf.path, self.buf.sfname) = old;
+        } else if let (Some(old_path), old_sfname) = old {
+            // `do_write` of `:saveas` exchanges the names of the current and the alternate buffer: the old name is the alternate
+            // file now (an unlisted buffer that is not loaded).
+            let id = self.buflist_add_path(old_path);
+            if let Some(b) = self.buffer_mut(id) {
+                b.sfname = old_sfname;
+            }
+            self.win.alt = Some(id);
         }
         Ok(())
     }

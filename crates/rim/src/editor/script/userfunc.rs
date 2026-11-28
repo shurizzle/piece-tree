@@ -46,7 +46,9 @@ pub(in crate::editor) struct UFunc {
     /// The lines of the body; a continuation line is followed by `None` for each line it took, so that an index is a line
     /// number (`uf_lines`).
     pub lines: Vec<Option<String>>,
-    /// The script it was defined in and which run of it (`uf_script_ctx.sc_sid`, `sc_seq`).
+    /// The script it was defined in and which run of it (`uf_script_ctx.sc_sid`, `sc_seq`), and the line of its `:function` there
+    /// (`sc_lnum`, which `<sflnum>` adds the line in the function to).
+    pub sc_lnum: usize,
     pub sid: usize,
     pub seq: usize,
     /// `uf_calls`.
@@ -91,6 +93,8 @@ pub(super) struct FuncDef {
     saved_did_emsg: bool,
     /// `function d.f()`: the Dictionary the function goes in.
     fudi: FuncDict,
+    /// The line of the script this `:function` is on (`sc_lnum` of the new function).
+    lnum: usize,
 }
 
 /// The state of `get_function_body` between two lines.
@@ -522,7 +526,7 @@ impl Editor {
             // `msg_putchar('\n')`: the lines of the body do not overwrite the name.
             self.capture_msg("\n", true);
         }
-        let def = FuncDef { arg: arg.to_string(), name, args: newargs, def_args: default_args, varargs, flags, skip, forceit, saved_did_emsg, fudi };
+        let def = FuncDef { arg: arg.to_string(), name, args: newargs, def_args: default_args, varargs, flags, skip, forceit, saved_did_emsg, fudi, lnum: self.scripts.stack.last().map_or(0, |f| f.lnum) };
         let cmdline = self.scripts.cmdlinep.clone();
         // The lines of the body.
         let mut body = FuncBody::new();
@@ -724,7 +728,7 @@ impl Editor {
     /// The end of `ex_function` once the body has been read: define the function, or give up (`erret`).
     fn func_finish(&mut self, def: FuncDef, lines: Vec<Option<String>>, got_body: bool, next: Option<String>) {
         self.scripts.nextcmd = next;
-        let FuncDef { arg, name, args, def_args, varargs, mut flags, skip, forceit, saved_did_emsg, fudi } = def;
+        let FuncDef { arg, name, args, def_args, varargs, mut flags, skip, forceit, saved_did_emsg, fudi, lnum: sc_lnum } = def;
         let ok = got_body && !self.scripts.did_emsg && !skip;
         if ok && (name.is_some() || fudi.dict.is_some()) {
             let (sid, seq) = (self.scripts.cur, self.scripts.cur_seq);
@@ -783,7 +787,7 @@ impl Editor {
             self.scripts.last_func_id += 1;
             let id = self.scripts.last_func_id;
             // shortcut: every function ever defined stays in `func_ids` so that a `funcref()` keeps its body; they are not freed
-            let f = Rc::new(UFunc { name: name.clone(), args, def_args, varargs, flags, lines, sid, seq, calls: std::cell::Cell::new(0), id, deleted: std::cell::Cell::new(false), scoped });
+            let f = Rc::new(UFunc { name: name.clone(), args, def_args, varargs, flags, lines, sid, seq, calls: std::cell::Cell::new(0), id, deleted: std::cell::Cell::new(false), scoped, sc_lnum });
             self.scripts.func_ids.insert(id, f.clone());
             self.scripts.funcs.insert(name, f);
         }
@@ -1623,6 +1627,7 @@ impl Editor {
             id,
             deleted: std::cell::Cell::new(false),
             scoped,
+            sc_lnum: self.scripts.stack.last().map_or(0, |f| f.lnum),
         });
         self.scripts.func_ids.insert(id, f.clone());
         self.scripts.funcs.insert(name.clone(), f);

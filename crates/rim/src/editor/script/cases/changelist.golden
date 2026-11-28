@@ -1,0 +1,536 @@
+NVIM v0.12.6
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[[], 0]
+"---
+
+Error in {file}:
+line    8:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line    8:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line    8:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['3:0:0'], 1]
+"---
+
+[['3:0:0'], 1]
+"---
+
+[['3:0:0'], 1]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['3:0:0'], 1]
+"---
+
+Error in {file}:
+line   10:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   10:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   10:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['5:0:0'], 1]
+"---
+
+[['5:0:0'], 1]
+"---
+
+[['5:0:0'], 1]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['5:0:0'], 1]
+"---
+
+Error in {file}:
+line   12:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   12:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   12:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['7:4:0'], 1]
+"---
+
+[['7:4:0'], 1]
+"---
+
+[['7:4:0'], 1]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['7:4:0'], 1]
+"---
+
+Error in {file}:
+line   14:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   14:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   14:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['1:0:0'], 1]
+"---
+
+[['1:0:0'], 1]
+"---
+
+[['1:0:0'], 1]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['1:0:0'], 1]
+"---
+
+Error in {file}:
+line   16:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   16:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   16:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['5:0:0'], 1]
+"---
+
+[['5:0:0'], 1]
+"---
+
+[['5:0:0'], 1]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['5:0:0'], 1]
+"---
+
+Error in {file}:
+line   18:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   18:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   18:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+[['5:0:0'], 0]
+"---
+
+[['5:0:0'], 0]
+"---
+
+[['5:0:0'], 0]
+"---
+
+[[], 0]
+"---
+
+[[], 0]
+"---
+
+[]
+"---
+
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[[], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[[], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[[], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[[], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+[['5:0:0'], 0]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+line   24:
+E745: Using a List as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+line   24:
+E728: Using a Dictionary as a Number
+[]
+"---
+
+Error in {file}:
+line   20:
+E662: At start of changelist
+line   21:
+E662: At start of changelist
+line   22:
+E662: At start of changelist
+line   23:
+E663: At end of changelist
+line   24:
+E118: Too many arguments for function: getchangelist
+E116: Invalid arguments for function Cl
+"---
+
+
+[['1:0:0'], 1]
+
+[['3:0:0'], 1]
+[['3:0:0'], 0]
+"---
+
+[[], 0]
+[['1:0:0'], 1]
+[['2:0:0'], 1]
+"---
+
+[[], 0]
+[['1:0:0'], 1]
+[['1:0:0'], 1]
+"---
+
+
+[['3:0:0'], 1]
+
+[['3:0:0'], 1]
+[['3:0:0'], 0]
+"---
+
+[['2:0:0'], 1]
+[['2:0:0'], 1]
+[['2:0:0'], 1]
+"---
+
+[]
+[]
+[]
+"---
+
+
+[['1:0:0'], 1]
+
+[['1:0:0'], 1]
+[['1:0:0'], 1]
+"---
+
+[[], 0]
+[['1:0:0'], 1]
+[['1:0:0'], 1]
+"---
+
+[[], 0]
+[['1:0:0'], 1]
+[['1:0:0'], 1]

@@ -262,7 +262,7 @@ fn quit_commands() {
     let mut e = ed("a");
     assert!(!feed(&mut e, ":x\n"));
     let mut e = run("a", "x:q\n");
-    assert_eq!(e.msg(), "E37: No write since last change (add ! to override)");
+    assert_eq!(e.msg(), "E37: No write since last change\nE162: No write since last change for buffer \"/nonexistent/rim-test\"");
     assert!(!feed(&mut e, ":q!\n"));
     // The save target does not exist: write-and-quit stays open.
     let mut e = run("a", "x:wq\n");
@@ -503,7 +503,8 @@ fn reload_from_disk() {
     let mut e = Editor::open(dir.join("missing-dir/f")).unwrap();
     fs::create_dir_all(dir.join("missing-dir/f")).unwrap();
     feed(&mut e, ":e!\n");
-    assert!(e.msg().starts_with("Reload failed"), "{}", e.msg());
+    // A directory reads as an empty buffer too.
+    assert_eq!(text(&e), "");
     fs::remove_dir_all(&dir).unwrap();
 }
 
@@ -589,7 +590,9 @@ fn frame_highlights_the_visual_selection() {
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
 #[test]
 fn frame_renders_wide_chars_tabs_and_controls() {
-    assert_eq!(snapshot("\tx\x01", "", 20, 2).0[0], "1     x?");
+    // A control char is drawn as `^A`, two cells (`transchar`).
+    assert_eq!(snapshot("\tx\x01", "", 20, 2).0[0], "1     x^A");
+    assert_eq!(snapshot("a\x7fb\u{85}c\u{200b}d", "", 30, 2).0[0], "1 a^?b<85>c<200b>d");
     assert!(!snapshot("\tx", "l", 20, 2).2);
     assert_eq!(snapshot("\tx", "l", 20, 2).1, (6, 0));
     // Text area of 4 cells: the cursor char is always fully visible; a cut wide char shows as a space.
@@ -1111,7 +1114,7 @@ fn frame_shows_the_command_line() {
     let (rows, cursor, _) = snapshot("a", "/日本", 20, 2);
     assert_eq!((rows[1].as_str(), cursor), ("/日本", (5, 1)));
     assert_eq!(snapshot("a", ":abcdef", 4, 2).1, (3, 1));
-    assert_eq!(fit("a\tb", 5), "a?b  ");
+    assert_eq!(fit("a\tb", 5), "a^Ib ");
     assert_eq!(fit("日本", 3), "日 ");
 }
 
@@ -2092,7 +2095,8 @@ fn segments_fast_path_matches_the_generic_one() {
         let mut v = 0usize;
         for (i, (b, g)) in unicode_segmentation::UnicodeSegmentation::grapheme_indices(line, true).enumerate() {
             let cw = if g == "\t" { ts - v % ts } else { graphemes::width(g, ts) };
-            let cells = if cw == 2 && g != "\t" && w != usize::MAX && v % w == w - 1 { 3 } else { cw };
+            // `^A` is two ASCII cells and is not moved to the next row: only a wide char is.
+            let cells = if cw == 2 && g != "\t" && !g.starts_with(|c: char| c.is_ascii_control()) && w != usize::MAX && v % w == w - 1 { 3 } else { cw };
             cl.push((i, b, b + g.len(), v, cells));
             v += cells;
         }
@@ -2294,8 +2298,10 @@ fn cached_layouts_match_fresh_ones_over_random_sessions() {
             *fresh.win.layout.borrow_mut() = Default::default();
             fresh.buf.cols.borrow_mut().clear();
             *fresh.win.match_cache.borrow_mut() = None;
-            let want = screen(&fresh.frame(w, h));
-            assert_eq!(screen(&kept.frame(w, h)), want, "round {round} keys {done:?} size {w}x{h}");
+            // The two editors made their undo messages a second apart at times: the age is not what is compared.
+            let aged = |rows: Vec<String>| rows.into_iter().map(|r| r.replace("1 second ago", "0 seconds ago")).collect::<Vec<_>>();
+            let want = aged(screen(&fresh.frame(w, h)));
+            assert_eq!(aged(screen(&kept.frame(w, h))), want, "round {round} keys {done:?} size {w}x{h}");
             assert_eq!((kept.win.line, kept.win.col, kept.win.top, kept.win.top_sub), (fresh.win.line, fresh.win.col, fresh.win.top, fresh.win.top_sub), "{done:?}");
         }
     }
@@ -2306,7 +2312,7 @@ fn cached_layouts_match_fresh_ones_over_random_sessions() {
 fn wide_fast_path_agrees_with_unicode_width() {
     use unicode_width::UnicodeWidthChar;
     for c in ('\u{4E00}'..='\u{9FFF}').chain('\u{3041}'..='\u{3096}').chain('\u{30A1}'..='\u{30FA}').chain('\u{AC00}'..='\u{D7A3}').chain('\0'..='\u{7F}') {
-        let slow = if c == '\t' { 4 } else if c.is_control() { 1 } else { c.width().unwrap_or(1) };
+        let slow = if c == '\t' { 4 } else if c.is_ascii_control() { 2 } else if c.is_control() { 1 } else { c.width().unwrap_or(1) };
         assert_eq!(super::render::cell_width(c, 4), slow, "{c:?}");
     }
 }
@@ -2489,7 +2495,7 @@ fn ex_read_write_saveas() {
     feed(&mut e, &format!(":2,3w {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "b\nc\n");
     feed(&mut e, &format!(":1w {}\n", out.display()));
-    assert_eq!(e.msg(), "File exists (add ! to override)");
+    assert_eq!(e.msg(), "E13: File exists (add ! to override)");
     feed(&mut e, &format!(":1w! {}\n", out.display()));
     assert_eq!(fs::read_to_string(&out).unwrap(), "a\n");
     feed(&mut e, &format!(":w >> {}\n", out.display()));
@@ -2508,7 +2514,7 @@ fn ex_read_write_saveas() {
     let mut e = Editor::new(Document::new("x"), own.clone());
     feed(&mut e, "ay\x1b");
     feed(&mut e, &format!(":sav {}\n", out.display()));
-    assert_eq!(e.msg(), "File exists (add ! to override)");
+    assert_eq!(e.msg(), "E13: File exists (add ! to override)");
     feed(&mut e, &format!(":sav {}\n", new.display()));
     assert_eq!((fs::read_to_string(&new).unwrap().as_str(), e.buf.path.as_deref(), e.is_dirty()), ("xy\n", Some(new.as_path()), false));
     feed(&mut e, ":sav\n");
@@ -2607,7 +2613,7 @@ fn buffers_switch_list_and_delete() {
     feed(&mut e, "Gdd\x1e");
     assert_eq!((text(&e).as_str(), pos(&e), e.buf.marks.get(&'x').map(|m| (m.line, m.col))), ("a1\na2", (1, 0), Some((1, 0))));
     feed(&mut e, ":ls\n");
-    assert_eq!(e.msg(), format!("  1 %a \"{}\" line 2\n  2 #  + \"{}\" line 2", a.display(), b.display()));
+    assert_eq!(e.msg(), format!("  1 %a   \"{}\" line 2\n  2 #h + \"{}\" line 2", a.display(), b.display()));
     feed(&mut e, &format!(":e {}\n", a.display()));
     assert_eq!((e.buf.id, e.buffers.len()), (1, 1), "the same file is not loaded twice");
     feed(&mut e, ":bn\n");
@@ -2621,34 +2627,38 @@ fn buffers_switch_list_and_delete() {
     feed(&mut e, ":b\n");
     assert_eq!(e.buf.id, 1);
     for (cmd, msg) in [
-        (":b 9", "Buffer 9 does not exist"),
+        (":b 9", "E86: Buffer 9 does not exist"),
         (":b zzz", "E94: No matching buffer for zzz"),
         (":bn x", "E488: Trailing characters: x"),
-        (":bd x", "Invalid buffer number: x"),
-        (":bd 9", "Buffer 9 does not exist"),
-        (":bd 2", "No write since last change for buffer 2 (add ! to override)"),
+        (":bd x", "E93: More than one match for x"),
+        (":bd 9", "E516: No buffers were deleted"),
+        (":bd 2", "E89: No write since last change for buffer 2 (add ! to override)"),
     ] {
         feed(&mut e, &format!("{cmd}\n"));
         assert_eq!(e.msg(), msg, "{cmd}");
     }
     // The last window refuses to quit while a hidden buffer is modified.
     feed(&mut e, ":q\n");
-    assert_eq!(e.msg(), format!("No write since last change for buffer 2 \"{}\" (add ! to override)", b.display()));
+    assert_eq!(e.msg(), format!("E37: No write since last change\nE162: No write since last change for buffer \"{}\"", b.display()));
     assert!(feed(&mut e, ":qa\n"));
     feed(&mut e, ":b 2\n:bd!\n");
-    assert_eq!((e.buf.id, e.buffers.len(), e.alt), (1, 0, None));
+    // The buffer is deleted, not wiped: it stays as an unlisted one and is the alternate file.
+    assert_eq!((e.buf.id, e.buffers.len(), e.win.alt), (1, 1, Some(2)));
     // The last buffer goes and an empty one without a file takes its place.
     feed(&mut e, ":bd\n");
-    assert_eq!((e.buf.id, e.buf.path.is_none(), e.buffers.len(), text(&e).as_str()), (3, true, 0, ""));
+    assert_eq!((e.buf.id, e.buf.path.is_none(), e.buffers.len(), text(&e).as_str()), (3, true, 2, ""));
+    // The window left buffer 1, which is its alternate file.
     feed(&mut e, "\x1e");
-    assert_eq!(e.msg(), "No alternate file");
+    assert_eq!(e.buf.id, 1);
+    feed(&mut e, "\x1e");
     feed(&mut e, ":e /nonexistent/dir/x\n");
     assert_eq!(e.buf.id, 3, "a missing file is a new empty buffer");
+    // A directory is an empty buffer (`readfile`), and 'shortmess' `F` keeps the message back.
     feed(&mut e, ":e /\n");
-    assert!(e.msg().starts_with("\"/\": "), "{}", e.msg());
+    assert_eq!((text(&e).as_str(), e.buf.path.as_deref()), ("", Some(std::path::Path::new("/"))));
     // `:bd` of another buffer moves the windows showing it.
-    feed(&mut e, ":e /nonexistent/dir/y\n:sp\n:b 3\n:bd 4\n");
-    assert_eq!((e.buf.id, e.windows[0].buf), (3, 3));
+    feed(&mut e, ":e /nonexistent/dir/y\n:sp\n:b 3\n:bd 5\n");
+    assert_eq!((e.buf.id, e.window_ids().len()), (3, 1));
     assert!(!feed(&mut e, ":qa!\n"));
     fs::remove_dir_all(dir).unwrap();
 }
@@ -2700,7 +2710,7 @@ fn windows_split_move_and_close() {
     feed(&mut e, "\x17o");
     assert_eq!(e.window_ids(), [e.win.id]);
     feed(&mut e, ":clo\n");
-    assert_eq!(e.msg(), "Cannot close last window");
+    assert_eq!(e.msg(), "E444: Cannot close last window");
     feed(&mut e, ":sp\n:on\n");
     assert_eq!(e.window_ids().len(), 1);
     // `:q` closes a window, the last one quits.
@@ -2831,7 +2841,7 @@ fn saves_waited_for_and_their_messages() {
     assert_eq!(e.buffers.len(), 1, "a file already loaded is skipped");
     // `:bd` and `:e` right after `:w` wait for it instead of refusing a modified buffer.
     feed(&mut e, ":b 2\nix\x1b:w\n:bd\n");
-    assert_eq!((e.buf.id, e.buffers.len()), (1, 0), "{}", e.msg());
+    assert_eq!((e.buf.id, e.buffers.len()), (1, 1), "{}", e.msg());
     feed(&mut e, "x:w\n:e\n");
     assert_eq!(e.msg(), format!("\"{}\" written (LF)", a.display()));
     // A write ending later does not cover the message of a later command, but replaces its own.
@@ -2842,7 +2852,7 @@ fn saves_waited_for_and_their_messages() {
     assert!(e.wait_saves());
     assert_eq!(e.msg(), format!("\"{}\" written (LF)", a.display()));
     assert!(e.open_more(dir.join("no/such/dir")).is_ok(), "a missing file is an empty buffer");
-    assert!(e.open_more(dir.clone()).is_err());
+    assert!(e.open_more(dir.clone()).is_ok(), "a directory is entered later, as an empty buffer");
     fs::remove_dir_all(dir).unwrap();
 }
 
@@ -3366,7 +3376,7 @@ fn buffers_without_a_file() {
     // `:w file` names the buffer and writes it, unless the file exists.
     fs::write(&b, "old").unwrap();
     feed(&mut e, &format!(":w {}\n", b.display()));
-    assert_eq!((e.msg(), e.buf.path.is_none()), ("File exists (add ! to override)", true));
+    assert_eq!((e.msg(), e.buf.path.is_none()), ("E13: File exists (add ! to override)", true));
     feed(&mut e, &format!(":w {}\n", a.display()));
     e.wait_saves();
     assert_eq!((e.buf.path.as_deref(), fs::read_to_string(&a).unwrap().as_str(), e.is_dirty()), (Some(a.as_path()), "x\n", false));
@@ -3378,7 +3388,7 @@ fn buffers_without_a_file() {
     feed(&mut e, ":enew\n");
     assert_eq!((e.buf.id, e.buf.name().as_str(), text(&e).as_str()), (2, "[No Name]", ""));
     feed(&mut e, ":ls\n");
-    assert_eq!(e.msg(), format!("  1 #  \"{}\" line 1\n  2 %a \"[No Name]\" line 1", b.display()));
+    assert_eq!(e.msg(), format!("  1 #h   \"{}\" line 1\n  2 %a   \"[No Name]\"                    line 1", b.display()));
     // `:new` and `:vnew` split first.
     feed(&mut e, ":new\n");
     assert_eq!((e.window_ids().len(), e.buf.id), (2, 3));
@@ -3508,7 +3518,7 @@ fn command_line_window_refuses_what_leaves_it() {
     feed(&mut e, ":w\n");
     assert_eq!(e.msg(), "Cannot write, 'buftype' option is set");
     feed(&mut e, ":ls\n");
-    assert_eq!(e.msg(), "  1    \"/nonexistent/rim-test\" line 1", "the window's own buffer is not listed");
+    assert_eq!(e.msg(), "  1 #a   \"/nonexistent/rim-test\"        line 1\n  2 %a   \"[Command Line]\"               line 1", "the history buffer is listed");
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -4919,8 +4929,10 @@ fn file_commands_expand_home_and_the_environment() {
     assert_eq!(fs::read_to_string(dir.join("out2.txt")).unwrap(), "one\ntwo\n");
     // `\$` keeps a `$` that is part of the name.
     let mut esc = ed("");
+    let _cwd = super::script::golden::CWD_LOCK.read();
     script(&mut esc, &[r"e \$RIM_FNAME_DIR/a.txt"]);
-    assert_eq!(esc.buf.path.as_deref(), Some(PathBuf::from(r"$RIM_FNAME_DIR/a.txt").as_path()));
+    let want = std::env::current_dir().unwrap().join(r"$RIM_FNAME_DIR/a.txt");
+    assert_eq!(esc.buf.path.as_deref(), Some(want.as_path()));
     assert_eq!(text(&esc), "");
     fs::remove_dir_all(&dir).unwrap();
 }
@@ -4942,8 +4954,9 @@ fn names_under_the_home_directory_show_as_tilde() {
     assert_eq!(e.buf.path.as_deref(), Some(PathBuf::from(format!("{home}/.rim-short-name-probe")).as_path()));
     script(&mut e, &["ls"]);
     assert!(e.msg().contains("\"~/.rim-short-name-probe\""), "{}", e.msg());
+    // The message of `Ctrl+G` is cut to the room the ruler leaves (`msg_trunc`): the whole text has the name.
     feed(&mut e, "\x07");
-    assert!(e.msg().starts_with("\"~/.rim-short-name-probe\""), "{}", e.msg());
+    assert!(e.file_info_whole().starts_with("\"~/.rim-short-name-probe\" [New]"), "{}", e.file_info_whole());
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -4961,7 +4974,7 @@ fn write_and_quit_takes_a_file_name() {
     // The same file again without `!` is refused (`E13`) and the editor stays open.
     let mut e = ed("y");
     assert!(feed(&mut e, ":wq $RIM_WQ_DIR/one.txt\n"));
-    assert_eq!(e.msg(), "File exists (add ! to override)");
+    assert_eq!(e.msg(), "E13: File exists (add ! to override)");
     assert_eq!(fs::read_to_string(dir.join("one.txt")).unwrap(), "x\n");
     // `:x file` writes only a changed buffer; an unmodified one just quits, leaving no file.
     let mut e = ed("");
@@ -5833,5 +5846,125 @@ fn confirm_sees_the_line_break_after_the_last_line() {
         let mut e = ed("a\nb");
         feed(&mut e, &format!(":%s/\\n/-/gc\n{keys}"));
         assert_eq!(text(&e), want, "{keys}");
+    }
+}
+
+#[cfg_attr(miri, ignore = "reads the current directory and the file system; safe editor logic")]
+#[test]
+fn file_name_modifiers_know_the_current_directory_and_the_home() {
+    let _cwd = super::script::golden::CWD_LOCK.read();
+    let mut e = ed("");
+    e.buf.path = None;
+    let cwd = std::env::current_dir().unwrap().to_string_lossy().into_owned();
+    // `:p` of a relative name (`path_to_absolute`), `:.` takes the directory away again, `:~` makes the home directory `~`.
+    assert_eq!(script(&mut e, &["echo fnamemodify('x/y', ':p')"]), format!("{cwd}/x/y"));
+    assert_eq!(script(&mut e, &["echo fnamemodify('x/y', ':p:.')"]), "x/y");
+    assert_eq!(script(&mut e, &["echo fnamemodify('x/y', ':.')"]), "x/y");
+    assert_eq!(script(&mut e, &["echo fnamemodify('', ':p')"]), format!("{cwd}/").replace("//", "/"));
+    // The current directory itself, as a directory, ends in a separator.
+    assert_eq!(script(&mut e, &["echo fnamemodify('.', ':p')"]), format!("{cwd}/"));
+    assert_eq!(script(&mut e, &["echo fnamemodify('.', ':p:h')"]), cwd);
+    let home = std::env::var("HOME").unwrap_or_default();
+    if !home.is_empty() && home != "/" {
+        assert_eq!(script(&mut e, &[&format!("echo fnamemodify('{home}/x', ':~')")]), "~/x");
+        assert_eq!(script(&mut e, &["echo fnamemodify('~/x', ':p')"]), format!("{home}/x"));
+    }
+    // `%:p` of a buffer without a name is the directory, `%:p:h` its parent.
+    assert_eq!(script(&mut e, &["echo expand('%:p')"]), "");
+    assert_eq!(script(&mut e, &["echo expand('%:p:h')"]), cwd);
+}
+
+#[cfg_attr(miri, ignore = "reads files; safe editor logic")]
+#[test]
+fn an_unreadable_file_is_reported_when_it_is_entered() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = temp_dir("unreadable");
+    fs::write(dir.join("ok"), "x\n").unwrap();
+    fs::write(dir.join("no"), "secret\n").unwrap();
+    fs::set_permissions(dir.join("no"), fs::Permissions::from_mode(0o000)).unwrap();
+    // Root reads anything: nothing to see then.
+    if fs::read_to_string(dir.join("no")).is_ok() {
+        return;
+    }
+    // As a second file it is not read at the start; entering it says `[Permission Denied]` and makes the buffer 'readonly'.
+    let mut e = Editor::open(dir.join("ok")).unwrap();
+    e.open_more(dir.join("no")).unwrap();
+    script(&mut e, &["bnext"]);
+    assert!(e.msg().ends_with("[Permission Denied]"), "{}", e.msg());
+    assert_eq!(script(&mut e, &["echo &readonly"]), "1");
+    // As the first file it is an empty buffer too, not an error.
+    let e = Editor::open(dir.join("no")).unwrap();
+    assert!(e.buf.opts.readonly && e.msg().ends_with("[Permission Denied]"), "{}", e.msg());
+    // A directory is an empty buffer; `shortmess` without `F` says so.
+    let mut e = Editor::open(dir.clone()).unwrap();
+    assert_eq!(text(&e), "");
+    script(&mut e, &["set shortmess-=F", "e ."]);
+    assert!(e.msg().contains("is a directory"), "{}", e.msg());
+    fs::set_permissions(dir.join("no"), fs::Permissions::from_mode(0o644)).unwrap();
+}
+
+/// Cost of the clock read after every Normal mode key (`b_last_used`, `normal_redraw`); run it with
+/// `cargo test --release -p rim -- --ignored --nocapture key_clock_cost` (numbers in docs/guides/benchmarks.md).
+#[ignore = "benchmark"]
+#[test]
+fn key_clock_cost() {
+    use std::time::Instant;
+    let text = "the quick brown fox jumps over the lazy dog\n".repeat(200);
+    let keys = ["l", "w", "j", "h", "b", "k", "e", "0", "$", "x", "u"];
+    let (mut best_key, mut best_now) = (f64::MAX, f64::MAX);
+    for _ in 0..7 {
+        let mut e = ed(&text);
+        let n = 200_000usize;
+        let t = Instant::now();
+        for i in 0..n {
+            feed(&mut e, keys[i % keys.len()]);
+        }
+        best_key = best_key.min(t.elapsed().as_nanos() as f64 / n as f64);
+        let t = Instant::now();
+        let mut sum = 0i64;
+        for _ in 0..n {
+            sum = sum.wrapping_add(undo::now());
+        }
+        std::hint::black_box(sum);
+        best_now = best_now.min(t.elapsed().as_nanos() as f64 / n as f64);
+    }
+    println!("per Normal key: {best_key:.0} ns; one clock read: {best_now:.0} ns ({:.1}% of a key)", best_now / best_key * 100.0);
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn matchlist_gives_the_groups_of_the_pattern() {
+    // The groups cannot be recorded against Neovim (its `\(` is not the `(` of Rust's dialect): one test of its own.
+    let mut e = ed("");
+    assert_eq!(script(&mut e, &["echo matchlist('foobar', '(foo)(bar)')"]), "['foobar', 'foo', 'bar', '', '', '', '', '', '', '']");
+    assert_eq!(script(&mut e, &["echo matchlist('xay', 'a(b)?')"]), "['a', '', '', '', '', '', '', '', '', '']");
+    assert_eq!(script(&mut e, &["echo matchstrpos('xaby', '(a)b')"]), "['ab', 1, 3]");
+    assert_eq!(script(&mut e, &["echo matchstrpos(['x', 'ab'], 'b')"]), "['b', 1, 1, 2]");
+}
+
+/// Cost of scanning text into clusters (`graphemes::cells`) after `complex` learned the chars drawn as `^A` and `<80>`; run with
+/// `cargo test --release -p rim -- --ignored --nocapture grapheme_scan_cost` (numbers in docs/guides/benchmarks.md).
+#[ignore = "benchmark"]
+#[test]
+fn grapheme_scan_cost() {
+    use std::time::Instant;
+    let texts = [
+        ("ASCII", "the quick brown fox jumps over the lazy dog ".repeat(2000)),
+        ("Latin-1 (C2 leads: £ ° ¿)", "the £ quick ° brown ¿ fox jumps over the lazy dog ".repeat(2000)),
+        ("Latin (é)", "thé quick browñ fox jumps över thé lazy dog ".repeat(2000)),
+        ("CJK", "日本語のテキストです。これは長い行です。".repeat(2000)),
+    ];
+    for (name, t) in &texts {
+        let mut best = f64::MAX;
+        for _ in 0..7 {
+            let start = Instant::now();
+            let mut cells = 0usize;
+            for _ in 0..20 {
+                cells += graphemes::cells(t, 0, 0, graphemes::Tabs::every(8), usize::MAX, usize::MAX).map(|c| c.cells).sum::<usize>();
+            }
+            std::hint::black_box(cells);
+            best = best.min(start.elapsed().as_nanos() as f64 / (20 * t.chars().count()) as f64);
+        }
+        println!("{name}: {best:.2} ns per char");
     }
 }

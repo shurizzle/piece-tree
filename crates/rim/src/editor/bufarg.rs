@@ -9,7 +9,7 @@ use super::{Editor, buffers::Buffer, script::Value, short_name};
 
 /// `file_pat_to_reg_pat` (unix: no `BACKSLASH_IN_FILENAME`, so `\` always escapes): a file pattern as a Vim regexp, or the
 /// message of the error (`E219`/`E220`: a `{` without its `}`).
-pub(super) fn file_pat_to_reg_pat(pat: &str) -> Result<String, &'static str> {
+pub(in crate::editor) fn file_pat_to_reg_pat(pat: &str) -> Result<String, &'static str> {
     if pat.is_empty() {
         return Ok("^$".into());
     }
@@ -91,12 +91,17 @@ pub(super) fn file_pat_to_reg_pat(pat: &str) -> Result<String, &'static str> {
 }
 
 /// The Vim regexp (`'magic'`) `pat` that `file_pat_to_reg_pat` makes, as a Rust regex: `\(` `\)` `\|` group, `.` and `*` mean
-/// themselves, `[...]` is a collection (a lone `[` is itself), `^` at the start and `$` at the end anchor, any other character
+/// themselves, `\<` and `\>` are Unicode word boundaries (Vim's are character classes), `[...]` is a collection (a lone `[` is itself), `^` at the start and `$` at the end anchor, any other character
 /// (also `+ ? { } ( ) |`, which are plain in Vim's magic) is literal and a backslash makes the next one literal.
 // shortcut: `\{n,m}` counts, `\%[` and the other `\` atoms of Vim are read as the literal char, `^` after `\(` or `\|` is
 // literal; a file pattern only gets them by escaping `{` and `\`; when needed, port `regexp.c`. There is no 'fileignorecase'
 // option: its default for the platform is used.
 fn vim_regex(pat: &str) -> Option<Regex> {
+    vim_regex_ic(pat, cfg!(any(target_os = "macos", windows)))
+}
+
+/// `vim_regex` with the case ignored or not.
+pub(in crate::editor) fn vim_regex_ic(pat: &str, ic: bool) -> Option<Regex> {
     let c: Vec<char> = pat.chars().collect();
     let mut out = String::new();
     let mut i = 0;
@@ -108,6 +113,9 @@ fn vim_regex(pat: &str) -> Option<Regex> {
                     '(' => out.push('('),
                     ')' => out.push(')'),
                     '|' => out.push('|'),
+                    // Word start and end: Unicode word boundaries here, Vim's are character classes.
+                    '<' => out.push_str("\\b{start}"),
+                    '>' => out.push_str("\\b{end}"),
                     x => out.push_str(&regex::escape(&x.to_string())),
                 }
             }
@@ -141,7 +149,7 @@ fn vim_regex(pat: &str) -> Option<Regex> {
         i += 1;
     }
     // `rm_ic = p_fic`: 'fileignorecase' is on where file names ignore case (macOS and Windows), off elsewhere.
-    regex::RegexBuilder::new(&out).case_insensitive(cfg!(any(target_os = "macos", windows))).build().ok()
+    regex::RegexBuilder::new(&out).case_insensitive(ic).build().ok()
 }
 
 impl Editor {
@@ -149,7 +157,7 @@ impl Editor {
     fn buffer_names(b: &Buffer) -> Option<(String, String)> {
         let p = b.path.as_ref()?;
         let full = std::path::absolute(p).unwrap_or_else(|_| p.clone());
-        Some((p.display().to_string(), full.display().to_string()))
+        Some((b.name(), full.display().to_string()))
     }
 
     /// `buflist_match`: the short name, then the full one, each also with the home directory as `~`.
@@ -159,11 +167,11 @@ impl Editor {
         [short, full].iter().any(|n| re.is_match(n) || re.is_match(&short_name(n, home)))
     }
 
-    /// `buflist_findpat` called with `unlisted`, no diff mode and every tab: the number of the buffer, -1 for none and -2 for
-    /// more than one; the error message of `E93`/`E94` is the caller's (`tv_get_buf` runs with errors off).
-    fn buflist_findpat(&mut self, pattern: &str) -> i64 {
+    /// `buflist_findpat` with no diff mode and every tab: the number of the buffer, -1 for none and -2 for more than one;
+    /// the error message of `E93`/`E94` is the caller's (`tv_get_buf` runs with errors off), see `buflist_findpat_emsg`.
+    pub(super) fn buflist_findpat(&mut self, pattern: &str, unlisted: bool) -> i64 {
         if matches!(pattern, "%" | "#") {
-            return if pattern == "%" { self.buf.id as i64 } else { self.alt.map_or(0, |a| a as i64) };
+            return if pattern == "%" { self.buf.id as i64 } else { self.win.alt.map_or(0, |a| a as i64) };
         }
         let Ok(pat) = file_pat_to_reg_pat(pattern) else { return -1 };
         let home = std::env::var("HOME").unwrap_or_default();
@@ -199,7 +207,7 @@ impl Editor {
                 }
             }
             // Unlisted buffers only when no listed one matched.
-            if !find_listed || found != -1 {
+            if !unlisted || !find_listed || found != -1 {
                 break;
             }
             find_listed = false;
@@ -207,14 +215,31 @@ impl Editor {
         found
     }
 
+    /// `buflist_findpat` with its messages: `E93` for more than one buffer, `E94` for none.
+    pub(super) fn buflist_findpat_emsg(&mut self, pattern: &str, unlisted: bool) -> i64 {
+        self.buflist_findpat_shown(pattern, pattern, unlisted)
+    }
+
+    /// `buflist_findpat(shown, end, ..)`: the messages name `shown`, the text from the pattern on, where the pattern is its first
+    /// part (`:bd a b`).
+    pub(super) fn buflist_findpat_shown(&mut self, pattern: &str, shown: &str, unlisted: bool) -> i64 {
+        let found = self.buflist_findpat(pattern, unlisted);
+        if found == -2 {
+            self.error(format!("E93: More than one match for {shown}"));
+        } else if found < 0 {
+            self.error(format!("E94: No matching buffer for {shown}"));
+        }
+        found
+    }
+
     /// `buflist_findnr`: 0 is the alternate buffer.
-    fn buflist_findnr(&self, nr: i64) -> Option<usize> {
-        let nr = if nr == 0 { self.alt.map_or(0, |a| a as i64) } else { nr };
+    pub(super) fn buflist_findnr(&self, nr: i64) -> Option<usize> {
+        let nr = if nr == 0 { self.win.alt.map_or(0, |a| a as i64) } else { nr };
         usize::try_from(nr).ok().filter(|&id| self.buffer(id).is_some())
     }
 
     /// `find_buffer`: a buffer by number or by its exact name (the full path; a buffer without a file by its title).
-    fn find_buffer(&self, v: &Value) -> Option<usize> {
+    pub(super) fn find_buffer(&self, v: &Value) -> Option<usize> {
         match v {
             Value::Int(n) => self.buflist_findnr(*n),
             Value::Str(name) => {
@@ -238,7 +263,7 @@ impl Editor {
             // `lastbuf`.
             Value::Str(name) if &**name == "$" => self.all_buffers().last().map(|b| b.id),
             Value::Str(name) => {
-                let found = self.buflist_findpat(name);
+                let found = self.buflist_findpat(name, true);
                 self.buflist_findnr(found).or_else(|| self.find_buffer(v))
             }
             _ => None,

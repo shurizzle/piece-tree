@@ -482,6 +482,7 @@ dependencies = [
  "memchr",
  "mimalloc",
  "nucleo-matcher",
+ "parking_lot",
  "piece-tree",
  "regex",
  "rustix",

@@ -136,7 +136,7 @@ fn glob(pat: &[char], text: &[char]) -> bool {
 
 /// Whether `wildignore` (comma separated globs) rules out `dir` + `name`: a glob with a `/` is
 /// matched against the whole path, the others against the name.
-fn ignored(wildignore: &str, dir: &str, name: &str, ic: bool) -> bool {
+pub(super) fn ignored(wildignore: &str, dir: &str, name: &str, ic: bool) -> bool {
     let low = |s: &str| -> Vec<char> { if ic { s.to_lowercase() } else { s.to_string() }.chars().collect() };
     let (full, name) = (low(&format!("{dir}{name}")), low(name));
     wildignore.split(',').filter(|g| !g.is_empty()).any(|g| {

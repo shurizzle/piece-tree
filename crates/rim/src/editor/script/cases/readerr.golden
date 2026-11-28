@@ -1,0 +1,36 @@
+NVIM v0.12.6
+
+1 0 0 1 d
+
+  1 %a   "d"                            line 1
+"---
+
+2 0 0 d
+
+1
+"---
+
+2 d 0
+"---
+
+nosuchdir/x 0
+"---
+
+d 1
+
+  1 #h   "[No Name]"                    line 1
+  2 %a   "d"                            line 1
+"---
+
+1 2
+"---
+
+d/ 1 ['f.x', 'd/']
+
+  1 #h   "f.x"                          line 1
+  2 %a   "d/"                           line 1
+"---
+
+d/ 1
+
+  1 %a   "d/"                           line 1

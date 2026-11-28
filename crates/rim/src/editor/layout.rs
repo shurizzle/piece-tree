@@ -79,7 +79,7 @@ impl Rows {
             let mut end = b + 1;
             let room = room.min(64);
             let chunk = &bytes[b..b + room];
-            if chunk.is_ascii() && memchr::memchr2(b'\t', b'\r', chunk).is_none() {
+            if chunk.iter().all(|b| (0x20..0x7f).contains(b)) {
                 // The last byte may start a cluster with a non-ASCII char after it (`e` + U+0301).
                 let room = if bytes.get(b + room).is_none_or(u8::is_ascii) { room } else { room - 1 };
                 if room > 0 {

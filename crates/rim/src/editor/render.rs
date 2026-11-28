@@ -79,9 +79,9 @@ pub struct Frame {
 }
 
 /// Rows of one window, its cursor cell and the rows of its cursor line.
-struct Pane {
+pub(super) struct Pane {
     rows: Vec<Vec<Span>>,
-    cursor: (usize, usize),
+    pub cursor: (usize, usize),
     cursor_rows: Range<usize>,
 }
 
@@ -253,7 +253,7 @@ impl Editor {
 
     /// Lays out the current window's `w`×`h` text rows and scrolls to keep the cursor visible;
     /// `active` draws the selection and the cursor line.
-    fn window_rows(&mut self, w: usize, h: usize, active: bool) -> Pane {
+    pub(super) fn window_rows(&mut self, w: usize, h: usize, active: bool) -> Pane {
         let w = w.max(1);
         self.win.rows = h.max(1);
         let vts = self.buf.opts.vts_array.clone();
@@ -424,6 +424,8 @@ impl Editor {
                 self.with_window(id, |e| (e.window_rows(r.w, text_h, false), e.window_status()))
             };
             if active {
+                // The redraw works out where the cursor is (`curs_columns`): `winnr('l')` and the like read it.
+                (self.win.wcol, self.win.wrow) = pane.cursor;
                 cursor = (r.x + pane.cursor.0, r.y + pane.cursor.1);
                 cursor_rows = r.y + pane.cursor_rows.start..r.y + pane.cursor_rows.end;
                 cursor_cols = r.x..r.x + r.w;
@@ -752,11 +754,13 @@ pub(super) fn cell_width(c: char, ts: usize) -> usize {
     match c {
         '\t' => ts,
         // ASCII is one cell, control chars included (drawn as `?`).
-        c if c.is_ascii() => 1,
+        c if c.is_ascii() => if c.is_ascii_control() { 2 } else { 1 },
         // The common wide chars (ideographs, kana, Hangul syllables) without the table lookup: it is
         // what a long CJK line pays per char (`wide_fast_path_agrees_with_unicode_width` checks the ranges).
         '\u{4E00}'..='\u{9FFF}' | '\u{3041}'..='\u{3096}' | '\u{30A1}'..='\u{30FA}' | '\u{AC00}'..='\u{D7A3}' => 2,
-        c if c.is_control() => 1,
+        // U+0080-U+009F are drawn as `<80>`, a char `utf_printable` refuses as `<200b>`.
+        c if c.is_control() => 4,
+        c if graphemes::transchar(c).is_some() => 6,
         c => c.width().unwrap_or(1),
     }
 }
@@ -780,6 +784,17 @@ fn row_spans(line: &str, vcol0: usize, style_at: impl Fn(usize, usize, usize) ->
         if start >= end {
             return true;
         }
+        if let Glyph::Trans(t) = &glyph {
+            // `^A`, `<80>`: a cell of the text each, so a cut shows what is left of it.
+            for x in start..end {
+                let style = style_at(i, x, x + 1);
+                if spans.last().is_none_or(|s| s.style != style) {
+                    spans.push(Span { style, text: String::new() });
+                }
+                spans.last_mut().expect("just pushed").text.push(t.chars().nth(x - x0).unwrap_or(' '));
+            }
+            return true;
+        }
         if let Glyph::Tab = glyph {
             // A Tab is drawn cell by cell: a Visual block may cover only some of its cells. With `list` its first cell is
             // `>`, even when the left edge cuts the tab.
@@ -800,9 +815,8 @@ fn row_spans(line: &str, vcol0: usize, style_at: impl Fn(usize, usize, usize) ->
         let whole = start == x0 && end == x1;
         match glyph {
             Glyph::Filler => out.push('>'),
-            Glyph::Char(c) if whole => out.push(if c.is_control() { '?' } else { c }),
+            Glyph::Char(c) if whole => out.push(c),
             Glyph::Str(g) if whole => match g.chars().next() {
-                Some(c) if c.is_control() => out.push('?'),
                 Some(c) if g.len() == c.len_utf8() && cell_width(c, tabs.ts) == 0 => {
                     out.push(' ');
                     out.push_str(g);
@@ -818,6 +832,7 @@ fn row_spans(line: &str, vcol0: usize, style_at: impl Fn(usize, usize, usize) ->
         let mut chars = g.chars();
         let glyph = match (chars.next(), chars.next()) {
             (Some('\t'), None) => Glyph::Tab,
+            _ if g.chars().next().and_then(graphemes::transchar).is_some() => Glyph::Trans(g.chars().next().and_then(graphemes::transchar).expect("checked")),
             (Some(ch), None) if cell_width(ch, tabs.ts) > 0 => Glyph::Char(ch),
             _ => Glyph::Str(g),
         };
@@ -848,12 +863,14 @@ enum Glyph<'a> {
     Filler,
     Char(char),
     Str(&'a str),
+    /// A char drawn as text of its own (`transchar`).
+    Trans(String),
 }
 
 /// Width of `s` as `fit` draws it (a tab as one cell, like a control char).
 fn str_width(s: &str) -> usize {
     // ASCII, control chars and tabs included, is one cell per byte here.
-    if s.is_ascii() { s.len() } else { graphemes::iter(s).map(|g| graphemes::width(g, 1)).sum() }
+    if s.bytes().all(|b| (0x20..0x7f).contains(&b)) { s.len() } else { graphemes::iter(s).map(|g| graphemes::width(g, 1)).sum() }
 }
 
 /// The spans of `row` between columns `from` and `to` (a wide cluster cut by an edge becomes spaces).
@@ -888,17 +905,19 @@ fn overlay(row: &mut Vec<Span>, x: usize, spans: Vec<Span>) {
     *row = left.into_iter().chain(spans).chain(right).collect();
 }
 
-/// `s` cut or padded to exactly `w` cells; control chars become `?`.
+/// `s` cut or padded to exactly `w` cells; control chars are drawn as `^A` (`transchar`).
 pub(super) fn fit(s: &str, w: usize) -> String {
     let (mut out, mut x) = (String::new(), 0);
     for g in graphemes::iter(s) {
-        let cw = graphemes::width(g, 1);
+        // A Tab on the command line is `^I`.
+        let cw = if g == "\t" { 2 } else { graphemes::width(g, 1) };
         if x + cw > w {
             break;
         }
         x += cw;
         match g.chars().next() {
-            Some(c) if c.is_control() => out.push('?'),
+            Some('\t') => out.push_str("^I"),
+            Some(c) if graphemes::transchar(c).is_some() => out.push_str(&graphemes::transchar(c).expect("checked")),
             _ => out.push_str(g),
         }
     }
@@ -966,14 +985,15 @@ fn wrap(s: &str, w: usize) -> Vec<String> {
     for line in s.split('\n') {
         let (mut row, mut x) = (String::new(), 0);
         for g in graphemes::iter(line) {
-            let cw = graphemes::width(g, 1);
+            let cw = if g == "\t" { 2 } else { graphemes::width(g, 1) };
             if x + cw > w && !row.is_empty() {
                 out.push(mem::take(&mut row));
                 x = 0;
             }
             x += cw;
             match g.chars().next() {
-                Some(c) if c.is_control() => row.push('?'),
+                Some('\t') => row.push_str("^I"),
+                Some(c) if graphemes::transchar(c).is_some() => row.push_str(&graphemes::transchar(c).expect("checked")),
                 _ => row.push_str(g),
             }
         }

@@ -1,0 +1,185 @@
+NVIM v0.12.6
+
+a\ b
+'a b'
+'a b'
+'a b'
+'a b'
+"---
+
+a\\b
+'a\b'
+'a\b'
+'a\b'
+'a\b'
+"---
+
+\>x
+'>x'
+'>x'
+'>x'
+'>x'
+"---
+
+\+x
+'+x'
+'+x'
+'+x'
+'+x'
+"---
+
+\-
+'-'
+'-'
+'-'
+'-'
+"---
+
+--
+'--'
+'--'
+'--'
+'--'
+"---
+
+a\%b\#c
+'a%b#c'
+'a\%b\#c'
+'a%b#c'
+'a\%b\#c'
+"---
+
+a\$b\`c
+'a$b`c'
+'a$b`c'
+'a$b`c'
+'a$b`c'
+"---
+
+it\'s
+'it'\''s'
+'it'\''s'
+'it'\''s'
+'it'\''s'
+"---
+
+a\!b
+'a!b'
+'a\!b'
+'a!b'
+'a\!b'
+"---
+
+a\
+b
+'a
+b'
+'a\
+b'
+'a
+b'
+'a\
+b'
+"---
+
+x\[y]\{z}
+'x[y]{z}'
+'x[y]{z}'
+'x[y]{z}'
+'x[y]{z}'
+"---
+
+a\*\?
+'a*?'
+'a*?'
+'a*?'
+'a*?'
+"---
+
+\"q\"
+'"q"'
+'"q"'
+'"q"'
+'"q"'
+"---
+
+a\|b\<c
+'a|b<c'
+'a|b<c'
+'a|b<c'
+'a|b<c'
+"---
+
+
+''
+''
+''
+''
+"---
+
+é\ ü
+'é ü'
+'é ü'
+'é ü'
+'é ü'
+"---
+
+\<cword>\ x
+'<cword> x'
+'\<cword> x'
+'<cword> x'
+'\<cword> x'
+"---
+
+\%
+'%'
+'\%'
+'%'
+'\%'
+"---
+
+\#
+'#'
+'\#'
+'#'
+'\#'
+"---
+
+a;b&c(d)
+'a;b&c(d)'
+'a;b&c(d)'
+'a;b&c(d)'
+'a;b&c(d)'
+"---
+
+'a\!b'
+'a\
+b'
+'a\\!b'
+'a\\
+b'
+'\%x'
+"---
+
+'a\\b'
+'a\\b'
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: fnameescape
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: shellescape
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: shellescape
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String

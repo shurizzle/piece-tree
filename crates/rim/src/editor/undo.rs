@@ -599,6 +599,29 @@ impl Editor {
         if top >= bot || bot > lc + 1 {
             return false;
         }
+        // `undo_allowed`: nothing is changed in a buffer that is not 'modifiable'.
+        if !self.buf.opts.modifiable {
+            self.error("E21: Cannot make changes, 'modifiable' is off");
+            return false;
+        }
+        // `change_warning`: the first change of a 'readonly' buffer warns once.
+        if !self.buf.did_warn && !self.buf.is_dirty() && self.buf.opts.readonly {
+            // `msg_source` writes where the script is, and the warning follows on the same line, at column 20.
+            let mut head = self.scripts.error_header();
+            let text = "W10: Warning: Changing a readonly file";
+            match head.last_mut() {
+                Some(_) => {
+                    // `msg_start` begins a line of its own before the source.
+                    head[0].insert(0, '\n');
+                    let l = head.last_mut().expect("not empty");
+                    l.push_str(&" ".repeat(10));
+                    l.push_str(text);
+                    self.warn(head.join("\n"));
+                }
+                None => self.warn(text),
+            }
+            self.buf.did_warn = true;
+        }
         let cursor = cursor.unwrap_or((self.win.line, self.win.col));
         self.buf.undo.levels = self.buf.opts.undolevels;
         let ver = self.buf.doc.seq();
@@ -910,6 +933,8 @@ impl Editor {
         self.buf.modified = mem::replace(&mut self.buf.undo.headers[id].changed, self.buf.modified);
         debug_assert!(moved.text.to_string() == self.buf.doc.text().to_string(), "the entries do not make the text `Document` moved to");
         self.map_marks(&before);
+        // `changed_lines` of each entry that has lines, then `changed()`/`unchanged()` at the end: one more each.
+        self.buf.changedtick += moved.regions.iter().filter(|r| r.1 > 0 || r.2 > 0).count() as u64 + 1;
         self.undoredo_marks(id, &moved, named, visual);
         // "Remember where we are for `g-`, `:earlier 10s` and `:earlier 1f`."
         let t = &mut self.buf.undo;
@@ -924,6 +949,7 @@ impl Editor {
 
     /// `u_undo`: `count` steps back. An undo step still open is closed and is the one step done.
     pub(super) fn u_undo(&mut self, mut count: usize) {
+        // `u_undo_end`'s caller: `u_doit` starts with `undo_allowed`.
         if !self.buf.undo.synced {
             self.u_sync(true);
             count = 1;
@@ -938,6 +964,10 @@ impl Editor {
 
     /// `u_doit`: undo or redo `startcount` times.
     pub(super) fn u_doit(&mut self, startcount: usize, undoes: bool, quiet: bool) {
+ if !self.buf.opts.modifiable {
+ self.error("E21: Cannot make changes, 'modifiable' is off");
+ return;
+ }
         let ul = self.buf.opts.undolevels;
         self.buf.undo.levels = ul;
         self.u_newcount = 0;

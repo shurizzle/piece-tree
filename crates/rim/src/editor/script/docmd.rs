@@ -173,7 +173,7 @@ pub(in crate::editor) struct Frame {
 pub(in crate::editor) struct State {
     /// `s:` variables of each script; 0 is for the commands typed.
     pub vars: Vec<Vars>,
-    ids: HashMap<PathBuf, usize>,
+    pub(super) ids: HashMap<PathBuf, usize>,
     /// The script `s:` means now.
     pub cur: usize,
     pub(in crate::editor) stack: Vec<Frame>,
@@ -256,6 +256,8 @@ pub(in crate::editor) struct State {
     /// not shown and do not end the line).
     pub msg_silent: u32,
     pub emsg_silent: u32,
+    /// `cmdmod.cmod_flags & CMOD_HIDE` of the command being run.
+    pub cmod_hide: bool,
     /// `emsg_noredir`: an error under `:silent!` is not written to a redirection either (`execute()`).
     pub emsg_noredir: bool,
     /// The Lists `execute()` runs line by line: the List and the index of the next item (`GetListLineCookie`), kept in `for_watch` like a `:for` does.
@@ -312,6 +314,11 @@ impl State {
 
     /// `estack_sfile(ESTACK_NONE)`: `a[3]..b`.
     pub(super) fn chain_string(&self) -> String {
+        self.chain_string_with(false)
+    }
+
+    /// `estack_sfile`: `stack` also gives the line of the last entry (`<stack>`).
+    pub(super) fn chain_string_with(&self, stack: bool) -> String {
         // `estack_sfile`: "function One[123]..Two[456]..Three": the type is named when it changes (a script that follows a
         // function is "script a.vim").
         let n = self.stack.len();
@@ -328,7 +335,7 @@ impl State {
                 .to_string();
                 last = f.kind;
             }
-            out.push(if i + 1 < n && f.lnum != 0 { format!("{t}{}[{}]", f.name, f.lnum) } else { format!("{t}{}", f.name) });
+            out.push(if (i + 1 < n || stack) && f.lnum != 0 { format!("{t}{}[{}]", f.name, f.lnum) } else { format!("{t}{}", f.name) });
         }
         out.join("..")
     }
@@ -739,6 +746,7 @@ impl Editor {
         let mut cmd_name: Option<&'static str> = None;
         let mut saved_msg_silent: Option<u32> = None;
         let mut did_esilent = 0;
+        let mut saved_hide = self.scripts.cmod_hide;
         'doend: {
             // 1. Blanks and `:`, the command modifiers.
             let (s, mods) = match cmdline::parse_modifiers(cmdline) {
@@ -748,7 +756,8 @@ impl Editor {
                     break 'doend;
                 }
             };
-            // `apply_cmdmod`
+            // `apply_cmdmod`; each command starts with the modifiers it has itself (`CLEAR_POINTER(cmod)`).
+            saved_hide = std::mem::replace(&mut self.scripts.cmod_hide, mods.hide);
             if mods.silent || mods.unsilent {
                 saved_msg_silent = Some(self.scripts.msg_silent);
             }
@@ -883,9 +892,32 @@ impl Editor {
             if matches!(long, ">" | "<") {
                 arg_in = skipwhite(arg_in.trim_start_matches(long));
             }
+            // Where the argument starts: what is in front of it is the command, rebuilt for the handler.
             let head_len = argpos + (argtxt.len() - arg_in.len());
             let after_bang = arg_in;
             let usefilter = (long == "write" && after_bang.starts_with('!')) || (long == "read" && (forceit || after_bang.starts_with('!')));
+            // `++opt=val` first, then `+cmd` (`getargopt`, `getargcmd`).
+            let mut ecmd: Option<String> = None;
+            if !usefilter {
+                if argt & cmdline::ARGOPT != 0 {
+                    while arg_in.starts_with("++") {
+                        match cmdline::getargopt(arg_in) {
+                            Ok(r) => arg_in = r,
+                            Err(cut) => {
+                                errormsg = Some("E474: Invalid argument".into());
+                                // A bad value ends the command line for the message.
+                                if let Some(end) = cut {
+                                    err_cmdline = format!("{}{}{}", &cmdline[..cmdline.len() - s.len()], &s[..head_len], &arg_in[..end]);
+                                }
+                                break 'doend;
+                            }
+                        }
+                    }
+                }
+                if argt & cmdline::CMDARG != 0 {
+                    (ecmd, arg_in) = cmdline::getargcmd(arg_in);
+                }
+            }
             let (arg, nextcmd) = if argt & TRLBAR != 0 && !usefilter {
                 cmdline::separate_nextcmd(arg_in, argt, long)
             } else if usefilter {
@@ -939,6 +971,11 @@ impl Editor {
             if skip && cmdline::skipped_when_inactive(long) {
                 break 'doend;
             }
+            // `EX_MODIFY`: a buffer that is not 'modifiable' takes none of these.
+            if !self.buf.opts.modifiable && matches!(long, "append" | "center" | "change" | "copy" | "delete" | "insert" | "join" | "left" | "move" | "put" | "read" | "retab" | "right" | "sort" | "t") {
+                errormsg = Some("E21: Cannot make changes, 'modifiable' is off".into());
+                break 'doend;
+            }
             // `ex_sort` returns before it reads its arguments when there are fewer than two lines.
             if long == "sort" {
                 let n = self.line_count();
@@ -951,7 +988,20 @@ impl Editor {
                     }
                 }
             }
+            // `expand_filename`: `%`, `#`, `<cword>`... in a file name.
+            let expanded = if argt & XFILE != 0 && !skip && !usefilter {
+                match self.expand_filename(&arg, argt & cmdline::NOSPC != 0) {
+                    Ok(a) => Some(a),
+                    Err(m) => {
+                        errormsg = Some(m);
+                        break 'doend;
+                    }
+                }
+            } else {
+                None
+            };
             // 6. Execute it.
+            let emsg0 = self.scripts.emsg_count;
             let res: Res<()> = match long {
                 "if" => self.ex_if(cstack, bare),
                 "elseif" | "else" => self.ex_else(cstack, long == "elseif", bare),
@@ -983,6 +1033,65 @@ impl Editor {
                         self.ex_append(long, l2, forceit, bare, &mut next, None);
                     }
                     Ok(())
+                }
+                "buffer" | "sbuffer" | "bnext" | "bprevious" | "bNext" | "brewind" | "bfirst" | "blast" | "bmodified" | "sbnext" | "sbprevious" | "sbNext" | "sbrewind" | "sbfirst" | "sblast" | "sbmodified" if !skip => {
+                    // No `EX_CMDWIN` flag: refused in the command-line window.
+                    if self.cmdwin.is_some() {
+                        errormsg = Some(crate::editor::cmdwin::E11.into());
+                        break 'doend;
+                    }
+                    // `set_cmd_count`: a count is the second address.
+                    let (mut addr_count, mut line2) = (range.addr_count, range.line2);
+                    if let Some(n) = self.scripts.ea.count {
+                        (line2, addr_count) = (n as i64, addr_count.max(1));
+                    }
+                    self.ex_buffer_family(long, forceit, addr_count, line2, rest)
+                }
+                "file" if !skip => {
+                    let arg = expanded.as_deref().unwrap_or(rest);
+                    self.ex_file(forceit, range.addr_count, range.line2, arg)
+                }
+                "badd" | "balt" if !skip => {
+                    let arg = expanded.as_deref().unwrap_or(rest);
+                    self.ex_badd(long == "balt", arg)
+                }
+                "args" | "argadd" | "argdelete" | "argedit" | "argument" | "next" | "previous" | "Next" | "first" | "last" | "rewind" if !skip => {
+                    let (mut addr_count, mut line2) = (range.addr_count, range.line2);
+                    if let Some(n) = self.scripts.ea.count {
+                        (line2, addr_count) = (n as i64, addr_count.max(1));
+                    }
+                    // `ADDR_OTHER`: the default is 1.
+                    if matches!(long, "next" | "previous" | "Next") && addr_count == 0 {
+                        line2 = 1;
+                    }
+                    let arg = expanded.as_deref().unwrap_or(rest);
+                    self.ex_arglist_cmd(long, forceit, addr_count, range.line1, line2, arg)
+                }
+                "bdelete" | "bwipeout" | "bunload" if !skip => {
+                    if self.cmdwin.is_some() {
+                        errormsg = Some(crate::editor::cmdwin::E11.into());
+                        break 'doend;
+                    }
+                    let (mut addr_count, mut line2) = (range.addr_count, range.line2);
+                    if let Some(n) = self.scripts.ea.count {
+                        (line2, addr_count) = (n as i64, addr_count.max(1));
+                    }
+                    // `EX_BUFNAME`: a first word that is no count names a buffer.
+                    let mut args = rest;
+                    if !args.is_empty() && addr_count == 0 {
+                        let p = crate::editor::bufdel::skiptowhite_esc(args);
+                        line2 = self.buflist_findpat_shown(&args[..p], args, long == "bwipeout");
+                        if line2 < 0 {
+                            break 'doend;
+                        }
+                        (addr_count, args) = (1, args[p..].trim_start_matches([' ', '\t']));
+                    }
+                    let action = match long {
+                        "bdelete" => crate::editor::bufdel::BufAction::Del,
+                        "bwipeout" => crate::editor::bufdel::BufAction::Wipe,
+                        _ => crate::editor::bufdel::BufAction::Unload,
+                    };
+                    self.do_bufdel(action, args, addr_count, range.line1, line2, forceit)
                 }
                 "function" => {
                     self.ex_function(skip, forceit, bare);
@@ -1030,7 +1139,7 @@ impl Editor {
                 _ => {
                     // `:vertical` changes the commands that split a window; on any other it does nothing.
                     let prefix = if mods.vertical && matches!(long, "split" | "new" | "resize") { "vertical " } else { "" };
-                    let text = format!("{prefix}{range_text}{}{arg}", &s[range_len..head_len]);
+                    let text = format!("{prefix}{range_text}{}{}", &s[range_len..head_len], expanded.as_deref().unwrap_or(&arg));
                     self.scripts.arg_rest = arg_in.get(arg.trim_end_matches([' ', '\t']).len()..).unwrap_or("").to_string();
                     if !self.command_one(&text) {
                         self.scripts.quitting = true;
@@ -1044,6 +1153,13 @@ impl Editor {
                     Ok(())
                 }
             };
+            // The `+cmd` runs once the file or buffer is entered; after the buffer commands also when they failed.
+            if let Some(c) = ecmd
+                && res.is_ok()
+                && (self.scripts.emsg_count == emsg0 || cmdline::is_buffer_cmd(long))
+            {
+                self.command(&c);
+            }
             if let Err(e) = res {
                 errormsg = Some(e);
             }
@@ -1079,6 +1195,7 @@ impl Editor {
         self.do_errthrow(Some(cstack), cmd_name);
         self.scripts.cmdlinep = saved_cmdlinep;
         // `undo_cmdmod`
+        self.scripts.cmod_hide = saved_hide;
         if let Some(save) = saved_msg_silent {
             if !self.scripts.did_emsg || self.scripts.msg_silent > save {
                 self.scripts.msg_silent = save;
@@ -1199,6 +1316,12 @@ fn user_dir(name: &str) -> Option<String> {
 /// when there is no such user). A backslash drops itself and keeps the char after it as written, not
 /// expanded.
 pub(in crate::editor) fn expand_env(s: &str) -> String {
+    expand_env_opt(s, true, true, false)
+}
+
+/// `expand_env_esc(.., one)` with the backslash kept (`halve` false: `expand_env_save`) or dropped (`backslash_halve` after
+/// it). `one`: the string is one file name, so a `~` after a blank or a comma is not expanded.
+pub(in crate::editor) fn expand_env_opt(s: &str, one: bool, halve: bool, keep_unset: bool) -> String {
     let src = skipwhite(s);
     let b = src.as_bytes();
     let (mut out, mut i, mut at_start) = (String::new(), 0, true);
@@ -1236,7 +1359,7 @@ pub(in crate::editor) fn expand_env(s: &str) -> String {
             if end != i + 1 {
                 match std::env::var(name).ok().filter(|v| !v.is_empty()) {
                     Some(v) => repl = Some((v, end)),
-                    None if !braced => repl = Some((String::new(), end)),
+                    None if !braced && !keep_unset => repl = Some((String::new(), end)),
                     None => {}
                 }
             }
@@ -1248,9 +1371,14 @@ pub(in crate::editor) fn expand_env(s: &str) -> String {
             continue;
         }
         at_start = false;
-        // A backslash drops itself and keeps the next char as it is, not expanded.
+        // A backslash keeps the next char as it is, not expanded; `halve` drops it too. A blank or a comma starts a new name for `~`.
         if b[i] == b'\\' && i + 1 < b.len() {
+            if !halve {
+                out.push('\\');
+            }
             i += 1;
+        } else if (b[i] == b' ' || b[i] == b',') && !one {
+            at_start = true;
         }
         let l = src[i..].chars().next().map_or(1, char::len_utf8);
         out.push_str(&src[i..i + l]);

@@ -6,7 +6,7 @@ Minimal vim-like terminal editor in `crates/rim/`. Purpose: exercise the library
 |---|---|
 | `src/main.rs` | CLI, theme detection, init file, OSC 52 clipboard query, `TerminalGuard`, event loop (polls background saves) |
 | `src/editor.rs` | `Editor` state, mode handlers, edits and undo groups, operators, paste, Visual and block ops, `:s`, save/reload |
-| `src/editor/buffers.rs` | `Buffer` (document and its loaded/saved versions, `ML_EMPTY`, optional file, marks, options), `:e file` (reads the file again when the buffer holds it, `E79` for an unknown `~user`), `:enew`, `:b`, `:ls`, `:bd`, `Ctrl+^`, `read_doc`/`doc_without_final_eol` (the last line break is not a line), background `:w` (`Saving`) |
+| `src/editor/buffers.rs` | `Buffer` (document and its loaded/saved versions, `ML_EMPTY`, optional file, marks, options), `:e file` (reads the file again when the buffer holds it, `E79` for an unknown `~user`), `:enew`, `:b` and the other buffer commands (`do_buffer_goto`), `:ls`, `'hidden'`/`'bufhidden'` (`buf_hide`, `unload_if_unused`, `Buffer::unload`/`load`), `Ctrl+^`, `read_doc`/`doc_without_final_eol` (the last line break is not a line), background `:w` (`Saving`) |
 | `src/editor/cmdline.rs` | the `:`/`/`/`?` line: cursor editing, history, completion, `Ctrl+R`/`Ctrl+V`, running a command or a search |
 | `src/editor/cmdwin.rs` | the command-line window (`Ctrl+F`, `q:`, `q/`, `q?`) |
 | `src/editor/wild.rs` | command-line completion: candidates (commands, files, options, highlight groups, buffers…), `wildmode` steps, the menu state, `wildignore`, `wildchar` |
@@ -47,7 +47,8 @@ rim [file | -]...
 
 - Missing file → empty buffer; created on first save.
 - Files are loaded with `Document::from_string`, which keeps the file's buffer without copying it.
-- Non-UTF-8 file → error on startup (`read_to_string`).
+- A control char is drawn as `^A` (two cells), DEL as `^?`, U+0080-U+009F as `<80>` and the chars Neovim does not print (U+200B...) as `<200b>`; a Tab on the command line is `^I`.
+- Non-UTF-8 file → empty 'readonly' buffer with `[Permission Denied]` when entered (Neovim reads it as bytes). A directory is an empty buffer. A file named after the first one on the command line is read when it is entered, not at the start.
 - The line ending is detected per file; `:set ff=unix|dos|mac` changes it.
 - At startup the terminal background is queried (`terminal-colorsaurus`, before raw mode); a light one selects the light highlight defaults (`background=light`). Errors or no answer → dark.
 - Then the init file `$XDG_CONFIG_HOME/rim/init` (or `~/.config/rim/init`) is sourced, if it exists: a Vimscript file, so any command, `|`, `if`/`while`/`for`, `\` continuation lines and `"` comments work (see [vimscript.md](vimscript.md)). Errors are reported on the message line as in Neovim (`Error in {file}:` `line    2:` `E492: Not an editor command: map x y`); what follows an error in a block is skipped, the other lines run. Files after the first copy the options.
@@ -240,9 +241,9 @@ Typed in the message row, with a cursor like neovim's command line; a line wider
 | `:x` | save if dirty, then `:q`; with `file`, the same write as `:wq` — a clean buffer writes nothing |
 | `:wqa` `:xa` | save every modified buffer, then quit |
 | `:e file` | edit `file`: the buffer already holding it (same canonical path), else a new one (missing file: empty); the current buffer stays loaded even if modified (vim's `hidden`). `~` at the start (also `~user`, that user's home directory), `$VAR`/`${VAR}` anywhere are expanded as `expand_filename()` does (`:r`, `:w file`, `:sav`, `:wq file`/`:x file`, `:sp`/`:vs` and `:source` too) and the buffer keeps the expanded name, as Neovim's does; a `~user` there is no user for says `E79: Cannot expand wildcards` (a plain message, the command does nothing), as Neovim's wildcard expansion does. No file info message when `'shortmess'` has `F` (the default), like `:silent` was used (`readfile`'s `silent`). The file the buffer already holds is read again (`do_ecmd`), refusing a modified buffer without `!` (`E37`); a file another buffer holds is only switched to, and `:sp file`/`:vs file` never read again |
-| `:bn [N]` `:bp [N]` (`:bN`) | next/previous buffer, wrapping |
+| `:[N]bn [N]` `:bp` `:bN` `:br` `:bf` `:bl` `:bm` (and `:sb…` split first) | the next/previous/first/last/changed buffer (`do_buffer_ext`: `E84` `E85` `E86` `E87` `E88`, unlisted buffers are skipped, `E37` leaving a changed buffer when `nohidden`) |
 | `:b N` | buffer N |
-| `:ls` (`:buffers`, `:files`) | `N %a/# [+ ]"name" line L` per listed buffer, one per row (`%a` current, `#` alternate; `[No Name]` without a file; a name under the home directory as `~/...`, `home_replace`) |
+| `:ls[!] [flags]` (`:buffers`, `:files`) | `buflist_list`: `%3d` then `u` (unlisted), `%`/`#` (current/alternate of the window), `a`/`h`/blank (shown, hidden, not loaded), `+`, the name (a name under the home directory as `~/...`), `line N` at column 40; flags `u + a h % # t` (`t`: by last use, with its time); `!` lists unlisted buffers too |
 | `:enew` | an empty buffer without a file in the window (`:new`, `:vnew`: in a new horizontal or vertical split) |
 | `:messages` | see Messages |
 | `:bd[!] [N]` | delete buffer N (default current); refuses a modified one without `!`; windows showing it move to the alternate or first other buffer; deleting the last buffer leaves an empty one without a file |
@@ -424,6 +425,7 @@ Where an option lives follows Neovim's scopes (`scope` in `options.lua`), each c
 | `pumwidth` | `pw` | 15 | least width of the popup menu |
 | `winfixheight` `winfixwidth` | `wfh` `wfw` | off | window-local: the window keeps the height / width it has now when others are laid out |
 | `cedit` | | `<C-F>` | key on the command line that opens the command-line window (empty: none) |
+| `hidden` | `hid` | on | a buffer that leaves its last window stays loaded; off: it is unloaded (its text and undo go; read again when entered) and a changed one refuses to leave (`E37`); `:hide cmd` runs a command with it on. No `'bufhidden'` |
 | `equalalways` | `ea` | on | a split or a close evens every window out; off: the split takes half of the window it splits and a closed window's room goes to the next one |
 | `winheight` `winwidth` | `wh` `wiw` | 1, 20 | the window entered (by any command, a split included) gets at least this many rows (status row on top) / columns when the others can give them; the default 20 columns widens windows on a narrow screen |
 | `winminheight` `winminwidth` | `wmh` `wmw` | 1, 1 | the least rows (without the status row) / columns a window keeps |

@@ -1,0 +1,3569 @@
+NVIM v0.12.6
+
+0
+['abc', 'v', ['abc']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc', 'v', ['abc']] ['', '']
+"---
+
+0
+['abc
+', 'V', ['abc']] ['', '']
+"---
+
+0
+['abc
+', 'V', ['abc']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc', '^V3', ['abc']] ['', '']
+"---
+
+0
+['abc', '^V5', ['abc']] ['', '']
+"---
+
+0
+['abc', 'v', ['abc']] ['', '']
+"---
+
+0
+['abc', '^V3', ['abc']] ['', '']
+"---
+
+0
+['abc', '^V3', ['abc']] ['', '']
+"---
+
+0
+['abc', '^V3', ['abc']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc', '^V3', ['abc']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc
+', 'V', ['abc']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc
+', 'V', ['abc']] ['', '']
+"---
+
+0
+['abc', '^V1', ['abc']] ['', '']
+"---
+
+0
+['abc
+', 'V', ['abc']] ['', '']
+"---
+
+0
+['abc
+', 'v', ['abc', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc', '^V5', ['abc']] ['', '']
+"---
+
+0
+['abc
+', 'v', ['abc', '']] ['', '']
+"---
+
+0
+['abc
+', 'v', ['abc', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['abc', '^V1', ['abc']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V3', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'v', ['a', 'b', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V5', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V5', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'v', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', 'v', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V3', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V5', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V0', ['']] ['', '']
+"---
+
+0
+['', '^V3', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '^V3', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V1', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'v', ['', '']] ['', '']
+"---
+
+0
+['', '^V0', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V0', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+
+', 'V', ['', '']] ['', '']
+"---
+
+0
+['
+
+', 'v', ['', '', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+
+', 'V', ['', '']] ['', '']
+"---
+
+0
+['
+
+', 'V', ['', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', '^V0', ['', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', '^V3', ['', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+
+', 'V', ['', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+
+', 'V', ['', '']] ['', '']
+"---
+
+0
+['x', '^V5', ['x']] ['', '']
+"---
+
+0
+['x
+', 'V', ['x']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['x', '^V2', ['x']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['x', '^V2', ['x']] ['', '']
+"---
+
+0
+['x', '^V2', ['x']] ['', '']
+"---
+
+0
+['x
+', 'V', ['x']] ['', '']
+"---
+
+0
+['x
+', 'V', ['x']] ['', '']
+"---
+
+0
+['é日
+', 'V', ['é日']] ['', '']
+"---
+
+0
+['é日
+', 'v', ['é日', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['é日
+', 'v', ['é日', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['é日', '^V3', ['é日']] ['', '']
+"---
+
+0
+['é日', '^V5', ['é日']] ['', '']
+"---
+
+0
+['é日
+', 'V', ['é日']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['é日
+', 'V', ['é日']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['é日', '^V3', ['é日']] ['', '']
+"---
+
+0
+['é日', '^V3', ['é日']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['é日
+', 'V', ['é日']] ['', '']
+"---
+
+0
+['é日
+', 'V', ['é日']] ['', '']
+"---
+
+0
+['é日', '^V1', ['é日']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V5', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V5', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V3', ['a', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b', '^V3', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['', '', []] ['', '']
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', 'v', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['', 'v', ['']] ['', '']
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V5', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['
+', 'V', ['']] ['', '']
+"---
+
+0
+['', '^V1', ['']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a', '^V1', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a', '^V1', ['a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+
+', 'V', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+
+', 'V', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+
+', 'V', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', '^V1', ['a', 'b', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', 'v', ['a', 'b', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', '^V1', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', '^V3', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', '^V1', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+
+', 'V', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+
+', 'V', ['a', 'b', '']] ['', '']
+"---
+
+0
+['a
+b
+', '^V1', ['a', 'b', '']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+b
+', '^V1', ['a', 'b', '']] ['', '']
+"---
+
+0
+['1
+2.5
+', 'V', ['1', '2.5']] ['', '']
+"---
+
+0
+['1
+2.5
+', 'V', ['1', '2.5']] ['', '']
+"---
+
+0
+['1
+2.5', 'v', ['1', '2.5']] ['', '']
+"---
+
+0
+['1
+2.5', '^V3', ['1', '2.5']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['1
+2.5', 'v', ['1', '2.5']] ['', '']
+"---
+
+0
+['1
+2.5
+', 'V', ['1', '2.5']] ['', '']
+"---
+
+0
+['1
+2.5
+', 'V', ['1', '2.5']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['1
+2.5', '^V3', ['1', '2.5']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['1
+2.5
+', 'V', ['1', '2.5']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b', 'v', ['a', '', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b
+', 'V', ['a', '', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b', '^V5', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b', 'v', ['a', '', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b', 'v', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b
+', 'V', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b', '^V3', ['a', '', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b', '^V3', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b', '^V1', ['a', '', 'b']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['a
+
+b', '^V1', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b', 'v', ['a', '', 'b']] ['', '']
+"---
+
+0
+['a
+
+b', '^V1', ['a', '', 'b']] ['', '']
+"---
+
+0
+['日本
+a
+', 'V', ['日本', 'a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['日本
+a', 'v', ['日本', 'a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['日本
+a
+', 'V', ['日本', 'a']] ['', '']
+"---
+
+0
+['日本
+a', '^V4', ['日本', 'a']] ['', '']
+"---
+
+0
+['日本
+a', 'v', ['日本', 'a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['日本
+a', '^V4', ['日本', 'a']] ['', '']
+"---
+
+0
+['日本
+a', '^V4', ['日本', 'a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['日本
+a', '^V4', ['日本', 'a']] ['', '']
+"---
+
+0
+['日本
+a', '^V1', ['日本', 'a']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['ab
+c
+defg', 'v', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg
+', 'V', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg', '^V4', ['ab', 'c', 'defg']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['ab
+c
+defg', '^V5', ['ab', 'c', 'defg']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['ab
+c
+defg', 'v', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg', '^V4', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg', '^V3', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg', '^V4', ['ab', 'c', 'defg']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['ab
+c
+defg
+', 'V', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg
+', 'V', ['ab', 'c', 'defg']] ['', '']
+"---
+
+0
+['ab
+c
+defg', '^V1', ['ab', 'c', 'defg']] ['', '']
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+"---
+
+0
+['ab', 'v', ['ab']] ['', '']
+ab
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+a
+b
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+a
+b
+
+"---
+
+0
+['ab', 'v', ['ab']] ['', '']
+ab
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+a
+b
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+a
+b
+
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+line    2:
+E116: Invalid arguments for function getreg
+
+"---
+
+0
+['ab', 'v', ['ab']] ['ab', 'v']
+ab
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['a
+b', 'v']
+a
+b
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['a
+b
+', 'V']
+a
+b
+
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+['ab', 'v', ['ab']] ['', '']
+ab
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+a
+b
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+a
+b
+
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E883: Search pattern and expression register may not contain two or more lines
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E883: Search pattern and expression register may not contain two or more lines
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E94: No matching buffer for ab
+0
+"---
+
+Error in {file}:
+line    1:
+E94: No matching buffer for a^@b
+0
+"---
+
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '%'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '%'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '%'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '.'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '.'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: '.'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: ':'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: ':'
+0
+"---
+
+Error in {file}:
+line    1:
+E354: Invalid register name: ':'
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', '^V3', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', '^V3', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', 'v', ['abcdef']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', 'v', ['abc', 'def']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'v', ['abcdef', '']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', '^V3', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'v', ['abcdef', '']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef', '^V3', ['abcdef']] ['', '']
+"---
+
+0
+['abcdef
+', 'V', ['abcdef']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'v', ['abc', 'def', '']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def', '^V3', ['abc', 'def']] ['', '']
+"---
+
+0
+['abc
+def
+', 'V', ['abc', 'def']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', 'v', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', '^V1', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', 'v', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', '^V1', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', 'v', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', '^V1', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', 'v', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d', '^V1', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+c
+d
+', 'V', ['a', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+bc', 'v', ['a', 'bc']] ['', '']
+"---
+
+0
+['a
+bc', 'v', ['a', 'bc']] ['', '']
+"---
+
+0
+['a
+bc
+', 'V', ['a', 'bc']] ['', '']
+"---
+
+0
+['a
+bc', '^V1', ['a', 'bc']] ['', '']
+"---
+
+0
+['a
+bc', 'v', ['a', 'bc']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c
+', 'V', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', '^V1', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+b
+c', 'v', ['a', 'b', 'c']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d
+', 'V', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', '^V1', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d
+', 'V', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', '^V1', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+bc
+d', 'v', ['a', 'bc', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d
+', 'V', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', '^V1', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d
+', 'V', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', '^V1', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a
+b
+c
+d', 'v', ['a', 'b', 'c', 'd']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a', '^V0', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a', '^V0', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a
+
+', 'V', ['a', '']] ['', '']
+"---
+
+0
+['a
+', '^V0', ['a', '']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a
+
+', 'V', ['a', '']] ['', '']
+"---
+
+0
+['a
+', '^V0', ['a', '']] ['', '']
+"---
+
+0
+['a
+', 'v', ['a', '']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a', '^V1', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['a
+', 'V', ['a']] ['', '']
+"---
+
+0
+['a', '^V1', ['a']] ['', '']
+"---
+
+0
+['a', 'v', ['a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['
+a
+', 'V', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', '^V1', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['
+a
+', 'V', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', '^V1', ['', 'a']] ['', '']
+"---
+
+0
+['
+a', 'v', ['', 'a']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', '^V1', ['a', 'b']] ['', '']
+"---
+
+0
+['a
+b', 'v', ['a', 'b']] ['', '']
+"---
+
+['xy', 'v', ['xy']] ['', '']
+"---
+
+['x
+y
+', 'V', ['x', 'y']] ['', '']
+"---
+
+['x
+y', 'v', ['x', 'y']] ['', '']
+"---
+
+['xy
+', 'V', ['xy']] ['', '']
+"---
+
+1
+['', '', []] ['', '']
+keep 
+"---
+
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+1
+['', '', []] ['', '']
+keep 
+"---
+
+1
+"---
+
+0
+['abc', 'v', ['abc']] ['', '']
+keep 
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['abc', 'v', ['abc']] ['abc', 'v']
+keep abc
+"---
+
+0
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['a
+b
+', 'V', ['a', 'b']] ['a
+b
+', 'V']
+keep a
+b
+
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+0
+['a
+b', '^V4', ['a', 'b']] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['a
+b', '^V4', ['a', 'b']] ['a
+b', '^V4']
+keep a
+b
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+0
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E475: Invalid value for argument value
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid value for argument value
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+Error in {file}:
+line    2:
+E475: Invalid value for argument value
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid value for argument value
+1
+"---
+
+Error in {file}:
+line    2:
+E475: Invalid value for argument value
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid value for argument value
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+Error in {file}:
+line    2:
+E475: Invalid value for argument value
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E475: Invalid value for argument value
+1
+"---
+
+0
+['x', 'v', ['x']] ['', '']
+keep 
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['x', 'v', ['x']] ['x', 'v']
+keep x
+"---
+
+0
+"---
+
+0
+['x', 'v', ['x']] ['x', 'v']
+keep x
+"---
+
+0
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['x', 'v', ['x']] ['x', 'v']
+keep x
+"---
+
+0
+"---
+
+0
+['1
+', 'V', ['1']] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['1
+', 'V', ['1']] ['1
+', 'V']
+keep 1
+
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E731: Using a Dictionary as a String
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+Error in {file}:
+line    2:
+E731: Using a Dictionary as a String
+1
+['', '', []] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E731: Using a Dictionary as a String
+1
+"---
+
+0
+['x
+', 'V', ['x']] ['', '']
+keep 
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+Error in {file}:
+line    2:
+E116: Invalid arguments for function setreg
+line    3:
+E116: Invalid arguments for function getreg
+keep 
+"---
+
+Error in {file}:
+line    1:
+E116: Invalid arguments for function setreg
+"---
+
+0
+['x
+', 'V', ['x']] ['x
+', 'V']
+keep x
+
+"---
+
+Error in {file}:
+line    1:
+E118: Too many arguments for function: setreg
+1
+"---
+
+
+A2
+"---
+
+B1 A1 B1
+C
+"---
+
+
+Q Q
+"---
+
+empty empty
+"---
+
+at at
+"---
+
+Error in {file}:
+line    1:
+E119: Not enough arguments for function: setreg
+line    2:
+E119: Not enough arguments for function: setreg
+line    3:
+E118: Too many arguments for function: setreg
+line    4:
+E730: Using a List as a String
+1
+1
+line    6:
+E730: Using a List as a String
+0
+line    7:
+E731: Using a Dictionary as a String
+0
+"---
+
+Error in {file}:
+line    1:
+E730: Using a List as a String
+1
+"---
+
+foo
+"---
+
+Error in {file}:
+line    1:
+E883: Search pattern and expression register may not contain two or more lines
+
+"---
+
+foo foo
+"---
+
+3
+"---
+
+6
+"---
+
+Error in {file}:
+line    1:
+E883: Search pattern and expression register may not contain two or more lines
+"---
+
+x.y
+x.y
+Error in {file}:
+line    7:
+E86: Buffer 9 does not exist
+0
+line    8:
+E94: No matching buffer for nosuch
+0

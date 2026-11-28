@@ -1,0 +1,2287 @@
+NVIM v0.12.6
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+Error in {file}:
+line    3:
+E353: Nothing in register "
+4
+"---
+
+Error in {file}:
+line    3:
+E353: Nothing in register "
+4
+"---
+
+5
+"---
+
+5
+"---
+
+6
+"---
+
+6
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+4
+"---
+
+5
+"---
+
+5
+"---
+
+4
+"---
+
+6
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+6
+"---
+
+6
+"---
+
+8
+"---
+
+6
+"---
+
+5
+"---
+
+6
+"---
+
+6
+"---
+
+1 more line; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5 lines changed
+4
+"---
+
+5 lines >ed 1 time
+5
+"---
+
+5 lines changed
+5
+"---
+
+5
+"---
+
+4
+"---
+
+4
+"---
+
+4
+"---
+
+4
+"---
+
+4
+"---
+
+6
+"---
+
+7
+"---
+
+4
+"---
+
+6
+"---
+
+7
+"---
+
+4
+"---
+
+6
+"---
+
+4
+"---
+
+4
+"---
+
+5
+"---
+
+6
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5
+"---
+
+5 lines yanked
+4
+"---
+
+5
+"---
+
+4
+"---
+
+4
+"---
+
+5
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+4
+"---
+
+8
+"---
+
+5
+"---
+
+4
+"---
+
+6
+"---
+
+5
+"---
+
+5
+"---
+
+6
+"---
+
+6
+"---
+
+6
+"---
+
+5
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: o
+5
+"---
+
+Error in {file}:
+line    5:
+E486: Pattern not found: o
+7
+"---
+
+3 substitutions on 3 lines
+5
+"---
+
+6
+"---
+
+8
+"---
+
+3 substitutions on 3 lines
+5
+"---
+
+6
+"---
+
+8
+"---
+
+Error in {file}:
+line    3:
+E486: Pattern not found: x
+4
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: x
+5
+"---
+
+Error in {file}:
+line    5:
+E486: Pattern not found: x
+7
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+Error in {file}:
+line    5:
+E486: Pattern not found: e
+7
+"---
+
+6
+"---
+
+7
+"---
+
+9
+"---
+
+5 substitutions on 5 lines
+5
+"---
+
+5 substitutions on 5 lines
+6
+"---
+
+5 substitutions on 5 lines
+8
+"---
+
+5 substitutions on 5 lines
+5
+"---
+
+5 substitutions on 5 lines
+6
+"---
+
+5 substitutions on 5 lines
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+7
+"---
+
+8
+"---
+
+10
+"---
+
+7
+"---
+
+8
+"---
+
+10
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+6
+"---
+
+7
+"---
+
+9
+"---
+
+6
+"---
+
+7
+"---
+
+9
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5 lines >ed 1 time
+5
+"---
+
+5 lines >ed 1 time
+6
+"---
+
+5 lines >ed 1 time
+8
+"---
+
+3 fewer lines
+7
+"---
+
+7
+"---
+
+9
+"---
+
+3 substitutions on 3 lines
+7
+"---
+
+7
+"---
+
+9
+"---
+
+7
+"---
+
+8
+"---
+
+9
+"---
+
+6
+"---
+
+3 fewer lines
+8
+"---
+
+3 fewer lines
+10
+"---
+
+10
+"---
+
+11
+"---
+
+13
+"---
+
+5 more lines
+9
+"---
+
+5 more lines
+10
+"---
+
+4 more lines
+11
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+8
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+Error in {file}:
+line    3:
+E353: Nothing in register "
+4
+"---
+
+6
+"---
+
+8
+"---
+
+Error in {file}:
+line    3:
+E353: Nothing in register "
+4
+"---
+
+6
+"---
+
+8
+"---
+
+Error in {file}:
+line    3:
+E353: Nothing in register "
+4
+"---
+
+6
+"---
+
+8
+"---
+
+5
+"---
+
+6
+"---
+
+7
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+11
+"---
+
+9
+"---
+
+10
+"---
+
+11
+"---
+
+9
+"---
+
+10
+"---
+
+12
+"---
+
+7
+"---
+
+8
+"---
+
+10
+"---
+
+Already at oldest change
+4
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+1 change; before #1  0 seconds ago
+13
+"---
+
+Already at newest change
+4
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+Already at newest change
+11
+"---
+
+0 changes; before #0  
+4
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+0 changes; before #0  
+4
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+Already at newest change
+4
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+7
+"---
+
+0 changes; before #0  
+4
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+Already at newest change
+4
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+7
+"---
+
+5
+"---
+
+Error in {file}:
+line    4:
+E486: Pattern not found: o
+5
+"---
+
+Error in {file}:
+line    5:
+E486: Pattern not found: o
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+6
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+6
+"---
+
+7
+"---
+
+6
+"---
+
+7
+"---
+
+9
+"---
+
+6
+"---
+
+5
+"---
+
+9
+"---
+
+2
+"---
+
+2
+"---
+
+2
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+4
+"---
+
+5
+"---
+
+7
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+1 more line; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+10
+"---
+
+2 more lines; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+3 changes; before #1  0 seconds ago
+10
+"---
+
+1 line less; before #1  0 seconds ago
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+8
+"---
+
+2 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 more line; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 more lines; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+3 changes; before #1  0 seconds ago
+Already at oldest change
+10
+"---
+
+1 line less; before #1  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+8
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+1 more line; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+10
+"---
+
+2 more lines; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+3 changes; before #1  0 seconds ago
+10
+"---
+
+1 line less; before #1  0 seconds ago
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+1 more line; before #1  0 seconds ago
+1 line less; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+1 line less; after #2  0 seconds ago
+12
+"---
+
+2 more lines; before #1  0 seconds ago
+2 fewer lines; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+1 change; after #2  0 seconds ago
+12
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+14
+"---
+
+1 line less; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+13
+"---
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+12
+"---
+
+5 more lines; before #1  0 seconds ago
+5 fewer lines; after #1  0 seconds ago
+9
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+11
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+8
+"---
+
+2 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 more line; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 more lines; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+3 changes; before #1  0 seconds ago
+Already at oldest change
+10
+"---
+
+1 line less; before #1  0 seconds ago
+Already at oldest change
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+8
+"---
+
+1 change; before #1  0 seconds ago
+Already at oldest change
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+1 more line; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+10
+"---
+
+2 more lines; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+3 changes; before #1  0 seconds ago
+10
+"---
+
+1 line less; before #1  0 seconds ago
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+1 more line; before #1  0 seconds ago
+1 line less; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; before #2  0 seconds ago
+1 line less; after #2  0 seconds ago
+12
+"---
+
+2 more lines; before #1  0 seconds ago
+2 fewer lines; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 change; before #2  0 seconds ago
+1 change; after #2  0 seconds ago
+12
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+14
+"---
+
+1 line less; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+13
+"---
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+12
+"---
+
+5 more lines; before #1  0 seconds ago
+5 fewer lines; after #1  0 seconds ago
+9
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+11
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+1 more line; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+12
+"---
+
+2 more lines; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+2 changes; before #1  0 seconds ago
+9
+"---
+
+3 changes; before #1  0 seconds ago
+10
+"---
+
+1 line less; before #1  0 seconds ago
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+1 change; before #1  0 seconds ago
+Already at newest change
+8
+"---
+
+Already at newest change
+6
+"---
+
+1 change; before #1  0 seconds ago
+Already at newest change
+8
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+7
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+5
+"---
+
+3 fewer lines
+3 more lines
+Already at newest change
+6
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+7
+"---
+
+1 change; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+8
+"---
+
+2 changes; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+1 more line; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+1 change; before #1  0 seconds ago
+14
+"---
+
+2 more lines; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+1 change; before #1  0 seconds ago
+14
+"---
+
+2 changes; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+3 changes; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+10
+"---
+
+1 line less; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+10
+"---
+
+2 fewer lines; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+5 more lines; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+7
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+7
+"---
+
+1 change; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+8
+"---
+
+1 change; before #1  0 seconds ago
+0 changes; before #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+1 more line; before #1  0 seconds ago
+1 line less; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+1 line less; after #2  0 seconds ago
+16
+"---
+
+2 more lines; before #1  0 seconds ago
+2 fewer lines; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+2 changes; after #2  0 seconds ago
+16
+"---
+
+2 changes; before #1  0 seconds ago
+2 changes; after #1  0 seconds ago
+12
+"---
+
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+14
+"---
+
+1 line less; before #1  0 seconds ago
+1 more line; after #1  0 seconds ago
+13
+"---
+
+2 fewer lines; before #1  0 seconds ago
+2 more lines; after #1  0 seconds ago
+12
+"---
+
+5 more lines; before #1  0 seconds ago
+5 fewer lines; after #1  0 seconds ago
+9
+"---
+
+3 fewer lines
+3 more lines
+3 changes; before #1  0 seconds ago
+3 changes; after #1  0 seconds ago
+12
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+9
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+10
+"---
+
+1 change; before #1  0 seconds ago
+1 change; after #1  0 seconds ago
+11
+"---
+
+6
+"---
+
+7
+"---
+
+7
+"---
+
+7
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+6
+"---
+
+1 change; before #1  0 seconds ago
+9
+"---
+
+7
+"---
+
+7
+"---
+
+8
+"---
+
+6
+"---
+
+5
+"---
+
+3 fewer lines
+3 more lines
+6
+"---
+
+6
+"---
+
+7
+"---
+
+8
+"---
+
+7
+"---
+
+8
+"---
+
+8
+"---
+
+8
+"---
+
+1 change; before #1  0 seconds ago
+8
+"---
+
+6
+"---
+
+1 change; before #1  0 seconds ago
+10
+"---
+
+8
+"---
+
+8
+"---
+
+9
+"---
+
+6
+"---
+
+5
+"---
+
+3 fewer lines
+3 more lines
+6
+"---
+
+7
+"---
+
+8
+"---
+
+9
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+1 change; before #1  0 seconds ago
+Already at newest change
+8
+"---
+
+Already at newest change
+6
+"---
+
+1 change; before #1  0 seconds ago
+Already at newest change
+8
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+7
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+5
+"---
+
+3 fewer lines
+3 more lines
+Already at newest change
+6
+"---
+
+Already at newest change
+5
+"---
+
+Already at newest change
+6
+"---
+
+Already at newest change
+7
+"---
+
+5
+"---
+
+6
+"---
+
+6
+"---
+
+7
+"---
+
+5
+"---
+
+6
+"---
+
+5
+"---
+
+6
+"---
+
+5
+"---
+
+6
+"---
+
+4
+"---
+
+5
+"---
+
+5
+"---
+
+6
+"---
+
+5
+"---
+
+6
+"---
+
+4
+"---
+
+5
+"---
+
+5
+"---
+
+4
+"---
+
+2
+"---
+
+2
+"---
+
+2
+2
+"---
+
+6
+"---
+
+8
+"---
+
+8
+"---
+
+2
+"---
+
+6
+"---
+
+7
+"---
+
+8
+"---
+
+8
+"---
+
+6
+"---
+
+4
+"---
+
+4
+"---
+
+6
+"---
+
+2
+"---
+
+2
+"---
+
+3
+"---
+
+6
+"---
+
+6
+"---
+
+6
+"---
+
+Error in {file}:
+line    3:
+E46: Cannot change read-only variable "b:changedtick"
+4
+"---
+
+Error in {file}:
+line    3:
+E795: Cannot delete variable b:changedtick
+4
+"---
+
+Error in {file}:
+line    3:
+E46: Cannot change read-only variable "b:changedtick"
+4
+"---
+
+Error in {file}:
+line    3:
+E940: Cannot lock or unlock variable b:changedtick
+4
+"---
+
+Error in {file}:
+line    3:
+E940: Cannot lock or unlock variable b:changedtick
+4
+"---
+
+{'changedtick': 4}
+4
+"---
+
+['changedtick']
+4
+"---
+
+b:foo                 #1
+b:changedtick         #4
+4
+"---
+
+b:changedtick         #4
+4
+"---
+
+1
+4
+"---
+
+1
+4
+"---
+
+4
+4
+"---
+
+Error in {file}:
+line    3:
+E46: Cannot change read-only variable "b:["changedtick"]"
+4
+"---
+
+0
+4
+"---
+
+Error in {file}:
+line    3:
+E742: Cannot change value of extend() argument
+4
+"---
+
+Error in {file}:
+line    3:
+E795: Cannot delete variable remove() argument
+4
+"---
+
+4
+4
+"---
+
+1
+4
+"---
+
+4
+"---
+
+Error in {file}:
+line    3:
+E121: Undefined variable: x
+4
+"---
+
+{'changedtick': 4}
+4
+"---
+
+Error in {file}:
+line    3:
+E46: Cannot change read-only variable "b:changedtick"
+4
+"---
+
+[4]
+4
+"---
+
+[['changedtick', 4]]
+4
+"---
+
+Error in {file}:
+line    3:
+E795: Cannot delete variable b:changedtick
+4
+"---
+
+4
+4

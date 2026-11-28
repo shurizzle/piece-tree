@@ -1,0 +1,159 @@
+NVIM v0.12.6
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+"---
+
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" line 1
+"---
+
+
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a + "/nonexistent/a"               line 1
+"---
+
+
+  1 #h + "/nonexistent/a"               line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+  1 #h + "/nonexistent/a"               line 1
+"---
+
+
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+  1 #h + "/nonexistent/a"               line 1
+"---
+
+
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+  1 #h + "/nonexistent/a"               line 1
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+"---
+
+
+  1 #h + "/nonexistent/a"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+"---
+
+
+"---
+
+
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1 #h   "/nonexistent/a"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #a   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a + "[No Name]"                    line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+  3 #h   "/nonexistent/c"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/c"               line 1
+"---
+
+
+  1 %a   "/nonexistent/日本語"          line 1
+"---
+
+
+  1 %a   "/nonexistent/a b"             line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "[No Name]"                    line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1

@@ -906,7 +906,10 @@ impl Editor {
     /// `eval_option`: `&name`, `&l:name`, `&g:name`.
     fn eval_option(&mut self, s: &str, p: &mut usize, ev: bool) -> R<Value> {
         let mut q = *p + 1;
+        let (mut global, mut scope_local) = (false, false);
         if matches!(at(s, q), b'g' | b'l') && at(s, q + 1) == b':' {
+            global = at(s, q) == b'g';
+            scope_local = !global;
             q += 2;
         }
         let from = q;
@@ -918,7 +921,17 @@ impl Editor {
         }
         let name = &s[from..q];
         self.opts_in();
-        let v = if ev { self.buf.opts.lookup(name).ok_or_else(|| format!("E113: Unknown option: {name}"))? } else { Value::None };
+        let found = if !ev {
+            Some(Value::None)
+        } else if global {
+            self.global_option(name)
+        } else if scope_local && crate::editor::options::long(name) == Some("scrolloff") {
+            // A global-local option has no local value until it is set: -1.
+            Some(Value::Int(self.win.opts.scrolloff.map_or(-1, |n| n as i64)))
+        } else {
+            self.buf.opts.lookup(name)
+        };
+        let v = found.ok_or_else(|| format!("E113: Unknown option: {name}"))?;
         *p = q;
         Ok(v)
     }

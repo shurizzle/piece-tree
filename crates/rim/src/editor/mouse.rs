@@ -161,7 +161,7 @@ impl Editor {
             self.mode = Mode::Normal;
         }
         if id != self.win.id {
-            self.park_and_take(id);
+            self.win_enter(id);
             self.enforce_win_size();
         }
         let (line, col) = self.pos_at(x - r.x, y - r.y);
@@ -227,7 +227,11 @@ impl Editor {
     /// Resizes window `id` to `target` rows (`width` false) or columns.
     fn resize_win(&mut self, id: usize, width: bool, target: usize) {
         let rects = self.win_rects();
+        let before_status = self.has_status(rects.len());
         self.split.resize(id, &rects, self.win_mins(), width, target);
+        self.layout_cur = Some(self.win.id);
+        self.layout_changed(&rects, before_status);
+        self.layout_cur = None;
     }
 
     fn mouse_scroll(&mut self, kind: MouseEventKind, x: usize, y: usize) {

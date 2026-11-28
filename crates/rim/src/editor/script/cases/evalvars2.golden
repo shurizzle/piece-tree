@@ -1,0 +1,2255 @@
+NVIM v0.12.6
+
+'%' '' []
+'%<' '' []
+'%:p' '' []
+'%:t' '' []
+'%:h' '' []
+'%:r' '' []
+'%:e' '' []
+'%:t:r' '' []
+'%<:t' '' []
+'%:s?a?X?' '' []
+'%xyz' '' []
+'%:z' '' []
+'%:e:e' '' []
+'%:h:h:h' '' []
+"---
+
+'#' '' []
+'#<' '' []
+'#:p' '' []
+'#:t' '' []
+'#:h' '' []
+'#:r' '' []
+'#:e' '' []
+'#:t:r' '' []
+'#<:t' '' []
+'#:s?a?X?' '' []
+'#xyz' '' []
+'#:z' '' []
+'#:e:e' '' []
+'#:h:h:h' '' []
+"---
+
+'#1' '' []
+'#1<' '' []
+'#1:p' '' []
+'#1:t' '' []
+'#1:h' '' []
+'#1:r' '' []
+'#1:e' '' []
+'#1:t:r' '' []
+'#1<:t' '' []
+'#1:s?a?X?' '' []
+'#1xyz' '' []
+'#1:z' '' []
+'#1:e:e' '' []
+'#1:h:h:h' '' []
+"---
+
+'#2' '' []
+'#2<' '' []
+'#2:p' '' []
+'#2:t' '' []
+'#2:h' '' []
+'#2:r' '' []
+'#2:e' '' []
+'#2:t:r' '' []
+'#2<:t' '' []
+'#2:s?a?X?' '' []
+'#2xyz' '' []
+'#2:z' '' []
+'#2:e:e' '' []
+'#2:h:h:h' '' []
+"---
+
+'#3' '' []
+'#3<' '' []
+'#3:p' '' []
+'#3:t' '' []
+'#3:h' '' []
+'#3:r' '' []
+'#3:e' '' []
+'#3:t:r' '' []
+'#3<:t' '' []
+'#3:s?a?X?' '' []
+'#3xyz' '' []
+'#3:z' '' []
+'#3:e:e' '' []
+'#3:h:h:h' '' []
+"---
+
+'#0' '' []
+'#0<' '' []
+'#0:p' '' []
+'#0:t' '' []
+'#0:h' '' []
+'#0:r' '' []
+'#0:e' '' []
+'#0:t:r' '' []
+'#0<:t' '' []
+'#0:s?a?X?' '' []
+'#0xyz' '' []
+'#0:z' '' []
+'#0:e:e' '' []
+'#0:h:h:h' '' []
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '' []
+'#<<' '' []
+'#<:p' '' []
+'#<:t' '' []
+'#<:h' '' []
+'#<:r' '' []
+'#<:e' '' []
+'#<:t:r' '' []
+'#<<:t' '' []
+'#<:s?a?X?' '' []
+'#<xyz' '' []
+'#<:z' '' []
+'#<:e:e' '' []
+'#<:h:h:h' '' []
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '' []
+'#<0<' '' []
+'#<0:p' '' []
+'#<0:t' '' []
+'#<0:h' '' []
+'#<0:r' '' []
+'#<0:e' '' []
+'#<0:t:r' '' []
+'#<0<:t' '' []
+'#<0:s?a?X?' '' []
+'#<0xyz' '' []
+'#<0:z' '' []
+'#<0:e:e' '' []
+'#<0:h:h:h' '' []
+"---
+
+'#a' '' []
+'#a<' '' []
+'#a:p' '' []
+'#a:t' '' []
+'#a:h' '' []
+'#a:r' '' []
+'#a:e' '' []
+'#a:t:r' '' []
+'#a<:t' '' []
+'#a:s?a?X?' '' []
+'#axyz' '' []
+'#a:z' '' []
+'#a:e:e' '' []
+'#a:h:h:h' '' []
+"---
+
+'#9999999999999999999' '' []
+'#9999999999999999999<' '' []
+'#9999999999999999999:p' '' []
+'#9999999999999999999:t' '' []
+'#9999999999999999999:h' '' []
+'#9999999999999999999:r' '' []
+'#9999999999999999999:e' '' []
+'#9999999999999999999:t:r' '' []
+'#9999999999999999999<:t' '' []
+'#9999999999999999999:s?a?X?' '' []
+'#9999999999999999999xyz' '' []
+'#9999999999999999999:z' '' []
+'#9999999999999999999:e:e' '' []
+'#9999999999999999999:h:h:h' '' []
+"---
+
+'%' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:t' 'a.b.txt' ['a.b.txt']
+'%:h' '/nonexistent/dir' ['/nonexistent/dir']
+'%:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:e' 'txt' ['txt']
+'%:t:r' 'a.b' ['a.b']
+'%:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'%:p:t' 'a.b.txt' ['a.b.txt']
+'%<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'%xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:e:e' 'b.txt' ['b.txt']
+'%:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:h:h:h' '/' ['/']
+"---
+
+'#' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:t' 'a.b.txt' ['a.b.txt']
+'#:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:e' 'txt' ['txt']
+'#:t:r' 'a.b' ['a.b']
+'#:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#:p:t' 'a.b.txt' ['a.b.txt']
+'#<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:e:e' 'b.txt' ['b.txt']
+'#:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:h:h:h' '/' ['/']
+"---
+
+'#1' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:t' 'a.b.txt' ['a.b.txt']
+'#1:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:e' 'txt' ['txt']
+'#1:t:r' 'a.b' ['a.b']
+'#1:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:p:t' 'a.b.txt' ['a.b.txt']
+'#1<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#1xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:e:e' 'b.txt' ['b.txt']
+'#1:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:h:h:h' '/' ['/']
+"---
+
+'#2' '' []
+'#2<' '' []
+'#2:p' '' []
+'#2:t' '' []
+'#2:h' '' []
+'#2:r' '' []
+'#2:e' '' []
+'#2:t:r' '' []
+'#2:p:h' '' []
+'#2:p:t' '' []
+'#2<:t' '' []
+'#2:s?a?X?' '' []
+'#2xyz' '' []
+'#2:z' '' []
+'#2:e:e' '' []
+'#2:p:r' '' []
+'#2:h:h:h' '' []
+"---
+
+'#3' '' []
+'#3<' '' []
+'#3:p' '' []
+'#3:t' '' []
+'#3:h' '' []
+'#3:r' '' []
+'#3:e' '' []
+'#3:t:r' '' []
+'#3:p:h' '' []
+'#3:p:t' '' []
+'#3<:t' '' []
+'#3:s?a?X?' '' []
+'#3xyz' '' []
+'#3:z' '' []
+'#3:e:e' '' []
+'#3:p:r' '' []
+'#3:h:h:h' '' []
+"---
+
+'#0' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:t' 'a.b.txt' ['a.b.txt']
+'#0:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#0:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:e' 'txt' ['txt']
+'#0:t:r' 'a.b' ['a.b']
+'#0:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#0:p:t' 'a.b.txt' ['a.b.txt']
+'#0<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#0xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:e:e' 'b.txt' ['b.txt']
+'#0:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:h:h:h' '/' ['/']
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1:p:h' '' []
+'#-1:p:t' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:p:r' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1:p:h' '' []
+'#<1:p:t' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:p:r' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:t:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:s?a?X?' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<xyz' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:z' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:e:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:h:h:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##:p:h' '' []
+'##:p:t' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:p:r' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:t:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:s?a?X?' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0xyz' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:z' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:e:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:h:h:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+"---
+
+'#a' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a<' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:e' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:t:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a<:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:s?a?X?' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#axyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:e:e' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:h:h:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+"---
+
+'#9999999999999999999' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:t' 'a.b.txt' ['a.b.txt']
+'#9999999999999999999:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#9999999999999999999:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:e' 'txt' ['txt']
+'#9999999999999999999:t:r' 'a.b' ['a.b']
+'#9999999999999999999:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#9999999999999999999:p:t' 'a.b.txt' ['a.b.txt']
+'#9999999999999999999<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#9999999999999999999xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:e:e' 'b.txt' ['b.txt']
+'#9999999999999999999:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:h:h:h' '/' ['/']
+"---
+
+'%' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:t' 'c' ['c']
+'%:h' '/nonexistent/other' ['/nonexistent/other']
+'%:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:e' '' []
+'%:t:r' 'c' ['c']
+'%:p:h' '/nonexistent/other' ['/nonexistent/other']
+'%:p:t' 'c' ['c']
+'%<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:e:e' '' []
+'%:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'%:h:h:h' '/' ['/']
+"---
+
+'#' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:t' 'a.b.txt' ['a.b.txt']
+'#:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:e' 'txt' ['txt']
+'#:t:r' 'a.b' ['a.b']
+'#:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#:p:t' 'a.b.txt' ['a.b.txt']
+'#<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#:e:e' 'b.txt' ['b.txt']
+'#:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#:h:h:h' '/' ['/']
+"---
+
+'#1' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:t' 'a.b.txt' ['a.b.txt']
+'#1:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:e' 'txt' ['txt']
+'#1:t:r' 'a.b' ['a.b']
+'#1:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:p:t' 'a.b.txt' ['a.b.txt']
+'#1<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#1xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:e:e' 'b.txt' ['b.txt']
+'#1:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:h:h:h' '/' ['/']
+"---
+
+'#2' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:t' 'c' ['c']
+'#2:h' '/nonexistent/other' ['/nonexistent/other']
+'#2:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:e' '' []
+'#2:t:r' 'c' ['c']
+'#2:p:h' '/nonexistent/other' ['/nonexistent/other']
+'#2:p:t' 'c' ['c']
+'#2<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:e:e' '' []
+'#2:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:h:h:h' '/' ['/']
+"---
+
+'#3' '' []
+'#3<' '' []
+'#3:p' '' []
+'#3:t' '' []
+'#3:h' '' []
+'#3:r' '' []
+'#3:e' '' []
+'#3:t:r' '' []
+'#3:p:h' '' []
+'#3:p:t' '' []
+'#3<:t' '' []
+'#3:s?a?X?' '' []
+'#3xyz' '' []
+'#3:z' '' []
+'#3:e:e' '' []
+'#3:p:r' '' []
+'#3:h:h:h' '' []
+"---
+
+'#0' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:t' 'a.b.txt' ['a.b.txt']
+'#0:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#0:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:e' 'txt' ['txt']
+'#0:t:r' 'a.b' ['a.b']
+'#0:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#0:p:t' 'a.b.txt' ['a.b.txt']
+'#0<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#0xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#0:e:e' 'b.txt' ['b.txt']
+'#0:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#0:h:h:h' '/' ['/']
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1:p:h' '' []
+'#-1:p:t' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:p:r' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1:p:h' '' []
+'#<1:p:t' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:p:r' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:t:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:s?a?X?' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<xyz' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:z' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:e:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<:h:h:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##:p:h' '' []
+'##:p:t' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:p:r' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:t:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:s?a?X?' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0xyz' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:z' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:e:e' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#<0:h:h:h' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+"---
+
+'#a' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a<' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:e' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:t:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a<:t' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:s?a?X?' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#axyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:e:e' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:p:r' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#a:h:h:h' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+"---
+
+'#9999999999999999999' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:t' 'a.b.txt' ['a.b.txt']
+'#9999999999999999999:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#9999999999999999999:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:e' 'txt' ['txt']
+'#9999999999999999999:t:r' 'a.b' ['a.b']
+'#9999999999999999999:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#9999999999999999999:p:t' 'a.b.txt' ['a.b.txt']
+'#9999999999999999999<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#9999999999999999999xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#9999999999999999999:e:e' 'b.txt' ['b.txt']
+'#9999999999999999999:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#9999999999999999999:h:h:h' '/' ['/']
+"---
+
+'%' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:t' 'a.b.txt' ['a.b.txt']
+'%:h' '/nonexistent/dir' ['/nonexistent/dir']
+'%:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:e' 'txt' ['txt']
+'%:t:r' 'a.b' ['a.b']
+'%:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'%:p:t' 'a.b.txt' ['a.b.txt']
+'%<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'%xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'%:e:e' 'b.txt' ['b.txt']
+'%:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'%:h:h:h' '/' ['/']
+"---
+
+'#' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:t' 'c' ['c']
+'#:h' '/nonexistent/other' ['/nonexistent/other']
+'#:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:e' '' []
+'#:t:r' 'c' ['c']
+'#:p:h' '/nonexistent/other' ['/nonexistent/other']
+'#:p:t' 'c' ['c']
+'#<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:e:e' '' []
+'#:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#:h:h:h' '/' ['/']
+"---
+
+'#1' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1<' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:p' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:t' 'a.b.txt' ['a.b.txt']
+'#1:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:e' 'txt' ['txt']
+'#1:t:r' 'a.b' ['a.b']
+'#1:p:h' '/nonexistent/dir' ['/nonexistent/dir']
+'#1:p:t' 'a.b.txt' ['a.b.txt']
+'#1<:t' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:s?a?X?' '/nonexistent/dir/X.b.txt' ['/nonexistent/dir/X.b.txt']
+'#1xyz' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:z' '/nonexistent/dir/a.b.txt' ['/nonexistent/dir/a.b.txt']
+'#1:e:e' 'b.txt' ['b.txt']
+'#1:p:r' '/nonexistent/dir/a.b' ['/nonexistent/dir/a.b']
+'#1:h:h:h' '/' ['/']
+"---
+
+'#2' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:t' 'c' ['c']
+'#2:h' '/nonexistent/other' ['/nonexistent/other']
+'#2:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:e' '' []
+'#2:t:r' 'c' ['c']
+'#2:p:h' '/nonexistent/other' ['/nonexistent/other']
+'#2:p:t' 'c' ['c']
+'#2<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:e:e' '' []
+'#2:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#2:h:h:h' '/' ['/']
+"---
+
+'#3' '' []
+'#3<' '' []
+'#3:p' '' []
+'#3:t' '' []
+'#3:h' '' []
+'#3:r' '' []
+'#3:e' '' []
+'#3:t:r' '' []
+'#3:p:h' '' []
+'#3:p:t' '' []
+'#3<:t' '' []
+'#3:s?a?X?' '' []
+'#3xyz' '' []
+'#3:z' '' []
+'#3:e:e' '' []
+'#3:p:r' '' []
+'#3:h:h:h' '' []
+"---
+
+'#0' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:t' 'c' ['c']
+'#0:h' '/nonexistent/other' ['/nonexistent/other']
+'#0:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:e' '' []
+'#0:t:r' 'c' ['c']
+'#0:p:h' '/nonexistent/other' ['/nonexistent/other']
+'#0:p:t' 'c' ['c']
+'#0<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:e:e' '' []
+'#0:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#0:h:h:h' '/' ['/']
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1:p:h' '' []
+'#-1:p:t' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:p:r' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1:p:h' '' []
+'#<1:p:t' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:p:r' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:t:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:p:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:p:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:e:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<:h:h:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##:p:h' '' []
+'##:p:t' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:p:r' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:t:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:p:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:p:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:e:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#<0:h:h:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+"---
+
+'#a' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:t:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:p:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:p:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#axyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:e:e' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#a:h:h:h' '/nonexistent/other/c' ['/nonexistent/other/c']
+"---
+
+'#9999999999999999999' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999<' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:p' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:t' 'c' ['c']
+'#9999999999999999999:h' '/nonexistent/other' ['/nonexistent/other']
+'#9999999999999999999:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:e' '' []
+'#9999999999999999999:t:r' 'c' ['c']
+'#9999999999999999999:p:h' '/nonexistent/other' ['/nonexistent/other']
+'#9999999999999999999:p:t' 'c' ['c']
+'#9999999999999999999<:t' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:s?a?X?' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999xyz' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:z' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:e:e' '' []
+'#9999999999999999999:p:r' '/nonexistent/other/c' ['/nonexistent/other/c']
+'#9999999999999999999:h:h:h' '/' ['/']
+"---
+
+'%' '/nonexistent/c' ['/nonexistent/c']
+'%<' '/nonexistent/c' ['/nonexistent/c']
+'%:p' '/nonexistent/c' ['/nonexistent/c']
+'%:t' 'c' ['c']
+'%:h' '/nonexistent' ['/nonexistent']
+'%:r' '/nonexistent/c' ['/nonexistent/c']
+'%:e' '' []
+'%:t:r' 'c' ['c']
+'%:p:h' '/nonexistent' ['/nonexistent']
+'%:p:t' 'c' ['c']
+'%<:t' '/nonexistent/c' ['/nonexistent/c']
+'%:s?a?X?' '/nonexistent/c' ['/nonexistent/c']
+'%xyz' '/nonexistent/c' ['/nonexistent/c']
+'%:z' '/nonexistent/c' ['/nonexistent/c']
+'%:e:e' '' []
+'%:p:r' '/nonexistent/c' ['/nonexistent/c']
+'%:h:h:h' '/' ['/']
+"---
+
+'#' '/nonexistent/b' ['/nonexistent/b']
+'#<' '/nonexistent/b' ['/nonexistent/b']
+'#:p' '/nonexistent/b' ['/nonexistent/b']
+'#:t' 'b' ['b']
+'#:h' '/nonexistent' ['/nonexistent']
+'#:r' '/nonexistent/b' ['/nonexistent/b']
+'#:e' '' []
+'#:t:r' 'b' ['b']
+'#:p:h' '/nonexistent' ['/nonexistent']
+'#:p:t' 'b' ['b']
+'#<:t' '/nonexistent/b' ['/nonexistent/b']
+'#:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#xyz' '/nonexistent/b' ['/nonexistent/b']
+'#:z' '/nonexistent/b' ['/nonexistent/b']
+'#:e:e' '' []
+'#:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#:h:h:h' '/' ['/']
+"---
+
+'#1' '/nonexistent/a' ['/nonexistent/a']
+'#1<' '/nonexistent/a' ['/nonexistent/a']
+'#1:p' '/nonexistent/a' ['/nonexistent/a']
+'#1:t' 'a' ['a']
+'#1:h' '/nonexistent' ['/nonexistent']
+'#1:r' '/nonexistent/a' ['/nonexistent/a']
+'#1:e' '' []
+'#1:t:r' 'a' ['a']
+'#1:p:h' '/nonexistent' ['/nonexistent']
+'#1:p:t' 'a' ['a']
+'#1<:t' '/nonexistent/a' ['/nonexistent/a']
+'#1:s?a?X?' '/nonexistent/X' ['/nonexistent/X']
+'#1xyz' '/nonexistent/a' ['/nonexistent/a']
+'#1:z' '/nonexistent/a' ['/nonexistent/a']
+'#1:e:e' '' []
+'#1:p:r' '/nonexistent/a' ['/nonexistent/a']
+'#1:h:h:h' '/' ['/']
+"---
+
+'#2' '/nonexistent/b' ['/nonexistent/b']
+'#2<' '/nonexistent/b' ['/nonexistent/b']
+'#2:p' '/nonexistent/b' ['/nonexistent/b']
+'#2:t' 'b' ['b']
+'#2:h' '/nonexistent' ['/nonexistent']
+'#2:r' '/nonexistent/b' ['/nonexistent/b']
+'#2:e' '' []
+'#2:t:r' 'b' ['b']
+'#2:p:h' '/nonexistent' ['/nonexistent']
+'#2:p:t' 'b' ['b']
+'#2<:t' '/nonexistent/b' ['/nonexistent/b']
+'#2:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#2xyz' '/nonexistent/b' ['/nonexistent/b']
+'#2:z' '/nonexistent/b' ['/nonexistent/b']
+'#2:e:e' '' []
+'#2:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#2:h:h:h' '/' ['/']
+"---
+
+'#3' '/nonexistent/c' ['/nonexistent/c']
+'#3<' '/nonexistent/c' ['/nonexistent/c']
+'#3:p' '/nonexistent/c' ['/nonexistent/c']
+'#3:t' 'c' ['c']
+'#3:h' '/nonexistent' ['/nonexistent']
+'#3:r' '/nonexistent/c' ['/nonexistent/c']
+'#3:e' '' []
+'#3:t:r' 'c' ['c']
+'#3:p:h' '/nonexistent' ['/nonexistent']
+'#3:p:t' 'c' ['c']
+'#3<:t' '/nonexistent/c' ['/nonexistent/c']
+'#3:s?a?X?' '/nonexistent/c' ['/nonexistent/c']
+'#3xyz' '/nonexistent/c' ['/nonexistent/c']
+'#3:z' '/nonexistent/c' ['/nonexistent/c']
+'#3:e:e' '' []
+'#3:p:r' '/nonexistent/c' ['/nonexistent/c']
+'#3:h:h:h' '/' ['/']
+"---
+
+'#0' '/nonexistent/b' ['/nonexistent/b']
+'#0<' '/nonexistent/b' ['/nonexistent/b']
+'#0:p' '/nonexistent/b' ['/nonexistent/b']
+'#0:t' 'b' ['b']
+'#0:h' '/nonexistent' ['/nonexistent']
+'#0:r' '/nonexistent/b' ['/nonexistent/b']
+'#0:e' '' []
+'#0:t:r' 'b' ['b']
+'#0:p:h' '/nonexistent' ['/nonexistent']
+'#0:p:t' 'b' ['b']
+'#0<:t' '/nonexistent/b' ['/nonexistent/b']
+'#0:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#0xyz' '/nonexistent/b' ['/nonexistent/b']
+'#0:z' '/nonexistent/b' ['/nonexistent/b']
+'#0:e:e' '' []
+'#0:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#0:h:h:h' '/' ['/']
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1:p:h' '' []
+'#-1:p:t' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:p:r' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1:p:h' '' []
+'#<1:p:t' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:p:r' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '/nonexistent/b' ['/nonexistent/b']
+'#<<' '/nonexistent/b' ['/nonexistent/b']
+'#<:p' '/nonexistent/b' ['/nonexistent/b']
+'#<:t' '/nonexistent/b' ['/nonexistent/b']
+'#<:h' '/nonexistent/b' ['/nonexistent/b']
+'#<:r' '/nonexistent/b' ['/nonexistent/b']
+'#<:e' '/nonexistent/b' ['/nonexistent/b']
+'#<:t:r' '/nonexistent/b' ['/nonexistent/b']
+'#<:p:h' '/nonexistent/b' ['/nonexistent/b']
+'#<:p:t' '/nonexistent/b' ['/nonexistent/b']
+'#<<:t' '/nonexistent/b' ['/nonexistent/b']
+'#<:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#<xyz' '/nonexistent/b' ['/nonexistent/b']
+'#<:z' '/nonexistent/b' ['/nonexistent/b']
+'#<:e:e' '/nonexistent/b' ['/nonexistent/b']
+'#<:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#<:h:h:h' '/nonexistent/b' ['/nonexistent/b']
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##:p:h' '' []
+'##:p:t' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:p:r' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '/nonexistent/b' ['/nonexistent/b']
+'#<0<' '/nonexistent/b' ['/nonexistent/b']
+'#<0:p' '/nonexistent/b' ['/nonexistent/b']
+'#<0:t' '/nonexistent/b' ['/nonexistent/b']
+'#<0:h' '/nonexistent/b' ['/nonexistent/b']
+'#<0:r' '/nonexistent/b' ['/nonexistent/b']
+'#<0:e' '/nonexistent/b' ['/nonexistent/b']
+'#<0:t:r' '/nonexistent/b' ['/nonexistent/b']
+'#<0:p:h' '/nonexistent/b' ['/nonexistent/b']
+'#<0:p:t' '/nonexistent/b' ['/nonexistent/b']
+'#<0<:t' '/nonexistent/b' ['/nonexistent/b']
+'#<0:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#<0xyz' '/nonexistent/b' ['/nonexistent/b']
+'#<0:z' '/nonexistent/b' ['/nonexistent/b']
+'#<0:e:e' '/nonexistent/b' ['/nonexistent/b']
+'#<0:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#<0:h:h:h' '/nonexistent/b' ['/nonexistent/b']
+"---
+
+'#a' '/nonexistent/b' ['/nonexistent/b']
+'#a<' '/nonexistent/b' ['/nonexistent/b']
+'#a:p' '/nonexistent/b' ['/nonexistent/b']
+'#a:t' '/nonexistent/b' ['/nonexistent/b']
+'#a:h' '/nonexistent/b' ['/nonexistent/b']
+'#a:r' '/nonexistent/b' ['/nonexistent/b']
+'#a:e' '/nonexistent/b' ['/nonexistent/b']
+'#a:t:r' '/nonexistent/b' ['/nonexistent/b']
+'#a:p:h' '/nonexistent/b' ['/nonexistent/b']
+'#a:p:t' '/nonexistent/b' ['/nonexistent/b']
+'#a<:t' '/nonexistent/b' ['/nonexistent/b']
+'#a:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#axyz' '/nonexistent/b' ['/nonexistent/b']
+'#a:z' '/nonexistent/b' ['/nonexistent/b']
+'#a:e:e' '/nonexistent/b' ['/nonexistent/b']
+'#a:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#a:h:h:h' '/nonexistent/b' ['/nonexistent/b']
+"---
+
+'#9999999999999999999' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999<' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:p' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:t' 'b' ['b']
+'#9999999999999999999:h' '/nonexistent' ['/nonexistent']
+'#9999999999999999999:r' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:e' '' []
+'#9999999999999999999:t:r' 'b' ['b']
+'#9999999999999999999:p:h' '/nonexistent' ['/nonexistent']
+'#9999999999999999999:p:t' 'b' ['b']
+'#9999999999999999999<:t' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:s?a?X?' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999xyz' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:z' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:e:e' '' []
+'#9999999999999999999:p:r' '/nonexistent/b' ['/nonexistent/b']
+'#9999999999999999999:h:h:h' '/' ['/']
+"---
+
+'%' '' []
+'%<' '' []
+'%:p' '' []
+'%:t' '' []
+'%:h' '' []
+'%:r' '' []
+'%:e' '' []
+'%:t:r' '' []
+'%<:t' '' []
+'%:s?a?X?' '' []
+'%xyz' '' []
+'%:z' '' []
+'%:e:e' '' []
+'%:h:h:h' '' []
+"---
+
+'#' '/nonexistent/a' ['/nonexistent/a']
+'#<' '/nonexistent/a' ['/nonexistent/a']
+'#:p' '/nonexistent/a' ['/nonexistent/a']
+'#:t' 'a' ['a']
+'#:h' '/nonexistent' ['/nonexistent']
+'#:r' '/nonexistent/a' ['/nonexistent/a']
+'#:e' '' []
+'#:t:r' 'a' ['a']
+'#<:t' '/nonexistent/a' ['/nonexistent/a']
+'#:s?a?X?' '/nonexistent/X' ['/nonexistent/X']
+'#xyz' '/nonexistent/a' ['/nonexistent/a']
+'#:z' '/nonexistent/a' ['/nonexistent/a']
+'#:e:e' '' []
+'#:h:h:h' '/' ['/']
+"---
+
+'#1' '/nonexistent/a' ['/nonexistent/a']
+'#1<' '/nonexistent/a' ['/nonexistent/a']
+'#1:p' '/nonexistent/a' ['/nonexistent/a']
+'#1:t' 'a' ['a']
+'#1:h' '/nonexistent' ['/nonexistent']
+'#1:r' '/nonexistent/a' ['/nonexistent/a']
+'#1:e' '' []
+'#1:t:r' 'a' ['a']
+'#1<:t' '/nonexistent/a' ['/nonexistent/a']
+'#1:s?a?X?' '/nonexistent/X' ['/nonexistent/X']
+'#1xyz' '/nonexistent/a' ['/nonexistent/a']
+'#1:z' '/nonexistent/a' ['/nonexistent/a']
+'#1:e:e' '' []
+'#1:h:h:h' '/' ['/']
+"---
+
+'#2' '' []
+'#2<' '' []
+'#2:p' '' []
+'#2:t' '' []
+'#2:h' '' []
+'#2:r' '' []
+'#2:e' '' []
+'#2:t:r' '' []
+'#2<:t' '' []
+'#2:s?a?X?' '' []
+'#2xyz' '' []
+'#2:z' '' []
+'#2:e:e' '' []
+'#2:h:h:h' '' []
+"---
+
+'#3' '' []
+'#3<' '' []
+'#3:p' '' []
+'#3:t' '' []
+'#3:h' '' []
+'#3:r' '' []
+'#3:e' '' []
+'#3:t:r' '' []
+'#3<:t' '' []
+'#3:s?a?X?' '' []
+'#3xyz' '' []
+'#3:z' '' []
+'#3:e:e' '' []
+'#3:h:h:h' '' []
+"---
+
+'#0' '/nonexistent/a' ['/nonexistent/a']
+'#0<' '/nonexistent/a' ['/nonexistent/a']
+'#0:p' '/nonexistent/a' ['/nonexistent/a']
+'#0:t' 'a' ['a']
+'#0:h' '/nonexistent' ['/nonexistent']
+'#0:r' '/nonexistent/a' ['/nonexistent/a']
+'#0:e' '' []
+'#0:t:r' 'a' ['a']
+'#0<:t' '/nonexistent/a' ['/nonexistent/a']
+'#0:s?a?X?' '/nonexistent/X' ['/nonexistent/X']
+'#0xyz' '/nonexistent/a' ['/nonexistent/a']
+'#0:z' '/nonexistent/a' ['/nonexistent/a']
+'#0:e:e' '' []
+'#0:h:h:h' '/' ['/']
+"---
+
+'#-1' '' []
+'#-1<' '' []
+'#-1:p' '' []
+'#-1:t' '' []
+'#-1:h' '' []
+'#-1:r' '' []
+'#-1:e' '' []
+'#-1:t:r' '' []
+'#-1<:t' '' []
+'#-1:s?a?X?' '' []
+'#-1xyz' '' []
+'#-1:z' '' []
+'#-1:e:e' '' []
+'#-1:h:h:h' '' []
+"---
+
+'#<1' '' []
+'#<1<' '' []
+'#<1:p' '' []
+'#<1:t' '' []
+'#<1:h' '' []
+'#<1:r' '' []
+'#<1:e' '' []
+'#<1:t:r' '' []
+'#<1<:t' '' []
+'#<1:s?a?X?' '' []
+'#<1xyz' '' []
+'#<1:z' '' []
+'#<1:e:e' '' []
+'#<1:h:h:h' '' []
+"---
+
+'#<' '/nonexistent/a' ['/nonexistent/a']
+'#<<' '/nonexistent/a' ['/nonexistent/a']
+'#<:p' '/nonexistent/a' ['/nonexistent/a']
+'#<:t' '/nonexistent/a' ['/nonexistent/a']
+'#<:h' '/nonexistent/a' ['/nonexistent/a']
+'#<:r' '/nonexistent/a' ['/nonexistent/a']
+'#<:e' '/nonexistent/a' ['/nonexistent/a']
+'#<:t:r' '/nonexistent/a' ['/nonexistent/a']
+'#<<:t' '/nonexistent/a' ['/nonexistent/a']
+'#<:s?a?X?' '/nonexistent/a' ['/nonexistent/a']
+'#<xyz' '/nonexistent/a' ['/nonexistent/a']
+'#<:z' '/nonexistent/a' ['/nonexistent/a']
+'#<:e:e' '/nonexistent/a' ['/nonexistent/a']
+'#<:h:h:h' '/nonexistent/a' ['/nonexistent/a']
+"---
+
+'##' '' []
+'##<' '' []
+'##:p' '' []
+'##:t' '' []
+'##:h' '' []
+'##:r' '' []
+'##:e' '' []
+'##:t:r' '' []
+'##<:t' '' []
+'##:s?a?X?' '' []
+'##xyz' '' []
+'##:z' '' []
+'##:e:e' '' []
+'##:h:h:h' '' []
+"---
+
+'#<0' '/nonexistent/a' ['/nonexistent/a']
+'#<0<' '/nonexistent/a' ['/nonexistent/a']
+'#<0:p' '/nonexistent/a' ['/nonexistent/a']
+'#<0:t' '/nonexistent/a' ['/nonexistent/a']
+'#<0:h' '/nonexistent/a' ['/nonexistent/a']
+'#<0:r' '/nonexistent/a' ['/nonexistent/a']
+'#<0:e' '/nonexistent/a' ['/nonexistent/a']
+'#<0:t:r' '/nonexistent/a' ['/nonexistent/a']
+'#<0<:t' '/nonexistent/a' ['/nonexistent/a']
+'#<0:s?a?X?' '/nonexistent/a' ['/nonexistent/a']
+'#<0xyz' '/nonexistent/a' ['/nonexistent/a']
+'#<0:z' '/nonexistent/a' ['/nonexistent/a']
+'#<0:e:e' '/nonexistent/a' ['/nonexistent/a']
+'#<0:h:h:h' '/nonexistent/a' ['/nonexistent/a']
+"---
+
+'#a' '/nonexistent/a' ['/nonexistent/a']
+'#a<' '/nonexistent/a' ['/nonexistent/a']
+'#a:p' '/nonexistent/a' ['/nonexistent/a']
+'#a:t' '/nonexistent/a' ['/nonexistent/a']
+'#a:h' '/nonexistent/a' ['/nonexistent/a']
+'#a:r' '/nonexistent/a' ['/nonexistent/a']
+'#a:e' '/nonexistent/a' ['/nonexistent/a']
+'#a:t:r' '/nonexistent/a' ['/nonexistent/a']
+'#a<:t' '/nonexistent/a' ['/nonexistent/a']
+'#a:s?a?X?' '/nonexistent/a' ['/nonexistent/a']
+'#axyz' '/nonexistent/a' ['/nonexistent/a']
+'#a:z' '/nonexistent/a' ['/nonexistent/a']
+'#a:e:e' '/nonexistent/a' ['/nonexistent/a']
+'#a:h:h:h' '/nonexistent/a' ['/nonexistent/a']
+"---
+
+'#9999999999999999999' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999<' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:p' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:t' 'a' ['a']
+'#9999999999999999999:h' '/nonexistent' ['/nonexistent']
+'#9999999999999999999:r' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:e' '' []
+'#9999999999999999999:t:r' 'a' ['a']
+'#9999999999999999999<:t' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:s?a?X?' '/nonexistent/X' ['/nonexistent/X']
+'#9999999999999999999xyz' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:z' '/nonexistent/a' ['/nonexistent/a']
+'#9999999999999999999:e:e' '' []
+'#9999999999999999999:h:h:h' '/' ['/']
+"---
+
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    1:
+E194: No alternate file name to substitute for '#': e #
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    1:
+E499: Empty file name for '%' or '#', only works with ":p:h": e %
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+Error in {file}:
+line    1:
+E499: Empty file name for '%' or '#', only works with ":p:h": e %:h
+
+  1 %a   "[No Name]"                    line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+"---
+
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/x"               line 1
+"---
+
+
+  1 #h   "/nonexistent/a/b.c"           line 1
+  2 %a   "/nonexistent/a/b"             line 1
+"---
+
+
+  1 #h   "/nonexistent/a/b.c"           line 1
+  2 %a   "/nonexistent/a/b.d"           line 1
+"---
+
+
+  1 #h   "/nonexistent/a/b.c"           line 1
+  2 %a   "/nonexistent/a/b.d"           line 1
+"---
+
+
+  1 %a   "/nonexistent/a/b.c"           line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E194: No alternate file name to substitute for '#': e #3
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E500: Evaluates to an empty string: e ##
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "#"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "%"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "x#y"                          line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "x/nonexistent/ay"             line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "x/nonexistent/by"             line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/ax"              line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/b/nonexistent/b" line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/b/nonexistent/a" line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.x"             line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "a"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent"                 line 1
+"---
+
+Error in {file}:
+line    3:
+E348: No string under cursor
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E496: No autocommand buffer number to substitute for "<abuf>": e <abuf>
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E495: No autocommand file name to substitute for "<afile>": e <afile>
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E497: No autocommand match name to substitute for "<amatch>": e <amatch>
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "{file}" line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "3"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "3"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "{file}[3]" line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "{file}" line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "<SNR>1_"                      line 1
+"---
+
+Error in {file}:
+line    3:
+E446: No file name under cursor
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E348: No string under cursor
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E348: No string under cursor
+
+  1 #h   "/nonexistent/a"               line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "<foo>"                        line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "<"                            line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "a<b"                          line 1
+"---
+
+
+2 /nonexistent/a /nonexistent/b
+"---
+
+
+2 /nonexistent/b /nonexistent/a
+"---
+
+
+2 /nonexistent/a /nonexistent/b
+"---
+
+
+2 /nonexistent/a /nonexistent/b
+"---
+
+
+2 /nonexistent/a /nonexistent/b
+"---
+
+
+2 /nonexistent/a /nonexistent/a
+"---
+
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+/nonexistent/a b
+
+
+  1 %a   "/nonexistent/a b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    1:
+E194: No alternate file name to substitute for '#': e /nonexistent/a#b
+
+  1 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    1:
+E499: Empty file name for '%' or '#', only works with ":p:h": e /nonexistent/a%b
+
+  1 %a   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/"                line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/~x"              line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/日本語"          line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/c"               line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent"                 line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a:z"             line 1
+"---
+
+
+  1  h   "/nonexistent/a"               line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a:p"             line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a<"              line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.c"             line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a"               line 1
+"---
+
+Error in {file}:
+line    3:
+E684: List index out of range: 0
+
+  1 #h   "/nonexistent/a.b"             line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+Error in {file}:
+line    3:
+E684: List index out of range: 1
+
+  1 #h   "/nonexistent/a.b"             line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.b-"            line 1
+"---
+
+Error in {file}:
+line    3:
+E194: No alternate file name to substitute for '#': e #-1
+
+  1 #h   "/nonexistent/a.b"             line 1
+  2 %a   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.b--1"          line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.bx"            line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+
+  1 %a   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "/nonexistent/a.b /nonexistent/a.b" line 1
+"---
+
+
+  1  h   "/nonexistent/a.b"             line 1
+  2 #h   "/nonexistent/b"               line 1
+  3 %a   "x/nonexistent/a.b /nonexistent/a.b" line 1
+"---
+
+{file}
+2
+3
+{file}[4]
+{file}
+<SNR>1_
+"---
+
+case.vim
+case.vim
+case.vim
+"---
+
+{file}[6]..function F
+2
+case.vim[6]..function F[3]
+"---
+
+{file}[4]..function F
+{file}[5]..function F{file}[5]..function F
+"---
+
+{file}[7]..function F[1]..G
+"---
+
+case.vim
+0
+"---
+
+
+
+
+
+
+"---
+
+['{file}']
+[]
+[]
+
+
+Error in {file}:
+line    6:
+E730: Using a List as a String
+
+1
+
+v:null
+"---
+
+1
+1
+1
+$NOSUCHVAR_X
+foo
+foo bar
+/nonexistent/x
+1
+['/nonexistent/x']
+"---
+
+a/b.txt
+a/b.txt
+c
+a
+a/b.txt
+a
+"---
+
+[1, 'foo', 'foo.bar', 'foo', 'foo.bar']
+[2, 'foo', 'foo.bar', 'foo', 'foo.bar']
+[3, 'foo', 'foo.bar', 'foo', 'foo.bar']
+[4, 'bar', 'foo.bar', 'foo.bar', 'foo.bar']
+[5, 'bar', 'foo.bar', 'foo.bar', 'foo.bar']
+[6, 'bar', 'foo.bar', 'foo.bar', 'foo.bar']
+[7, 'bar', 'foo.bar', 'foo.bar', 'foo.bar']
+[8, 'baz', 'baz', 'baz', 'baz']
+[9, 'baz', 'baz', 'baz', 'baz']
+[10, 'baz', 'baz', 'baz', 'baz']
+[11, 'baz', 'baz', 'baz', 'baz']
+"---
+
+[1, 'a', 'a->b[1].c', 'a', 'a-']
+[2, 'b', 'a->b[1].c', 'a->b', 'a-']
+[3, 'b', 'a->b[1].c', 'a->b', 'b']
+[4, 'b', 'a->b[1].c', 'a->b', 'b']
+[5, '1', 'a->b[1].c', '1', '1']
+[6, '1', 'a->b[1].c', '1', '1']
+[7, 'c', 'a->b[1].c', 'a->b[1]', '.c']
+[8, 'c', 'a->b[1].c', 'a->b[1].c', '.c']
+[9, 'c', 'a->b[1].c', 'a->b[1].c', '.c']
+[10, 'd', 'd', 'd', 'd']
+[11, 'd', 'd', 'd', 'd']
+"---
+
+[1, 'x', 'x', 'x', 'x']
+[2, 'y', '=', 'y', '=']
+[3, 'y', '=', 'y', '=']
+[4, 'y', 'y[i]->z;', 'y', 'y']
+[5, 'y', 'y[i]->z;', 'y', 'y']
+[6, 'i', 'y[i]->z;', 'i', 'i']
+[7, 'i', 'y[i]->z;', 'i', 'i']
+[8, 'z', 'y[i]->z;', 'y[i]', '-']
+[9, 'z', 'y[i]->z;', 'y[i]->z', '-']
+[10, 'z', 'y[i]->z;', 'y[i]->z', 'z']
+[11, 'z', 'y[i]->z;', 'y[i]->z', 'z']
+[12, ';', 'y[i]->z;', ';', '']
+"---
+
+[1, '日本語', '日本語', '日本語', '日本語']
+[2, '日本語', '日本語', '日本語', '日本語']
+[3, '日本語', '日本語', '日本語', '日本語']
+[4, '日本語', '日本語', '日本語', '日本語']
+[5, '日本語', '日本語', '日本語', '日本語']
+[6, 'abc', 'abc', 'abc', 'abc']
+[7, 'abc', 'abc', 'abc', 'abc']
+[8, 'abc', 'abc', 'abc', 'abc']
+[9, 'abc', 'abc', 'abc', 'abc']
+"---
+
+[1, 'file', 'file.txt:12', 'file', 'file.txt']
+[2, 'file', 'file.txt:12', 'file', 'file.txt']
+[3, 'file', 'file.txt:12', 'file', 'file.txt']
+[4, 'file', 'file.txt:12', 'file', 'file.txt']
+[5, 'txt', 'file.txt:12', 'file.txt', 'file.txt']
+[6, 'txt', 'file.txt:12', 'file.txt', 'file.txt']
+[7, 'txt', 'file.txt:12', 'file.txt', 'file.txt']
+[8, 'txt', 'file.txt:12', 'file.txt', 'file.txt']
+[9, '12', 'file.txt:12', '12', '12']
+[10, '12', 'file.txt:12', '12', '12']
+[11, '12', 'file.txt:12', '12', '12']
+[12, 'and', 'and', 'and', 'and']
+[13, 'and', 'and', 'and', 'and']
+[14, 'and', 'and', 'and', 'and']
+[15, 'and', 'and', 'and', 'and']
+[16, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[17, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[18, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[19, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[20, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[21, 'path', '(path/to/f.c)', 'path', 'path/to/f.c']
+[22, 'to', '(path/to/f.c)', 'to', 'path/to/f.c']
+[23, 'to', '(path/to/f.c)', 'to', 'path/to/f.c']
+[24, 'to', '(path/to/f.c)', 'to', 'path/to/f.c']
+[25, 'f', '(path/to/f.c)', 'f', 'path/to/f.c']
+[26, 'f', '(path/to/f.c)', 'f', 'path/to/f.c']
+[27, 'c', '(path/to/f.c)', 'f.c', 'path/to/f.c']
+[28, 'c', '(path/to/f.c)', 'f.c', 'path/to/f.c']
+[29, ')', '(path/to/f.c)', ')', '']
+"---
+
+[1, 'http', 'http://example.com:80/x?y=1&z=2', 'http', 'http://example.com:80/x?y=1&z=2']
+[2, 'http', 'http://example.com:80/x?y=1&z=2', 'http', 'http://example.com:80/x?y=1&z=2']
+[3, 'http', 'http://example.com:80/x?y=1&z=2', 'http', 'http://example.com:80/x?y=1&z=2']
+[4, 'http', 'http://example.com:80/x?y=1&z=2', 'http', 'http://example.com:80/x?y=1&z=2']
+[5, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[6, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[7, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[8, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[9, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[10, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[11, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[12, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[13, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[14, 'example', 'http://example.com:80/x?y=1&z=2', 'example', 'http://example.com:80/x?y=1&z=2']
+[15, 'com', 'http://example.com:80/x?y=1&z=2', 'example.com', 'http://example.com:80/x?y=1&z=2']
+[16, 'com', 'http://example.com:80/x?y=1&z=2', 'example.com', 'http://example.com:80/x?y=1&z=2']
+[17, 'com', 'http://example.com:80/x?y=1&z=2', 'example.com', 'http://example.com:80/x?y=1&z=2']
+[18, 'com', 'http://example.com:80/x?y=1&z=2', 'example.com', 'http://example.com:80/x?y=1&z=2']
+[19, '80', 'http://example.com:80/x?y=1&z=2', '80', '80/x']
+[20, '80', 'http://example.com:80/x?y=1&z=2', '80', '80/x']
+[21, '80', 'http://example.com:80/x?y=1&z=2', '80', '80/x']
+[22, 'x', 'http://example.com:80/x?y=1&z=2', 'x', '80/x']
+[23, 'x', 'http://example.com:80/x?y=1&z=2', 'x', '80/x']
+[24, 'y', 'http://example.com:80/x?y=1&z=2', 'y', 'y=1']
+[25, 'y', 'http://example.com:80/x?y=1&z=2', 'y', 'y=1']
+[26, '1', 'http://example.com:80/x?y=1&z=2', '1', 'y=1']
+[27, '1', 'http://example.com:80/x?y=1&z=2', '1', 'y=1']
+[28, 'z', 'http://example.com:80/x?y=1&z=2', 'z', 'z=2']
+[29, 'z', 'http://example.com:80/x?y=1&z=2', 'z', 'z=2']
+[30, '2', 'http://example.com:80/x?y=1&z=2', '2', 'z=2']
+[31, '2', 'http://example.com:80/x?y=1&z=2', '2', 'z=2']
+[32, 'end', 'end', 'end', 'end']
+[33, 'end', 'end', 'end', 'end']
+[34, 'end', 'end', 'end', 'end']
+[35, 'end', 'end', 'end', 'end']
+"---
+
+[1, 'see', 'see', 'see', 'see']
+[2, 'see', 'see', 'see', 'see']
+[3, 'see', 'see', 'see', 'see']
+[4, 'x', '"~/x/y.z",', 'x', '~/x/y.z']
+[5, 'x', '"~/x/y.z",', 'x', '~/x/y.z']
+[6, 'x', '"~/x/y.z",', 'x', '~/x/y.z']
+[7, 'x', '"~/x/y.z",', 'x', '~/x/y.z']
+[8, 'x', '"~/x/y.z",', 'x', '~/x/y.z']
+[9, 'y', '"~/x/y.z",', 'y', '~/x/y.z']
+[10, 'y', '"~/x/y.z",', 'y', '~/x/y.z']
+[11, 'z', '"~/x/y.z",', 'y.z', '~/x/y.z']
+[12, 'z', '"~/x/y.z",', 'y.z', '~/x/y.z']
+[13, 'ok', '"~/x/y.z",', 'ok', ',']
+[14, 'ok', '"~/x/y.z",', 'ok', ',']
+[15, 'ok', 'ok', 'ok', 'ok']
+[16, 'ok', 'ok', 'ok', 'ok']
+[17, 'ok', 'ok', 'ok', 'ok']
+"---
+
+[1, 'file', 'file:///tmp/x', 'file', 'file:///tmp/x']
+[2, 'file', 'file:///tmp/x', 'file', 'file:///tmp/x']
+[3, 'file', 'file:///tmp/x', 'file', 'file:///tmp/x']
+[4, 'file', 'file:///tmp/x', 'file', 'file:///tmp/x']
+[5, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[6, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[7, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[8, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[9, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[10, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[11, 'tmp', 'file:///tmp/x', 'tmp', 'file:///tmp/x']
+[12, 'x', 'file:///tmp/x', 'x', 'file:///tmp/x']
+[13, 'x', 'file:///tmp/x', 'x', 'file:///tmp/x']
+[14, 'y', 'y', 'y', 'y']
+[15, 'y', 'y', 'y', 'y']
+"---
+
+[1, 'C', 'C:\dir\f.c', 'C', 'C:']
+[2, 'dir', 'C:\dir\f.c', 'dir', 'dir']
+[3, 'dir', 'C:\dir\f.c', 'dir', 'dir']
+[4, 'dir', 'C:\dir\f.c', 'dir', 'dir']
+[5, 'dir', 'C:\dir\f.c', 'dir', 'dir']
+[6, 'dir', 'C:\dir\f.c', 'dir', 'dir']
+[7, 'f', 'C:\dir\f.c', 'f', 'f.c']
+[8, 'f', 'C:\dir\f.c', 'f', 'f.c']
+[9, 'c', 'C:\dir\f.c', 'f.c', 'f.c']
+[10, 'c', 'C:\dir\f.c', 'f.c', 'f.c']
+[11, 'x', 'x', 'x', 'x']
+[12, 'x', 'x', 'x', 'x']
+"---
+
+[1, 'a', 'a\', 'a', 'a\ b']
+[2, 'b', 'a\', 'b', 'b']
+[3, 'b', 'b', 'b', 'b']
+[4, 'b', 'b', 'b', 'b']
+[5, 'c', 'c', 'c', 'c']
+[6, 'c', 'c', 'c', 'c']
+"---
+
+[1, '..', '..', '..', '..']
+[2, '..', '..', '..', '..']
+"---
+
+[1, 'x', '...x', '..', '...x']
+[2, 'x', '...x', '..', '...x']
+[3, 'x', '...x', '..', '...x']
+[4, 'x', '...x', '..', '...x']
+"---
+
+[1, 'x', 'x..', 'x', 'x..']
+[2, '..', 'x..', '..', 'x..']
+[3, '..', 'x..', '..', 'x..']
+"---
+
+[1, 'a', '[a]', 'a', 'a']
+[2, 'a', '[a]', 'a', 'a']
+[3, ']', '[a]', 'a', '']
+"---
+
+[1, 'a', 'a]', 'a', 'a']
+[2, ']', 'a]', 'a', '']
+"---
+
+[1, '(((', '(((', '(((', '']
+[2, '(((', '(((', '(((', '']
+[3, '(((', '(((', '(((', '']
+"---
+
+[1, 'a', 'a.b.c.d', 'a', 'a.b.c.d']
+[2, 'b', 'a.b.c.d', 'a.b', 'a.b.c.d']
+[3, 'b', 'a.b.c.d', 'a.b', 'a.b.c.d']
+[4, 'c', 'a.b.c.d', 'a.b.c', 'a.b.c.d']
+[5, 'c', 'a.b.c.d', 'a.b.c', 'a.b.c.d']
+[6, 'd', 'a.b.c.d', 'a.b.c.d', 'a.b.c.d']
+[7, 'd', 'a.b.c.d', 'a.b.c.d', 'a.b.c.d']
+"---
+
+[1, 'é', 'é/ü.txt', 'é', 'é/ü.txt']
+[2, 'ü', 'é/ü.txt', 'ü', 'é/ü.txt']
+[3, 'ü', 'é/ü.txt', 'ü', 'é/ü.txt']
+[4, 'txt', 'é/ü.txt', 'ü.txt', 'é/ü.txt']
+[5, 'txt', 'é/ü.txt', 'ü.txt', 'é/ü.txt']
+[6, 'txt', 'é/ü.txt', 'ü.txt', 'é/ü.txt']
+[7, 'txt', 'é/ü.txt', 'ü.txt', 'é/ü.txt']
+"---
+
+[1, '!?;', '!?;', '!?;', '']
+[2, '!?;', '!?;', '!?;', '']
+[3, '!?;', '!?;', '!?;', '']
+"---
+
+[1, 'x', '.,;:x,.', 'x', '.,']
+[2, 'x', '.,;:x,.', 'x', '.,']
+[3, 'x', '.,;:x,.', 'x', 'x,']
+[4, 'x', '.,;:x,.', 'x', 'x,']
+[5, 'x', '.,;:x,.', 'x', 'x,']
+[6, ',.', '.,;:x,.', ',.', 'x,']
+[7, ',.', '.,;:x,.', ',.', 'x,']
+"---
+
+[1, 'tmp', 'tmp/x.y.', 'tmp', 'tmp/x.y']
+[2, 'tmp', 'tmp/x.y.', 'tmp', 'tmp/x.y']
+[3, 'tmp', 'tmp/x.y.', 'tmp', 'tmp/x.y']
+[4, 'x', 'tmp/x.y.', 'x', 'tmp/x.y']
+[5, 'x', 'tmp/x.y.', 'x', 'tmp/x.y']
+[6, 'y', 'tmp/x.y.', 'x.y', 'tmp/x.y']
+[7, 'y', 'tmp/x.y.', 'x.y', 'tmp/x.y']
+[8, '.', 'tmp/x.y.', '.', 'tmp/x.y']
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "/nonexistent/x1"              line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "nonexistent"                  line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "/nonexistent/x1"              line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "x1"                           line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "ab"                           line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "ab"                           line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "ab"                           line 1
+"---
+
+
+  1 #h + "[No Name]"                    line 1
+  2 %a   "cd"                           line 1

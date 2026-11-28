@@ -1,0 +1,340 @@
+NVIM v0.12.6
+
+1 1 1 3 1 1 1 1
+['X', 'beta', 'gamma']
+1 change; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+1 1
+"---
+
+2 2 1 3 1 1 1 1
+['X', 'beta', 'gamma']
+1 change; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+1 1
+"---
+
+3 5 1 3 1 1 1 1
+['X', 'beta', 'gamma']
+1 change; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+1 1
+"---
+
+3
+[0, 3, 5, 0]
+"---
+
+
+2 1 ['X', 'beta', 'gamma']
+1 change; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 3 1 1 1
+['alpha', 'beta', 'X']
+1 change; before #1  0 seconds ago
+3 1 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+3 1
+"---
+
+2 2 1 3 3 1 1 1
+['alpha', 'beta', 'X']
+1 change; before #1  0 seconds ago
+3 2 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+3 1
+"---
+
+3 1 1 3 3 1 1 1
+['alpha', 'beta', 'X']
+1 change; before #1  0 seconds ago
+3 1 ['alpha', 'beta', 'gamma']
+1 change; after #1  0 seconds ago
+3 1
+"---
+
+3
+[0, 3, 1, 0]
+"---
+
+
+2 1 ['alpha', 'beta', 'X']
+1 change; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 0 0 0 0
+['alpha', 'beta', 'gamma']
+Already at oldest change
+1 1 ['alpha', 'beta', 'gamma']
+Already at newest change
+1 1
+"---
+
+2 2 1 3 0 0 0 0
+['alpha', 'beta', 'gamma']
+Already at oldest change
+2 2 ['alpha', 'beta', 'gamma']
+Already at newest change
+2 2
+"---
+
+3 5 1 3 0 0 0 0
+['alpha', 'beta', 'gamma']
+Already at oldest change
+3 5 ['alpha', 'beta', 'gamma']
+Already at newest change
+3 5
+"---
+
+3
+[0, 3, 5, 0]
+"---
+
+
+2 1 ['alpha', 'beta', 'gamma']
+Already at oldest change
+2
+"---
+
+1 1 1 3 1 1 1 1
+['X', 'alpha', 'beta', 'gamma']
+1 line less; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+1 1
+"---
+
+3 2 1 3 1 1 1 1
+['X', 'alpha', 'beta', 'gamma']
+1 line less; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+1 1
+"---
+
+4 5 1 3 1 1 1 1
+['X', 'alpha', 'beta', 'gamma']
+1 line less; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+1 1
+"---
+
+4
+[0, 4, 5, 0]
+"---
+
+
+3 1 ['X', 'alpha', 'beta', 'gamma']
+1 line less; before #1  0 seconds ago
+1
+"---
+
+1 1 1 3 2 1 1 1
+['alpha', 'x', 'y', 'beta', 'gamma']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+4 2 1 3 2 1 1 1
+['alpha', 'x', 'y', 'beta', 'gamma']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 5 1 3 2 1 1 1
+['alpha', 'x', 'y', 'beta', 'gamma']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5
+[0, 5, 5, 0]
+"---
+
+
+4 1 ['alpha', 'x', 'y', 'beta', 'gamma']
+2 fewer lines; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 4 1 1 1
+['alpha', 'beta', 'gamma', 'Z']
+1 line less; before #1  0 seconds ago
+3 1 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+4 1
+"---
+
+2 2 1 3 4 1 1 1
+['alpha', 'beta', 'gamma', 'Z']
+1 line less; before #1  0 seconds ago
+3 2 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+4 1
+"---
+
+3 5 1 3 4 1 1 1
+['alpha', 'beta', 'gamma', 'Z']
+1 line less; before #1  0 seconds ago
+3 5 ['alpha', 'beta', 'gamma']
+1 more line; after #1  0 seconds ago
+4 1
+"---
+
+3
+[0, 3, 5, 0]
+"---
+
+
+2 1 ['alpha', 'beta', 'gamma', 'Z']
+1 line less; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 1 1 1 1
+['beta', 'gamma']
+1 more line; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 line less; after #1  0 seconds ago
+1 1
+"---
+
+1 2 1 3 1 1 1 1
+['beta', 'gamma']
+1 more line; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 line less; after #1  0 seconds ago
+1 1
+"---
+
+2 5 1 3 1 1 1 1
+['beta', 'gamma']
+1 more line; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+1 line less; after #1  0 seconds ago
+1 1
+"---
+
+2
+[0, 2, 5, 0]
+"---
+
+
+1 1 ['beta', 'gamma']
+1 more line; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 2 1 1 1
+['alpha']
+2 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1 1 1 3 2 1 1 1
+['alpha']
+2 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1 1 1 3 2 1 1 1
+['alpha']
+2 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1
+[0, 1, 1, 0]
+"---
+
+
+1 1 ['alpha']
+2 more lines; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 1 1 1 1
+['']
+3 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+3 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1 1 1 3 1 1 1 1
+['']
+3 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+3 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1 1 1 3 1 1 1 1
+['']
+3 more lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+3 fewer lines; after #1  0 seconds ago
+1 1
+"---
+
+1
+[0, 1, 1, 0]
+"---
+
+
+1 1 ['']
+3 more lines; before #1  0 seconds ago
+2
+"---
+
+1 1 1 3 4 1 1 1
+['a', 'b', 'c', 'd', 'e']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+2 1 1 3 4 1 1 1
+['a', 'b', 'c', 'd', 'e']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 1 1 3 4 1 1 1
+['a', 'b', 'c', 'd', 'e']
+2 fewer lines; before #1  0 seconds ago
+1 1 ['alpha', 'beta', 'gamma']
+2 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3
+[0, 3, 1, 0]
+"---
+
+
+2 1 ['a', 'b', 'c', 'd', 'e']
+2 fewer lines; before #1  0 seconds ago
+2

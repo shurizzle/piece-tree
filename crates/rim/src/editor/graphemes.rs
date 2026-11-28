@@ -29,14 +29,18 @@ use super::render::cell_width;
 fn complex(c0: u8, c1: u8, c2: u8) -> bool {
     // Bitwise only, no branches, so `run_end` vectorizes it.
     let r = |c: u8, lo: u8, hi: u8| c.wrapping_sub(lo) <= hi - lo;
-    let e2 = (c1 == 0x80) & ((c2 == 0x8C) | (c2 == 0x8D))
+    // Not displayed as they are (`transchar`): the controls, U+0080-U+009F, U+200B-U+200F, U+202A-U+202E, U+2060-U+206F.
+    let e2 = (c1 == 0x80) & ((c2 == 0x8C) | (c2 == 0x8D) | r(c2, 0x8B, 0x8F) | r(c2, 0xAA, 0xAE))
+        | (c1 == 0x81) & r(c2, 0xA0, 0xAF)
         | (c1 == 0x83) & (c2 >= 0x90)
         | (c1 == 0xB3) & r(c2, 0xAF, 0xB1)
         | (c1 == 0xB5) & (c2 == 0xBF)
         | (c1 == 0xB7) & (c2 >= 0xA0);
     let e3 = (c1 == 0x80) & r(c2, 0xAA, 0xAF) | (c1 == 0x82) & r(c2, 0x99, 0x9A);
     let ef_simple = r(c1, 0xA4, 0xAB) | (c1 == 0xBC) & (c2 >= 0x81) | (c1 == 0xBD) | (c1 == 0xBE) & !r(c2, 0x9E, 0x9F) | (c1 == 0xBF) & (c2 <= 0xAF);
-    (c0 == b'\r')
+    ((c0 < 0x20) & (c0 != b'\t'))
+        | (c0 == 0x7f)
+        | (c0 == 0xC2) & (c1 < 0xA0)
         | r(c0, 0xC0, 0xC1)
         | (c0 == 0xCC)
         | (c0 == 0xCD) & (c1 < 0xB0)
@@ -64,8 +68,8 @@ fn simple(b: &[u8], i: usize) -> usize {
 /// Cyrillic, ideographs and Hangul E4–E9, EB, EC never match).
 #[inline(always)]
 fn maybe_lead(c: u8) -> bool {
-    let never = (c.wrapping_sub(0xE4) <= 0x05) | (c == 0xEB) | (c == 0xEC) | (c.wrapping_sub(0xC2) <= 0x09) | (c.wrapping_sub(0xCE) <= 0x03);
-    (c == b'\r') | (c >= 0xC0) & !never
+    let never = (c.wrapping_sub(0xE4) <= 0x05) | (c == 0xEB) | (c == 0xEC) | (c.wrapping_sub(0xC3) <= 0x08) | (c.wrapping_sub(0xCE) <= 0x03);
+    ((c < 0x20) & (c != b'\t')) | (c == 0x7f) | (c >= 0xC0) & !never
 }
 
 /// Tier 2 of `run_end`: a superset of `complex` deciding punctuation and kana (E2, E3) on their
@@ -73,7 +77,7 @@ fn maybe_lead(c: u8) -> bool {
 #[inline(always)]
 fn maybe_char(c: u8, c1: u8, c2: u8) -> bool {
     let e3 = (c == 0xE3) & ((c1 == 0x80) & (c2.wrapping_sub(0xAA) <= 0x05) | (c1 == 0x82) & (c2.wrapping_sub(0x99) <= 0x01));
-    let e2 = (c == 0xE2) & ((c1 == 0x80) | (c1 == 0x83) | (c1 == 0xB3) | (c1 == 0xB5) | (c1 == 0xB7)) & (c2 >= 0x8C);
+    let e2 = (c == 0xE2) & ((c1 == 0x80) & (c2 >= 0x8B) | (c1 == 0x81) & (c2 >= 0xA0) | (c1 == 0x83) & (c2 >= 0x8C) | (c1 == 0xB3) & (c2 >= 0x8C) | (c1 == 0xB5) & (c2 >= 0x8C) | (c1 == 0xB7) & (c2 >= 0x8C));
     maybe_lead(c) & (c.wrapping_sub(0xE2) > 0x01) | e3 | e2
 }
 
@@ -299,6 +303,8 @@ pub(super) fn width(g: &str, ts: usize) -> usize {
     match (it.next(), it.next()) {
         (Some(c), None) => cell_width(c, ts).max(1),
         (None, _) => 0,
+        // A char that is shown as `^A` or `<200b>` takes that many cells; what follows it adds none.
+        (Some(c), Some(_)) if transchar(c).is_some() => cell_width(c, ts),
         _ => g.width().clamp(1, 2),
     }
 }
@@ -418,7 +424,14 @@ pub(super) fn fit(cw: usize, vcol: usize, w: usize) -> (usize, usize) {
 
 /// `(cells, head)` of cluster `g` at virtual column `vcol` (`charsize`): a Tab by its stop, the others by `fit`.
 pub(super) fn size(g: &str, vcol: usize, tabs: Tabs, w: usize) -> (usize, usize) {
-    if g.starts_with('\t') { (tabs.pad(vcol), 0) } else { fit(width(g, tabs.ts), vcol, w) }
+    if g.starts_with('\t') {
+        (tabs.pad(vcol), 0)
+    } else if g.starts_with(|c: char| c.is_ascii_control()) {
+        // `^A` is two ASCII cells: a row may end between them (only a multibyte wide char is moved to the next row).
+        (width(g, tabs.ts), 0)
+    } else {
+        fit(width(g, tabs.ts), vcol, w)
+    }
 }
 
 /// One cluster laid out by `Cells`.
@@ -751,6 +764,30 @@ fn cover(edits: &[Edit]) -> Option<(usize, usize, usize)> {
         (at, old, new) = (lo, old_end - lo, hi + e.new_len - e.old_len - lo);
     }
     Some((at, old, new))
+}
+
+/// `mb_string2cells`: the cells the text takes, a Tab counted as one (the register width of a block).
+pub(super) fn count_cells(s: &str) -> usize {
+    iter(s).map(|g| if g.starts_with(|c: char| c.is_ascii()) { 1 } else { width(g, 1) }).sum()
+}
+
+/// `utf_printable`: whether a char of U+0100 and above is shown as it is.
+fn utf_printable(c: u32) -> bool {
+    !matches!(c, 0x070f | 0x180b..=0x180e | 0x200b..=0x200f | 0x202a..=0x202e | 0x2060..=0x206f | 0xd800..=0xdfff | 0xfeff | 0xfff9..=0xfffb | 0xfffe..=0xffff)
+}
+
+/// `transchar`: how a char that is not shown as it is gets drawn: `^A` for a control, `^?` for DEL, `<80>` for U+0080-U+009F
+/// and `<200b>` for the chars `utf_printable` refuses. Each char of the text is a cell. A Tab is not one of them (`size`).
+pub(super) fn transchar(c: char) -> Option<String> {
+    let n = c as u32;
+    match n {
+        0x09 => None,
+        0..0x20 => Some(format!("^{}", (n as u8 + b'@') as char)),
+        0x7f => Some("^?".into()),
+        0x80..0xa0 => Some(format!("<{n:02x}>")),
+        0x100.. if !utf_printable(n) => Some(format!("<{n:04x}>")),
+        _ => None,
+    }
 }
 
 #[cfg(test)]

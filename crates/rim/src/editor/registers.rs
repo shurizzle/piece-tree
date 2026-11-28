@@ -19,6 +19,22 @@ pub(super) struct Reg {
     pub kind: RegKind,
 }
 
+/// The motion type `setreg()` is given (`kMTUnknown` when it is to be found out).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum YType {
+    Unknown,
+    Char,
+    Line,
+    /// The width less one, or none when the block is as wide as its widest line.
+    Block(Option<usize>),
+}
+
+/// What `setreg()` puts in a register: one String, or the lines of a List.
+pub(super) enum RegSource {
+    Str(String),
+    Lines(Vec<String>),
+}
+
 /// `"` unnamed, `0` last yank, `1`–`9` delete history, `a`–`z` named (`A`–`Z` append), `+`/`*` clipboard.
 #[derive(Default)]
 pub(super) struct Registers {
@@ -27,6 +43,8 @@ pub(super) struct Registers {
     prev: Option<char>,
     /// Text to send to the system clipboard on the next draw.
     pub clipboard: Option<String>,
+    /// `expr_line`: the expression `setreg('=', ..)` set; reading the register evaluates it.
+    pub expr_line: Option<String>,
 }
 
 fn key(name: char) -> char {
@@ -72,8 +90,106 @@ impl Registers {
         }
     }
 
+    /// The lines of register `name` as `y_array` has them, and its type.
+    fn lines_of(&self, key: char) -> Option<(Vec<String>, RegKind)> {
+        let r = self.map.get(&key)?;
+        let body = if r.kind == RegKind::Line { r.text.strip_suffix('\n').unwrap_or(&r.text) } else { &r.text };
+        Some((body.split('\n').map(str::to_string).collect(), r.kind))
+    }
+
+    /// `y_previous` is register `name`: what the unnamed register stands for (`op_reg_set_previous`).
+    pub fn set_previous(&mut self, name: char) {
+        self.prev = Some(if name == '"' { '0' } else { key(name) });
+    }
+
+    /// `str_to_reg` with `write_reg_contents_ex`/`write_reg_contents_lst` around it: `src` goes into register `name`, appended
+    /// when `append` or when the name is uppercase; `yt` is the motion type.
+    pub fn str_to_reg(&mut self, name: char, src: RegSource, yt: YType, append: bool) {
+        let must_append = append || name.is_ascii_uppercase();
+        let target = if name == '"' { '0' } else { key(name) };
+        // `init_write_reg`: a register that is not appended to is freed first.
+        let old = if must_append { self.lines_of(target) } else { None };
+        let (mut lines, old_kind) = old.unwrap_or((Vec::new(), RegKind::Char));
+        let old_size = lines.len();
+        let str_list = matches!(src, RegSource::Lines(_));
+        let ends_nl = match &src {
+            RegSource::Str(t) => t.ends_with(['\n', '\r']),
+            RegSource::Lines(_) => false,
+        };
+        let yt = if yt == YType::Unknown { if str_list || ends_nl { YType::Line } else { YType::Char } } else { yt };
+        let mut maxlen = 0usize;
+        match &src {
+            RegSource::Lines(l) => {
+                for x in l {
+                    if matches!(yt, YType::Block(_)) {
+                        maxlen = maxlen.max(super::graphemes::count_cells(x));
+                    }
+                    lines.push(x.clone());
+                }
+            }
+            RegSource::Str(t) => {
+                let mut newlines = t.matches('\n').count();
+                let extraline = matches!(yt, YType::Char) || t.is_empty() || !t.ends_with('\n');
+                if extraline {
+                    newlines += 1;
+                }
+                let append_first = old_size > 0 && old_kind == RegKind::Char;
+                if append_first {
+                    newlines -= 1;
+                }
+                if old_size + newlines == 0 {
+                    self.map.remove(&target);
+                    self.finish(name, target);
+                    return;
+                }
+                let mut start = 0usize;
+                let end = t.len();
+                let mut first = append_first;
+                while start < end + usize::from(extraline) {
+                    let line_end = t[start.min(end)..].find('\n').map_or(end, |i| start.min(end) + i);
+                    let line = &t[start.min(end)..line_end];
+                    if matches!(yt, YType::Block(_)) {
+                        maxlen = maxlen.max(super::graphemes::count_cells(line));
+                    }
+                    if first {
+                        if let Some(last) = lines.last_mut() {
+                            last.push_str(line);
+                        }
+                        first = false;
+                    } else {
+                        lines.push(line.to_string());
+                    }
+                    start = line_end + 1;
+                }
+            }
+        }
+        if lines.is_empty() {
+            self.map.remove(&target);
+            self.finish(name, target);
+            return;
+        }
+        let reg = match yt {
+            YType::Char | YType::Unknown => Reg { text: lines.join("\n"), kind: RegKind::Char },
+            YType::Line => Reg { text: lines.iter().map(|l| format!("{l}\n")).collect(), kind: RegKind::Line },
+            YType::Block(w) => Reg { text: lines.join("\n"), kind: RegKind::Block(w.unwrap_or(maxlen.wrapping_sub(1))) },
+        };
+        if matches!(name, '+' | '*') {
+            self.clipboard = Some(reg.text.clone());
+        }
+        self.map.insert(target, reg);
+        self.finish(name, target);
+    }
+
+    /// `finish_write_reg`: `:let @" = ...` changes what `""` means, any other register leaves it alone.
+    fn finish(&mut self, name: char, target: char) {
+        if name == '"' {
+            self.prev = Some(target);
+        }
+    }
+
     /// The value of the last expression (register `=`), apart from the unnamed register.
     pub fn set_expr(&mut self, text: String) {
+        self.expr_line = None;
         self.map.insert('=', Reg { text, kind: RegKind::Char });
     }
 
