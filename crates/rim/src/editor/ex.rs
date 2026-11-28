@@ -248,6 +248,9 @@ impl Editor {
     /// Before an option is read or set: `opts.fileformat` takes the line ending of the document.
     pub(super) fn ff_in(&mut self) {
         self.buf.opts.fileformat = ff_name(self.buf.doc.eol()).into();
+        let (modified, differs) = (self.buf.modified, self.buf.ff_differs());
+        let o = &mut self.buf.opts;
+        (o.modified, o.ff_changed, o.modified_set) = (modified, differs, false);
     }
 
     /// After an option was set: the document takes `opts.fileformat` (`did_set_fileformat`).
@@ -259,6 +262,13 @@ impl Editor {
         };
         if eol != self.buf.doc.eol() {
             self.buf.doc.set_eol(eol);
+        }
+        // `:set modified` and `:set nomodified` (`did_set_modified`): `nomodified` is `save_file_ff()` too.
+        if mem::take(&mut self.buf.opts.modified_set) {
+            self.buf.modified = self.buf.opts.modified;
+            if !self.buf.modified {
+                self.buf.save_file_ff();
+            }
         }
     }
 }

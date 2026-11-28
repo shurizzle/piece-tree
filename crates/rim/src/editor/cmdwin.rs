@@ -50,7 +50,6 @@ impl Editor {
         let buf = self.new_scratch();
         let b = self.buffers.iter_mut().find(|b| b.id == buf).expect("just added");
         b.doc = Document::from_string(text);
-        b.saved = b.doc.text().clone();
         (b.listed, b.opts.nofile, b.title) = (false, true, Some("[Command Line]"));
         self.next_win += 1;
         let win = self.next_win;

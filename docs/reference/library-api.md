@@ -60,6 +60,7 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `replace_all(&Regex, &str) -> usize` | regex replace as one undo step ([search.md](search.md)) |
 | `replace_matching(&Regex, &str, keep) -> usize` | same, only the matches `keep(range)` accepts; `last_edits` has one edit per replaced match |
 | `plan_replace(&Regex, &str, keep) -> Replacement` / `apply_replacement(Replacement) -> usize` | `replace_matching` in two steps, for a caller that must prepare before the text changes (rim saves undo lines first): `Replacement::edits()`/`text()` show the result, planning changes nothing; applying a plan made for another text panics |
+| `plan_replace_eol(&Regex, &str, keep) -> Replacement` | `plan_replace` where the last line ends with a line break the text does not hold: a match may take it (Vim's `:s` with `\n` at the end of the last line). The edit that takes it ends at the end of the text; an empty match after it is dropped |
 | `reopen_group() -> bool` | opens a group on the current version when it is the newest one (an editor's `:undojoin`): the next edits grow it instead of making a version |
 | `new_version()` | a version equal to the current text with no edits (an editor's undo step is made before the text is known to differ); inside a group the group owns it |
 | `compact(max)` | the current version's text becomes `Text::compact(max)` (same content; `last_edits` empty); history kept, other versions keep their own pieces |

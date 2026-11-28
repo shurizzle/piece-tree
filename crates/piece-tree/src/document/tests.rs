@@ -653,6 +653,34 @@ fn a_planned_replacement_is_the_same_as_replacing() {
 }
 
 #[test]
+fn a_replacement_can_take_the_line_break_after_the_last_line() {
+    let nl = Regex::new("\\n").unwrap();
+    // The line break that is not in the text is replaced too: the edit ends at the end of the text.
+    let mut doc = Document::new("a\nb");
+    let plan = doc.plan_replace_eol(&nl, "-", |_| true);
+    assert_eq!(plan.text().to_string(), "a-b-");
+    assert_eq!(plan.edits(), [Edit { start: 1, old_len: 1, new_len: 1 }, Edit { start: 3, old_len: 0, new_len: 1 }]);
+    assert_eq!(doc.apply_replacement(plan), 2);
+    assert_eq!(doc.text().to_string(), "a-b-");
+    // Emptied by the replacement: the text ends where the match began.
+    let mut doc = Document::new("a\nb");
+    let plan = doc.plan_replace_eol(&nl, "", |_| true);
+    assert_eq!(plan.text().to_string(), "ab");
+    doc.apply_replacement(plan);
+    assert_eq!((doc.text().to_string(), doc.last_edits().len()), ("ab".to_string(), 2));
+    // A match that does not reach the end leaves the text without the extra line break.
+    let doc = Document::new("a\nb");
+    let plan = doc.plan_replace_eol(&nl, "-", |m| m.start == 1);
+    assert_eq!(plan.text().to_string(), "a-b");
+    // Nothing matches: no edits, the text as it was.
+    let plan = doc.plan_replace_eol(&Regex::new("z").unwrap(), "-", |_| true);
+    assert_eq!((plan.text().to_string(), plan.edits().len()), ("a\nb".to_string(), 0));
+    // An empty match after the last line break is not a match of the line break.
+    let plan = doc.plan_replace_eol(&Regex::new("(?m)$").unwrap(), "!", |_| true);
+    assert_eq!(plan.text().to_string(), "a!\nb!");
+}
+
+#[test]
 #[should_panic(expected = "the text changed")]
 fn a_stale_replacement_is_refused() {
     let re = Regex::new("a").unwrap();

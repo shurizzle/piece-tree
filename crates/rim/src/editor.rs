@@ -224,6 +224,8 @@ struct Confirm {
     cur: Range<usize>,
     /// `did_save` of `do_sub`: the cursor line was saved for undo.
     did_save: bool,
+    /// The pattern has `\n`, so it can match the line break after the last line (see `Document::plan_replace_eol`).
+    virt: bool,
 }
 
 /// A yes/no question (`ask_yesno`) that waits for a key: `y` runs `yes`, any other answer drops the command.
@@ -233,12 +235,15 @@ struct Ask {
 }
 
 impl Confirm {
-    /// Next match (and its replacement) in range; `next` past the text means none.
-    fn find(&self, text: &Text) -> Option<(Range<usize>, String)> {
+    /// Next match (and its replacement) in range; `next` past the text means none. The last flag: the match took the line
+    /// break after the last line, which is not in the text, so the range stops at the end of the text and nothing follows.
+    fn find(&self, text: &Text) -> Option<(Range<usize>, String, bool)> {
         if self.next > text.len() {
             return None;
         }
-        text.replacement_at(&self.search.re, self.next, &self.rep).filter(|(m, _)| m.start <= self.end)
+        let hay = if self.virt { text.insert(text.len(), "\n") } else { text.clone() };
+        let (m, rep) = hay.replacement_at(&self.search.re, self.next, &self.rep).filter(|(m, _)| m.start <= self.end)?;
+        Some((m.start..m.end.min(text.len()), rep, m.end > text.len()))
     }
 }
 
@@ -577,6 +582,7 @@ impl Editor {
         let (doc, endofline, had_bytes) = read_doc(&path)?;
         let mut e = Self::new(doc, path);
         (e.buf.opts.endofline, e.buf.empty_at_open) = (endofline, !had_bytes);
+        e.buf.save_file_ff();
         Ok(e)
     }
 
@@ -607,7 +613,7 @@ impl Editor {
     /// An editor on `text` without a file, modified.
     pub fn from_text(text: &str) -> Self {
         let mut e = Self::with_path(Document::from_string(text.to_string()), None);
-        e.buf.saved = Document::new("").text().clone();
+        e.buf.modified = true;
         e
     }
 
@@ -701,11 +707,7 @@ impl Editor {
     /// before and after.
     fn compact(&mut self) -> (usize, usize) {
         let before = self.buf.doc.text().piece_count();
-        let clean = !self.is_dirty();
         self.buf.doc.compact(COMPACT_MAX);
-        if clean {
-            self.buf.saved = self.buf.doc.text().clone();
-        }
         (before, self.buf.doc.text().piece_count())
     }
 
@@ -900,6 +902,8 @@ impl Editor {
         debug_assert!(!self.buf.undo.synced, "an edit without u_save at {}", std::panic::Location::caller());
         let before = self.buf.doc.text().clone();
         let r = f(&mut self.buf.doc);
+        // `changed()`: a command that rewrites a line with the same text modifies the buffer too.
+        self.buf.modified = true;
         if !self.buf.doc.text().is_empty() {
             self.buf.undo.empty = false;
         }
@@ -3051,6 +3055,8 @@ impl Editor {
             }
             if joined > 1 {
                 self.join(joined - 1, false);
+            // `do_join` ends with `check_cursor_col()`: a last piece that is empty leaves the column on the end of the line.
+            self.clamp_normal();
                 (self.scripts.sub_nsubs, self.scripts.sub_nlines) = (joined - 1, 1);
                 self.do_sub_msg(false);
                 let flag = s.flags.chars().next();
@@ -3082,10 +3088,13 @@ impl Editor {
         search.pat = pat.clone();
         let text = self.buf.doc.text().clone();
         let (start, end) = (text.line_to_offset(first), self.line_end_offset(last));
+        // The last line has a line break the text does not hold: a `\n` in the pattern can match it.
+        let virt = pat.contains("\\n");
+        let hay = if virt { text.insert(text.len(), "\n") } else { text.clone() };
         if s.confirm && !s.count {
             self.last_search = Some(search.clone());
             self.hl = true;
-            self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None, cur: 0..0, did_save: false });
+            self.confirm = Some(Confirm { search, rep: s.rep, all: s.all, next: start, end, n: 0, lines: 0, last_line: None, cur: 0..0, did_save: false, virt });
             self.mode = Mode::Confirm;
             if !self.confirm_prompt() {
                 self.error(format!("E486: Pattern not found: {pat}"));
@@ -3111,7 +3120,7 @@ impl Editor {
             true
         };
         if s.count {
-            let n = text.find_iter_in(&search.re, start..end).filter(|m| pick(m.clone())).count();
+            let n = hay.find_iter_in(&search.re, start..end).filter(|m| pick(m.clone())).count();
             self.last_search = Some(search);
             self.hl = true;
             if n == 0 {
@@ -3127,17 +3136,32 @@ impl Editor {
             return;
         }
         // The saves `do_sub` makes, line by line, before the text changes.
-        let plan = self.buf.doc.plan_replace(&search.re, &s.rep, pick);
+        let plan = if virt { self.buf.doc.plan_replace_eol(&search.re, &s.rep, pick) } else { self.buf.doc.plan_replace(&search.re, &s.rep, pick) };
         if !plan.edits().is_empty() {
             // `do_sub`: `setpcmark()` at the first match, with the cursor where the command found it.
             self.set_jump();
             let (mut delta, mut items) = (0isize, Vec::with_capacity(plan.edits().len()));
+            // After a match that takes lines `do_sub` puts the text so far into the buffer line, and the next match works on that
+            // line: its end line, where that line starts in the new text, and its text.
+            let mut half: Option<(usize, usize, String)> = None;
             for e in plan.edits() {
                 let old = (e.start as isize - delta) as usize;
                 let line = text.offset_to_line(old);
                 let takes = text.slice(old..old + e.old_len).matches('\n').count();
                 let crs = plan.text().slice(e.start..e.start + e.new_len).matches('\n').count();
-                items.push(undo::SubItem { line, takes, crs });
+                if half.as_ref().is_some_and(|h| h.0 != line) {
+                    half = None;
+                }
+                let before_line = half.as_ref().map(|h| h.2.clone());
+                if takes > 0 {
+                    let gstart = half.as_ref().map_or_else(|| (text.line_to_offset(line) as isize + delta) as usize, |h| h.1);
+                    let (end_line, mid) = (text.offset_to_line(old + e.old_len), plan.text().slice(gstart..e.start + e.new_len).into_owned());
+                    // A line break the replacement made starts the line that is left.
+                    let cut = mid.rfind('\n').map_or(0, |p| p + 1);
+                    let tail = text.slice(old + e.old_len..text.line_end(end_line));
+                    half = Some((end_line, gstart + cut, format!("{}{tail}", &mid[cut..])));
+                }
+                items.push(undo::SubItem { line, takes, crs, half: before_line });
                 delta += e.new_len as isize - e.old_len as isize;
             }
             self.sub_undo(&items, &text, &mut false);
@@ -3219,7 +3243,7 @@ impl Editor {
     /// Moves the cursor to the next match of the confirm session and asks; false when none is left.
     fn confirm_prompt(&mut self) -> bool {
         let Some(c) = &self.confirm else { return false };
-        let Some((m, _)) = c.find(self.buf.doc.text()) else { return false };
+        let Some((m, ..)) = c.find(self.buf.doc.text()) else { return false };
         let (l, col) = self.pos_of(m.start);
         let Some(c) = &mut self.confirm else { return false };
         let ask = format!("replace with {} (y/n/a/q/l)?", c.rep);
@@ -3261,7 +3285,7 @@ impl Editor {
         loop {
             let Some(c) = &mut self.confirm else { return };
             let text = self.buf.doc.text().clone();
-            let Some((m, rep)) = c.find(&text) else {
+            let Some((m, rep, eats)) = c.find(&text) else {
                 return self.confirm_finish();
             };
             if k == 'q' {
@@ -3277,7 +3301,7 @@ impl Editor {
                     c.lines += 1;
                 }
                 c.last_line = Some(l);
-                let item = undo::SubItem { line: l, takes: text.slice(m.clone()).matches('\n').count(), crs: rep.matches('\n').count() };
+                let item = undo::SubItem { line: l, takes: text.slice(m.clone()).matches('\n').count(), crs: rep.matches('\n').count(), half: None };
                 let mut did_save = c.did_save;
                 self.sub_undo(&[item], &text, &mut did_save);
                 if let Some(c) = self.confirm.as_mut() {
@@ -3298,6 +3322,9 @@ impl Editor {
             } else {
                 at
             };
+            if eats {
+                c.next = usize::MAX;
+            }
             if k == 'l' {
                 return self.confirm_finish();
             }
@@ -3351,15 +3378,18 @@ impl Editor {
             Ok((doc, endofline, had_bytes)) => {
                 self.buf.opts.endofline = endofline;
                 let lc = self.line_count();
-                // `'undoreload'` (10000): a buffer of up to that many lines is saved first, so the reload can be undone.
-                if lc <= 10000 {
+                // `'undoreload'`: a buffer of up to that many lines (any, when negative) is saved first, so the reload can be undone.
+                let ur = self.buf.opts.undoreload;
+                if ur < 0 || lc as i64 <= ur {
                     self.u_sync(false);
                     self.u_savecommon_lc(0, lc + 1, 0, lc);
                     let (new, len) = (doc.text().slice(0..doc.text().len()).into_owned(), self.buf.doc.text().len());
+                    let old = self.buf.doc.text().clone();
                     self.edit(|d| {
                         d.splice(0..len, &new);
                         d.set_eol(doc.eol());
                     });
+                    self.u_find_first_changed(&old);
                     self.buf.undo.empty = doc.text().is_empty() && !had_bytes;
                 } else {
                     self.buf.doc = doc;
@@ -3367,7 +3397,10 @@ impl Editor {
                     // `u_clearall`.
                     self.u_clearline();
                 }
-                (self.buf.saved, self.buf.saved_eol) = (self.buf.doc.text().clone(), self.buf.doc.eol());
+                // `u_unchanged()` and `unchanged()` after the file is read (`ex_cmds.c`): undoing the reload modifies the buffer.
+                self.buf.undo.unchanged();
+                self.buf.modified = false;
+                self.buf.save_file_ff();
                 (self.buf.loaded, self.buf.empty_at_open) = (self.buf.doc.text().clone(), !had_bytes);
                 self.changed = false;
                 self.clamp();

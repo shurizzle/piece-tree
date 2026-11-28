@@ -44,9 +44,14 @@ pub(super) struct Buffer {
     pub title: Option<&'static str>,
     /// Shown by `:ls` and reached by `:bn`/`:bp`; the command-line window's buffer is not.
     pub listed: bool,
-    /// Version and line ending last written to disk; dirty is a pointer comparison.
-    pub saved: Text,
-    pub saved_eol: LineEnding,
+    /// `b_changed` (`'modified'`): set by an edit, cleared by a write, `:e!` and `:set nomodified`; undo and redo
+    /// put it back from the header's `UH_CHANGED` (`undo.rs`).
+    pub modified: bool,
+    /// `b_start_ffc` (`save_file_ff`): the line ending when the file was read or written; a different one is a change too
+    /// (`file_ff_differs`).
+    pub start_eol: LineEnding,
+    /// `b_start_eol`: `'endofline'` at that time.
+    pub start_endofline: bool,
     /// The text version the file was read as (`ML_EMPTY`: a buffer is empty only when nothing was read
     /// and nothing was typed, or an edit emptied it).
     pub loaded: Text,
@@ -96,8 +101,9 @@ impl Buffer {
         let doc_empty = doc.text().is_empty();
         Self {
             id,
-            saved: doc.text().clone(),
-            saved_eol: doc.eol(),
+            modified: false,
+            start_eol: doc.eol(),
+            start_endofline: opts.endofline,
             loaded: doc.text().clone(),
             empty_at_open: doc.text().is_empty(),
             doc,
@@ -135,9 +141,21 @@ impl Buffer {
         self.doc.text().is_empty() && (self.empty_at_open || !self.doc.text().ptr_eq(&self.loaded))
     }
 
+    /// `save_file_ff`: the line ending and `'endofline'` as the file has them now.
+    pub fn save_file_ff(&mut self) {
+        (self.start_eol, self.start_endofline) = (self.doc.eol(), self.opts.endofline);
+    }
+
+    /// `file_ff_differs`: `'fileformat'` is not what it was when the file was read or written, or `'endofline'` is not and
+    /// the last line break is written as it is (`'binary'`, `'nofixendofline'`). `'endoffile'`, `'bomb'` and `'fileencoding'`
+    /// do not exist in rim.
+    pub fn ff_differs(&self) -> bool {
+        self.doc.eol() != self.start_eol || ((self.opts.binary || !self.opts.fixendofline) && self.opts.endofline != self.start_endofline)
+    }
+
     /// A `buftype=nofile` buffer is never modified.
     pub fn is_dirty(&self) -> bool {
-        !self.opts.nofile && (!self.doc.text().ptr_eq(&self.saved) || self.doc.eol() != self.saved_eol)
+        !self.opts.nofile && (self.modified || self.ff_differs())
     }
 
     /// The file name as shown to the user.
@@ -150,7 +168,6 @@ impl Buffer {
 pub(super) struct Saving {
     buf: usize,
     path: PathBuf,
-    text: Text,
     eol: LineEnding,
     handle: JoinHandle<io::Result<()>>,
     /// `Messages::seq` after the "writing" message: the write reports itself only if nothing else was shown since.
@@ -199,7 +216,7 @@ impl Editor {
         let id = self.new_scratch();
         let b = self.buffers.iter_mut().find(|b| b.id == id).expect("just added");
         b.doc = Document::from_string(text.to_string());
-        b.saved = Document::new("").text().clone();
+        b.modified = true;
     }
 
     /// `:enew`: an empty buffer without a file in the current window.
@@ -324,6 +341,7 @@ impl Editor {
             self.switch_buffer(self.next_buf);
         }
         (self.buf.opts.endofline, self.buf.empty_at_open) = (endofline, !had_bytes);
+        self.buf.save_file_ff();
         self.check_modelines();
         // `readfile` gives the file info unless `'shortmess'` has `F` (Neovim's default has it).
         if !self.buf.opts.shortmess('F') {
@@ -341,6 +359,7 @@ impl Editor {
         self.next_buf += 1;
         let mut b = Buffer::new(self.next_buf, doc, Some(path), self.global_opts.clone()).for_window(self.win.id);
         (b.opts.endofline, b.empty_at_open) = (endofline, !had_bytes);
+        b.save_file_ff();
         self.buffers.push(b);
         Ok(())
     }
@@ -476,10 +495,15 @@ impl Editor {
         // A write is a command of its own in Neovim (`msg_scroll`): its message is never cut.
         self.info_whole(writing_msg(&path));
         let seq = self.msgs.seq;
-        self.saves.push(Saving { buf: id, path, text, eol, handle, seq });
+        self.saves.push(Saving { buf: id, path, eol, handle, seq });
         // `u_update_save_nr`: the change this text ends with is the one of this write (`:earlier 1f`).
+        // `unchanged()`, `save_file_ff()` and `u_unchanged()` as the write begins (`bufwrite.c`): later edits and the steps they
+        // make count from here; a write that fails gives the flag back.
         if let Some(b) = self.buffer_mut(id) {
             b.undo.update_save_nr();
+            b.modified = false;
+            b.save_file_ff();
+            b.undo.unchanged();
         }
         if wait {
             ok &= self.wait_saves_where(|s| s.buf == id);
@@ -517,12 +541,12 @@ impl Editor {
                     if self.msgs.seq == s.seq {
                         self.info_whole(format!("\"{}\" written ({})", s.path.display(), s.eol));
                     }
-                    if let Some(b) = self.buffer_mut(s.buf).filter(|b| b.path.as_ref() == Some(&s.path)) {
-                        (b.saved, b.saved_eol) = (s.text, s.eol);
-                    }
                 }
                 Err(e) => {
                     self.error(format!("Save failed: {e}"));
+                    if let Some(b) = self.buffer_mut(s.buf) {
+                        b.modified = true;
+                    }
                     ok = false;
                 }
             }

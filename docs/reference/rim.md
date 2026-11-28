@@ -268,6 +268,8 @@ Typed in the message row, with a cursor like neovim's command line; a line wider
 | `:earlier Nf` / `:later Nf` | N writes of the file back/forward (the changes since the last write count as one) |
 | `:undoj[oin]` | the next change goes into the last undo step (`E790` after an undo) |
 | `'undolevels'` (`ul`) | undo steps kept (default 1000; `-1` none, `0` one that `u` toggles); old steps are forgotten (their versions stay in memory, `shortcut:`) |
+| `'undoreload'` (`ur`) | a `:e!` of a buffer with at most this many lines (default 10000; `-1` always) is an undo step, so `u` brings the old text back; the cursor goes to the first line that differs (`u_find_first_changed`) |
+| `'modified'` (`mod`) | the buffer's changed flag (`b_changed`); `:set nomodified` clears it. `&modified` is also 1 while `'fileformat'` differs from the one of the last read or write. A write (from the moment it starts) and `:e!` clear it and mark every undo step made until then, so `u` after them makes the buffer modified again (`UH_CHANGED`); a failed write gives it back. `'fileformat'` and, with `'binary'` or `'nofixendofline'`, `'endofline'` count as changed when they differ from the last read or write (`file_ff_differs`) |
 | `:stats` | pieces, chunks, memory bytes (`Text::memory_bytes`), bytes, chars, lines and versions of the current text |
 | `:compact` | `Document::compact` into 64 KiB chunks (`N pieces -> M`); history kept, a clean buffer stays clean |
 | `:undol[ist]` | Neovim's list: `number changes  when               saved`, one line per branch tip (`Nothing to undo` when empty); `changenr()` and `undotree({buf})` (a number or a name pattern as Neovim's `tv_get_buf`, `E158`) too |

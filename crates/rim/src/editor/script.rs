@@ -489,6 +489,7 @@ impl Editor {
                 }
                 if kind == OptKind::Flag {
                     self.buf.opts.set_flag(name, n != 0);
+                    self.ff_out();
                     self.win_out(false, scrolloff);
                     self.on_global(|g| g.set_flag(name, n != 0));
                     self.share_global();

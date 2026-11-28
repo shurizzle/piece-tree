@@ -1,0 +1,5413 @@
+NVIM v0.12.6
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc-'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc-'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc-'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 3 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'abc'] 3 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'abc'] 3 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc', 'Zabc'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'Zabc'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'Zabc'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'x+abc+'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'x+abc+'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'x+abc+'] 2 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'abc'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+3 more lines
+['abc', 'x', 'abc', ''] 4 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc', 'x', 'abc', ''] 4 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc', 'x', 'abc', ''] 4 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['a', 'c', 'x', 'a', 'c'] 5 1 2
+2 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 more lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['a', 'c', 'x', 'a', 'c'] 5 1 2
+2 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 more lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['a', 'c', 'x', 'a', 'c'] 5 1 2
+2 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 more lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc#abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc#abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc#abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abcxabc'] 1 5 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc-x-abc'] 1 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'x', 'abc'] 1 1 1 3
+2 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+3 more lines
+['abc', 'x', 'abc!'] 3 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'abc'] 3 1 3 3
+1 change; after #2  0 seconds ago
+3 1
+"---
+
+3 more lines
+['abc', 'x', 'abc!'] 3 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'abc'] 3 1 3 3
+1 change; after #2  0 seconds ago
+3 1
+"---
+
+3 more lines
+['abc', 'x', 'abc!'] 3 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'abc'] 3 1 3 3
+1 change; after #2  0 seconds ago
+3 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'abc'] 3 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'abc'] 1 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+3 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'abc'] 3 1 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+3 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b-'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b-'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b-'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'XX'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'XX'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'XX'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'x', 'b', 'b'] 1 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'x', 'b', 'b'] 2 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['abc', 'x', 'x', 'b', 'b'] 5 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'x', 'b', 'b'] 1 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'x', 'b', 'b'] 2 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['abc', 'x', 'x', 'b', 'b'] 5 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc', 'ZZZZ'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'ZZZZ'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'ZZZZ'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'x+x+b+b+'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'x+x+b+b+'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'x+x+b+b+'] 2 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 2 1 2 5
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b', ''] 6 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b', ''] 6 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b', ''] 6 1 2
+1 line less; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+3 substitutions on 3 lines
+['a', 'c', 'x', 'x', '', '', '', ''] 8 1 2
+3 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+3 substitutions on 3 lines
+['a', 'c', 'x', 'x', '', '', '', ''] 8 1 2
+3 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+3 substitutions on 3 lines
+['a', 'c', 'x', 'x', '', '', '', ''] 8 1 2
+3 fewer lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc#x#b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc#x#b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc#x#b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abcxxbb'] 1 7 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc-x-x-b-b'] 1 1 2
+4 more lines; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 1 1 1 5
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b!'] 5 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 5 1 5 5
+1 change; after #2  0 seconds ago
+5 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b!'] 5 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 5 1 5 5
+1 change; after #2  0 seconds ago
+5 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'b', 'b!'] 5 1 2
+1 change; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 5 1 5 5
+1 change; after #2  0 seconds ago
+5 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'Xb'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'Xb'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+['abc', 'x', 'x', 'Xb'] 4 1 2
+1 more line; before #2  0 seconds ago
+['abc', 'x', 'x', 'b', 'b'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'x', 'b', 'b'] 1 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'x', 'b', 'b'] 2 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+5 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['abc', 'x', 'x', 'b', 'b'] 5 1 1
+5 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+5 more lines; after #1  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab-'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab-'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab-'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'aX'] 7 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 8
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'aX'] 7 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 8
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'aX'] 7 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 8
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc_x', 'b', 'a', 'abc', 'ab'] 2 1 2
+2 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 4
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc_x', 'b', 'a', 'abc', 'ab'] 2 1 2
+2 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 4
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc_x', 'b', 'a', 'abc', 'ab'] 2 1 2
+2 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 4
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1
+8 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+8 more lines; after #1  0 seconds ago
+1 1
+"---
+
+8 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 4 1 1
+8 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+8 more lines; after #1  0 seconds ago
+1 1
+"---
+
+8 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 8 1 1
+8 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+8 more lines; after #1  0 seconds ago
+1 1
+"---
+
+8 more lines
+4 substitutions on 3 lines
+['Zabc', '', 'ZZa', 'abc', 'aZ'] 5 1 2
+3 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+4 substitutions on 3 lines
+['Zabc', '', 'ZZa', 'abc', 'aZ'] 5 1 2
+3 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+4 substitutions on 3 lines
+['Zabc', '', 'ZZa', 'abc', 'aZ'] 5 1 2
+3 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x', 'abc++x+b+a+abc+ab+'] 2 1 2
+6 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc++x+b+a+abc+ab+'] 2 1 2
+6 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc++x+b+a+abc+ab+'] 2 1 2
+6 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab', ''] 9 1 2
+1 line less; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab', ''] 9 1 2
+1 line less; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab', ''] 9 1 2
+1 line less; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+4 substitutions on 4 lines
+['x', 'a', 'c', '', 'x', '', '', 'a', 'a', 'c', 'a', ''] 12 1 2
+4 fewer lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+4 substitutions on 4 lines
+['x', 'a', 'c', '', 'x', '', '', 'a', 'a', 'c', 'a', ''] 12 1 2
+4 fewer lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+4 substitutions on 4 lines
+['x', 'a', 'c', '', 'x', '', '', 'a', 'a', 'c', 'a', ''] 12 1 2
+4 fewer lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 8
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc', '#b#abc', 'ab'] 3 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 3 1 3 7
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+8 more lines
+['x', 'abc', '#b#abc', 'ab'] 3 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 3 1 3 7
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+8 more lines
+['x', 'abc', '#b#abc', 'ab'] 3 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 3 1 3 7
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['xabcxbaabcab'] 1 11 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x-abc--x-b-a-abc-ab'] 1 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 1 1 1 8
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab!'] 8 1 2
+1 change; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 8 1 8 8
+1 change; after #2  0 seconds ago
+8 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab!'] 8 1 2
+1 change; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 8 1 8 8
+1 change; after #2  0 seconds ago
+8 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab!'] 8 1 2
+1 change; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 8 1 8 8
+1 change; after #2  0 seconds ago
+8 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'ab'] 5 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 6
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'ab'] 5 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 6
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc', '', 'x', 'Xa', 'abc', 'ab'] 5 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 5 1 5 6
+1 line less; after #2  0 seconds ago
+5 1
+"---
+
+8 more lines
+['x', 'abc', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+8 more lines
+['x', 'abc', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2
+1 more line; before #2  0 seconds ago
+['x', 'abc', '', 'x', 'b', 'a', 'abc', 'ab'] 2 1 2 3
+1 line less; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x-'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x-'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x-'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b', 'a', 'x_', 'a', 'x', 'abc', 'abc_', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+12 more lines
+['b', 'a', 'x_', 'a', 'x', 'abc', 'abc_', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+12 more lines
+['b', 'a', 'x_', 'a', 'x', 'abc', 'abc_', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+12 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1
+12 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+12 more lines; after #1  0 seconds ago
+1 1
+"---
+
+12 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 6 1 1
+12 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+12 more lines; after #1  0 seconds ago
+1 1
+"---
+
+12 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 12 1 1
+12 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+12 more lines; after #1  0 seconds ago
+1 1
+"---
+
+12 more lines
+4 substitutions on 4 lines
+['Za', 'Z', '', 'a', 'Zabc', 'abc', '', '', 'Z'] 9 1 2
+3 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+4 substitutions on 4 lines
+['Za', 'Z', '', 'a', 'Zabc', 'abc', '', '', 'Z'] 9 1 2
+3 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+4 substitutions on 4 lines
+['Za', 'Z', '', 'a', 'Zabc', 'abc', '', '', 'Z'] 9 1 2
+3 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b', 'a+x+++a+x+abc+abc+++x+'] 2 1 2
+10 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 2 1 2 12
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['b', 'a+x+++a+x+abc+abc+++x+'] 2 1 2
+10 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 2 1 2 12
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['b', 'a+x+++a+x+abc+abc+++x+'] 2 1 2
+10 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 2 1 2 12
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x', ''] 13 1 2
+1 line less; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x', ''] 13 1 2
+1 line less; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x', ''] 13 1 2
+1 line less; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['', '', 'a', 'x', '', '', 'a', 'x', 'a', 'c', 'a', 'c', '', '', 'x'] 12 1 2
+3 fewer lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 9
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['', '', 'a', 'x', '', '', 'a', 'x', 'a', 'c', 'a', 'c', '', '', 'x'] 12 1 2
+3 fewer lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 9
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['', '', 'a', 'x', '', '', 'a', 'x', 'a', 'c', 'a', 'c', '', '', 'x'] 12 1 2
+3 fewer lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 9
+3 more lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['b#x', '', '#x', 'abc', 'abc', '', '#'] 7 1 2
+5 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['b#x', '', '#x', 'abc', 'abc', '', '#'] 7 1 2
+5 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+3 substitutions on 3 lines
+['b#x', '', '#x', 'abc', 'abc', '', '#'] 7 1 2
+5 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['baxaxabcabcx'] 1 12 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-a-x---a-x-abc-abc---x'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x!'] 12 1 2
+1 change; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 12 1 12 12
+1 change; after #2  0 seconds ago
+12 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x!'] 12 1 2
+1 change; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 12 1 12 12
+1 change; after #2  0 seconds ago
+12 1
+"---
+
+12 more lines
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x!'] 12 1 2
+1 change; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 12 1 12 12
+1 change; after #2  0 seconds ago
+12 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['Xa', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 2
+1 more line; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 1 1 1 2
+1 line less; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+4 substitutions on 2 lines
+['b', 'a', 'x', 'a', 'x', 'abc', 'abc', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+12 more lines
+4 substitutions on 2 lines
+['b', 'a', 'x', 'a', 'x', 'abc', 'abc', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+12 more lines
+4 substitutions on 2 lines
+['b', 'a', 'x', 'a', 'x', 'abc', 'abc', 'x'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['b', 'a', 'x', '', '', 'a', 'x', 'abc', 'abc', '', '', 'x'] 3 1 3 11
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc-'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc-'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc-'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 6 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n\n
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 13 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'Q', 'b', 'x', 'a', 'abc'] 8 1 2
+1 more line; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 8 1 8 9
+1 line less; after #2  0 seconds ago
+8 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'Q', 'b', 'x', 'a', 'abc'] 8 1 2
+1 more line; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 8 1 8 9
+1 line less; after #2  0 seconds ago
+8 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'Q', 'b', 'x', 'a', 'abc'] 8 1 2
+1 more line; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 8 1 8 9
+1 line less; after #2  0 seconds ago
+8 1
+"---
+
+13 more lines
+6 substitutions on 3 lines
+['', 'ZZa', 'Za', 'a', 'a', 'ZZZa', 'abc'] 6 1 2
+6 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 12
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+6 substitutions on 3 lines
+['', 'ZZa', 'Za', 'a', 'a', 'ZZZa', 'abc'] 6 1 2
+6 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 12
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+6 substitutions on 3 lines
+['', 'ZZa', 'Za', 'a', 'a', 'ZZZa', 'abc'] 6 1 2
+6 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 12
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+['', 'b+x+a+x+a+a+a+b+b+x+a+abc+'] 2 1 2
+11 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+11 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+['', 'b+x+a+x+a+a+a+b+b+x+a+abc+'] 2 1 2
+11 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+11 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+['', 'b+x+a+x+a+a+a+b+b+x+a+abc+'] 2 1 2
+11 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+11 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc', ''] 14 1 2
+1 line less; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc', ''] 14 1 2
+1 line less; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc', ''] 14 1 2
+1 line less; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+4 substitutions on 4 lines
+['', '', '', 'x', 'a', 'x', 'a', 'a', 'a', '', '', '', '', 'x', 'a', 'a', 'c'] 17 1 2
+4 fewer lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+4 substitutions on 4 lines
+['', '', '', 'x', 'a', 'x', 'a', 'a', 'a', '', '', '', '', 'x', 'a', 'a', 'c'] 17 1 2
+4 fewer lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+4 substitutions on 4 lines
+['', '', '', 'x', 'a', 'x', 'a', 'a', 'a', '', '', '', '', 'x', 'a', 'a', 'c'] 17 1 2
+4 fewer lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 13
+4 more lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+['#x#x#a#b#x#abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['#x#x#a#b#x#abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['#x#x#a#b#x#abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['bxaxaaabbxaabc'] 1 12 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['-b-x-a-x-a-a-a-b-b-x-a-abc'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc!'] 13 1 2
+1 change; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 13 1 13 13
+1 change; after #2  0 seconds ago
+13 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc!'] 13 1 2
+1 change; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 13 1 13 13
+1 change; after #2  0 seconds ago
+13 1
+"---
+
+13 more lines
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc!'] 13 1 2
+1 change; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 13 1 13 13
+1 change; after #2  0 seconds ago
+13 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+3 substitutions on 2 lines
+['', 'Xx', 'a', 'x', 'a', 'a', 'a', 'XXx', 'a', 'abc'] 8 1 2
+3 more lines; before #2  0 seconds ago
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 2 1 2 11
+3 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 1 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 6 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+13 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: \n$
+['', 'b', 'x', 'a', 'x', 'a', 'a', 'a', 'b', 'b', 'x', 'a', 'abc'] 13 1 1
+13 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+13 more lines; after #1  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc--'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc--'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc--'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b_ab', 'abc', 'a_a', 'abc_'] 9 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+5 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b_ab', 'abc', 'a_a', 'abc_'] 9 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+5 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b_ab', 'abc', 'a_a', 'abc_'] 9 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+5 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+14 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1
+14 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+14 more lines; after #1  0 seconds ago
+1 1
+"---
+
+14 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 7 1 1
+14 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+14 more lines; after #1  0 seconds ago
+1 1
+"---
+
+14 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 14 1 1
+14 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+14 more lines; after #1  0 seconds ago
+1 1
+"---
+
+14 more lines
+6 substitutions on 3 lines
+['aZabc', 'ZZZZ', 'aZabc', 'a', '', 'a', 'abc', ''] 3 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+6 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+6 substitutions on 3 lines
+['aZabc', 'ZZZZ', 'aZabc', 'a', '', 'a', 'abc', ''] 3 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+6 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+6 substitutions on 3 lines
+['aZabc', 'ZZZZ', 'aZabc', 'a', '', 'a', 'abc', ''] 3 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+6 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab', 'abc+x+b+x+b++ab+abc+a++a+abc++'] 2 1 2
+12 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 14
+12 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+['ab', 'abc+x+b+x+b++ab+abc+a++a+abc++'] 2 1 2
+12 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 14
+12 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+['ab', 'abc+x+b+x+b++ab+abc+a++a+abc++'] 2 1 2
+12 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 14
+12 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '', ''] 15 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '', ''] 15 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '', ''] 15 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', '', '', 'x', '', '', '', 'a', '', 'a', 'c', 'a', '', 'a', 'a', 'c', ''] 20 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 13
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', '', '', 'x', '', '', '', 'a', '', 'a', 'c', 'a', '', 'a', 'a', 'c', ''] 20 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 13
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', '', '', 'x', '', '', '', 'a', '', 'a', 'c', 'a', '', 'a', 'a', 'c', ''] 20 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 13
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 2 lines
+['ab', 'abc#b#b', '', 'ab', 'abc##abc', ''] 5 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 13
+8 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+4 substitutions on 2 lines
+['ab', 'abc#b#b', '', 'ab', 'abc##abc', ''] 5 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 13
+8 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+4 substitutions on 2 lines
+['ab', 'abc#b#b', '', 'ab', 'abc##abc', ''] 5 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 2 1 2 13
+8 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ababcxbxbababcaaabc'] 1 19 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc-'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc-'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab-abc-x-b-x-b--ab-abc-a--a-abc-'] 1 1 2
+13 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '!'] 14 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 14 1 14 14
+1 change; after #2  0 seconds ago
+14 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '!'] 14 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 14 1 14 14
+1 change; after #2  0 seconds ago
+14 1
+"---
+
+14 more lines
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', '!'] 14 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 14 1 14 14
+1 change; after #2  0 seconds ago
+14 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 4 lines
+['aXabc', 'x', 'Xx', 'X', 'aXabc', 'a', '', 'a', 'abc', ''] 5 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 1 1 1 9
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b', 'ab', 'abc', 'a', 'a', 'abc'] 11 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+3 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b', 'ab', 'abc', 'a', 'a', 'abc'] 11 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+3 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+14 more lines
+3 substitutions on 3 lines
+['ab', 'abc', 'x', 'b', 'x', 'b', 'ab', 'abc', 'a', 'a', 'abc'] 11 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'b', 'x', 'b', '', 'ab', 'abc', 'a', '', 'a', 'abc', ''] 6 1 6 14
+3 fewer lines; after #2  0 seconds ago
+6 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a-'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a-'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a-'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a_ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+2 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 6
+2 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a_ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+2 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 6
+2 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a_ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+2 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 6
+2 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+16 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1
+16 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+16 more lines; after #1  0 seconds ago
+1 1
+"---
+
+16 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 8 1 1
+16 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+16 more lines; after #1  0 seconds ago
+1 1
+"---
+
+16 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: a\nb
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 16 1 1
+16 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+16 more lines; after #1  0 seconds ago
+1 1
+"---
+
+16 more lines
+8 substitutions on 4 lines
+['aZabc', 'Za', '', 'aZaZZZaZa', 'a', 'Za', 'abc', 'a'] 6 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 14
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+8 substitutions on 4 lines
+['aZabc', 'Za', '', 'aZaZZZaZa', 'a', 'Za', 'abc', 'a'] 6 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 14
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+8 substitutions on 4 lines
+['aZabc', 'Za', '', 'aZaZZZaZa', 'a', 'Za', 'abc', 'a'] 6 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 14
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc+x+a++ab+ab+b+x+ab+a+a+x+a+abc+a+'] 2 1 2
+14 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+14 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['ab', 'abc+x+a++ab+ab+b+x+ab+a+a+x+a+abc+a+'] 2 1 2
+14 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+14 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['ab', 'abc+x+a++ab+ab+b+x+ab+a+a+x+a+abc+a+'] 2 1 2
+14 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+14 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', ''] 17 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', ''] 17 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', ''] 17 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', 'a', '', 'a', '', 'a', '', '', '', 'x', 'a', '', 'a', 'a', 'x', 'a', 'a', 'c', 'a'] 22 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 15
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', 'a', '', 'a', '', 'a', '', '', '', 'x', 'a', '', 'a', 'a', 'x', 'a', 'a', 'c', 'a'] 22 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 15
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+7 substitutions on 7 lines
+['a', '', 'a', 'c', 'x', 'a', '', 'a', '', 'a', '', '', '', 'x', 'a', '', 'a', 'a', 'x', 'a', 'a', 'c', 'a'] 22 1 2
+7 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 15
+7 more lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '', 'ab', 'ab#x', 'ab#a#a', 'abc#'] 7 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+9 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '', 'ab', 'ab#x', 'ab#a#a', 'abc#'] 7 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+9 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '', 'ab', 'ab#x', 'ab#a#a', 'abc#'] 7 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 2 1 2 16
+9 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ababcxaababbxabaaxaabca'] 1 23 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab-abc-x-a--ab-ab-b-x-ab-a-a-x-a-abc-a'] 1 1 2
+15 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 16
+15 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a!'] 16 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 16 1 16 16
+1 change; after #2  0 seconds ago
+16 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a!'] 16 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 16 1 16 16
+1 change; after #2  0 seconds ago
+16 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a!'] 16 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 16 1 16 16
+1 change; after #2  0 seconds ago
+16 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+5 substitutions on 3 lines
+['aXabc', 'x', 'a', '', 'aXaXXx', 'aXa', 'a', 'x', 'a', 'abc', 'a'] 6 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 1 1 1 11
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+16 more lines
+['ab', 'abc', 'x', 'a', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'x', 'a', '', 'ab', 'ab', 'b', 'x', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a'] 4 1 4 5
+1 line less; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab-'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab-'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab-'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'aX'] 16 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'aX'] 16 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'aX'] 16 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['ab', 'abc', 'a', 'a_a', 'b', 'b', 'a', 'abc', 'abc_abc', 'abc', 'a', 'x_b_ab'] 12 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 20
+8 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['ab', 'abc', 'a', 'a_a', 'b', 'b', 'a', 'abc', 'abc_abc', 'abc', 'a', 'x_b_ab'] 12 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 20
+8 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['ab', 'abc', 'a', 'a_a', 'b', 'b', 'a', 'abc', 'abc_abc', 'abc', 'a', 'x_b_ab'] 12 1 2
+8 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 20
+8 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'Q', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 6 7
+1 line less; after #2  0 seconds ago
+6 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'Q', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 6 7
+1 line less; after #2  0 seconds ago
+6 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'Q', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 6 1 6 7
+1 line less; after #2  0 seconds ago
+6 1
+"---
+
+20 more lines
+6 substitutions on 5 lines
+['aZabc', 'a', 'a', '', 'a', 'ZZa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'Z', 'Z', 'aZ'] 15 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+6 substitutions on 5 lines
+['aZabc', 'a', 'a', '', 'a', 'ZZa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'Z', 'Z', 'aZ'] 15 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+6 substitutions on 5 lines
+['aZabc', 'a', 'a', '', 'a', 'ZZa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'Z', 'Z', 'aZ'] 15 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab', 'abc+a+a++a+b+b+a+abc+abc++abc+abc+a+x++b++ab+'] 2 1 2
+18 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 20
+18 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+['ab', 'abc+a+a++a+b+b+a+abc+abc++abc+abc+a+x++b++ab+'] 2 1 2
+18 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 20
+18 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+['ab', 'abc+a+a++a+b+b+a+abc+abc++abc+abc+a+x++b++ab+'] 2 1 2
+18 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 20
+18 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab', ''] 21 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab', ''] 21 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab', ''] 21 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+10 substitutions on 10 lines
+['a', '', 'a', 'c', 'a', 'a', '', 'a', '', '', '', '', 'a', 'a', 'c', 'a', 'c', '', 'a', 'c', 'a', 'c', 'a', 'x', '', '', '', '', 'a', ''] 30 1 2
+10 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+10 more lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+10 substitutions on 10 lines
+['a', '', 'a', 'c', 'a', 'a', '', 'a', '', '', '', '', 'a', 'a', 'c', 'a', 'c', '', 'a', 'c', 'a', 'c', 'a', 'x', '', '', '', '', 'a', ''] 30 1 2
+10 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+10 more lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+10 substitutions on 10 lines
+['a', '', 'a', 'c', 'a', 'a', '', 'a', '', '', '', '', 'a', 'a', 'c', 'a', 'c', '', 'a', 'c', 'a', 'c', 'a', 'x', '', '', '', '', 'a', ''] 30 1 2
+10 fewer lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+10 more lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '#b#a', 'abc', 'abc', '', 'abc', 'abc#x', '#', 'ab'] 9 1 2
+10 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 19
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '#b#a', 'abc', 'abc', '', 'abc', 'abc#x', '#', 'ab'] 9 1 2
+10 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 19
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+5 substitutions on 4 lines
+['ab', 'abc#a', '#b#a', 'abc', 'abc', '', 'abc', 'abc#x', '#', 'ab'] 9 1 2
+10 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 2 1 2 19
+10 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ababcaaabbaabcabcabcabcaxbab'] 1 27 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab-abc-a-a--a-b-b-a-abc-abc--abc-abc-a-x--b--ab'] 1 1 2
+19 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 20
+19 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab!'] 20 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 20 1 20 20
+1 change; after #2  0 seconds ago
+20 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab!'] 20 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 20 1 20 20
+1 change; after #2  0 seconds ago
+20 1
+"---
+
+20 more lines
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab!'] 20 1 2
+1 change; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 20 1 20 20
+1 change; after #2  0 seconds ago
+20 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 19
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 19
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+4 substitutions on 3 lines
+['aXabc', 'a', 'a', '', 'a', 'XXa', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'X', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 1 1 1 19
+4 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+4 substitutions on 4 lines
+['ab', 'abc', 'a', 'a', 'a', 'b', 'b', 'a', 'abc', 'abc', 'abc', 'abc', 'a', 'x', 'b', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 19
+4 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+4 substitutions on 4 lines
+['ab', 'abc', 'a', 'a', 'a', 'b', 'b', 'a', 'abc', 'abc', 'abc', 'abc', 'a', 'x', 'b', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 19
+4 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+20 more lines
+4 substitutions on 4 lines
+['ab', 'abc', 'a', 'a', 'a', 'b', 'b', 'a', 'abc', 'abc', 'abc', 'abc', 'a', 'x', 'b', 'ab'] 15 1 2
+4 more lines; before #2  0 seconds ago
+['ab', 'abc', 'a', 'a', '', 'a', 'b', 'b', 'a', 'abc', 'abc', '', 'abc', 'abc', 'a', 'x', '', 'b', '', 'ab'] 4 1 4 19
+4 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc-'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc-'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc-'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b_a', 'a', 'a', 'abc', 'abc', 'b_x', 'b', 'abc', 'x', 'b_b', 'abc'] 18 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 24
+6 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b_a', 'a', 'a', 'abc', 'abc', 'b_x', 'b', 'abc', 'x', 'b_b', 'abc'] 18 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 24
+6 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b_a', 'a', 'a', 'abc', 'abc', 'b_x', 'b', 'abc', 'x', 'b_b', 'abc'] 18 1 2
+6 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 24
+6 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'Q', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 7 8
+1 line less; after #2  0 seconds ago
+7 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'Q', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 7 8
+1 line less; after #2  0 seconds ago
+7 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'Q', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 2
+1 more line; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 7 1 7 8
+1 line less; after #2  0 seconds ago
+7 1
+"---
+
+25 more lines
+11 substitutions on 7 lines
+['aZa', 'aZaZa', 'abc', 'a', 'ZZ', 'a', 'a', 'a', 'abc', 'abc', 'Z', 'ZZabc', 'ZZ', 'Zabc'] 14 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+11 substitutions on 7 lines
+['aZa', 'aZaZa', 'abc', 'a', 'ZZ', 'a', 'a', 'a', 'abc', 'abc', 'Z', 'ZZabc', 'ZZ', 'Zabc'] 14 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+11 substitutions on 7 lines
+['aZa', 'aZaZa', 'abc', 'a', 'ZZ', 'a', 'a', 'a', 'abc', 'abc', 'Z', 'ZZabc', 'ZZ', 'Zabc'] 14 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab', 'a+ab+ab+a+abc+a+b+b++a+a+a+abc+abc+b++x+b+abc+x+b++b+abc+'] 2 1 2
+23 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 2 1 2 25
+23 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+25 more lines
+['ab', 'a+ab+ab+a+abc+a+b+b++a+a+a+abc+abc+b++x+b+abc+x+b++b+abc+'] 2 1 2
+23 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 2 1 2 25
+23 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+25 more lines
+['ab', 'a+ab+ab+a+abc+a+b+b++a+a+a+abc+abc+b++x+b+abc+x+b++b+abc+'] 2 1 2
+23 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 2 1 2 25
+23 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc', ''] 26 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc', ''] 26 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc', ''] 26 1 2
+1 line less; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+1 more line; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+14 substitutions on 14 lines
+['a', '', 'a', 'a', '', 'a', '', 'a', 'a', 'c', 'a', '', '', '', '', '', 'a', 'a', 'a', 'a', 'c', 'a', 'c', '', '', '', 'x', '', '', 'a', 'c', 'x', '', '', '', '', '', 'a', 'c'] 39 1 2
+14 fewer lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+14 more lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+14 substitutions on 14 lines
+['a', '', 'a', 'a', '', 'a', '', 'a', 'a', 'c', 'a', '', '', '', '', '', 'a', 'a', 'a', 'a', 'c', 'a', 'c', '', '', '', 'x', '', '', 'a', 'c', 'x', '', '', '', '', '', 'a', 'c'] 39 1 2
+14 fewer lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+14 more lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+14 substitutions on 14 lines
+['a', '', 'a', 'a', '', 'a', '', 'a', 'a', 'c', 'a', '', '', '', '', '', 'a', 'a', 'a', 'a', 'c', 'a', 'c', '', '', '', 'x', '', '', 'a', 'c', 'x', '', '', '', '', '', 'a', 'c'] 39 1 2
+14 fewer lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+14 more lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+10 substitutions on 5 lines
+['ab#ab', 'ab#abc#b##a#abc', 'abc##b', 'abc#b', '#abc'] 5 1 2
+20 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+20 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+10 substitutions on 5 lines
+['ab#ab', 'ab#abc#b##a#abc', 'abc##b', 'abc#b', '#abc'] 5 1 2
+20 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+20 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+10 substitutions on 5 lines
+['ab#ab', 'ab#abc#b##a#abc', 'abc##b', 'abc#b', '#abc'] 5 1 2
+20 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+20 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abaababaabcabbaaaabcabcbxbabcxbbabc'] 1 33 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-a-ab-ab-a-abc-a-b-b--a-a-a-abc-abc-b--x-b-abc-x-b--b-abc'] 1 1 2
+24 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+24 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc!'] 25 1 2
+1 change; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 25 1 25 25
+1 change; after #2  0 seconds ago
+25 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc!'] 25 1 2
+1 change; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 25 1 25 25
+1 change; after #2  0 seconds ago
+25 1
+"---
+
+25 more lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc!'] 25 1 2
+1 change; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 25 1 25 25
+1 change; after #2  0 seconds ago
+25 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+9 substitutions on 7 lines
+['aXa', 'aXaXa', 'abc', 'a', 'XX', 'a', 'a', 'a', 'abc', 'abc', 'X', 'x', 'Xabc', 'x', 'X', 'Xabc'] 16 1 2
+9 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 1 1 1 25
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', 'a', 'a', 'a', 'abc', 'abc', 'b', 'x', 'b', 'abc', 'x', 'b', 'b', 'abc'] 20 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 23
+3 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', 'a', 'a', 'a', 'abc', 'abc', 'b', 'x', 'b', 'abc', 'x', 'b', 'b', 'abc'] 20 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 23
+3 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+25 more lines
+3 substitutions on 3 lines
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', 'a', 'a', 'a', 'abc', 'abc', 'b', 'x', 'b', 'abc', 'x', 'b', 'b', 'abc'] 20 1 2
+3 more lines; before #2  0 seconds ago
+['ab', 'a', 'ab', 'ab', 'a', 'abc', 'a', 'b', 'b', '', 'a', 'a', 'a', 'abc', 'abc', 'b', '', 'x', 'b', 'abc', 'x', 'b', '', 'b', 'abc'] 9 1 9 23
+3 fewer lines; after #2  0 seconds ago
+9 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', 'b'] 1 17 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', 'b'] 1 17 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abc-a-abc-abc-b-a-ab-x-ab-', 'b'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abc-a-abc-abc-b-a-ab-x-ab-', 'b'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', 'b'] 1 17 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', 'b'] 1 17 2
+9 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', '', 'b'] 1 16 2
+8 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['abcaabcabcbaabxab', '', 'b'] 1 16 2
+8 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+3 substitutions on 3 lines
+['abc', 'a', 'abc', 'abc', 'a', 'ax', 'a', 'b'] 7 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 5 1 5 10
+3 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+11 more lines
+3 substitutions on 3 lines
+['abc', 'a', 'abc', 'abc', 'a', 'ax', 'a', 'b'] 7 1 2
+3 more lines; before #2  0 seconds ago
+['abc', 'a', 'abc', 'abc', 'b', 'a', 'ab', 'x', 'ab', '', 'b'] 5 1 5 10
+3 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+11 more lines
+['babcxxaabb', 'a'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['babcxxaabb', 'a'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['b-abc-x-x-a-a-b-b--', 'a'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['b-abc-x-x-a-a-b-b--', 'a'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['babcxxaabb', 'a'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['babcxxaabb', 'a'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['babcxxaabb', '', 'a'] 1 10 2
+8 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['babcxxaabb', '', 'a'] 1 10 2
+8 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+3 substitutions on 2 lines
+['abc', 'x', 'x', 'a', 'a', '', '', 'a'] 6 1 2
+3 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 9
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+3 substitutions on 2 lines
+['abc', 'x', 'x', 'a', 'a', '', '', 'a'] 6 1 2
+3 more lines; before #2  0 seconds ago
+['b', 'abc', 'x', 'x', 'a', 'a', 'b', 'b', '', '', 'a'] 1 1 1 9
+3 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', 'a'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', 'a'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['x-ab-ab-abc-a-a-a---', 'a'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['x-ab-ab-abc-a-a-a---', 'a'] 1 1 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', 'a'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', 'a'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', '', 'a'] 1 11 2
+8 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['xabababcaaa', '', 'a'] 1 11 2
+8 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 1 1 1 9
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+11 more lines
+['x', 'aaabc', 'a', 'a', 'a', '', '', '', 'a'] 2 1 2
+2 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 2 1 2 4
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+11 more lines
+['x', 'aaabc', 'a', 'a', 'a', '', '', '', 'a'] 2 1 2
+2 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'abc', 'a', 'a', 'a', '', '', '', 'a'] 2 1 2 4
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', 'b'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', 'b'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['x-ab-ab-x-abc-b-x-abc-x-b-', 'b'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['x-ab-ab-x-abc-b-x-abc-x-b-', 'b'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', 'b'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', 'b'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', '', 'b'] 1 16 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['xababxabcbxabcxb', '', 'b'] 1 16 2
+9 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+4 substitutions on 3 lines
+['x', 'aax', 'abc', 'x', 'abc', 'x', '', 'b'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 2 1 2 11
+4 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+4 substitutions on 3 lines
+['x', 'aax', 'abc', 'x', 'abc', 'x', '', 'b'] 7 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'ab', 'ab', 'x', 'abc', 'b', 'x', 'abc', 'x', 'b', '', 'b'] 2 1 2 11
+4 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+12 more lines
+['babbxbbbxb', 'x'] 1 10 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['babbxbbbxb', 'x'] 1 10 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-ab-b-x-b-b-b-x-b--', 'x'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['b-ab-b-x-b-b-b-x-b--', 'x'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['babbxbbbxb', 'x'] 1 10 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['babbxbbbxb', 'x'] 1 10 2
+10 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['babbxbbbxb', '', 'x'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['babbxbbbxb', '', 'x'] 1 10 2
+9 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+7 substitutions on 3 lines
+['ax', 'x', '', '', 'x'] 3 1 2
+7 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 10
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+7 substitutions on 3 lines
+['ax', 'x', '', '', 'x'] 3 1 2
+7 more lines; before #2  0 seconds ago
+['b', 'ab', 'b', 'x', 'b', 'b', 'b', 'x', 'b', '', '', 'x'] 1 1 1 10
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', 'abc'] 1 11 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', 'abc'] 1 11 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['a-abc-a-a-a-a-x-ab---', 'abc'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['a-abc-a-a-a-a-x-ab---', 'abc'] 1 1 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', 'abc'] 1 11 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', 'abc'] 1 11 2
+10 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', '', 'abc'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['aabcaaaaxab', '', 'abc'] 1 11 2
+9 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 1 1 1 10
+9 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+12 more lines
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'a', '', '', 'abc'] 8 1 2
+1 more line; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 8 1 8 9
+1 line less; after #2  0 seconds ago
+8 1
+"---
+
+12 more lines
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'a', '', '', 'abc'] 8 1 2
+1 more line; before #2  0 seconds ago
+['a', 'abc', 'a', 'a', 'a', 'a', 'x', 'ab', '', '', '', 'abc'] 8 1 8 9
+1 line less; after #2  0 seconds ago
+8 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', 'a'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', 'a'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['x-abc-ab-x-b-a-b-b-abc-x-x-', 'a'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['x-abc-ab-x-b-a-b-b-abc-x-x-', 'a'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', 'a'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', 'a'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', '', 'a'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['xabcabxbabbabcxx', '', 'a'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+4 substitutions on 3 lines
+['x', 'abc', 'ax', 'a', 'abc', 'x', 'x', '', 'a'] 5 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 3 1 3 9
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+13 more lines
+4 substitutions on 3 lines
+['x', 'abc', 'ax', 'a', 'abc', 'x', 'x', '', 'a'] 5 1 2
+4 more lines; before #2  0 seconds ago
+['x', 'abc', 'ab', 'x', 'b', 'a', 'b', 'b', 'abc', 'x', 'x', '', 'a'] 3 1 3 9
+4 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+13 more lines
+['abbbaaababcabcba', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abbbaaababcabcba', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['ab-b-b-a-a-ab-abc-abc-b-a--', 'ab'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['ab-b-b-a-a-ab-abc-abc-b-a--', 'ab'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abbbaaababcabcba', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abbbaaababcabcba', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abbbaaababcabcba', '', 'ab'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abbbaaababcabcba', '', 'ab'] 1 16 2
+10 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+5 substitutions on 3 lines
+['aa', 'a', 'aabc', 'abc', 'a', '', '', 'ab'] 5 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 10
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+5 substitutions on 3 lines
+['aa', 'a', 'aabc', 'abc', 'a', '', '', 'ab'] 5 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'b', 'b', 'a', 'a', 'ab', 'abc', 'abc', 'b', 'a', '', '', 'ab'] 1 1 1 10
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', 'x'] 1 14 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', 'x'] 1 14 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['ab-x-x-b-a-ab-b-abc-ab---', 'x'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['ab-x-x-b-a-ab-b-abc-ab---', 'x'] 1 1 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', 'x'] 1 14 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', 'x'] 1 14 2
+11 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', '', 'x'] 1 14 2
+10 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+['abxxbaabbabcab', '', 'x'] 1 14 2
+10 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 11
+10 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+5 substitutions on 4 lines
+['ax', 'x', 'a', 'aabc', 'a', '', '', 'x'] 5 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 10
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+13 more lines
+5 substitutions on 4 lines
+['ax', 'x', 'a', 'aabc', 'a', '', '', 'x'] 5 1 2
+5 more lines; before #2  0 seconds ago
+['ab', 'x', 'x', 'b', 'a', 'ab', 'b', 'abc', 'ab', '', '', '', 'x'] 1 1 1 10
+5 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', 'b'] 1 19 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', 'b'] 1 19 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['a-a-abc-ab-ab-a-a-x-a-abc-a-ab-', 'b'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['a-a-abc-ab-ab-a-a-x-a-abc-a-ab-', 'b'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', 'b'] 1 19 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', 'b'] 1 19 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', '', 'b'] 1 18 2
+11 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcababaaxaabcaab', '', 'b'] 1 18 2
+11 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+3 substitutions on 2 lines
+['a', 'a', 'abc', 'aaa', 'a', 'x', 'a', 'abc', 'a', 'a', 'b'] 10 1 2
+3 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 4 1 4 13
+3 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+14 more lines
+3 substitutions on 2 lines
+['a', 'a', 'abc', 'aaa', 'a', 'x', 'a', 'abc', 'a', 'a', 'b'] 10 1 2
+3 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'ab', 'ab', 'a', 'a', 'x', 'a', 'abc', 'a', 'ab', '', 'b'] 4 1 4 13
+3 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+14 more lines
+['aaabcxababababaabc', 'a'] 1 18 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcxababababaabc', 'a'] 1 18 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['a-a-abc-x-ab-a-b-ab-ab-a-abc--', 'a'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['a-a-abc-x-ab-a-b-ab-ab-a-abc--', 'a'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcxababababaabc', 'a'] 1 18 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcxababababaabc', 'a'] 1 18 2
+12 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcxababababaabc', '', 'a'] 1 18 2
+11 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['aaabcxababababaabc', '', 'a'] 1 18 2
+11 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+4 substitutions on 2 lines
+['a', 'a', 'abc', 'x', 'aa', 'aaa', 'abc', '', '', 'a'] 6 1 2
+4 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 5 1 5 10
+4 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+14 more lines
+4 substitutions on 2 lines
+['a', 'a', 'abc', 'x', 'aa', 'aaa', 'abc', '', '', 'a'] 6 1 2
+4 more lines; before #2  0 seconds ago
+['a', 'a', 'abc', 'x', 'ab', 'a', 'b', 'ab', 'ab', 'a', 'abc', '', '', 'a'] 5 1 5 10
+4 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', 'ab'] 1 16 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', 'ab'] 1 16 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abc-x-a-x-abc-abc-x-a-x-a---', 'ab'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abc-x-a-x-abc-abc-x-a-x-a---', 'ab'] 1 1 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', 'ab'] 1 16 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', 'ab'] 1 16 2
+12 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 13
+12 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', '', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+['abcxaxabcabcxaxa', '', 'ab'] 1 16 2
+11 more lines; before #2  0 seconds ago
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1 12
+11 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+14 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 1 1 1
+14 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+14 more lines; after #1  0 seconds ago
+1 1
+"---
+
+14 more lines
+Error in {file}:
+line    7:
+E486: Pattern not found: b\n
+['abc', 'x', 'a', 'x', 'abc', 'abc', 'x', 'a', 'x', 'a', '', '', '', 'ab'] 14 1 1
+14 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 1
+14 more lines; after #1  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', 'abc'] 1 26 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', 'abc'] 1 26 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abc-ab-abc-x-abc-abc-abc-x-a-x-x-a-ab-x-', 'abc'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abc-ab-abc-x-abc-abc-abc-x-a-x-x-a-ab-x-', 'abc'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', 'abc'] 1 26 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', 'abc'] 1 26 2
+14 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', '', 'abc'] 1 26 2
+13 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcababcxabcabcabcxaxxaabx', '', 'abc'] 1 26 2
+13 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abc', 'aabc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ax', '', 'abc'] 12 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 2 1 2 14
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['abc', 'aabc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ax', '', 'abc'] 12 1 2
+2 more lines; before #2  0 seconds ago
+['abc', 'ab', 'abc', 'x', 'abc', 'abc', 'abc', 'x', 'a', 'x', 'x', 'a', 'ab', 'x', '', 'abc'] 2 1 2 14
+2 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', 'ab'] 1 20 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', 'ab'] 1 20 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['a-b-a-abc-x-abc-ab-a-ab-ab-b-x-b--', 'ab'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['a-b-a-abc-x-abc-ab-a-ab-ab-b-x-b--', 'ab'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', 'ab'] 1 20 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', 'ab'] 1 20 2
+14 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', '', 'ab'] 1 20 2
+13 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abaabcxabcabaababbxb', '', 'ab'] 1 20 2
+13 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+6 substitutions on 4 lines
+['a', 'a', 'abc', 'x', 'abc', 'aa', 'aax', '', '', 'ab'] 8 1 2
+6 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 2 1 2 14
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+6 substitutions on 4 lines
+['a', 'a', 'abc', 'x', 'abc', 'aa', 'aax', '', '', 'ab'] 8 1 2
+6 more lines; before #2  0 seconds ago
+['a', 'b', 'a', 'abc', 'x', 'abc', 'ab', 'a', 'ab', 'ab', 'b', 'x', 'b', '', '', 'ab'] 2 1 2 14
+6 fewer lines; after #2  0 seconds ago
+2 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', 'b'] 1 24 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', 'b'] 1 24 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abc-abc-b-ab-abc-ab-b-abc-b-b-abc-b---', 'b'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abc-abc-b-ab-abc-ab-b-abc-b-b-abc-b---', 'b'] 1 1 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', 'b'] 1 24 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', 'b'] 1 24 2
+14 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 15
+14 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', '', 'b'] 1 24 2
+13 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+['abcabcbababcabbabcbbabcb', '', 'b'] 1 24 2
+13 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 1 1 1 14
+13 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+16 more lines
+7 substitutions on 4 lines
+['abc', 'abc', 'aabc', 'aabc', 'abc', '', '', '', 'b'] 6 1 2
+7 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 3 1 3 13
+7 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+16 more lines
+7 substitutions on 4 lines
+['abc', 'abc', 'aabc', 'aabc', 'abc', '', '', '', 'b'] 6 1 2
+7 more lines; before #2  0 seconds ago
+['abc', 'abc', 'b', 'ab', 'abc', 'ab', 'b', 'abc', 'b', 'b', 'abc', 'b', '', '', '', 'b'] 3 1 3 13
+7 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', 'ab'] 1 34 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', 'ab'] 1 34 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['b-abc-ab-a-a-ab-b-a-abc-abc-ab-b-abc-abc-x-abc-ab-x-', 'ab'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['b-abc-ab-a-a-ab-b-a-abc-abc-ab-b-abc-abc-x-abc-ab-x-', 'ab'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', 'ab'] 1 34 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', 'ab'] 1 34 2
+18 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', '', 'ab'] 1 34 2
+17 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['babcabaaabbaabcabcabbabcabcxabcabx', '', 'ab'] 1 34 2
+17 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+7 substitutions on 5 lines
+['abc', 'aa', 'a', 'aa', 'abc', 'abc', 'aabc', 'abc', 'x', 'abc', 'ax', '', 'ab'] 11 1 2
+7 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 18
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+7 substitutions on 5 lines
+['abc', 'aa', 'a', 'aa', 'abc', 'abc', 'aabc', 'abc', 'x', 'abc', 'ax', '', 'ab'] 11 1 2
+7 more lines; before #2  0 seconds ago
+['b', 'abc', 'ab', 'a', 'a', 'ab', 'b', 'a', 'abc', 'abc', 'ab', 'b', 'abc', 'abc', 'x', 'abc', 'ab', 'x', '', 'ab'] 1 1 1 18
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', 'a'] 1 26 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', 'a'] 1 26 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['a-a-ab-x-a-ab-x-ab-ab-x-a-b-abc-abc-b-a-ab--', 'a'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['a-a-ab-x-a-ab-x-ab-ab-x-a-b-abc-abc-b-a-ab--', 'a'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', 'a'] 1 26 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', 'a'] 1 26 2
+18 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', '', 'a'] 1 26 2
+17 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aaabxaabxababxababcabcbaab', '', 'a'] 1 26 2
+17 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+7 substitutions on 6 lines
+['a', 'a', 'ax', 'a', 'ax', 'aax', 'a', 'abc', 'abc', 'a', 'a', '', 'a'] 11 1 2
+7 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 3 1 3 18
+7 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+20 more lines
+7 substitutions on 6 lines
+['a', 'a', 'ax', 'a', 'ax', 'aax', 'a', 'abc', 'abc', 'a', 'a', '', 'a'] 11 1 2
+7 more lines; before #2  0 seconds ago
+['a', 'a', 'ab', 'x', 'a', 'ab', 'x', 'ab', 'ab', 'x', 'a', 'b', 'abc', 'abc', 'b', 'a', 'ab', '', '', 'a'] 3 1 3 18
+7 fewer lines; after #2  0 seconds ago
+3 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', 'x'] 1 24 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', 'x'] 1 24 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['a-abc-a-x-ab-a-b-b-abc-ab-b-a-abc-x-a-b---', 'x'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['a-abc-a-x-ab-a-b-b-abc-ab-b-a-abc-x-a-b---', 'x'] 1 1 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', 'x'] 1 24 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', 'x'] 1 24 2
+18 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 19
+18 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', '', 'x'] 1 24 2
+17 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+['aabcaxababbabcabbaabcxab', '', 'x'] 1 24 2
+17 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 1 1 1 18
+17 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+20 more lines
+6 substitutions on 4 lines
+['a', 'abc', 'a', 'x', 'aa', 'abc', 'aa', 'abc', 'x', 'a', '', '', '', 'x'] 11 1 2
+6 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 5 1 5 17
+6 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+20 more lines
+6 substitutions on 4 lines
+['a', 'abc', 'a', 'x', 'aa', 'abc', 'aa', 'abc', 'x', 'a', '', '', '', 'x'] 11 1 2
+6 more lines; before #2  0 seconds ago
+['a', 'abc', 'a', 'x', 'ab', 'a', 'b', 'b', 'abc', 'ab', 'b', 'a', 'abc', 'x', 'a', 'b', '', '', '', 'x'] 5 1 5 17
+6 fewer lines; after #2  0 seconds ago
+5 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', 'b'] 1 39 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', 'b'] 1 39 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['x-x-x-b-abc-b-a-abc-abc-b-abc-abc-b-a-abc-x-x-x-ab-abc-ab-b-a-', 'b'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['x-x-x-b-abc-b-a-abc-abc-b-abc-abc-b-a-abc-x-x-x-ab-abc-ab-b-a-', 'b'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', 'b'] 1 39 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', 'b'] 1 39 2
+23 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', '', 'b'] 1 39 2
+22 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['xxxbabcbaabcabcbabcabcbaabcxxxababcabba', '', 'b'] 1 39 2
+22 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+7 substitutions on 6 lines
+['x', 'x', 'x', 'abc', 'a', 'abc', 'abc', 'abc', 'abc', 'a', 'abc', 'x', 'x', 'x', 'aabc', 'aa', '', 'b'] 16 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 4 1 4 23
+7 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+25 more lines
+7 substitutions on 6 lines
+['x', 'x', 'x', 'abc', 'a', 'abc', 'abc', 'abc', 'abc', 'a', 'abc', 'x', 'x', 'x', 'aabc', 'aa', '', 'b'] 16 1 2
+7 more lines; before #2  0 seconds ago
+['x', 'x', 'x', 'b', 'abc', 'b', 'a', 'abc', 'abc', 'b', 'abc', 'abc', 'b', 'a', 'abc', 'x', 'x', 'x', 'ab', 'abc', 'ab', 'b', 'a', '', 'b'] 4 1 4 23
+7 fewer lines; after #2  0 seconds ago
+4 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', 'x'] 1 38 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', 'x'] 1 38 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['b-abc-a-ab-x-ab-ab-a-ab-x-a-a-abc-ab-x-abc-ab-abc-a-b-a-abc--', 'x'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['b-abc-a-ab-x-ab-ab-a-ab-x-a-a-abc-ab-x-abc-ab-abc-a-b-a-abc--', 'x'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', 'x'] 1 38 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', 'x'] 1 38 2
+23 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', '', 'x'] 1 38 2
+22 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['babcaabxababaabxaaabcabxabcababcabaabc', '', 'x'] 1 38 2
+22 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+8 substitutions on 7 lines
+['abc', 'a', 'ax', 'aaa', 'ax', 'a', 'a', 'abc', 'ax', 'abc', 'aabc', 'a', 'a', 'abc', '', '', 'x'] 13 1 2
+8 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 21
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+8 substitutions on 7 lines
+['abc', 'a', 'ax', 'aaa', 'ax', 'a', 'a', 'abc', 'ax', 'abc', 'aabc', 'a', 'a', 'abc', '', '', 'x'] 13 1 2
+8 more lines; before #2  0 seconds ago
+['b', 'abc', 'a', 'ab', 'x', 'ab', 'ab', 'a', 'ab', 'x', 'a', 'a', 'abc', 'ab', 'x', 'abc', 'ab', 'abc', 'a', 'b', 'a', 'abc', '', '', 'x'] 1 1 1 21
+8 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', 'b'] 1 32 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', 'b'] 1 32 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-b-abc-b-x-x-abc-abc-x-a-b-abc-x-x-ab-x-b-x-x-x-ab---', 'b'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['ab-b-abc-b-x-x-abc-abc-x-a-b-abc-x-x-ab-x-b-x-x-x-ab---', 'b'] 1 1 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', 'b'] 1 32 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', 'b'] 1 32 2
+23 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 24
+23 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', '', 'b'] 1 32 2
+22 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+['abbabcbxxabcabcxababcxxabxbxxxab', '', 'b'] 1 32 2
+22 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 23
+22 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+7 substitutions on 6 lines
+['aabc', 'x', 'x', 'abc', 'abc', 'x', 'a', 'abc', 'x', 'x', 'ax', 'x', 'x', 'x', 'a', '', '', 'b'] 15 1 2
+7 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 22
+7 fewer lines; after #2  0 seconds ago
+1 1
+"---
+
+25 more lines
+7 substitutions on 6 lines
+['aabc', 'x', 'x', 'abc', 'abc', 'x', 'a', 'abc', 'x', 'x', 'ax', 'x', 'x', 'x', 'a', '', '', 'b'] 15 1 2
+7 more lines; before #2  0 seconds ago
+['ab', 'b', 'abc', 'b', 'x', 'x', 'abc', 'abc', 'x', 'a', 'b', 'abc', 'x', 'x', 'ab', 'x', 'b', 'x', 'x', 'x', 'ab', '', '', '', 'b'] 1 1 1 22
+7 fewer lines; after #2  0 seconds ago
+1 1

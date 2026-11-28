@@ -27,6 +27,14 @@ pub(super) struct Options {
     pub softtabstop: i64,
     /// `'undolevels'`: how many undo steps are kept (-1: none).
     pub undolevels: i64,
+    /// `'undoreload'` (global): a reload of a buffer with up to this many lines is saved for undo (-1: always).
+    pub undoreload: i64,
+    /// `'modified'`: scratch fields between `Editor::ff_in` and `Editor::ff_out`: `Buffer::modified` (`b_changed`, which `:set`
+    /// and `!` work on), whether `'fileformat'` differs from when the file was read (shown as modified too), and whether
+    /// the option was set.
+    pub modified: bool,
+    pub ff_changed: bool,
+    pub modified_set: bool,
     /// `'varsofttabstop'` as it was set, and its stops (as `vartabstop`).
     pub varsofttabstop: String,
     pub vsts_array: Vec<usize>,
@@ -132,6 +140,10 @@ impl Default for Options {
             smarttab: true,
             softtabstop: 0,
             undolevels: 1000,
+            undoreload: 10000,
+            modified: false,
+            ff_changed: false,
+            modified_set: false,
             varsofttabstop: String::new(),
             vsts_array: Vec::new(),
             expandtab: true,
@@ -246,6 +258,8 @@ pub(super) const NAMES: &[(&str, Option<&str>, bool)] = &[
     ("smarttab", Some("sta"), true),
     ("softtabstop", Some("sts"), false),
     ("undolevels", Some("ul"), false),
+    ("undoreload", Some("ur"), false),
+    ("modified", Some("mod"), true),
     ("varsofttabstop", Some("vsts"), false),
     ("expandtab", Some("et"), true),
     ("shiftwidth", Some("sw"), false),
@@ -329,6 +343,7 @@ impl Options {
         (to.msg_hit_enter, to.msg_wait, to.msg_history) = (self.msg_hit_enter, self.msg_wait, self.msg_history);
         to.shortmess = self.shortmess.clone();
         to.smarttab = self.smarttab;
+        to.undoreload = self.undoreload;
         to.cmdwinheight = self.cmdwinheight;
         to.more = self.more;
         (to.wildmenu, to.wildmode, to.wildoptions) = (self.wildmenu, self.wildmode.clone(), self.wildoptions.clone());
@@ -403,6 +418,7 @@ impl Options {
             self.set_bin(on);
             return;
         }
+        self.modified_set |= name == "modified";
         if let Some(f) = self.flag(name) {
             *f = on;
         }
@@ -536,6 +552,7 @@ impl Options {
             "equalalways" => Some(&mut self.equalalways),
             "wildignorecase" => Some(&mut self.wildignorecase),
             "modeline" => Some(&mut self.modeline),
+            "modified" => Some(&mut self.modified),
             "endofline" => Some(&mut self.endofline),
             "fixendofline" => Some(&mut self.fixendofline),
             "binary" => Some(&mut self.binary),
@@ -555,6 +572,7 @@ impl Options {
             "smarttab" => on(self.smarttab, name),
             "softtabstop" => format!("softtabstop={}", self.softtabstop),
             "undolevels" => format!("undolevels={}", self.undolevels),
+            "undoreload" => format!("undoreload={}", self.undoreload),
             "varsofttabstop" => format!("varsofttabstop={}", self.varsofttabstop),
             "list" => on(self.list, name),
             "ignorecase" => on(self.ignorecase, name),
@@ -575,6 +593,7 @@ impl Options {
             "winminwidth" => format!("winminwidth={}", self.winminwidth),
             "wildignorecase" => on(self.wildignorecase, name),
             "modeline" => on(self.modeline, name),
+            "modified" => on(self.modified || self.ff_changed, name),
             "endofline" => on(self.endofline, name),
             "fixendofline" => on(self.fixendofline, name),
             "binary" => on(self.binary, name),
@@ -640,6 +659,7 @@ impl Options {
             // Any number that fits 32 bits: a negative one is 'shiftwidth'.
             "softtabstop" => self.softtabstop = value.parse().map_err(|_| invalid())?,
             "undolevels" => self.undolevels = value.parse().map_err(|_| invalid())?,
+            "undoreload" => self.undoreload = value.parse().map_err(|_| invalid())?,
             "background" => {
                 self.background = match value {
                     "dark" => Background::Dark,
@@ -720,7 +740,7 @@ impl Options {
         };
         match name {
             "tabstop" => ok(1, 9999, POSITIVE),
-            "softtabstop" | "undolevels" => ok(i64::from(i32::MIN), i64::MAX, INVALID),
+            "softtabstop" | "undolevels" | "undoreload" => ok(i64::from(i32::MIN), i64::MAX, INVALID),
             "shiftwidth" | "report" | "scrolloff" | "winminheight" | "winminwidth" => ok(0, i64::MAX, POSITIVE),
             "cmdwinheight" | "winheight" | "winwidth" | "pumwidth" => ok(1, i64::MAX, POSITIVE),
             "laststatus" => ok(0, 3, INVALID),

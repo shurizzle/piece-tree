@@ -2555,7 +2555,7 @@ fn stats_compact_and_idle() {
     assert_eq!(text(&e), "bdfgh");
     // A clean buffer stays clean.
     let mut e = run("ab", "x");
-    e.buf.saved = e.buf.doc.text().clone();
+    e.buf.modified = false;
     feed(&mut e, ":compact\n");
     assert!(!e.is_dirty());
     // Idle compaction: only past `compactat`, only in Normal mode.
@@ -2718,6 +2718,72 @@ fn insert_mode_survives_drawing_other_windows() {
     e.frame(20, 4);
     feed(&mut e, "c");
     assert_eq!(text(&e), "abc");
+}
+
+/// Values recorded from Neovim 0.12.6: `u_unchanged` after a write or a reload (`UH_CHANGED`), `'undoreload'` and
+/// `u_find_first_changed`.
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn modified_flag_after_write_and_reload_matches_neovim() {
+    let dir = temp_dir("modflag");
+    let path = dir.join("f.txt");
+    fs::write(&path, "l1\nl2\nl3\nl4\nl5\n").unwrap();
+    let mut e = Editor::open(path.clone()).unwrap();
+    // A write clears the flag and every header: undoing the change makes the buffer modified, redoing it clears it again.
+    feed(&mut e, "jjx:w\n");
+    assert!(e.wait_saves());
+    assert!(!e.is_dirty());
+    feed(&mut e, "u");
+    assert_eq!((text(&e).lines().nth(2), e.is_dirty()), (Some("l3"), true));
+    feed(&mut e, "\x12");
+    assert_eq!((text(&e).lines().nth(2), e.is_dirty()), (Some("3"), false));
+    // The steps made while the write runs count from the write: undoing the first of them is back to what was written.
+    feed(&mut e, "x:w\nix\x1bu");
+    assert!(!e.is_dirty(), "undone to the text of the write");
+    feed(&mut e, "u");
+    assert!(e.is_dirty());
+    feed(&mut e, "\x12\x12");
+    assert!(e.is_dirty());
+    assert!(e.wait_saves());
+    feed(&mut e, ":w\n");
+    assert!(e.wait_saves());
+    assert!(!e.is_dirty());
+    // A reload is an undo step, and undoing it modifies the buffer; the cursor goes to the first line that differs.
+    feed(&mut e, "2Gx4G:e!\n");
+    assert_eq!((text(&e).lines().nth(1), e.is_dirty()), (Some("l2"), false));
+    feed(&mut e, "u");
+    assert_eq!((text(&e).lines().nth(1), e.is_dirty(), pos(&e)), (Some("2"), true, (1, 0)));
+    feed(&mut e, "\x12");
+    assert_eq!((e.is_dirty(), pos(&e)), (false, (1, 0)));
+    // Lines added at the end: the cursor goes to the first one that is not there any more.
+    feed(&mut e, "1G$Go\x1b:e!\n");
+    assert_eq!(e.line_count(), 5);
+    feed(&mut e, "u");
+    assert_eq!((e.line_count(), pos(&e)), (6, (4, 0)));
+    // `'undoreload'`: the reload is saved when the buffer has at most that many lines (-1: always), else it cannot be undone.
+    for (ur, lines, undone) in [(0, 5, false), (-1, 5, true), (5, 5, true), (4, 5, false)] {
+        feed(&mut e, &format!(":e!\n:set ur={ur}\nGx:e!\nu"));
+        assert_eq!((e.line_count(), text(&e).lines().nth(lines - 1).map(str::to_string), e.is_dirty()), (5, Some(if undone { "5" } else { "l5" }.into()), undone), "undoreload={ur}");
+    }
+    // `'modified'` and `'fileformat'`: `:set nomodified` forgets the line ending, undo flags stay.
+    feed(&mut e, ":e!\n:set ff=dos\n");
+    assert!(e.is_dirty());
+    feed(&mut e, ":set invmodified\n");
+    assert!(e.is_dirty(), "the flag is inverted, the changed line ending still shows");
+    feed(&mut e, ":set nomodified\n");
+    assert!(!e.is_dirty());
+    // `file_ff_differs`: a changed `'endofline'` counts only when the last line break is written as it is.
+    feed(&mut e, ":e!\n:set noeol\n");
+    assert!(!e.is_dirty());
+    feed(&mut e, ":set nofixeol\n");
+    assert!(e.is_dirty());
+    feed(&mut e, ":set eol\n");
+    assert!(!e.is_dirty());
+    feed(&mut e, ":set noeol bin\n");
+    assert!(e.is_dirty());
+    feed(&mut e, ":set nomod\n");
+    assert!(!e.is_dirty());
+    fs::remove_dir_all(&dir).unwrap();
 }
 
 #[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
@@ -5757,4 +5823,15 @@ fn freed_undo_headers_let_go_of_their_document_versions() {
         feed(&mut e, "x");
     }
     assert!(e.buf.doc.history_len() <= 2, "{} versions kept", e.buf.doc.history_len());
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic or tree-sitter (C code Miri cannot run); the unsafe of rim is reached by the reader_* tests of syntax/tests.rs")]
+#[test]
+fn confirm_sees_the_line_break_after_the_last_line() {
+    // Values recorded from Neovim 0.12.6: the break after the last line is a match of `\n`, asked about last.
+    for (keys, want) in [("yy", "a-b-"), ("yn", "a-b"), ("ny", "a\nb-"), ("a", "a-b-"), ("yq", "a-b"), ("yl", "a-b-")] {
+        let mut e = ed("a\nb");
+        feed(&mut e, &format!(":%s/\\n/-/gc\n{keys}"));
+        assert_eq!(text(&e), want, "{keys}");
+    }
 }

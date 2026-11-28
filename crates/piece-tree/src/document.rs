@@ -303,6 +303,27 @@ impl Document {
         Replacement { base: self.text().clone(), next, edits }
     }
 
+    /// [`Document::plan_replace`] where the last line ends with a line break that is not in the text: a match can
+    /// take it (a `\n` at the end of the last line, as Vim's `:s` does). The edit that takes it is cut short by
+    /// one byte, so it ends at the end of the text.
+    pub fn plan_replace_eol(&self, re: &Regex, rep: &str, mut keep: impl FnMut(Range<usize>) -> bool) -> Replacement {
+        self.plan_eol(re, rep, &mut keep)
+    }
+
+    /// `plan_replace_eol` without the generic closure: one instantiation, so every branch is counted once.
+    fn plan_eol(&self, re: &Regex, rep: &str, keep: &mut dyn FnMut(Range<usize>) -> bool) -> Replacement {
+        let base = self.text().clone();
+        // An empty match after the line break is past the end of the text.
+        let end = base.len();
+        let (mut next, mut edits) = base.insert(end, "\n").replace_matching_edits(re, rep, |m| m.start <= end && keep(m));
+        // A match that reaches the end of the text took the line break; the edits are in the text left by the ones before.
+        match edits.last_mut() {
+            Some(e) if e.old_len > 0 && e.start + e.new_len == next.len() => e.old_len -= 1,
+            _ => next = next.delete(next.len() - 1..next.len()),
+        }
+        Replacement { base, next, edits }
+    }
+
     /// Does what [`Document::plan_replace`] planned; returns the replaced count. The text must be the one it was planned for.
     pub fn apply_replacement(&mut self, plan: Replacement) -> usize {
         assert!(plan.base.ptr_eq(self.text()), "the text changed after the replacement was planned");

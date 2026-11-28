@@ -51,6 +51,8 @@ pub(super) struct Header {
     pub visual: Option<VisualPos>,
     /// `UH_EMPTYBUF`: the buffer had no lines (`ML_EMPTY`) when the change began; after an undo or redo, when the other side had.
     pub emptybuf: bool,
+    /// `UH_CHANGED`: `'modified'` before the change was undone, after it was redone (the other side of the step).
+    pub changed: bool,
     /// The `Document` versions before and after the change.
     pub before_ver: usize,
     pub ver: usize,
@@ -117,6 +119,7 @@ impl Header {
             namedm: Vec::new(),
             visual: None,
             emptybuf,
+            changed: false,
             before_ver,
             ver: before_ver,
             next: None,
@@ -244,6 +247,11 @@ impl UndoTree {
             next = self.headers[t].prev;
             self.freeentries(t, uhpp);
         }
+    }
+
+    /// `u_unchanged`: the buffer was just written or read, so undoing any step makes it modified.
+    pub fn unchanged(&mut self) {
+        self.headers.iter_mut().filter(|h| !h.freed).for_each(|h| h.changed = true);
     }
 
     /// `u_savecommon` without the reload case: saves the lines between `top` and `bot` (see the module header) for the change
@@ -606,6 +614,8 @@ impl Editor {
             let id = self.buf.undo.newhead.expect("a header was just made");
             let h = &mut self.buf.undo.headers[id];
             (h.namedm, h.visual, h.ver) = (named, visual, new_ver);
+            // `uh_flags = (b_changed ? UH_CHANGED : 0) + ..`: the edit has not been made yet.
+            h.changed = self.buf.modified;
         }
         true
     }
@@ -762,8 +772,11 @@ impl Editor {
             let mut lnum = (line as isize + 1 + shift) as usize;
             // The line is finished when its last match is done, or at a match that takes the lines after it.
             let mut open = false;
+            let mut last = i;
             while i < items.len() && items[i].line == line {
-                let it = items[i];
+                let it = &items[i];
+                // `u_savesub`: the line as the buffer holds it.
+                let src = it.half.as_deref().map_or_else(|| (before.clone(), line), |h| (Text::from(h), 0));
                 for _ in 0..it.crs {
                     self.u_savecommon_src(lnum - 1, lnum, lnum + 1, lc, None, Some((lnum - 1, 0)));
                     lc += 1;
@@ -777,8 +790,9 @@ impl Editor {
                     *did_save = true;
                 }
                 open = true;
+                last = i;
                 if it.takes > 0 {
-                    self.u_savecommon_src(lnum - 1, lnum + 1, lnum + 1, lc, Some((before.clone(), line)), Some((lnum - 1, 0)));
+                    self.u_savecommon_src(lnum - 1, lnum + 1, lnum + 1, lc, Some(src), Some((lnum - 1, 0)));
                     let newbot = if it.takes == lc { 2 } else { lnum + 1 };
                     self.u_savecommon_src(lnum, lnum + 1 + it.takes, newbot, lc, Some((before.clone(), line + 1)), Some((lnum - 1, 0)));
                     self.marks_delete_lines(line + 1, it.takes);
@@ -789,7 +803,8 @@ impl Editor {
                 i += 1;
             }
             if open {
-                self.u_savecommon_src(lnum - 1, lnum + 1, lnum + 1, lc, Some((before.clone(), line)), Some((lnum - 1, 0)));
+                let src = items[last].half.as_deref().map_or_else(|| (before.clone(), line), |h| (Text::from(h), 0));
+                self.u_savecommon_src(lnum - 1, lnum + 1, lnum + 1, lc, Some(src), Some((lnum - 1, 0)));
             }
         }
     }
@@ -798,6 +813,22 @@ impl Editor {
     /// `first` are deleted (the others stay on the first line that goes, as `ONE_ADJUST_NODEL` does).
     pub(super) fn marks_delete_lines(&mut self, first: usize, n: usize) {
         self.mark_adjust(first, n, None, 0);
+    }
+
+    /// `u_find_first_changed`: after a reload saved for undo (`'undoreload'`), undoing it puts the cursor on the first line
+    /// that differs from the text `old` it replaced, or on the first one added or deleted at the end.
+    pub(super) fn u_find_first_changed(&mut self, old: &Text) {
+        let (new, size) = (self.buf.doc.text(), old.line_count());
+        let nl = new.line_count();
+        let mut lnum = 1;
+        while lnum < nl && lnum <= size && new.line(lnum - 1) == old.line(lnum - 1) {
+            lnum += 1;
+        }
+        let differs = lnum < nl && lnum <= size;
+        if differs || nl != size {
+            let id = self.buf.undo.newhead.expect("the reload made a header");
+            self.buf.undo.headers[id].cursor = (lnum - 1, 0);
+        }
     }
 
     /// `u_sync`: the next change makes a new undo step.
@@ -875,6 +906,8 @@ impl Editor {
         let target = if self.buf.doc.seq() == h.before_ver { h.ver } else { h.before_ver };
         self.buf.doc.goto(target);
         let moved = self.buf.undo.swap(id, before.clone(), self.win.line, self.buf.doc.text().is_empty());
+        // `u_undoredo` ends with `changed()` or `unchanged()` by the old flags, and keeps the current ones in the header.
+        self.buf.modified = mem::replace(&mut self.buf.undo.headers[id].changed, self.buf.modified);
         debug_assert!(moved.text.to_string() == self.buf.doc.text().to_string(), "the entries do not make the text `Document` moved to");
         self.map_marks(&before);
         self.undoredo_marks(id, &moved, named, visual);
@@ -1275,11 +1308,14 @@ impl Editor {
 }
 
 /// A match `:s` replaces: the line it starts on (0-based), the lines after it that it takes, the line breaks in its replacement.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub(super) struct SubItem {
     pub line: usize,
     pub takes: usize,
     pub crs: usize,
+    /// The text of the buffer line when this match is handled, if an earlier match that took lines already put the text so far
+    /// into it (`ml_replace` before the next match): that line is saved then, not the original one.
+    pub half: Option<String>,
 }
 
 #[cfg(test)]
@@ -1355,5 +1391,19 @@ mod tests {
         assert_eq!((t.len(), t.matches(':').count()), (8, 2), "{t}");
         let t = fmt_time(1_000_000_000, 1_000_000_000 + 13 * 3600);
         assert_eq!((t.len(), t.matches('/').count()), (19, 2), "{t}");
+    }
+
+    /// `u_savesub` after a match that took lines saves the line as the buffer holds it then: the text so far.
+    #[cfg_attr(miri, ignore = "safe editor logic; the unsafe of rim is reached by the reader_*, rc and env tests")]
+    #[test]
+    fn a_join_saves_the_half_changed_line() {
+        use super::super::tests::ed;
+        let mut e = ed("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm\nn");
+        e.command("%s/\\n/-/g");
+        let h = &e.buf.undo.headers[e.buf.undo.newhead.unwrap()];
+        let lines: Vec<String> = h.entries.iter().filter(|en| en.size == 1 && en.top == 0).filter_map(|en| en.src.as_ref().map(|(t, f)| t.line(*f).to_string())).collect();
+        // The first save is the original line, the next ones the line as the buffer holds it after each join.
+        assert_eq!(&lines[..3], ["a", "a-b", "a-b-c"]);
+        assert_eq!(lines.last().map(String::as_str), Some("a-b-c-d-e-f-g-h-i-j-k-l-m-n"));
     }
 }

@@ -1,0 +1,5554 @@
+NVIM v0.12.6
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xzbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['xzbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 dos 4
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['xsecond', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+['x'] 1 1 1 dos 3
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 4
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 4
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 3
+Already at newest change
+[''] 1 1 0 unix 3
+Already at newest change
+[''] 1 1 0 unix 3
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+Already at newest change
+[''] 1 1 0 unix 2
+Already at newest change
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+Already at newest change
+[''] 1 1 1 unix 2
+[''] 1 1 1 unix 2
+line   29:
+E353: Nothing in register "
+[''] 1 1 1 unix 3
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+['Xbcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 4
+['Xbcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 0 unix 4
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 0 unix 4
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhihi', 'second', 'third'] 1 30 1 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+1 change; before #4  0 seconds ago
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+Already at newest change
+['x'] 1 1 1 unix 3
+Already at newest change
+['x'] 1 1 1 unix 3
+['z'] 1 1 1 unix 4
+1 line less; before #3  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+['hi'] 1 2 1 dos 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   23:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+['hi'] 1 2 1 dos 3
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+1 change; before #4  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 unix 3
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 unix 3
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 0 unix 3
+1 change; before #3  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 27 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'bcdefghijklmnopqrstuvwxyzhi', 'third'] 2 27 1 unix 4
+Already at newest change
+['second', 'bcdefghijklmnopqrstuvwxyzhi', 'third'] 2 27 1 unix 4
+['second', 'bcdefghijklmnopqrstuvwxyzhi', 'third'] 2 27 0 unix 4
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'third', 'abcdefghijklmnopqrstuvwxyz'] 3 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhz', 'second', 'third'] 1 28 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 1 1 unix 4
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 1 0 unix 4
+1 change; before #4  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhz', 'second', 'third'] 1 28 1 unix 3
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 3
+1 changes; before #3  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #3  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; after #3  0 seconds ago
+[''] 1 1 0 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 dos 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 dos 2
+['abcdefghijklmnopqrstuvwxyzhihi', 'second', 'third'] 1 30 1 dos 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; before #4  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+1 line less; before #3  0 seconds ago
+[''] 1 1 0 unix 0
+1 more line; after #3  0 seconds ago
+['x'] 1 1 1 unix 3
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 4
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 4
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+Error in {file}:
+line   29:
+E486: Pattern not found: .
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 0 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 5
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+2 more lines; after #1  1 second ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['abcdefghijklmnopqrstuvwxy', 'second', 'third'] 1 25 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 4
+2 more lines; after #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 0 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 5
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 5
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Error in {file}:
+line   29:
+E353: Nothing in register "
+[''] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 5
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 5
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+['xhi'] 1 3 1 unix 3
+1 change; before #4  0 seconds ago
+['xhi'] 1 3 1 unix 3
+['xhi'] 1 3 1 dos 3
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   17:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 2
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 3
+1 change; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 25 1 unix 2
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+Already at newest change
+['hi'] 1 2 1 unix 2
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 3
+['h'] 1 1 1 unix 4
+['xh'] 1 1 1 unix 5
+['zh'] 1 1 1 unix 6
+['zh'] 1 1 1 unix 6
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 dos 0
+['x'] 1 1 1 dos 3
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 3
+1 change; before #4  0 seconds ago
+['hi'] 1 2 1 unix 3
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhz', 'second', 'third'] 1 28 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhz', 'second', 'third'] 1 28 0 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+1 line less; before #3  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+Already at newest change
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+1 change; before #5  0 seconds ago
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['secondhi', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 8 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 1 dos 2
+['hi'] 1 2 1 dos 2
+Already at newest change
+['hi'] 1 2 1 dos 2
+['hihi'] 1 4 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+Already at newest change
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+['x'] 1 1 1 dos 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 dos 0
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 1 dos 2
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 4
+['second', 'Xbcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 5
+2 changes; before #4  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; before #4  0 seconds ago
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'third', 'Xbcdefghijklmnopqrstuvwxyz'] 3 1 1 unix 4
+['second', 'third', 'Xbcdefghijklmnopqrstuvwxyzhi'] 3 28 1 unix 5
+Already at newest change
+['second', 'third', 'Xbcdefghijklmnopqrstuvwxyzhi'] 3 28 1 unix 5
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+['X'] 1 1 1 unix 3
+['X'] 1 1 0 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+Already at newest change
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xzbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+Already at newest change
+['xzbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 4
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 4
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 5
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xXabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; before #4  0 seconds ago
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 3
+1 change; before #3  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 26 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 26 0 unix 2
+1 change; after #3  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 27 1 unix 3
+1 change; before #3  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 26 0 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 26 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 0 unix 2
+['hi'] 1 2 1 unix 3
+1 line less; before #3  0 seconds ago
+[''] 1 1 0 unix 2
+['hi'] 1 2 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 3
+['Xbcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 3
+['xxabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 30 1 dos 4
+['xxabcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 30 1 dos 5
+1 change; before #5  0 seconds ago
+['xxabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 30 1 dos 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 3
+['bcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 26 1 unix 4
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+['hi'] 1 2 1 unix 3
+1 line less; before #3  0 seconds ago
+[''] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   23:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['a'] 1 1 1 unix 3
+Already at newest change
+['a'] 1 1 1 unix 3
+Already at newest change
+['a'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 1 unix 2
+[''] 1 1 1 unix 2
+[''] 1 1 0 unix 2
+['x'] 1 1 1 unix 3
+['', 'x'] 2 1 1 unix 4
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   17:
+E353: Nothing in register "
+[''] 1 1 0 unix 3
+['x'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 3
+['second', 'Xcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'Xcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 4
+['second', 'Xcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+Already at newest change
+['second', 'Xcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 1 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['zbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 3
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 3
+['zbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 dos 3
+['zbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xzbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['xsecond', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #4  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 5
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 5
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 5
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 dos 3
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 28 1 dos 4
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 28 1 dos 4
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 28 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 3
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 0 unix 3
+['Xcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+1 change; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Error in {file}:
+line   23:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 28 1 unix 4
+1 change; before #5  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyzhz', 'third'] 2 28 1 unix 4
+1 change; before #4  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+['x'] 1 1 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xxbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+2 changes; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 4
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xXbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 3
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+2 changes; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; after #4  0 seconds ago
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+[''] 1 1 1 unix 3
+['', ''] 2 1 1 unix 4
+['', ''] 2 1 1 unix 5
+['', ''] 2 1 0 unix 5
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 unix 4
+['Xabcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 29 1 unix 5
+['Xabcdefghijklmnopqrstuvwxyzhxihi', 'second', 'third'] 1 32 1 unix 6
+Already at newest change
+['Xabcdefghijklmnopqrstuvwxyzhxihi', 'second', 'third'] 1 32 1 unix 6
+['Xabcdefghijklmnopqrstuvwxyzhxihi', 'second', 'third'] 1 32 1 unix 6
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['Xi'] 1 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 2 1 1 unix 3
+['abcdefghijklmnopqrstuvwxyz', 'xsecond', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 0 unix 2
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 3
+[''] 1 1 1 unix 3
+Already at newest change
+[''] 1 1 1 unix 3
+Already at newest change
+[''] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+1 change; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 unix 2
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+line   17:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+line   23:
+E353: Nothing in register "
+[''] 1 1 1 unix 3
+[''] 1 1 1 dos 3
+[''] 1 1 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   17:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+2 changes; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'third', 'abcdefghijklmnopqrstuvwxyz'] 3 1 1 unix 3
+1 change; before #3  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 4
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Error in {file}:
+line   26:
+E353: Nothing in register "
+[''] 1 1 1 dos 2
+['x'] 1 1 1 dos 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   17:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 4
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+['hi'] 1 2 1 dos 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhz', 'second', 'third'] 1 28 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 dos 3
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 1 dos 3
+['xabcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 29 0 dos 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+1 change; before #4  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E486: Pattern not found: .
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+Error in {file}:
+line   20:
+E486: Pattern not found: .
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+['xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; before #5  0 seconds ago
+['xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+Already at newest change
+['x'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+1 change; before #4  0 seconds ago
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 dos 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 5
+Already at newest change
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 5
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 5
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 4
+1 change; before #5  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 1 unix 4
+['abcdefghijklmnopqrstuvwxyzhxi', 'second', 'third'] 1 28 0 unix 4
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 3
+['x'] 1 1 1 unix 3
+['', 'x'] 2 1 1 unix 4
+['', 'x'] 2 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 3
+['Xbcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 dos 4
+1 change; before #5  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 dos 4
+['Xbcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 dos 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['a'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['cdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+['x'] 1 1 1 unix 2
+['X'] 1 1 1 unix 3
+['xX'] 1 1 1 unix 4
+['X'] 1 1 1 unix 5
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 dos 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+Already at oldest change
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #3  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+['hi'] 1 2 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+Already at newest change
+['second', 'xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+Already at newest change
+['second', 'xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+Already at newest change
+[''] 1 1 1 unix 2
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 3
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['xxbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 3
+['hi'] 1 2 0 unix 3
+['hi'] 1 2 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyzhi', 'third'] 2 28 1 unix 4
+1 change; before #4  0 seconds ago
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 26 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 26 0 unix 3
+1 change; after #4  0 seconds ago
+['second', 'Xbcdefghijklmnopqrstuvwxyzhi', 'third'] 2 27 1 unix 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+Already at oldest change
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+[''] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #3  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 0 unix 2
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+1 change; after #2  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 1 dos 2
+Already at newest change
+[''] 1 1 1 dos 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+['z'] 1 1 1 unix 3
+['z'] 1 1 1 unix 3
+[''] 1 1 1 unix 4
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+[''] 1 1 1 unix 0
+['x'] 1 1 1 unix 2
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 3
+['Xcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 1 1 unix 4
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 3
+['second', 'abcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyzhi', 'third'] 2 1 1 unix 4
+2 changes; before #3  0 seconds ago
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['Xbcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 1 1 unix 5
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'xabcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+Error in {file}:
+line   17:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Error in {file}:
+line   20:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'third', 'abcdefghijklmnopqrstuvwxyz'] 3 1 1 unix 3
+['second', 'third', 'abcdefghijklmnopqrstuvwxyz'] 3 1 1 unix 4
+['second', 'third', 'abcdefghijklmnopqrstuvwxyz'] 3 1 1 dos 4
+['second', 'third', 'zbcdefghijklmnopqrstuvwxyz'] 3 1 1 dos 5
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+Error in {file}:
+line   23:
+E486: Pattern not found: .
+[''] 1 1 1 dos 0
+[''] 1 1 1 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 3
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+['x'] 1 1 1 dos 2
+['x'] 1 1 0 dos 2
+2 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 4
+['hi'] 1 2 0 unix 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['xxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['xxxabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 4
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+['x'] 1 1 1 unix 2
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+Already at newest change
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+['x'] 1 1 1 unix 3
+['x'] 1 1 0 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+['hi'] 1 2 0 unix 2
+Already at newest change
+['hi'] 1 2 0 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+['hi'] 1 2 1 unix 2
+1 line less; before #2  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+Error in {file}:
+line   17:
+E486: Pattern not found: .
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+1 change; before #3  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; before #5  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+1 change; after #5  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 5
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 4
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 5
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 5
+2 changes; before #4  0 seconds ago
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; after #2  0 seconds ago
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 2
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 3
+Already at newest change
+['second', 'Xbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 0 dos 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+[''] 1 1 0 dos 0
+[''] 1 1 0 dos 0
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 dos 0
+"---
+
+3 more lines
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; after #2  0 seconds ago
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 3
+"---
+
+3 more lines
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+1 change; before #4  0 seconds ago
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['bcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 27 1 unix 5
+2 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+1 change; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 dos 1
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 1 unix 1
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Error in {file}:
+line   11:
+E353: Nothing in register "
+[''] 1 1 0 unix 2
+[''] 1 1 1 unix 2
+Already at newest change
+[''] 1 1 1 unix 2
+line   20:
+E486: Pattern not found: .
+[''] 1 1 1 unix 2
+[''] 1 1 0 unix 2
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+['x'] 1 1 1 unix 2
+['x'] 1 1 1 unix 2
+Already at newest change
+['x'] 1 1 1 unix 2
+['x'] 1 1 0 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+"---
+
+3 more lines
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['Xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 4
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 5
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 5
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 6
+['Xcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 7
+"---
+
+3 more lines
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['bcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+Already at newest change
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 3
+['second', 'cdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+1 change; before #5  0 seconds ago
+['second', 'cdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 dos 4
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+1 changes; before #1  0 seconds ago
+[''] 1 1 1 unix 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+Already at newest change
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'zbcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+0 changes; before #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['second', 'abcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 2
+['second', 'bcdefghijklmnopqrstuvwxyz', 'third'] 2 1 1 unix 3
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+1 change; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+0 changes; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 26 0 unix 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+"---
+
+3 more lines
+Already at newest change
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['zbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['Xbcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 3
+2 changes; before #2  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 1
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+Already at oldest change
+[''] 1 1 0 unix 0
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 unix 0
+Error in {file}:
+line   14:
+E353: Nothing in register "
+[''] 1 1 1 unix 2
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+Already at newest change
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 0 unix 2
+['abcdefghijklmnopqrstuvwxyzhi', 'second', 'third'] 1 28 1 dos 2
+['abcdefghijklmnopqrstuvwxyzh', 'second', 'third'] 1 27 1 dos 3
+"---
+
+3 more lines
+3 fewer lines; before #1  0 seconds ago
+[''] 1 1 0 unix 0
+[''] 1 1 1 dos 0
+3 more lines; after #1  0 seconds ago
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 dos 1
+"---
+
+3 more lines
+['abcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 1
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 1 unix 2
+['xabcdefghijklmnopqrstuvwxyz', 'second', 'third'] 1 1 0 unix 2

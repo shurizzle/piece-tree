@@ -17,7 +17,7 @@ fn load(vim: &str, golden: &str) -> (Vec<String>, Vec<String>) {
 
 /// Cases that differ from Neovim and are known to: (file, case numbers, from 0). Each phase of
 /// docs/reference/vimscript.md empties its part of this list; it never grows.
-const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[])];
+const KNOWN: &[(&str, &[usize])] = &[("range", &[]), ("typed", &[]), ("cmd", &[]), ("bar", &[]), ("let", &[]), ("funcs", &[]), ("expr", &[]), ("edge", &[]), ("args", &[]), ("mixed", &[]), ("extreme", &[]), ("triple", &[]), ("double", &[]), ("valid", &[]), ("sort", &[]), ("heredoc", &[]), ("heredoc.typed", &[]), ("function", &[]), ("function.typed", &[]), ("call", &[]), ("call2", &[]), ("call.typed", &[]), ("funcref", &[]), ("lambda", &[]), ("dictfunc", &[]), ("try", &[]), ("try2", &[]), ("execute", &[]), ("append", &[]), ("append.typed", &[]), ("excur", &[]), ("normcur", &[]), ("defer", &[]), ("lock", &[]), ("lock2", &[]), ("trycall", &[]), ("callname", &[]), ("const", &[]), ("const.typed", &[]), ("linecmd", &[]), ("limits", &[]), ("marks", &[]), ("motions", &[]), ("fmarks", &[]), ("putdot.typed", &[]), ("subg", &[]), ("sortretab", &[]), ("tabs", &[]), ("curswant", &[]), ("winview", &[]), ("vartabstop", &[]), ("smarttab", &[]), ("abort", &[]), ("fname", &[]), ("block", &[]), ("block2", &[]), ("block3", &[]), ("insarrow.typed", &[276, 279, 280, 281]), ("wordclass", &[]), ("cwempty", &[]), ("bigword", &[]), ("undo", &[]), ("undo2", &[]), ("undo.typed", &[]), ("typedstate.typed", &[]), ("marks2", &[]), ("jumps", &[]), ("winmarks", &[]), ("visual2", &[]), ("undoline", &[]), ("bufarg", &[]), ("undolevels", &[]), ("undoflags", &[]), ("undosub", &[])];
 
 /// The lines of `s` in order.
 fn sorted_lines(s: &str) -> String {
@@ -532,4 +532,16 @@ fn bufarg_cases_match_neovim() {
 #[test]
 fn undolevels_cases_match_neovim() {
     run("undolevels", include_str!("cases/undolevels.vim"), include_str!("cases/undolevels.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn undoflags_cases_match_neovim() {
+    run("undoflags", include_str!("cases/undoflags.vim"), include_str!("cases/undoflags.golden"));
+}
+
+#[cfg_attr(miri, ignore = "safe editor logic; compares scripts with recorded output")]
+#[test]
+fn undosub_cases_match_neovim() {
+    run("undosub", include_str!("cases/undosub.vim"), include_str!("cases/undosub.golden"));
 }
