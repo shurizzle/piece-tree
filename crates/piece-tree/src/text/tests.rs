@@ -226,6 +226,64 @@ fn chunks_are_in_order() {
 }
 
 #[test]
+fn chunks_in_and_lines_in_match_the_model() {
+    for seed in 0..40 {
+        let mut rng = Rng(seed);
+        let (t, m) = fragmented(&mut rng, [0, 3, 40, 150][seed as usize % 4]);
+        for _ in 0..30 {
+            let (a, b) = (rng.boundary(&m), rng.boundary(&m));
+            let r = a.min(b)..a.max(b);
+            assert_eq!(t.chunks_in(r.clone()).collect::<String>(), m[r.clone()], "seed {seed} {r:?}");
+            assert!(t.chunks_in(r.clone()).all(|c| !c.is_empty()));
+            let lines: Vec<_> = t.lines_in(r.clone()).collect();
+            assert_eq!(lines, m[r.clone()].split('\n').collect::<Vec<_>>(), "seed {seed} {r:?}");
+        }
+        let all = 0..m.len();
+        assert_eq!(t.chunks_in(all.clone()).collect::<Vec<_>>(), t.chunks().collect::<Vec<_>>());
+        assert_eq!(t.lines_in(all).count(), t.line_count());
+    }
+}
+
+#[test]
+fn lines_in_borrows_unless_a_line_spans_pieces() {
+    let t = Text::from("ld\nxy").insert(0, "hello wor").insert(0, "ab\n");
+    assert_eq!(t.to_string(), "ab\nhello world\nxy");
+    let lines: Vec<_> = t.lines_in(0..t.len()).collect();
+    assert!(matches!(lines[..], [Cow::Borrowed("ab"), Cow::Owned(ref s), Cow::Borrowed("xy")] if s == "hello world"));
+    assert!(matches!(t.lines_in(3..3).next(), Some(Cow::Borrowed(""))));
+    assert_eq!(Text::new().lines_in(0..0).collect::<Vec<_>>(), [""]);
+    let t = Text::from("a\n");
+    let mut it = t.lines_in(0..2);
+    assert_eq!((it.next(), it.next(), it.next()), (Some("a".into()), Some("".into()), None));
+    assert_eq!(it.next(), None);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+fn chunks_in_out_of_bounds_panics() {
+    Text::from("abc").chunks_in(0..4);
+}
+
+#[test]
+#[should_panic(expected = "invalid range")]
+fn chunks_in_reversed_range_panics() {
+    #[allow(clippy::reversed_empty_ranges)]
+    Text::from("abc").chunks_in(2..1);
+}
+
+#[test]
+#[should_panic(expected = "char boundary")]
+fn lines_in_inside_char_panics() {
+    Text::from("é").lines_in(0..1);
+}
+
+#[test]
+#[should_panic(expected = "char boundary")]
+fn lines_in_start_inside_char_panics() {
+    Text::from("é").lines_in(1..2);
+}
+
+#[test]
 fn multibyte_boundaries_are_accepted() {
     let t = Text::from("é🦀ß");
     let t = t.insert(2, "|").insert(7, "|").insert(t.len() + 2, "|");

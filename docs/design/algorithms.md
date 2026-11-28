@@ -159,6 +159,8 @@ All are iterative root-to-leaf walks using subtree totals.
   4. Otherwise the line spans pieces: compute the end with `line_to_offset(i + 1) − 1` (or `len()`) and `slice`.
 - **`slice(a..b)`**: `collect` visits only subtrees overlapping the range and calls a callback (`FnMut(&str) -> ControlFlow<B>`, `#[inline(always)]`) with each piece's `&str` sub-slice, in order, until it breaks. `slice` builds its `Cow` from the callback (one part → `Cow::Borrowed`, several → one owned `String`); `chars_in` sums `count_chars` and `line_col_to_offset` stops at the piece holding the column, so neither collects the pieces nor copies a line that spans pieces.
 - **`chunks()`**: explicit-stack in-order iterator (push left spine, pop, push left spine of right child).
+- **`chunks_in(range)`**: the same iterator, started by one descent to the piece holding `range.start` (pieces before it are skipped with their left subtrees; the stack keeps each piece's start offset). The first and last parts are cut to the range; the iterator ends at the first piece starting at or after `range.end`.
+- **`lines_in(range)`**: splits the parts of `chunks_in` with `memchr`. A line inside one part is `Cow::Borrowed`; a line that starts in an earlier part is accumulated in one `String` carried across parts and yielded `Cow::Owned`. After the last part it yields the tail once (so the result equals `split('\n')`).
 
 ## Regex search (`search.rs`)
 

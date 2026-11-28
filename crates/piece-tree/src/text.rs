@@ -706,6 +706,53 @@ impl Text {
         c
     }
 
+    /// The parts of the pieces overlapping `range`, in order, always borrowed: like [`chunks`](Self::chunks)
+    /// but starting with one O(height) descent and cut at both ends of `range`.
+    pub fn chunks_in(&self, range: Range<usize>) -> ChunksIn<'_> {
+        self.check_range(&range);
+        let mut c = ChunksIn { stack: Vec::new(), start: range.start, end: range.end };
+        if range.is_empty() {
+            return c;
+        }
+        c.stack.reserve(tree::height(&self.root).into());
+        // Descend to the piece holding `start`; a piece ending at or before it is skipped with its
+        // left subtree.
+        let (mut t, mut base) = (&self.root, 0);
+        loop {
+            let n = t.as_ref().expect("start < len is inside a piece");
+            let ps = base + tree::len(&n.left);
+            if range.start < ps {
+                c.stack.push((n, ps));
+                t = &n.left;
+            } else if range.start < ps + n.piece.len() {
+                c.stack.push((n, ps));
+                break;
+            } else {
+                base = ps + n.piece.len();
+                t = &n.right;
+            }
+        }
+        c
+    }
+
+    /// The lines of `range` without their `\n`, exactly `slice(range).split('\n')` (an empty range and
+    /// a trailing `\n` give a last empty line). A line is borrowed unless it spans pieces, so only
+    /// those allocate.
+    pub fn lines_in(&self, range: Range<usize>) -> LinesIn<'_> {
+        let mut chunks = self.chunks_in(range);
+        let rest = chunks.next().unwrap_or("");
+        LinesIn { chunks, rest, carry: String::new(), done: false }
+    }
+
+    /// Panics unless `range` lies inside the text, on char boundaries.
+    fn check_range(&self, range: &Range<usize>) {
+        assert!(range.start <= range.end && range.end <= self.len(), "invalid range {range:?}");
+        assert!(
+            self.is_char_boundary(range.start) && self.is_char_boundary(range.end),
+            "range {range:?} is not on a char boundary"
+        );
+    }
+
     /// Writes the text with `\n` converted to `eol`. A clone is a snapshot, so this can run on
     /// another thread while the original keeps being edited.
     pub fn write_to(&self, mut w: impl Write, eol: LineEnding) -> io::Result<()> {
@@ -824,6 +871,80 @@ impl<'a> Iterator for Chunks<'a> {
         let n = self.stack.pop()?;
         self.push_left(&n.right);
         Some(n.piece.text())
+    }
+}
+
+/// In-order iterator over the parts of the pieces inside a range, see [`Text::chunks_in`].
+pub struct ChunksIn<'a> {
+    /// Pieces still to yield, next on top, each with its start offset in the text.
+    stack: Vec<(&'a Node, usize)>,
+    start: usize,
+    end: usize,
+}
+
+impl<'a> Iterator for ChunksIn<'a> {
+    type Item = &'a str;
+
+    fn next(&mut self) -> Option<&'a str> {
+        let (n, ps) = self.stack.pop()?;
+        if ps >= self.end {
+            self.stack.clear();
+            return None;
+        }
+        let pe = ps + n.piece.len();
+        // Only the left spine of the right child: everything there starts after `start`.
+        let mut t = &n.right;
+        while let Some(r) = t {
+            let rs = pe + tree::len(&r.left);
+            self.stack.push((r, rs));
+            t = &r.left;
+        }
+        Some(&n.piece.text()[self.start.max(ps) - ps..self.end.min(pe) - ps])
+    }
+}
+
+/// Iterator over the lines of a range, see [`Text::lines_in`].
+pub struct LinesIn<'a> {
+    chunks: ChunksIn<'a>,
+    /// Unsplit tail of the current part.
+    rest: &'a str,
+    /// Start of the line in progress when it began in an earlier part.
+    carry: String,
+    done: bool,
+}
+
+impl<'a> Iterator for LinesIn<'a> {
+    type Item = Cow<'a, str>;
+
+    fn next(&mut self) -> Option<Cow<'a, str>> {
+        if self.done {
+            return None;
+        }
+        loop {
+            if let Some(i) = memchr::memchr(b'\n', self.rest.as_bytes()) {
+                let head = &self.rest[..i];
+                self.rest = &self.rest[i + 1..];
+                if self.carry.is_empty() {
+                    return Some(Cow::Borrowed(head));
+                }
+                self.carry.push_str(head);
+                return Some(Cow::Owned(mem::take(&mut self.carry)));
+            }
+            match self.chunks.next() {
+                Some(next) => {
+                    self.carry.push_str(self.rest);
+                    self.rest = next;
+                }
+                None => {
+                    self.done = true;
+                    if self.carry.is_empty() {
+                        return Some(Cow::Borrowed(self.rest));
+                    }
+                    self.carry.push_str(self.rest);
+                    return Some(Cow::Owned(mem::take(&mut self.carry)));
+                }
+            }
+        }
     }
 }
 

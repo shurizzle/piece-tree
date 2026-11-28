@@ -32,6 +32,8 @@ Immutable. Edits return a new `Text`; `self` is unchanged. `Send + Sync`; `Clone
 | `is_char_boundary(off)` / `floor_char_boundary(off)` | bool / boundary at or before `off` (clamped) | — | |
 | `slice(Range)` | `Cow<str>` | `invalid range` (reversed or end > len), `char boundary` (from `str`) | borrowed if in one piece |
 | `chunks()` | `Chunks<'_>` iterator of `&str` | — | one item per piece, in order (contiguous typing yields one piece) |
+| `chunks_in(Range)` | `ChunksIn<'_>` iterator of `&str` | `invalid range`, `char boundary` (checked when called) | the parts of the pieces overlapping the range, in order, always borrowed, never empty; one O(height) descent then O(1) per part |
+| `lines_in(Range)` | `LinesIn<'_>` iterator of `Cow<str>` | same as `chunks_in` | the lines of the range without `\n`, exactly `slice(range).split('\n')` (empty range: one `""`; trailing `\n`: last empty line); borrowed unless the line spans pieces, so only those allocate |
 | `write_to(impl Write, LineEnding)` | `io::Result<()>` | — | writes with `\n` converted to the ending; propagates writer errors. A clone is a snapshot: write it on another thread while the original is edited (rim's background `:w`) |
 | `piece_count()` / `chunk_count()` | pieces (tree nodes) / distinct chunks referenced, the add chunk included | — | O(pieces) walks |
 | `memory_bytes()` | approximate heap bytes kept alive: chunks at capacity plus tree nodes | — | O(pieces); versions share both, so a sum over versions overcounts |
